@@ -1,0 +1,41 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21
+  },
+  "configurePresets": [
+    {
+      "name": "msys2-release",
+      "displayName": "MSYS2 - Release",
+      "description": "Use GCC from MSYS2 with Ninja build system",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "C:/bin/msys64/ucrt64/bin/gcc.exe"
+      }
+    },
+    {
+      "name": "msys2-debug",
+      "displayName": "MSYS2 - Debug",
+      "description": "Use GCC from MSYS2 with Ninja build system",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "C:/bin/msys64/ucrt64/bin/gcc.exe"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "build-msys2-release",
+      "configurePreset": "msys2-release"
+    },
+    {
+      "name": "build-msys2-debug",
+      "configurePreset": "msys2-debug"
+    }
+  ]
+}

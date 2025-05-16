@@ -1,0 +1,14 @@
+# ninja log v6
+87	154	7691341132170048	maze_muncher.exe	f3eeaf10fe64a6b7
+27	86	7691341131567079	CMakeFiles/maze_muncher.dir/src/main.c.obj	23fb64d2682b2398
+25	82	7691332334121756	CMakeFiles/maze_muncher.dir/src/game.c.obj	8a3dae1c1861f2e
+1	21	7691346918449542	C:/dev/maze-muncher/build/msys2-debug/CMakeFiles/cmake.verify_globs	d338574d8d0e3210
+21	123	7691346919354680	build.ninja	afe88970d5305f6b
+1	18	7691346919530864	C:/dev/maze-muncher/build/msys2-debug/CMakeFiles/cmake.verify_globs	d338574d8d0e3210
+22	79	7691346919735646	CMakeFiles/maze_muncher.dir/src/main.c.obj	23fb64d2682b2398
+21	101	7691346919725644	CMakeFiles/maze_muncher.dir/src/log/log.c.obj	ad6369d19535f3f6
+101	173	7691346920531299	maze_muncher.exe	3c34bf5c40dad201
+2	21	7691347068647273	C:/dev/maze-muncher/build/msys2-debug/CMakeFiles/cmake.verify_globs	d338574d8d0e3210
+1	19	7691347697219411	C:/dev/maze-muncher/build/msys2-debug/CMakeFiles/cmake.verify_globs	d338574d8d0e3210
+22	80	7691347697439420	CMakeFiles/maze_muncher.dir/src/main.c.obj	23fb64d2682b2398
+80	147	7691347698010888	maze_muncher.exe	3c34bf5c40dad201

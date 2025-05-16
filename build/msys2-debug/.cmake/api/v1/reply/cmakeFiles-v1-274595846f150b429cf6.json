@@ -1,0 +1,202 @@
+{
+	"globsDependent" : 
+	[
+		{
+			"expression" : "C:/dev/maze-muncher/src/*.c",
+			"paths" : 
+			[
+				"C:/dev/maze-muncher/src/game.c",
+				"C:/dev/maze-muncher/src/log/log.c",
+				"C:/dev/maze-muncher/src/main.c"
+			],
+			"recurse" : true
+		}
+	],
+	"inputs" : 
+	[
+		{
+			"path" : "CMakeLists.txt"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "build/msys2-debug/CMakeFiles/3.31.6/CMakeSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Platform/Windows-Initialize.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "build/msys2-debug/CMakeFiles/3.31.6/CMakeCCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/CMakeSystemSpecificInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/CMakeGenericSystem.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/CMakeInitializeConfigs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Platform/Windows.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Platform/WindowsPaths.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/CMakeCInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/CMakeLanguageInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Compiler/GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Compiler/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Platform/Windows-GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Platform/Windows-GNU.cmake"
+		},
+		{
+			"isGenerated" : true,
+			"path" : "build/msys2-debug/CMakeFiles/3.31.6/CMakeRCCompiler.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/CMakeRCInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Platform/Windows-windres.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Platform/Windows-GNU-C-ABI.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/CMakeCommonLanguageInclude.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Internal/CMakeCLinkerInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Linker/GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Linker/GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Platform/Linker/Windows-GNU-C.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Platform/Linker/Windows-GNU.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/Platform/Linker/GNU.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/lib/cmake/raylib/raylib-config-version.cmake"
+		},
+		{
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/lib/cmake/raylib/raylib-config.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/FindPkgConfig.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/FindPackageMessage.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/FindPackageHandleStandardArgs.cmake"
+		},
+		{
+			"isCMake" : true,
+			"isExternal" : true,
+			"path" : "C:/bin/msys64/ucrt64/share/cmake/Modules/FindPackageMessage.cmake"
+		}
+	],
+	"kind" : "cmakeFiles",
+	"paths" : 
+	{
+		"build" : "C:/dev/maze-muncher/build/msys2-debug",
+		"source" : "C:/dev/maze-muncher"
+	},
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 1
+	}
+}
