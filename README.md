@@ -1,5 +1,6 @@
 # Maze Muncher
 
+```sh
 maze-muncher/
 ├── asset/                # Images, sounds, fonts, etc.
 ├── src/
@@ -16,3 +17,4 @@ maze-muncher/
 │   ├── ui.c/.h           # Score display, menus
 │   │
 │   └── common.h          # Shared types, constants, macros
+```
