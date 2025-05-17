@@ -137,21 +137,22 @@ Log* log_create(const LogConfig* newConfig) {
     log->config        = defaultConfig;
     log->ownsSubsystem = false;
   } else {
-    // Validate log level
     if (newConfig->minLevel < 0 || newConfig->minLevel >= LOG_LEVEL_COUNT) {
       fprintfCheck(stderr, "Invalid log level: %d.\n", newConfig->minLevel);
       return nullptr;
     }
 
-    // Validate subsystem name
     if (newConfig->subsystem != nullptr && strlen(newConfig->subsystem) == 0) {
       fprintfCheck(stderr, "Invalid subsystem name: empty string.\n");
       return nullptr;
     }
 
-    // All validations passed, safe to copy
     log->config = *newConfig;
-    if (newConfig->subsystem != nullptr) {
+
+    // Subsystem name can be null, but if it's not, we need to copy it
+    if (newConfig->subsystem == nullptr) {
+      log->ownsSubsystem = false;
+    } else {
       log->config.subsystem = strdup(newConfig->subsystem);
       if (log->config.subsystem == nullptr) {
         perror("strdup() failed");
@@ -188,7 +189,6 @@ const LogConfig* log_getDefaultConfig(void) {
 }
 
 void log_message(Log* log, LogLevel level, const char* file, int line, bool trailingNewline, const char* format, ...) {
-  // Validate parameters
   if (log == nullptr) {
     fprintfCheck(stderr, "Invalid log message: log is null\n");
     return;
