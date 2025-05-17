@@ -150,14 +150,16 @@ Log* log_create(const LogConfig* newConfig) {
     }
 
     // All validations passed, safe to copy
-    log->config           = *newConfig;
-    log->config.subsystem = strdup(newConfig->subsystem);
-    if (log->config.subsystem == nullptr) {
-      perror("strdup() failed");
-      free(log);
-      return nullptr;
+    log->config = *newConfig;
+    if (newConfig->subsystem != nullptr) {
+      log->config.subsystem = strdup(newConfig->subsystem);
+      if (log->config.subsystem == nullptr) {
+        perror("strdup() failed");
+        free(log);
+        return nullptr;
+      }
+      log->ownsSubsystem = true;
     }
-    log->ownsSubsystem = true;
   }
 
   return log;

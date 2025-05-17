@@ -9,7 +9,7 @@
 // Test default configuration
 MU_TEST(test_defaultConfig) {
   const LogConfig* defaultConfig = log_getDefaultConfig();
-  mu_check(defaultConfig != NULL);
+  mu_check(defaultConfig != nullptr);
   mu_check(defaultConfig->minLevel == LOG_LEVEL_INFO);
   mu_check(defaultConfig->useColours == true);
   mu_check(defaultConfig->showTimestamp == true);
@@ -17,13 +17,13 @@ MU_TEST(test_defaultConfig) {
   mu_check(strcmp(defaultConfig->subsystem, "MAIN") == 0);
 }
 
-// Test log creation with NULL config (uses defaults)
-MU_TEST(test_createWithNullConfig) {
-  Log* log = log_create(NULL);
-  mu_check(log != NULL);
+// Test log creation with nullptr config (uses defaults)
+MU_TEST(test_createWithnullptrConfig) {
+  Log* log = log_create(nullptr);
+  mu_check(log != nullptr);
 
   const LogConfig* config = log_getConfig(log);
-  mu_check(config != NULL);
+  mu_check(config != nullptr);
   mu_check(config->minLevel == LOG_LEVEL_INFO);
   mu_check(config->useColours == true);
   mu_check(config->showTimestamp == true);
@@ -31,7 +31,7 @@ MU_TEST(test_createWithNullConfig) {
   mu_check(strcmp(config->subsystem, "MAIN") == 0);
 
   log_destroy(&log);
-  mu_check(log == NULL);
+  mu_check(log == nullptr);
 }
 
 // Test log creation with custom config
@@ -45,10 +45,10 @@ MU_TEST(test_createWithCustomConfig) {
   };
 
   Log* log = log_create(&config);
-  mu_check(log != NULL);
+  mu_check(log != nullptr);
 
   const LogConfig* retrievedConfig = log_getConfig(log);
-  mu_check(retrievedConfig != NULL);
+  mu_check(retrievedConfig != nullptr);
   mu_check(retrievedConfig->minLevel == LOG_LEVEL_DEBUG);
   mu_check(retrievedConfig->useColours == false);
   mu_check(retrievedConfig->showTimestamp == false);
@@ -56,7 +56,7 @@ MU_TEST(test_createWithCustomConfig) {
   mu_check(strcmp(retrievedConfig->subsystem, "TEST") == 0);
 
   log_destroy(&log);
-  mu_check(log == NULL);
+  mu_check(log == nullptr);
 }
 
 // Test invalid config values
@@ -70,7 +70,7 @@ MU_TEST(test_invalidConfigs) {
     .subsystem     = "TEST"
   };
   Log* log = log_create(&invalidLevelConfig);
-  mu_check(log == NULL);
+  mu_check(log == nullptr);
 
   // Test empty subsystem name
   LogConfig emptySubsystemConfig = {
@@ -81,7 +81,7 @@ MU_TEST(test_invalidConfigs) {
     .subsystem     = ""  // Empty string
   };
   log = log_create(&emptySubsystemConfig);
-  mu_check(log == NULL);
+  mu_check(log == nullptr);
 }
 
 // Test all log levels
@@ -95,7 +95,7 @@ MU_TEST(test_allLogLevels) {
   };
 
   Log* log = log_create(&config);
-  mu_check(log != NULL);
+  mu_check(log != nullptr);
 
   // Test all log levels
   LOG_TRACE(log, "This is a TRACE message");
@@ -106,7 +106,7 @@ MU_TEST(test_allLogLevels) {
   LOG_FATAL(log, "This is a FATAL message");
 
   log_destroy(&log);
-  mu_check(log == NULL);
+  mu_check(log == nullptr);
 }
 
 // Test log level filtering
@@ -121,7 +121,7 @@ MU_TEST(test_logLevelFiltering) {
   };
 
   Log* log = log_create(&config);
-  mu_check(log != NULL);
+  mu_check(log != nullptr);
 
   printf("\nThe following should only show WARN, ERROR, and FATAL:\n");
   LOG_TRACE(log, "This TRACE message should NOT be visible");
@@ -132,7 +132,7 @@ MU_TEST(test_logLevelFiltering) {
   LOG_FATAL(log, "This FATAL message should be visible");
 
   log_destroy(&log);
-  mu_check(log == NULL);
+  mu_check(log == nullptr);
 }
 
 // Test different formatting options
@@ -143,11 +143,11 @@ MU_TEST(test_formattingOptions) {
     .useColours    = false,
     .showTimestamp = false,
     .showFileLine  = false,
-    .subsystem     = NULL  // No subsystem
+    .subsystem     = nullptr  // No subsystem
   };
 
   Log* log = log_create(&minimalConfig);
-  mu_check(log != NULL);
+  mu_check(log != nullptr);
 
   printf("\nMinimal formatting (no colors, timestamp, file/line):\n");
   LOG_INFO(log, "Minimal formatting message");
@@ -164,19 +164,19 @@ MU_TEST(test_formattingOptions) {
   };
 
   log = log_create(&fullConfig);
-  mu_check(log != NULL);
+  mu_check(log != nullptr);
 
   printf("\nFull formatting:\n");
   LOG_INFO(log, "Full formatting message");
 
   log_destroy(&log);
-  mu_check(log == NULL);
+  mu_check(log == nullptr);
 }
 
 // Test message formatting
 MU_TEST(test_messageFormatting) {
-  Log* log = log_create(NULL);
-  mu_check(log != NULL);
+  Log* log = log_create(nullptr);
+  mu_check(log != nullptr);
 
   // Test string formatting
   LOG_INFO(log, "String: %s", "test string");
@@ -194,22 +194,22 @@ MU_TEST(test_messageFormatting) {
   LOG_INFO(log, "");
 
   log_destroy(&log);
-  mu_check(log == NULL);
+  mu_check(log == nullptr);
 }
 
 // Test error handling in log_message
 MU_TEST(test_logMessageErrors) {
-  Log* log = log_create(NULL);
-  mu_check(log != NULL);
+  Log* log = log_create(nullptr);
+  mu_check(log != nullptr);
 
   // These should print error messages to stderr but not crash
   printf("\nThe following should show error messages:\n");
 
-  // NULL format string
-  log_message(log, LOG_LEVEL_INFO, __FILE__, __LINE__, true, NULL);
+  // nullptr format string
+  log_message(log, LOG_LEVEL_INFO, __FILE__, __LINE__, true, nullptr);
 
-  // NULL file
-  log_message(log, LOG_LEVEL_INFO, NULL, __LINE__, true, "Test message");
+  // nullptr file
+  log_message(log, LOG_LEVEL_INFO, nullptr, __LINE__, true, "Test message");
 
   // Negative line number
   log_message(log, LOG_LEVEL_INFO, __FILE__, -1, true, "Test message");
@@ -217,17 +217,17 @@ MU_TEST(test_logMessageErrors) {
   // Invalid log level
   log_message(log, LOG_LEVEL_COUNT, __FILE__, __LINE__, true, "Test message");
 
-  // NULL log
-  log_message(NULL, LOG_LEVEL_INFO, __FILE__, __LINE__, true, "Test message");
+  // nullptr log
+  log_message(nullptr, LOG_LEVEL_INFO, __FILE__, __LINE__, true, "Test message");
 
   log_destroy(&log);
-  mu_check(log == NULL);
+  mu_check(log == nullptr);
 }
 
 // Test trailing newline parameter
 MU_TEST(test_trailingNewline) {
-  Log* log = log_create(NULL);
-  mu_check(log != NULL);
+  Log* log = log_create(nullptr);
+  mu_check(log != nullptr);
 
   printf("\nTesting trailing newline parameter:\n");
   // With trailing newline (true)
@@ -239,12 +239,12 @@ MU_TEST(test_trailingNewline) {
   printf(" (this should be on the same line)\n");
 
   log_destroy(&log);
-  mu_check(log == NULL);
+  mu_check(log == nullptr);
 }
 
 MU_TEST_SUITE(test_logSuite) {
   MU_RUN_TEST(test_defaultConfig);
-  MU_RUN_TEST(test_createWithNullConfig);
+  MU_RUN_TEST(test_createWithnullptrConfig);
   MU_RUN_TEST(test_createWithCustomConfig);
   MU_RUN_TEST(test_invalidConfigs);
   MU_RUN_TEST(test_allLogLevels);
