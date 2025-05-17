@@ -1,6 +1,18 @@
 #include "game.h"
 #include "log/log.h"
-#include "raylib.h"
+
+#include <raylib.h>
+
+// --- Types ---
+
+typedef struct ScrState {
+  int scrWidth;
+  int scrHeight;
+  int scrRefreshRate;
+  int scrScale;
+} ScrState;
+
+// --- Constants ---
 
 const LogConfig LOG_CONFIG = {
 #ifndef NDEBUG
@@ -14,10 +26,18 @@ const LogConfig LOG_CONFIG = {
   .subsystem     = "MAIN"
 };
 
+const char* WINDOW_TITLE   = "Maze Muncher";
+const int   ORG_SCR_WIDTH  = 480;
+const int   ORG_SCR_HEIGHT = 270;
+
+// --- Global state ---
+
+ScrState gScrState;
+
+// --- Main ---
+
 int main(void) {
-  Log*      log          = log_create(&LOG_CONFIG);
-  const int screenWidth  = 800;
-  const int screenHeight = 600;
+  Log* log = log_create(&LOG_CONFIG);
 
 #ifndef NDEBUG
   SetTraceLogLevel(LOG_DEBUG);
@@ -27,8 +47,25 @@ int main(void) {
 
   LOG_INFO(log, "Starting game...");
 
-  InitWindow(screenWidth, screenHeight, "Maze Muncher");
-  SetTargetFPS(GetMonitorRefreshRate(GetCurrentMonitor()));
+  InitWindow(0, 0, WINDOW_TITLE);
+
+  int scrWidth       = GetScreenWidth();
+  int scrHeight      = GetScreenHeight();
+  int scrRefreshRate = GetMonitorRefreshRate(GetCurrentMonitor());
+  int scrScale       = scrWidth / ORG_SCR_WIDTH;
+
+  gScrState = (ScrState) {
+    .scrWidth       = scrWidth,
+    .scrHeight      = scrHeight,
+    .scrRefreshRate = scrRefreshRate,
+    .scrScale       = scrScale,
+  };
+
+  LOG_INFO(log, "Screen state: %d %d %d %d", scrWidth, scrHeight, scrRefreshRate, scrScale);
+
+  SetTargetFPS(scrRefreshRate);
+  ToggleBorderlessWindowed();
+  HideCursor();
 
   LOG_INFO(log, "Loading game...");
 
