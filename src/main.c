@@ -1,20 +1,13 @@
+#include "common.h"
 #include "game.h"
 #include "log/log.h"
 
+#include <assert.h>
 #include <raylib.h>
 
 // --- Macros ---
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
-
-// --- Types ---
-
-typedef struct ScrState {
-  int scrWidth;
-  int scrHeight;
-  int scrRefreshRate;
-  int scrScale;
-} ScrState;
 
 // --- Constants ---
 
@@ -40,14 +33,19 @@ const int   ORG_SCR_HEIGHT = 270;
 
 // --- Global state ---
 
-ScrState    gScrState;
+ScreenState gScreenState;
 static Log* gRaylibLog = nullptr;
 
 // --- Helper functions ---
 
 static void raylibLog(int msgType, const char* text, va_list args) {
+  assert(gRaylibLog != nullptr);
+  assert(msgType >= 0 && msgType <= LOG_NONE);
+  assert(text != nullptr);
+
   LogLevel level;
   switch (msgType) {
+  // TODO: is this correct?
   case LOG_TRACE  : level = LOG_LEVEL_TRACE; break;
   case LOG_DEBUG  : level = LOG_LEVEL_DEBUG; break;
   case LOG_INFO   : level = LOG_LEVEL_INFO; break;
@@ -77,11 +75,11 @@ int main(void) {
   int scrRefreshRate = GetMonitorRefreshRate(GetCurrentMonitor());
   int scrScale       = MIN(scrWidth / ORG_SCR_WIDTH, scrHeight / ORG_SCR_HEIGHT);
 
-  gScrState = (ScrState) {
-    .scrWidth       = scrWidth,
-    .scrHeight      = scrHeight,
-    .scrRefreshRate = scrRefreshRate,
-    .scrScale       = scrScale,
+  gScreenState = (ScreenState) {
+    .width       = scrWidth,
+    .height      = scrHeight,
+    .refreshRate = scrRefreshRate,
+    .scale       = scrScale,
   };
 
   LOG_INFO(log, "Screen state: %d %d %d %d", scrWidth, scrHeight, scrRefreshRate, scrScale);
