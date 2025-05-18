@@ -5,6 +5,14 @@
 #include <stdio.h>
 #include <string.h>
 
+// Helper function for testing log_vmessage
+static void testVmessageHelper(Log* log, LogLevel level, const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  log_vmessage(log, level, __FILE__, __LINE__, true, format, args);
+  va_end(args);
+}
+
 // Test default configuration
 MU_TEST(test_defaultConfig) {
   const LogConfig* defaultConfig = log_getDefaultConfig();
@@ -241,6 +249,27 @@ MU_TEST(test_trailingNewline) {
   mu_check(log == nullptr);
 }
 
+// Test log_vmessage function directly
+MU_TEST(test_logVmessage) {
+  Log* log = log_create(nullptr);
+  mu_check(log != nullptr);
+
+  printf("\nTesting log_vmessage directly:\n");
+
+  // Test with various argument types
+  testVmessageHelper(log, LOG_LEVEL_INFO, "Testing vmessage with string: %s", "test string");
+  testVmessageHelper(log, LOG_LEVEL_INFO, "Testing vmessage with integer: %d", 42);
+  testVmessageHelper(log, LOG_LEVEL_INFO, "Testing vmessage with float: %.2f", 3.14159);
+  testVmessageHelper(log, LOG_LEVEL_INFO, "Testing vmessage with multiple args: %s %d %.2f", "test", 42, 3.14159);
+
+  // Test error cases
+  testVmessageHelper(nullptr, LOG_LEVEL_INFO, "This should show an error: nullptr log");
+  testVmessageHelper(log, LOG_LEVEL_COUNT, "This should show an error: invalid level");
+
+  log_destroy(&log);
+  mu_check(log == nullptr);
+}
+
 MU_TEST_SUITE(test_logSuite) {
   MU_RUN_TEST(test_defaultConfig);
   MU_RUN_TEST(test_createWithnullptrConfig);
@@ -252,6 +281,7 @@ MU_TEST_SUITE(test_logSuite) {
   MU_RUN_TEST(test_messageFormatting);
   MU_RUN_TEST(test_logMessageErrors);
   MU_RUN_TEST(test_trailingNewline);
+  MU_RUN_TEST(test_logVmessage);
 }
 
 int main(void) {
