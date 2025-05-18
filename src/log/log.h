@@ -8,14 +8,16 @@
 // clang-format Language: C
 #pragma once
 
+#include <stdarg.h>  // va_list
+
 typedef enum LogLevel {
-  LOG_LEVEL_TRACE,  // Ultra-fine-grained messages for tracing program execution flow
-  LOG_LEVEL_DEBUG,  // Diagnostic debug messages useful during development
-  LOG_LEVEL_INFO,   // Coarse-grained informational messages about application progress
-  LOG_LEVEL_WARN,   // Warnings about potential issues that are non-fatal
-  LOG_LEVEL_ERROR,  // Error messages indicating operations that have failed
-  LOG_LEVEL_FATAL,  // Fatal errors after which the application must abort
-  LOG_LEVEL_COUNT   // Sentinel value representing the number of log levels
+  LOG_LEVEL_TRACE,   // Ultra-fine-grained messages for tracing program execution flow
+  LOG_LEVEL_DEBUG,   // Diagnostic debug messages useful during development
+  LOG_LEVEL_INFO,    // Coarse-grained informational messages about application progress
+  LOG_LEVEL_WARN,    // Warnings about potential issues that are non-fatal
+  LOG_LEVEL_ERROR,   // Error messages indicating operations that have failed
+  LOG_LEVEL_FATAL,   // Fatal errors after which the application must abort
+  LOG_LEVEL_COUNT    // Sentinel value representing the number of log levels
 } LogLevel;
 
 typedef struct LogConfig {
@@ -44,6 +46,15 @@ const LogConfig* log_getConfig(const Log* log);
 const LogConfig* log_getDefaultConfig(void);
 
 void log_message(Log* log, LogLevel level, const char* file, int line, bool trailingNewline, const char* format, ...);
+void log_vmessage(
+  Log*        log,
+  LogLevel    level,
+  const char* file,
+  int         line,
+  bool        trailingNewline,
+  const char* format,
+  va_list     args
+);
 
 // Convenience macros for different log levels
 #define LOG_LOG(log, level, ...) log_message(log, level, __FILE__, __LINE__, true, __VA_ARGS__)

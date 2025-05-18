@@ -189,6 +189,21 @@ const LogConfig* log_getDefaultConfig(void) {
 }
 
 void log_message(Log* log, LogLevel level, const char* file, int line, bool trailingNewline, const char* format, ...) {
+  va_list args;
+  va_start(args, format);
+  log_vmessage(log, level, file, line, trailingNewline, format, args);
+  va_end(args);
+}
+
+void log_vmessage(
+  Log*        log,
+  LogLevel    level,
+  const char* file,
+  int         line,
+  bool        trailingNewline,
+  const char* format,
+  va_list     args
+) {
   if (log == nullptr) {
     fprintfCheck(stderr, "Invalid log message: log is null\n");
     return;
@@ -244,13 +259,10 @@ void log_message(Log* log, LogLevel level, const char* file, int line, bool trai
     }
   }
 
-  va_list args;
-  va_start(args, format);
   if (!vfprintfCheck(stream, format, args)) {
-    va_end(args);
     return;
   }
-  va_end(args);
+
   if (trailingNewline) {
     fprintfCheck(stream, "\n");
   }
