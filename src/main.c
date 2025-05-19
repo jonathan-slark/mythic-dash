@@ -20,11 +20,21 @@ static const log_Config LOG_CONFIG = {.minLevel = LOG_LEVEL_DEBUG,
 
 int main(void) {
   log_Log* log = log_create(&LOG_CONFIG);
+  if (log == nullptr) {
+    LOG_ERROR(log, "Failed to create log");
+    return 1;
+  }
 
-  engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE);
+  if (!engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE)) {
+    LOG_ERROR(log, "Failed to initialise engine");
+    return 1;
+  }
 
   LOG_INFO(log, "Loading game...");
-  game_load();
+  if (!game_load()) {
+    LOG_ERROR(log, "Failed to load game");
+    return 1;
+  }
   LOG_INFO(log, "Game loaded");
 
   while (!engine_shouldClose()) {

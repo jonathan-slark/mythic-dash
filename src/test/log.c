@@ -1,5 +1,4 @@
 #include "../log/log.h"
-
 #include <minunit.h>
 #include <stdbool.h>
 #include <stdio.h>

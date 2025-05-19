@@ -1,5 +1,4 @@
 #include "log.h"
-
 #include <assert.h>  // assert
 #include <stdarg.h>  // va_list, va_start, va_end
 #include <stdio.h>   // fprintf, stderr, stdout, perror
@@ -25,12 +24,10 @@ constexpr int LEVEL_WIDTH = 5;
 constexpr int FILE_WIDTH = 14;
 constexpr int LINE_WIDTH = 3;
 
-static const char* LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO",
-                                    "WARN",  "ERROR", "FATAL"};
+static const char* LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
 
-static const char* LEVEL_COLOURS[] = {COLOUR_CYAN,  COLOUR_BLUE,
-                                      COLOUR_GREEN, COLOUR_YELLOW,
-                                      COLOUR_RED,   COLOUR_MAGENTA};
+static const char* LEVEL_COLOURS[] = {COLOUR_CYAN,   COLOUR_BLUE, COLOUR_GREEN,
+                                      COLOUR_YELLOW, COLOUR_RED,  COLOUR_MAGENTA};
 
 static const char TIME_ERROR[] = "[TIME ERROR]";
 
@@ -103,8 +100,7 @@ static const char* getCachedTimestamp(log_Log* log) {
     }
 
     size_t timestampCount =
-        strftime(log->timestampCache.timestamp,
-                 sizeof(log->timestampCache.timestamp), "%H:%M:%S", timeInfo);
+        strftime(log->timestampCache.timestamp, sizeof(log->timestampCache.timestamp), "%H:%M:%S", timeInfo);
     if (timestampCount == 0) {
       perror("strftime() failed");
       return TIME_ERROR;
@@ -213,13 +209,11 @@ void log_vmessage(log_Log* log,
     return;
   }
   if (line < 0) {
-    fprintfCheck(stderr, "Invalid log message: line number is negative (%d)\n",
-                 line);
+    fprintfCheck(stderr, "Invalid log message: line number is negative (%d)\n", line);
     return;
   }
   if (level < 0 || level >= LOG_LEVEL_COUNT) {
-    fprintfCheck(stderr, "Invalid log message: log level out of range (%d)\n",
-                 level);
+    fprintfCheck(stderr, "Invalid log message: log level out of range (%d)\n", level);
     return;
   }
 
@@ -230,22 +224,19 @@ void log_vmessage(log_Log* log,
   FILE* stream = level >= LOG_LEVEL_ERROR ? stderr : stdout;
 
   if (log->config.showTimestamp) {
-    if (!fprintfCheck(stream, "[%-*s] ", TIMESTAMP_WIDTH,
-                      getCachedTimestamp(log))) {
+    if (!fprintfCheck(stream, "[%-*s] ", TIMESTAMP_WIDTH, getCachedTimestamp(log))) {
       return;
     }
   }
 
   if (log->config.subsystem) {
-    if (!fprintfCheck(stream, "[%-*s] ", SUBSYSTEM_WIDTH,
-                      log->config.subsystem)) {
+    if (!fprintfCheck(stream, "[%-*s] ", SUBSYSTEM_WIDTH, log->config.subsystem)) {
       return;
     }
   }
 
   if (log->config.useColours) {
-    if (!fprintfCheck(stream, "%s[%-*s]%s ", LEVEL_COLOURS[level], LEVEL_WIDTH,
-                      LEVEL_NAMES[level], COLOUR_RESET)) {
+    if (!fprintfCheck(stream, "%s[%-*s]%s ", LEVEL_COLOURS[level], LEVEL_WIDTH, LEVEL_NAMES[level], COLOUR_RESET)) {
       return;
     }
   } else {
@@ -255,8 +246,7 @@ void log_vmessage(log_Log* log,
   }
 
   if (log->config.showFileLine) {
-    if (!fprintfCheck(stream, "(%-*s:%-*d) ", FILE_WIDTH, file, LINE_WIDTH,
-                      line)) {
+    if (!fprintfCheck(stream, "(%-*s:%-*d) ", FILE_WIDTH, file, LINE_WIDTH, line)) {
       return;
     }
   }

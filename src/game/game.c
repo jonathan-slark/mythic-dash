@@ -1,10 +1,11 @@
 #include "game.h"
 
-#include "../engine/engine.h"
-#include "game_internal.h"
-
 #include <assert.h>
 #include <raylib.h>
+
+#include "../engine/engine.h"
+#include "../log/log.h"
+#include "game_internal.h"
 
 // --- Constants ---
 
@@ -13,17 +14,19 @@ static const char FILE_SPRITES[] = "../../asset/gfx/sprites.png";
 
 // --- Global state ---
 
-static engine_Texture* g_background;
-static engine_Texture* g_sprites;
+static engine_Texture* g_background = nullptr;
+static engine_Texture* g_sprites = nullptr;
 static engine_Sprite g_playerSprite = {.size = {16, 16}, .offset = {0, 0}};
 
 // --- Game functions ---
 
-void game_load(void) {
-  g_background = engine_textureLoad(FILE_BACKGROUND);
-  g_sprites = engine_textureLoad(FILE_SPRITES);
+bool game_load(void) {
+  GAME_TRY(g_background = engine_textureLoad(FILE_BACKGROUND));
+  GAME_TRY(g_sprites = engine_textureLoad(FILE_SPRITES));
 
   game__playerInit();
+
+  return true;
 }
 
 void game_update(void) {
@@ -37,6 +40,6 @@ void game_draw(void) {
 }
 
 void game_unload(void) {
-  engine_textureUnload(g_background);
-  engine_textureUnload(g_sprites);
+  engine_textureUnload(&g_background);
+  engine_textureUnload(&g_sprites);
 }

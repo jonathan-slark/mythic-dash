@@ -19,6 +19,15 @@ void engine_clearScreen(Color color) {
 
 void engine_drawSprite(const engine_Texture* texture,
                        const engine_Sprite* sprite) {
+  if (texture == nullptr) {
+    LOG_WARN(engine_log, "Texture is nullptr");
+    return;
+  }
+  if (sprite == nullptr) {
+    LOG_WARN(engine_log, "Sprite is nullptr");
+    return;
+  }
+
   int scale = engine__screenState.scale;
   Rectangle src = (Rectangle){sprite->offset.x, sprite->offset.y,
                               sprite->size.x, sprite->size.y};
@@ -29,6 +38,11 @@ void engine_drawSprite(const engine_Texture* texture,
 }
 
 void engine_drawBackground(engine_Texture* background) {
+  if (background == nullptr) {
+    LOG_WARN(engine_log, "Background is nullptr");
+    return;
+  }
+
   DrawTextureEx(background->handle, (Vector2){0, 0}, 0,
                 engine__screenState.scale, WHITE);
 }

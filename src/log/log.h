@@ -16,11 +16,9 @@
  * @brief Defines the severity levels for log messages
  */
 typedef enum log_Level {
-  LOG_LEVEL_TRACE, /**< Ultra-fine-grained messages for tracing program
-                      execution flow */
+  LOG_LEVEL_TRACE, /**< Ultra-fine-grained messages for tracing program execution flow */
   LOG_LEVEL_DEBUG, /**< Diagnostic debug messages useful during development */
-  LOG_LEVEL_INFO,  /**< Coarse-grained informational messages about application
-                      progress */
+  LOG_LEVEL_INFO,  /**< Coarse-grained informational messages about application progress */
   LOG_LEVEL_WARN,  /**< Warnings about potential issues that are non-fatal */
   LOG_LEVEL_ERROR, /**< Error messages indicating operations that have failed */
   LOG_LEVEL_FATAL, /**< Fatal errors after which the application must abort */
@@ -49,8 +47,7 @@ typedef struct log_Log log_Log;
  * @brief Creates a new logger instance
  *
  * @param config Configuration options for the logger (optional)
- * @return log_Log* Pointer to the new logger instance, or NULL if creation
- * failed
+ * @return log_Log* Pointer to the new logger instance, or NULL if creation failed
  *
  * @note If config is NULL, the default configuration will be used:
  *       - minLevel: LOG_LEVEL_INFO
@@ -122,8 +119,7 @@ void log_vmessage(log_Log* log,
                   va_list args);
 
 // Convenience macros for different log levels
-#define LOG_LOG(log, level, ...) \
-  log_message(log, level, __FILE__, __LINE__, true, __VA_ARGS__)
+#define LOG_LOG(log, level, ...) log_message(log, level, __FILE__, __LINE__, true, __VA_ARGS__)
 #define LOG_TRACE(log, ...) LOG_LOG(log, LOG_LEVEL_TRACE, __VA_ARGS__)
 #define LOG_DEBUG(log, ...) LOG_LOG(log, LOG_LEVEL_DEBUG, __VA_ARGS__)
 #define LOG_INFO(log, ...) LOG_LOG(log, LOG_LEVEL_INFO, __VA_ARGS__)
