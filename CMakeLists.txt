@@ -11,8 +11,8 @@ set(EXTERN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern)
 
 # Common include directories
 set(COMMON_INCLUDES
-    ${SRC_DIR}
-    ${EXTERN_DIR}
+  ${SRC_DIR}
+  ${EXTERN_DIR}
 )
 
 add_compile_options(-Wall -Wextra -Wpedantic -Werror)
@@ -27,14 +27,58 @@ target_include_directories(log PUBLIC ${SRC_DIR})
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMMON_INCLUDES})
 target_link_libraries(${PROJECT_NAME} 
-    raylib
-    winmm
-    gdi32
-    opengl32
-    log
+  raylib
+  winmm
+  gdi32
+  opengl32
+  log
 )
 
 # Test executable
 add_executable(test_log ${SRC_DIR}/test/log.c)
 target_include_directories(test_log PRIVATE ${COMMON_INCLUDES})
 target_link_libraries(test_log PRIVATE log)
+
+# Doxygen documentation setup
+find_package(Doxygen)
+
+if (DOXYGEN_FOUND)
+  set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
+  set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/doc)
+
+  add_custom_target(doc ALL
+    COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Command: ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN}"
+    COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generating API documentation with Doxygen"
+    VERBATIM
+  )
+
+  if (WIN32)
+    add_custom_command(TARGET doc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
+          start "" "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+          VERBATIM
+    )
+  elseif(APPLE)
+      add_custom_command(TARGET doc POST_BUILD
+          COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
+          COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
+            open "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            VERBATIM
+      )
+  elseif(UNIX)
+      add_custom_command(TARGET doc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
+        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
+          xdg-open "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+          VERBATIM
+      )
+  endif()
+else()
+  message(STATUS "Doxygen not found. Documentation target will be unavailable.")
+endif()

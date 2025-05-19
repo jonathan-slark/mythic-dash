@@ -1,4 +1,10 @@
-/// Shared types, constants, and global state across the game.
+/**
+ * @file common.h
+ * @brief Common types, constants, and global state shared across the game.
+ *
+ * Defines screen state, global constants, and declarations needed
+ * throughout the game source. Intended to be included in most translation units.
+ */
 
 // clang-format Language: C
 #pragma once
