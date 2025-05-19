@@ -1,9 +1,0 @@
-var searchData=
-[
-  ['log_5fcreate_0',['log_create',['../log_2log_8c.html#a53acf71049e9145fb4184b5bf8e48a07',1,'log_create(const LogConfig *newConfig):&#160;log.c'],['../log_8h.html#a6e8816289322c56ac3a4f31ba5480408',1,'log_create(const LogConfig *config):&#160;log.c']]],
-  ['log_5fdestroy_1',['log_destroy',['../log_2log_8c.html#a907bb7aed8b0f85459339b14133fb1d5',1,'log_destroy(Log **log):&#160;log.c'],['../log_8h.html#a907bb7aed8b0f85459339b14133fb1d5',1,'log_destroy(Log **log):&#160;log.c']]],
-  ['log_5fgetconfig_2',['log_getConfig',['../log_2log_8c.html#a3a3cfb9b542ac1f136ce8438fed89afc',1,'log_getConfig(const Log *log):&#160;log.c'],['../log_8h.html#a3a3cfb9b542ac1f136ce8438fed89afc',1,'log_getConfig(const Log *log):&#160;log.c']]],
-  ['log_5fgetdefaultconfig_3',['log_getDefaultConfig',['../log_2log_8c.html#aa05195fcb0ac00db05218239a0935608',1,'log_getDefaultConfig(void):&#160;log.c'],['../log_8h.html#aa05195fcb0ac00db05218239a0935608',1,'log_getDefaultConfig(void):&#160;log.c']]],
-  ['log_5fmessage_4',['log_message',['../log_2log_8c.html#af2bad0ed6deb20f21513d8c8503934a5',1,'log_message(Log *log, LogLevel level, const char *file, int line, bool trailingNewline, const char *format,...):&#160;log.c'],['../log_8h.html#af2bad0ed6deb20f21513d8c8503934a5',1,'log_message(Log *log, LogLevel level, const char *file, int line, bool trailingNewline, const char *format,...):&#160;log.c']]],
-  ['log_5fvmessage_5',['log_vmessage',['../log_2log_8c.html#a36f8758b81993ba6da6feaec1ac0a1ca',1,'log_vmessage(Log *log, LogLevel level, const char *file, int line, bool trailingNewline, const char *format, va_list args):&#160;log.c'],['../log_8h.html#a36f8758b81993ba6da6feaec1ac0a1ca',1,'log_vmessage(Log *log, LogLevel level, const char *file, int line, bool trailingNewline, const char *format, va_list args):&#160;log.c']]]
-];

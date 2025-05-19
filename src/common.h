@@ -13,19 +13,27 @@
 
 // --- Types ---
 
+/**
+ * @struct ScreenState
+ * @brief Stores the current display configuration
+ */
 typedef struct ScreenState {
+  /// Width of the screen in pixels
   int width;
+  /// Height of the screen in pixels
   int height;
+  /// Display refresh rate in Hz
   int refreshRate;
+  /// Rendering scale factor
   int scale;
 } ScreenState;
 
 // --- Constants ---
 
-/// The origin of the maze in the screen.
+/// @brief The origin of the maze in the screen.
 extern const Vector2 MAZE_ORIGIN;
 
 // --- Global state ---
 
-/// Shared screen state across the game.
+/// @brief Shared screen state across the game.
 extern ScreenState gScreenState;
