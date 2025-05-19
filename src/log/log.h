@@ -114,9 +114,7 @@ void log_vmessage(
   va_list     args
 );
 
-/**
- * @brief Convenience macros for different log levels
- */
+// Convenience macros for different log levels
 #define LOG_LOG(log, level, ...) log_message(log, level, __FILE__, __LINE__, true, __VA_ARGS__)
 #define LOG_TRACE(log, ...)      LOG_LOG(log, LOG_LEVEL_TRACE, __VA_ARGS__)
 #define LOG_DEBUG(log, ...)      LOG_LOG(log, LOG_LEVEL_DEBUG, __VA_ARGS__)

@@ -1,7 +1,3 @@
-/*
- * Implementation of the logging sub-system
- */
-
 #include "log.h"
 
 #include <assert.h>  // assert

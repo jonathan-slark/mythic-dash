@@ -18,14 +18,10 @@
  * @brief Stores the current display configuration
  */
 typedef struct ScreenState {
-  /// Width of the screen in pixels
-  int width;
-  /// Height of the screen in pixels
-  int height;
-  /// Display refresh rate in Hz
-  int refreshRate;
-  /// Rendering scale factor
-  int scale;
+  int width;       /**< Width of the screen in pixels */
+  int height;      /**< Height of the screen in pixels */
+  int refreshRate; /**< Display refresh rate in Hz */
+  int scale;       /**< Rendering scale factor */
 } ScreenState;
 
 // --- Constants ---
