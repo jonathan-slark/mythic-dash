@@ -1,7 +1,6 @@
 #include "game.h"
 
-#include "common.h"
-#include "player.h"
+#include "../engine/engine.h"
 
 #include <assert.h>
 #include <raylib.h>
@@ -32,12 +31,12 @@ static Texture gSprites;
 
 static void drawBackground(Texture* background) {
   assert(background != nullptr);
-  DrawTextureEx(*background, (Vector2) { 0, 0 }, 0, gScreenState.scale, WHITE);
+  DrawTextureEx(*background, (Vector2) { 0, 0 }, 0, gEngineScreenState.scale, WHITE);
 }
 
 static void drawSprite(const Sprite* sprite, Vector2 pos) {
   assert(sprite != nullptr);
-  int       scale = gScreenState.scale;
+  int       scale = gEngineScreenState.scale;
   Rectangle src   = (Rectangle) { sprite->offset.x, sprite->offset.y, sprite->size.x, sprite->size.y };
   Rectangle dst   = (Rectangle) {
     (pos.x + MAZE_ORIGIN.x) * scale,
@@ -54,16 +53,16 @@ void game_load(void) {
   gBackground = LoadTexture(FILE_BACKGROUND);
   gSprites    = LoadTexture(FILE_SPRITES);
 
-  player_init();
+  game_playerInit();
 }
 
 void game_update(void) {
-  player_update();
+  game_playerUpdate();
 }
 
 void game_draw(void) {
   drawBackground(&gBackground);
-  drawSprite(&gPlayerSprite, player_getPos());
+  drawSprite(&gPlayerSprite, game_playerGetPos());
 }
 
 void game_unload(void) {

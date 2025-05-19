@@ -18,3 +18,22 @@ maze-muncher/
 │   │
 │   └── common.h          # Shared types, constants, macros
 ```
+
+## Abstration layer
+
+```sh
+maze_muncher/
+├── engine/
+│   ├── engine.h
+│   ├── window.h
+│   ├── renderer.h
+│   ├── texture.h
+│   ├── bitmap_font.h
+│   └── input.h
+├── assets/
+│   ├── font.png
+│   └── tileset.png
+├── src/
+│   └── main.c
+├── Makefile
+```

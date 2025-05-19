@@ -17,7 +17,7 @@ set(COMMON_INCLUDES
 
 add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 find_package(raylib REQUIRED)
-file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/*.c")
+file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/*.c" "${SRC_DIR}/engine/*.c" "${SRC_DIR}/game/*.c")
 
 # Build log library
 add_library(log STATIC ${SRC_DIR}/log/log.c)

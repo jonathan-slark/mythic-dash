@@ -11,25 +11,7 @@
 
 #include <raylib.h>
 
-// --- Types ---
-
-/**
- * @struct ScreenState
- * @brief Stores the current display configuration
- */
-typedef struct ScreenState {
-  int width;       /**< Width of the screen in pixels */
-  int height;      /**< Height of the screen in pixels */
-  int refreshRate; /**< Display refresh rate in Hz */
-  int scale;       /**< Rendering scale factor */
-} ScreenState;
-
 // --- Constants ---
 
 /// @brief The origin of the maze in the screen.
 extern const Vector2 MAZE_ORIGIN;
-
-// --- Global state ---
-
-/// @brief Shared screen state across the game.
-extern ScreenState gScreenState;

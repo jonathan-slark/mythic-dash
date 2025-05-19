@@ -1,4 +1,4 @@
-#include "player.h"
+#include "game.h"
 
 #include <assert.h>
 #include <raylib.h>
@@ -13,12 +13,12 @@ static Vector2 gPlayerPos;
 
 // --- Player functions ---
 
-void player_init(void) {
+void game_playerInit(void) {
   gPlayerPos = PLAYER_START_POS;
 }
 
-void player_update(void) {}
+void game_playerUpdate(void) {}
 
-Vector2 player_getPos(void) {
+Vector2 game_playerGetPos(void) {
   return gPlayerPos;
 }
