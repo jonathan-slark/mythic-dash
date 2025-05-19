@@ -1,11 +1,11 @@
 #include "log.h"
 
-#include <assert.h> // assert
-#include <stdarg.h> // va_list, va_start, va_end
-#include <stdio.h>  // fprintf, stderr, stdout, perror
-#include <stdlib.h> // malloc, free, strdup
-#include <string.h> // strlen
-#include <time.h>   // time, localtime, strftime
+#include <assert.h>  // assert
+#include <stdarg.h>  // va_list, va_start, va_end
+#include <stdio.h>   // fprintf, stderr, stdout, perror
+#include <stdlib.h>  // malloc, free, strdup
+#include <string.h>  // strlen
+#include <time.h>    // time, localtime, strftime
 
 // --- Constants ---
 
@@ -25,10 +25,10 @@ constexpr int LEVEL_WIDTH = 5;
 constexpr int FILE_WIDTH = 14;
 constexpr int LINE_WIDTH = 3;
 
-static const char *LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO",
+static const char* LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO",
                                     "WARN",  "ERROR", "FATAL"};
 
-static const char *LEVEL_COLOURS[] = {COLOUR_CYAN,  COLOUR_BLUE,
+static const char* LEVEL_COLOURS[] = {COLOUR_CYAN,  COLOUR_BLUE,
                                       COLOUR_GREEN, COLOUR_YELLOW,
                                       COLOUR_RED,   COLOUR_MAGENTA};
 
@@ -55,7 +55,7 @@ typedef struct log_Log {
 
 // --- Helpers ---
 
-static inline bool fprintfCheck(FILE *file, const char *fmt, ...) {
+static inline bool fprintfCheck(FILE* file, const char* fmt, ...) {
   assert(file != nullptr && "File is null");
   assert(fmt != nullptr && "Format string is null");
 
@@ -72,7 +72,7 @@ static inline bool fprintfCheck(FILE *file, const char *fmt, ...) {
   return true;
 }
 
-static inline bool vfprintfCheck(FILE *file, const char *fmt, va_list args) {
+static inline bool vfprintfCheck(FILE* file, const char* fmt, va_list args) {
   assert(file != nullptr && "File is null");
   assert(fmt != nullptr && "Format string is null");
 
@@ -85,7 +85,7 @@ static inline bool vfprintfCheck(FILE *file, const char *fmt, va_list args) {
   return true;
 }
 
-static const char *getCachedTimestamp(log_Log *log) {
+static const char* getCachedTimestamp(log_Log* log) {
   assert(log != nullptr && "Log is null");
 
   time_t now;
@@ -96,7 +96,7 @@ static const char *getCachedTimestamp(log_Log *log) {
 
   // Update cache if more than a second has passed
   if (now != log->timestampCache.lastUpdate) {
-    struct tm *timeInfo = localtime(&now);
+    struct tm* timeInfo = localtime(&now);
     if (timeInfo == nullptr) {
       perror("localtime() failed");
       return TIME_ERROR;
@@ -118,8 +118,8 @@ static const char *getCachedTimestamp(log_Log *log) {
 
 // --- Public API ---
 
-log_Log *log_create(const log_Config *newConfig) {
-  log_Log *log = (log_Log *)malloc(sizeof(log_Log));
+log_Log* log_create(const log_Config* newConfig) {
+  log_Log* log = (log_Log*)malloc(sizeof(log_Log));
   if (log == nullptr) {
     perror("malloc() failed");
     return nullptr;
@@ -158,7 +158,7 @@ log_Log *log_create(const log_Config *newConfig) {
   return log;
 }
 
-void log_destroy(log_Log **log) {
+void log_destroy(log_Log** log) {
   if (*log != nullptr) {
     if ((*log)->config.subsystem != nullptr && (*log)->ownsSubsystem) {
       free((*log)->config.subsystem);
@@ -168,7 +168,7 @@ void log_destroy(log_Log **log) {
   }
 }
 
-const log_Config *log_getConfig(const log_Log *log) {
+const log_Config* log_getConfig(const log_Log* log) {
   if (log == nullptr) {
     return nullptr;
   }
@@ -176,18 +176,30 @@ const log_Config *log_getConfig(const log_Log *log) {
   return &log->config;
 }
 
-const log_Config *log_getDefaultConfig(void) { return &defaultConfig; }
+const log_Config* log_getDefaultConfig(void) {
+  return &defaultConfig;
+}
 
-void log_message(log_Log *log, log_Level level, const char *file, int line,
-                 bool trailingNewline, const char *format, ...) {
+void log_message(log_Log* log,
+                 log_Level level,
+                 const char* file,
+                 int line,
+                 bool trailingNewline,
+                 const char* format,
+                 ...) {
   va_list args;
   va_start(args, format);
   log_vmessage(log, level, file, line, trailingNewline, format, args);
   va_end(args);
 }
 
-void log_vmessage(log_Log *log, log_Level level, const char *file, int line,
-                  bool trailingNewline, const char *format, va_list args) {
+void log_vmessage(log_Log* log,
+                  log_Level level,
+                  const char* file,
+                  int line,
+                  bool trailingNewline,
+                  const char* format,
+                  va_list args) {
   if (log == nullptr) {
     fprintfCheck(stderr, "Invalid log message: log is null\n");
     return;
@@ -215,7 +227,7 @@ void log_vmessage(log_Log *log, log_Level level, const char *file, int line,
     return;
   }
 
-  FILE *stream = level >= LOG_LEVEL_ERROR ? stderr : stdout;
+  FILE* stream = level >= LOG_LEVEL_ERROR ? stderr : stdout;
 
   if (log->config.showTimestamp) {
     if (!fprintfCheck(stream, "[%-*s] ", TIMESTAMP_WIDTH,

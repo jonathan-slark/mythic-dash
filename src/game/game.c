@@ -13,8 +13,8 @@ static const char FILE_SPRITES[] = "../../asset/gfx/sprites.png";
 
 // --- Global state ---
 
-static engine_Texture *g_background;
-static engine_Texture *g_sprites;
+static engine_Texture* g_background;
+static engine_Texture* g_sprites;
 static engine_Sprite g_playerSprite = {.size = {16, 16}, .offset = {0, 0}};
 
 // --- Game functions ---
@@ -26,7 +26,9 @@ void game_load(void) {
   game__playerInit();
 }
 
-void game_update(void) { game__playerUpdate(); }
+void game_update(void) {
+  game__playerUpdate();
+}
 
 void game_draw(void) {
   engine_drawBackground(g_background);

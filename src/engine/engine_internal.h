@@ -4,7 +4,7 @@
 #include "engine.h"
 #include "log/log.h"
 
-#include <raylib.h> // Texture2D
+#include <raylib.h>  // Texture2D
 
 // --- Types ---
 
@@ -31,4 +31,4 @@ typedef struct engine__ScreenState {
 // --- Global state ---
 
 extern engine__ScreenState engine__screenState;
-extern log_Log *engine_log;
+extern log_Log* engine_log;

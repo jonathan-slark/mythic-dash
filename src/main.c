@@ -1,12 +1,12 @@
+#include <raylib.h>
+
 #include "engine/engine.h"
 #include "game/game.h"
 #include "log/log.h"
 
-#include <raylib.h>
-
 // --- Constants ---
 
-static const char *WINDOW_TITLE = "Maze Muncher";
+static const char* WINDOW_TITLE = "Maze Muncher";
 static const int ORG_SCR_WIDTH = 480;
 static const int ORG_SCR_HEIGHT = 270;
 
@@ -19,7 +19,7 @@ static const log_Config LOG_CONFIG = {.minLevel = LOG_LEVEL_DEBUG,
 // --- Main ---
 
 int main(void) {
-  log_Log *log = log_create(&LOG_CONFIG);
+  log_Log* log = log_create(&LOG_CONFIG);
 
   engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE);
 

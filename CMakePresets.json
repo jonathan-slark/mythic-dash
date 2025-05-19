@@ -31,31 +31,11 @@
   "buildPresets": [
     {
       "name": "build-msys2-release",
-      "configurePreset": "msys2-release",
-      "targets": [
-        "maze_muncher"
-      ]
+      "configurePreset": "msys2-release"
     },
     {
       "name": "build-msys2-debug",
-      "configurePreset": "msys2-debug",
-      "targets": [
-        "maze_muncher"
-      ]
-    },
-    {
-      "name": "build-test-runner-release",
-      "configurePreset": "msys2-release",
-      "targets": [
-        "test_runner"
-      ]
-    },
-    {
-      "name": "build-test-runner-debug",
-      "configurePreset": "msys2-debug",
-      "targets": [
-        "test_runner"
-      ]
+      "configurePreset": "msys2-debug"
     }
   ]
 }

@@ -5,7 +5,7 @@
 
 // --- Constants ---
 
-static const Vector2 PLAYER_START_POS = { 101, 176 };
+static const Vector2 PLAYER_START_POS = {101, 176};
 
 // --- Global state ---
 

@@ -6,8 +6,10 @@
 #include <string.h>
 
 // Helper function for testing log_vmessage
-static void testVmessageHelper(log_Log *log, log_Level level,
-                               const char *format, ...) {
+static void testVmessageHelper(log_Log* log,
+                               log_Level level,
+                               const char* format,
+                               ...) {
   va_list args;
   va_start(args, format);
   log_vmessage(log, level, __FILE__, __LINE__, true, format, args);
@@ -16,7 +18,7 @@ static void testVmessageHelper(log_Log *log, log_Level level,
 
 // Test default configuration
 MU_TEST(test_defaultConfig) {
-  const log_Config *defaultConfig = log_getDefaultConfig();
+  const log_Config* defaultConfig = log_getDefaultConfig();
   mu_check(defaultConfig != nullptr);
   mu_check(defaultConfig->minLevel == LOG_LEVEL_INFO);
   mu_check(defaultConfig->useColours == true);
@@ -27,10 +29,10 @@ MU_TEST(test_defaultConfig) {
 
 // Test log creation with nullptr config (uses defaults)
 MU_TEST(test_createWithnullptrConfig) {
-  log_Log *log = log_create(nullptr);
+  log_Log* log = log_create(nullptr);
   mu_check(log != nullptr);
 
-  const log_Config *config = log_getConfig(log);
+  const log_Config* config = log_getConfig(log);
   mu_check(config != nullptr);
   mu_check(config->minLevel == LOG_LEVEL_INFO);
   mu_check(config->useColours == true);
@@ -50,10 +52,10 @@ MU_TEST(test_createWithCustomConfig) {
                        .showFileLine = false,
                        .subsystem = "TEST"};
 
-  log_Log *log = log_create(&config);
+  log_Log* log = log_create(&config);
   mu_check(log != nullptr);
 
-  const log_Config *retrievedConfig = log_getConfig(log);
+  const log_Config* retrievedConfig = log_getConfig(log);
   mu_check(retrievedConfig != nullptr);
   mu_check(retrievedConfig->minLevel == LOG_LEVEL_DEBUG);
   mu_check(retrievedConfig->useColours == false);
@@ -68,12 +70,13 @@ MU_TEST(test_createWithCustomConfig) {
 // Test invalid config values
 MU_TEST(test_invalidConfigs) {
   // Test invalid log level
-  log_Config invalidLevelConfig = {.minLevel = LOG_LEVEL_COUNT, // Invalid level
-                                   .useColours = true,
-                                   .showTimestamp = true,
-                                   .showFileLine = true,
-                                   .subsystem = "TEST"};
-  log_Log *log = log_create(&invalidLevelConfig);
+  log_Config invalidLevelConfig = {
+      .minLevel = LOG_LEVEL_COUNT,  // Invalid level
+      .useColours = true,
+      .showTimestamp = true,
+      .showFileLine = true,
+      .subsystem = "TEST"};
+  log_Log* log = log_create(&invalidLevelConfig);
   mu_check(log == nullptr);
 
   // Test empty subsystem name
@@ -82,7 +85,7 @@ MU_TEST(test_invalidConfigs) {
       .useColours = true,
       .showTimestamp = true,
       .showFileLine = true,
-      .subsystem = "" // Empty string
+      .subsystem = ""  // Empty string
   };
   log = log_create(&emptySubsystemConfig);
   mu_check(log == nullptr);
@@ -90,14 +93,14 @@ MU_TEST(test_invalidConfigs) {
 
 // Test all log levels
 MU_TEST(test_allLogLevels) {
-  log_Config config = {.minLevel =
-                           LOG_LEVEL_TRACE, // Set to lowest to test all levels
-                       .useColours = true,
-                       .showTimestamp = true,
-                       .showFileLine = true,
-                       .subsystem = "TEST"};
+  log_Config config = {
+      .minLevel = LOG_LEVEL_TRACE,  // Set to lowest to test all levels
+      .useColours = true,
+      .showTimestamp = true,
+      .showFileLine = true,
+      .subsystem = "TEST"};
 
-  log_Log *log = log_create(&config);
+  log_Log* log = log_create(&config);
   mu_check(log != nullptr);
 
   // Test all log levels
@@ -121,7 +124,7 @@ MU_TEST(test_logLevelFiltering) {
                        .showFileLine = true,
                        .subsystem = "TEST"};
 
-  log_Log *log = log_create(&config);
+  log_Log* log = log_create(&config);
   mu_check(log != nullptr);
 
   printf("\nThe following should only show WARN, ERROR, and FATAL:\n");
@@ -144,10 +147,10 @@ MU_TEST(test_formattingOptions) {
       .useColours = false,
       .showTimestamp = false,
       .showFileLine = false,
-      .subsystem = nullptr // No subsystem
+      .subsystem = nullptr  // No subsystem
   };
 
-  log_Log *log = log_create(&minimalConfig);
+  log_Log* log = log_create(&minimalConfig);
   mu_check(log != nullptr);
 
   printf("\nMinimal formatting (no colors, timestamp, file/line):\n");
@@ -174,7 +177,7 @@ MU_TEST(test_formattingOptions) {
 
 // Test message formatting
 MU_TEST(test_messageFormatting) {
-  log_Log *log = log_create(nullptr);
+  log_Log* log = log_create(nullptr);
   mu_check(log != nullptr);
 
   // Test string formatting
@@ -198,7 +201,7 @@ MU_TEST(test_messageFormatting) {
 
 // Test error handling in log_message
 MU_TEST(test_logMessageErrors) {
-  log_Log *log = log_create(nullptr);
+  log_Log* log = log_create(nullptr);
   mu_check(log != nullptr);
 
   // These should print error messages to stderr but not crash
@@ -226,7 +229,7 @@ MU_TEST(test_logMessageErrors) {
 
 // Test trailing newline parameter
 MU_TEST(test_trailingNewline) {
-  log_Log *log = log_create(nullptr);
+  log_Log* log = log_create(nullptr);
   mu_check(log != nullptr);
 
   printf("\nTesting trailing newline parameter:\n");
@@ -245,7 +248,7 @@ MU_TEST(test_trailingNewline) {
 
 // Test log_vmessage function directly
 MU_TEST(test_logVmessage) {
-  log_Log *log = log_create(nullptr);
+  log_Log* log = log_create(nullptr);
   mu_check(log != nullptr);
 
   printf("\nTesting log_vmessage directly:\n");
