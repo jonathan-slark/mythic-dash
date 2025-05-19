@@ -2,27 +2,24 @@
 #include "game/game.h"
 #include "log/log.h"
 
-#include <assert.h>
 #include <raylib.h>
 
 // --- Constants ---
 
-static const char* WINDOW_TITLE   = "Maze Muncher";
-static const int   ORG_SCR_WIDTH  = 480;
-static const int   ORG_SCR_HEIGHT = 270;
+static const char *WINDOW_TITLE = "Maze Muncher";
+static const int ORG_SCR_WIDTH = 480;
+static const int ORG_SCR_HEIGHT = 270;
 
-static const LogConfig LOG_CONFIG = {
-  .minLevel      = LOG_LEVEL_DEBUG,
-  .useColours    = true,
-  .showTimestamp = true,
-  .showFileLine  = true,
-  .subsystem     = "MAIN"
-};
+static const log_Config LOG_CONFIG = {.minLevel = LOG_LEVEL_DEBUG,
+                                      .useColours = true,
+                                      .showTimestamp = true,
+                                      .showFileLine = true,
+                                      .subsystem = "MAIN"};
 
 // --- Main ---
 
 int main(void) {
-  Log* log = log_create(&LOG_CONFIG);
+  log_Log *log = log_create(&LOG_CONFIG);
 
   engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE);
 
@@ -30,12 +27,12 @@ int main(void) {
   game_load();
   LOG_INFO(log, "Game loaded");
 
-  while (!WindowShouldClose()) {
+  while (!engine_shouldClose()) {
     game_update();
-    BeginDrawing();
-    ClearBackground(BLACK);
+    engine_beginFrame();
+    engine_clearScreen(BLACK);
     game_draw();
-    EndDrawing();
+    engine_endFrame();
   }
 
   LOG_INFO(log, "Closing game...");

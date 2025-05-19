@@ -1,49 +1,47 @@
+// clang-format Language: C
 #pragma once
 
-#include <raylib.h> // KeyboardKey, Texture2D, Color
+#include <raylib.h> // Vector2, KeyboardKey, Color
 
-typedef struct EngineScreenState {
-  int width;       /**< Width of the screen in pixels */
-  int height;      /**< Height of the screen in pixels */
-  int refreshRate; /**< Display refresh rate in Hz */
-  int scale;       /**< Rendering scale factor */
-} EngineScreenState;
+// --- Types ---
 
-typedef struct {
-  Texture2D handle;
-  int width, height;
-} EngineTexture;
+typedef struct engine_Sprite {
+  Vector2 position;
+  Vector2 size;
+  Vector2 offset;
+} engine_Sprite;
 
-typedef struct {
-  Texture2D texture;
-  int glyphWidth;
-  int glyphHeight;
-  int columns;
-  int rows;
-} EngineFont;
+typedef struct engine_Texture engine_Texture;
+typedef struct engine_Font engine_Font;
 
-extern EngineScreenState gEngineScreenState;
+// --- Engine functions (engine.c) ---
 
 void engine_init(int orgScreenWidth, int orgScreenHeight, const char *title);
 bool engine_shouldClose(void);
-void engine_beginFrame(void);
-void engine_endFrame(void);
 void engine_shutdown(void);
 
-int engine_windowGetWidth(void);
-int engine_windowGetHeight(void);
+// --- Input functions (input.c) ---
 
-bool engine_inputKeyDown(KeyboardKey key);
-bool engine_inputKeyPressed(KeyboardKey key);
-bool engine_inputKeyReleased(KeyboardKey key);
+bool engine_isKeyDown(KeyboardKey key);
+bool engine_isKeyPressed(KeyboardKey key);
+bool engine_isKeyReleased(KeyboardKey key);
 
-EngineTexture engine_textureLoad(const char *filepath);
-void engine_textureUnload(EngineTexture *texture);
-void engine_textureDraw(EngineTexture *texture, int x, int y);
+// --- Texture functions (texture.c) ---
 
-EngineFont engine_fontLoad(const char *path, int glyphWidth, int glyphHeight);
-void engine_fontUnload(EngineFont *font);
-void engine_fontDrawText(EngineFont *font, const char *text, int x, int y);
+engine_Texture *engine_textureLoad(const char *filepath);
+void engine_textureUnload(engine_Texture *texture);
 
-void engine_rendererClear(Color color);
-void engine_rendererDrawRect(int x, int y, int w, int h, Color color);
+// --- Font functions (font.c) ---
+
+engine_Font *engine_fontLoad(const char *path, int glyphWidth, int glyphHeight);
+void engine_fontUnload(engine_Font *font);
+void engine_fontDrawText(engine_Font *font, const char *text, int x, int y);
+
+// --- Renderer functions (renderer.c) ---
+
+void engine_beginFrame(void);
+void engine_endFrame(void);
+void engine_clearScreen(Color color);
+void engine_drawSprite(const engine_Texture *texture,
+                       const engine_Sprite *sprite);
+void engine_drawBackground(engine_Texture *background);

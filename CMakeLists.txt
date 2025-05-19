@@ -41,7 +41,6 @@ target_link_libraries(test_log PRIVATE log)
 
 # Doxygen documentation setup
 find_package(Doxygen)
-
 if (DOXYGEN_FOUND)
   set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
   set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/doc)
@@ -56,28 +55,28 @@ if (DOXYGEN_FOUND)
 
   if (WIN32)
     add_custom_command(TARGET doc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
-        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
-          start "" "${DOXYGEN_OUTPUT_DIR}/html/index.html"
-          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-          VERBATIM
+      COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
+      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
+        start "" "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        VERBATIM
     )
   elseif(APPLE)
-      add_custom_command(TARGET doc POST_BUILD
-          COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
-          COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
-            open "${DOXYGEN_OUTPUT_DIR}/html/index.html"
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            VERBATIM
-      )
+    add_custom_command(TARGET doc POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
+      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
+        open "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        VERBATIM
+    )
   elseif(UNIX)
-      add_custom_command(TARGET doc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
-        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
-          xdg-open "${DOXYGEN_OUTPUT_DIR}/html/index.html"
-          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-          VERBATIM
-      )
+    add_custom_command(TARGET doc POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
+      COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
+        xdg-open "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        VERBATIM
+    )
   endif()
 else()
   message(STATUS "Doxygen not found. Documentation target will be unavailable.")
