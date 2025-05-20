@@ -34,8 +34,10 @@ typedef struct engine_Font engine_Font;       /**< Opaque font type */
 
 /**
  * @brief Initialize the engine
+ *
  * Create a borderless window using the current display size and refresh rate.
  * Rendering is scaled from the native canvas size to the display size.
+ *
  * @param nativeWidth Native canvas width
  * @param nativeHeight Native canvas height
  * @param title Window title
