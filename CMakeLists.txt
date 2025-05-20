@@ -34,10 +34,16 @@ target_link_libraries(${PROJECT_NAME}
   log
 )
 
-# Test executable
+# Test log executable
 add_executable(test_log ${SRC_DIR}/test/log.c)
 target_include_directories(test_log PRIVATE ${COMMON_INCLUDES})
 target_link_libraries(test_log PRIVATE log)
+
+# Test engine executable
+file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/engine/*.c")
+add_executable(test_engine ${SRC_DIR}/test/engine.c ${SOURCES})
+target_include_directories(test_engine PRIVATE ${COMMON_INCLUDES})
+target_link_libraries(test_engine PRIVATE log raylib)
 
 # Doxygen documentation setup
 find_package(Doxygen)
