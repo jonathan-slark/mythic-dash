@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include "../engine/engine_internal.h"
 
-// Mock functions and variables for testing
+// Mock variables for testing
 static bool mockWindowShouldClose  = false;
 static bool mockInitWindowCalled   = false;
 static int mockScreenWidth         = 1280;
@@ -29,13 +29,11 @@ static char* mockLastDrawnText     = NULL;
 static engine_Texture* testTexture = NULL;
 static engine_Font* testFont       = NULL;
 
-// Mock implementations for Raylib functions
+// --- Mock implementations for Raylib functions ---
+
 bool WindowShouldClose(void) { return mockWindowShouldClose; }
 
-void InitWindow(int width, int height, const char* title) {
-  (void) width;   // Unused parameter
-  (void) height;  // Unused parameter
-  (void) title;   // Unused parameter
+void InitWindow(int width [[maybe_unused]], int height [[maybe_unused]], const char* title [[maybe_unused]]) {
   mockInitWindowCalled = true;
 }
 
@@ -43,15 +41,12 @@ int GetScreenWidth(void) { return mockScreenWidth; }
 
 int GetScreenHeight(void) { return mockScreenHeight; }
 
-int GetMonitorRefreshRate(int monitor) {
-  (void) monitor;  // Unused parameter
-  return mockRefreshRate;
-}
+int GetMonitorRefreshRate(int monitor [[maybe_unused]]) { return mockRefreshRate; }
 
 int GetCurrentMonitor(void) { return mockCurrentMonitor; }
 
-void SetTargetFPS(int fps) {
-  (void) fps;  // Unused parameter
+void SetTargetFPS(int fps [[maybe_unused]]) {
+  // Mock implementation
 }
 
 void ToggleBorderlessWindowed(void) {
@@ -66,17 +61,16 @@ void CloseWindow(void) {
   // Mock implementation
 }
 
-void SetTraceLogLevel(int logLevel) {
-  (void) logLevel;  // Unused parameter
+void SetTraceLogLevel(int logLevel [[maybe_unused]]) {
+  // Mock implementation
 }
 
-void SetTraceLogCallback(void (*callback)(int, const char*, va_list)) {
-  (void) callback;  // Unused parameter
+void SetTraceLogCallback([[maybe_unused]] void (*callback)(int, const char*, va_list)) {
+  // Mock implementation
 }
 
-Texture2D LoadTexture(const char* fileName) {
-  (void) fileName;  // Unused parameter
-  Texture2D texture = {0};
+Texture2D LoadTexture(const char* fileName [[maybe_unused]]) {
+  Texture2D texture = {};
   if (mockTextureLoadSuccess) {
     texture.id     = 1;  // Non-zero ID means success
     texture.width  = 64;
@@ -85,30 +79,25 @@ Texture2D LoadTexture(const char* fileName) {
   return texture;
 }
 
-void UnloadTexture(Texture2D texture) {
-  (void) texture;  // Unused parameter
+void UnloadTexture(Texture2D texture [[maybe_unused]]) {
+  // Mock implementation
 }
 
-void DrawTexturePro(Texture2D texture,
-                    Rectangle sourceRec,
-                    Rectangle destRec,
-                    Vector2 origin,
-                    float rotation,
-                    Color tint) {
-  (void) texture;    // Unused parameter
-  (void) sourceRec;  // Unused parameter
-  (void) destRec;    // Unused parameter
-  (void) origin;     // Unused parameter
-  (void) rotation;   // Unused parameter
-  (void) tint;       // Unused parameter
+void DrawTexturePro(Texture2D texture [[maybe_unused]],
+                    Rectangle sourceRec [[maybe_unused]],
+                    Rectangle destRec [[maybe_unused]],
+                    Vector2 origin [[maybe_unused]],
+                    float rotation [[maybe_unused]],
+                    Color tint [[maybe_unused]]) {
+  // Mock implementation
 }
 
-void DrawTextureEx(Texture2D texture, Vector2 position, float rotation, float scale, Color tint) {
-  (void) texture;   // Unused parameter
-  (void) position;  // Unused parameter
-  (void) rotation;  // Unused parameter
-  (void) scale;     // Unused parameter
-  (void) tint;      // Unused parameter
+void DrawTextureEx(Texture2D texture [[maybe_unused]],
+                   Vector2 position [[maybe_unused]],
+                   float rotation [[maybe_unused]],
+                   float scale [[maybe_unused]],
+                   Color tint [[maybe_unused]]) {
+  // Mock implementation
 }
 
 void BeginDrawing(void) {
@@ -119,8 +108,8 @@ void EndDrawing(void) {
   // Mock implementation
 }
 
-void ClearBackground(Color color) {
-  (void) color;  // Unused parameter
+void ClearBackground(Color color [[maybe_unused]]) {
+  // Mock implementation
 }
 
 // Setup and teardown
