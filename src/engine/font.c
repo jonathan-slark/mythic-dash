@@ -96,18 +96,19 @@ void engine_fontPrintfV(engine_Font* font, int x, int y, const char* format, va_
   int size = vsnprintf(NULL, 0, format, ap);
   va_end(ap);
 
-  // Allocate a buffer for the formatted string
-  char text[size + 1];
-  vsnprintf(text, sizeof text, format, args);
+  char* text = (char*) malloc(size + 1);
+  if (text == nullptr) {
+    LOG_ERROR(engine__log, "Failed to allocate memory for formatted string");
+    return;
+  }
+  vsnprintf(text, size + 1, format, args);
 
   for (int i = 0; i <= size; i++) {
     char c = text[i];
-
     // Only render visible ASCII characters
     if (c < ASCII_START || c > ASCII_END) {
       continue;
     }
-
     int charIndex = c - ASCII_START;
     int col       = charIndex % font->columns;
     int row       = charIndex / font->columns;
@@ -124,4 +125,6 @@ void engine_fontPrintfV(engine_Font* font, int x, int y, const char* format, va_
 
     DrawTexturePro(font->texture, src, dst, (Vector2) {0, 0}, 0, WHITE);
   }
+
+  free(text);
 }
