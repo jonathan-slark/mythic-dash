@@ -2,3 +2,14 @@
 Language: C
 BasedOnStyle: Chromium
 ColumnLimit: 120
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+  AlignCompound: true
+  AlignFunctionDeclarations: true
+  AlignFunctionPointers: true
+  PadOperators: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+SpaceAfterCStyleCast: true

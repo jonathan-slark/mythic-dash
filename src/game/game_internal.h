@@ -3,12 +3,14 @@
 
 #include <raylib.h>  // Vector2
 
-// --- Macros ---
-
 #define GAME_TRY(func) \
   if (!(func)) {       \
     return false;      \
   }
+
+// --- Constants ---
+
+extern const Vector2 MAZE_ORIGIN;
 
 // --- Player functions ---
 

@@ -172,9 +172,7 @@ const log_Config* log_getConfig(const log_Log* log) {
   return &log->config;
 }
 
-const log_Config* log_getDefaultConfig(void) {
-  return &defaultConfig;
-}
+const log_Config* log_getDefaultConfig(void) { return &defaultConfig; }
 
 void log_message(log_Log* log,
                  log_Level level,

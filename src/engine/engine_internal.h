@@ -9,8 +9,7 @@
 // --- Types ---
 
 typedef struct engine_Texture {
-  Texture2D handle;
-  int width, height;
+  Texture2D texture;
 } engine_Texture;
 
 typedef struct engine_Font {
@@ -31,4 +30,4 @@ typedef struct engine__ScreenState {
 // --- Global state ---
 
 extern engine__ScreenState engine__screenState;
-extern log_Log* engine_log;
+extern log_Log* engine__log;

@@ -14,21 +14,18 @@ typedef struct engine_Sprite {
 typedef struct engine_Texture engine_Texture;
 typedef struct engine_Font engine_Font;
 
-// --- Constants ---
-
-extern const int LOG_LEVEL_RAYLIB;
-
 // --- Engine functions (engine.c) ---
 
-bool engine_init(int orgScreenWidth, int orgScreenHeight, const char* title);
-bool engine_shouldClose(void);
+bool engine_init(int nativeWidth, int nativeHeight, const char* title);
 void engine_shutdown(void);
 
-// --- Input functions (input.c) ---
+static inline bool engine_shouldClose(void) { return WindowShouldClose(); }
 
-bool engine_isKeyDown(KeyboardKey key);
-bool engine_isKeyPressed(KeyboardKey key);
-bool engine_isKeyReleased(KeyboardKey key);
+// --- Input functions ---
+
+static inline bool engine_isKeyDown(KeyboardKey key) { return IsKeyDown(key); }
+static inline bool engine_isKeyPressed(KeyboardKey key) { return IsKeyPressed(key); }
+static inline bool engine_isKeyReleased(KeyboardKey key) { return IsKeyReleased(key); }
 
 // --- Texture functions (texture.c) ---
 
@@ -37,14 +34,15 @@ void engine_textureUnload(engine_Texture** texture);
 
 // --- Font functions (font.c) ---
 
-engine_Font* engine_fontLoad(const char* path, int glyphWidth, int glyphHeight);
+engine_Font* engine_fontLoad(const char* filepath, int glyphWidth, int glyphHeight);
 void engine_fontUnload(engine_Font** font);
-void engine_fontDrawText(engine_Font* font, const char* text, int x, int y);
+void engine_fontPrintf(engine_Font* font, int x, int y, const char* format, ...);
 
 // --- Renderer functions (renderer.c) ---
 
-void engine_beginFrame(void);
-void engine_endFrame(void);
-void engine_clearScreen(Color color);
 void engine_drawSprite(const engine_Texture* texture, const engine_Sprite* sprite);
 void engine_drawBackground(engine_Texture* background);
+
+static inline void engine_beginFrame(void) { BeginDrawing(); }
+static inline void engine_endFrame(void) { EndDrawing(); }
+static inline void engine_clearScreen(Color color) { ClearBackground(color); }
