@@ -7,14 +7,14 @@
 #include "engine_internal.h"
 #include "log/log.h"
 
-// --- Constants ---
-
-static const int ASCII_START = 33;
-static const int ASCII_END   = 96;
-
 // --- Font functions ---
 
-engine_Font* engine_fontLoad(const char* filepath, int glyphWidth, int glyphHeight) {
+engine_Font* engine_fontLoad(const char* filepath,
+                             int glyphWidth,
+                             int glyphHeight,
+                             int asciiStart,
+                             int asciiEnd,
+                             int glyphSpacing) {
   if (filepath == nullptr) {
     LOG_ERROR(engine__log, "Failed to load font: filepath is nullptr");
     return nullptr;
@@ -38,10 +38,13 @@ engine_Font* engine_fontLoad(const char* filepath, int glyphWidth, int glyphHeig
     return nullptr;
   }
 
-  font->glyphWidth  = glyphWidth;
-  font->glyphHeight = glyphHeight;
-  font->columns     = font->texture.width / glyphWidth;
-  font->rows        = font->texture.height / glyphHeight;
+  font->glyphWidth   = glyphWidth;
+  font->glyphHeight  = glyphHeight;
+  font->columns      = font->texture.width / glyphWidth;
+  font->rows         = font->texture.height / glyphHeight;
+  font->asciiStart   = asciiStart;
+  font->asciiEnd     = asciiEnd;
+  font->glyphSpacing = glyphSpacing;
 
   LOG_INFO(engine__log, "Loaded font: %s, %dx%d, %d columns, %d row%s", filepath, font->glyphWidth, font->glyphHeight,
            font->columns, font->rows, font->rows == 1 ? "" : "s");
@@ -106,20 +109,20 @@ void engine_fontPrintfV(engine_Font* font, int x, int y, const char* format, va_
   for (int i = 0; i <= size; i++) {
     char c = text[i];
     // Only render visible ASCII characters
-    if (c < ASCII_START || c > ASCII_END) {
+    if (c < font->asciiStart || c > font->asciiEnd) {
       continue;
     }
-    int charIndex = c - ASCII_START;
+    int charIndex = c - font->asciiStart;
     int col       = charIndex % font->columns;
     int row       = charIndex / font->columns;
     int scale     = engine__screenState.scale;
 
-    Rectangle src = {.x      = (float) (col * font->glyphWidth + col + 1),
-                     .y      = (float) (row * font->glyphHeight + row + 1),
+    Rectangle src = {.x      = (float) (col * font->glyphWidth + (col + 1) * font->glyphSpacing),
+                     .y      = (float) (row * font->glyphHeight + (row + 1) * font->glyphSpacing),
                      .width  = (float) (font->glyphWidth),
                      .height = (float) (font->glyphHeight)};
     Rectangle dst = {.x      = (float) ((x + i * font->glyphWidth) * scale),
-                     .y      = (float) ((y + font->glyphHeight) * scale),
+                     .y      = (float) (y * scale),
                      .width  = (float) (font->glyphWidth * scale),
                      .height = (float) (font->glyphHeight * scale)};
 

@@ -1,9 +1,7 @@
 #include "game.h"
-
 #include <assert.h>
 #include <raylib.h>
 #include <raymath.h>
-
 #include "../engine/engine.h"
 #include "game_internal.h"
 
@@ -29,7 +27,7 @@ static engine_Sprite g_playerSprite = {.size = {16, 16}, .offset = {0, 0}};
 bool game_load(void) {
   GAME_TRY(g_background = engine_textureLoad(FILE_BACKGROUND));
   GAME_TRY(g_sprites = engine_textureLoad(FILE_SPRITES));
-  GAME_TRY(g_font = engine_fontLoad(FILE_FONT, 8, 8));
+  GAME_TRY(g_font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
 
   game__playerInit();
 

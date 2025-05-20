@@ -1,10 +1,9 @@
 #include "engine.h"
-
+#include <assert.h>
+#include <raylib.h>
 #include "../log/log.h"
 #include "engine_internal.h"
 
-#include <assert.h>
-#include <raylib.h>
 
 // --- Macros ---
 
@@ -95,7 +94,7 @@ bool engine_init(int nativeWidth, int nativeHeight, const char* title) {
     return false;
   }
 
-  engine__screenState = (engine__ScreenState){
+  engine__screenState = (engine__ScreenState) {
       .width       = screenWidth,
       .height      = screenHeight,
       .refreshRate = screenRefreshRate,

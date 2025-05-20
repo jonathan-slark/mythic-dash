@@ -1,10 +1,9 @@
 // clang-format Language: C
 #pragma once
 
+#include <raylib.h>  // Texture2D
 #include "engine.h"
 #include "log/log.h"
-
-#include <raylib.h>  // Texture2D
 
 // --- Types ---
 
@@ -18,6 +17,9 @@ typedef struct engine_Font {
   int glyphHeight;
   int columns;
   int rows;
+  int asciiStart;
+  int asciiEnd;
+  int glyphSpacing;
 } engine_Font;
 
 typedef struct engine__ScreenState {
