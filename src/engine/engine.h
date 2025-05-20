@@ -37,6 +37,7 @@ void engine_textureUnload(engine_Texture** texture);
 engine_Font* engine_fontLoad(const char* filepath, int glyphWidth, int glyphHeight);
 void engine_fontUnload(engine_Font** font);
 void engine_fontPrintf(engine_Font* font, int x, int y, const char* format, ...);
+void engine_fontPrintfV(engine_Font* font, int x, int y, const char* format, va_list args);
 
 // --- Renderer functions (renderer.c) ---
 

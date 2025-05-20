@@ -37,3 +37,7 @@ maze_muncher/
 │   └── main.c
 ├── Makefile
 ```
+
+## Asset Credits
+
+[Cursive2 font](https://opengameart.org/content/new-original-grafx2-font-collection) - CC0
