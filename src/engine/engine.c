@@ -4,7 +4,6 @@
 #include "../log/log.h"
 #include "engine_internal.h"
 
-
 // --- Macros ---
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -101,7 +100,8 @@ bool engine_init(int nativeWidth, int nativeHeight, const char* title) {
       .scale       = screenScale,
   };
 
-  LOG_INFO(engine__log, "Screen state: %d %d %d %d", screenWidth, screenHeight, screenRefreshRate, screenScale);
+  LOG_INFO(engine__log, "Screen state: %dx%d @ %dHz, scale: %d", screenWidth, screenHeight, screenRefreshRate,
+           screenScale);
 
   SetTargetFPS(screenRefreshRate);
   ToggleBorderlessWindowed();

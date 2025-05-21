@@ -25,6 +25,8 @@ engine_Texture* engine_textureLoad(const char* filepath) {
     return nullptr;
   }
 
+  LOG_INFO(engine__log, "Texture loaded: %s, %dx%d", filepath, texture->texture.width, texture->texture.height);
+
   return texture;
 }
 
