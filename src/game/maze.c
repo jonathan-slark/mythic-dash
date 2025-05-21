@@ -4,10 +4,10 @@
 
 // --- Constants ---
 
-const Vector2 MAZE_ORIGIN              = {132.0f, 15.0f};
-constexpr int MAZE_ROWS                = 30;
-constexpr int MAZE_COLS                = 27;
-static const int TILE_SIZE             = 8;
+const Vector2        MAZE_ORIGIN       = {132.0f, 15.0f};
+constexpr int        MAZE_ROWS         = 30;
+constexpr int        MAZE_COLS         = 27;
+static const int     TILE_SIZE         = 8;
 static const Vector2 MAZE_SIZE         = {MAZE_COLS * TILE_SIZE, MAZE_ROWS* TILE_SIZE};
 
 /*

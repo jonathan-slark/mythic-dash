@@ -12,23 +12,23 @@
 
 // --- Constants ---
 
-static const char FILE_BACKGROUND[]     = "../../asset/gfx/background.png";
-static const char FILE_SPRITES[]        = "../../asset/gfx/sprites.png";
-static const char FILE_FONT[]           = "../../asset/gfx/font.png";
+static const char       FILE_BACKGROUND[] = "../../asset/gfx/background.png";
+static const char       FILE_SPRITES[]    = "../../asset/gfx/sprites.png";
+static const char       FILE_FONT[]       = "../../asset/gfx/font.png";
 
-static const log_Config LOG_CONFIG_GAME = {.minLevel      = LOG_LEVEL_DEBUG,
-                                           .useColours    = true,
-                                           .showTimestamp = true,
-                                           .showFileLine  = true,
-                                           .subsystem     = "GAME"};
+static const log_Config LOG_CONFIG_GAME   = {.minLevel      = LOG_LEVEL_TRACE,
+                                             .useColours    = true,
+                                             .showTimestamp = true,
+                                             .showFileLine  = true,
+                                             .subsystem     = "GAME"};
 
 // --- Global state ---
 
-log_Log* game__log;
+log_Log*               game__log;
 static engine_Texture* g_background;
 static engine_Texture* g_sprites;
-static engine_Font* g_font;
-static engine_Sprite g_playerSprite = {.size = {16, 16}, .offset = {0, 0}};
+static engine_Font*    g_font;
+static engine_Sprite   g_playerSprite = {.size = {16, 16}, .offset = {0, 0}};
 
 // --- Game functions ---
 

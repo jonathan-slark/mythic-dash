@@ -13,16 +13,16 @@
 
 // --- Types ---
 
-typedef enum { Up, Right, Down, Left, None } Dir;
+typedef enum Dir { Up, Right, Down, Left, None } Dir;
 
 typedef struct {
   Vector2 pos;
-  Dir dir;
+  Dir     dir;
 } Actor;
 
 // --- Constants ---
 
-extern const int ACTOR_SIZE;
+extern const int     ACTOR_SIZE;
 extern const Vector2 MAZE_ORIGIN;
 extern const Vector2 VELS[];
 
@@ -32,12 +32,12 @@ extern log_Log* game__log;
 
 // --- Actor functions (actor.c) ---
 
-bool game__actorCanMove(Actor actor, float distance);
+bool game__actorCanMove(Actor actor, Dir dir, float distance);
 
 // --- Player functions (player.c) ---
 
-void game__playerInit(void);
-void game__playerUpdate(float frameTime);
+void    game__playerInit(void);
+void    game__playerUpdate(float frameTime);
 Vector2 game__playerGetPos(void);
 
 // --- Maze functions (maze.c) ---
