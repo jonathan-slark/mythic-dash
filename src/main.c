@@ -6,15 +6,15 @@
 
 // --- Constants ---
 
-static const char* WINDOW_TITLE = "Maze Muncher";
-static const int ORG_SCR_WIDTH = 480;
-static const int ORG_SCR_HEIGHT = 270;
+static const char* WINDOW_TITLE    = "Maze Muncher";
+static const int ORG_SCR_WIDTH     = 480;
+static const int ORG_SCR_HEIGHT    = 270;
 
-static const log_Config LOG_CONFIG = {.minLevel = LOG_LEVEL_DEBUG,
-                                      .useColours = true,
+static const log_Config LOG_CONFIG = {.minLevel      = LOG_LEVEL_DEBUG,
+                                      .useColours    = true,
                                       .showTimestamp = true,
-                                      .showFileLine = true,
-                                      .subsystem = "MAIN"};
+                                      .showFileLine  = true,
+                                      .subsystem     = "MAIN"};
 
 // --- Main ---
 
@@ -38,7 +38,8 @@ int main(void) {
   LOG_INFO(log, "Game loaded");
 
   while (!engine_shouldClose()) {
-    game_update();
+    float frameTime = engine_getFrameTime();
+    game_update(frameTime);
     engine_beginFrame();
     engine_clearScreen(BLACK);
     game_draw();

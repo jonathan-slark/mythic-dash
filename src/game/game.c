@@ -51,12 +51,10 @@ bool game_load(void) {
   return true;
 }
 
-void game_update(void) { game__playerUpdate(); }
+void game_update(float frameTime) { game__playerUpdate(frameTime); }
 
 void game_draw(void) {
   engine_drawBackground(g_background);
-  engine_fontPrintf(g_font, 0, 0, "%s", "!\"#$%&'()*+,-./0123456789:;<=>?@");
-  engine_fontPrintf(g_font, 0, 8, "%s", "ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`");
 
   g_playerSprite.position = POS_ADJUST(game__playerGetPos());
   engine_drawSprite(g_sprites, &g_playerSprite);

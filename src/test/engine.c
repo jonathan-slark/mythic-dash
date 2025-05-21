@@ -24,6 +24,7 @@ static int mockCurrentMonitor      = 0;
 static bool mockTextureLoadSuccess = true;
 static bool mockFontLoadSuccess    = true;
 static char* mockLastDrawnText     = NULL;
+static float mockFrameTime         = 0.016667f;  // Default value (60 FPS)
 
 // Test resources
 static engine_Texture* testTexture = NULL;
@@ -112,6 +113,8 @@ void ClearBackground(Color color [[maybe_unused]]) {
   // Mock implementation
 }
 
+float GetFrameTime(void) { return mockFrameTime; }
+
 // Setup and teardown
 static void test_setup(void) {
   // Reset mock state
@@ -123,6 +126,7 @@ static void test_setup(void) {
   mockCurrentMonitor     = 0;
   mockTextureLoadSuccess = true;
   mockFontLoadSuccess    = true;
+  mockFrameTime          = 0.016667f;  // 60 FPS
 
   // Initialize engine with test values
   engine_init(320, 180, "Test");
@@ -310,6 +314,21 @@ MU_TEST(test_input_handling) {
   engine_isKeyReleased(KEY_ESCAPE);
 }
 
+// Test time functions
+MU_TEST(test_engine_getFrameTime) {
+  // Test default frame time (60 FPS)
+  mockFrameTime = 0.016667f;
+  mu_assert_double_eq(0.016667f, engine_getFrameTime());
+
+  // Test different frame time (30 FPS)
+  mockFrameTime = 0.033333f;
+  mu_assert_double_eq(0.033333f, engine_getFrameTime());
+
+  // Test zero frame time
+  mockFrameTime = 0.0f;
+  mu_assert_double_eq(0.0f, engine_getFrameTime());
+}
+
 // Test suite
 MU_TEST_SUITE(test_engine_suite) {
   MU_SUITE_CONFIGURE(&test_setup, &test_teardown);
@@ -341,6 +360,9 @@ MU_TEST_SUITE(test_engine_suite) {
 
   // Input tests
   MU_RUN_TEST(test_input_handling);
+
+  // Time tests
+  MU_RUN_TEST(test_engine_getFrameTime);
 }
 
 // Main function

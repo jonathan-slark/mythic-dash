@@ -22,5 +22,5 @@ extern log_Log* game__log;
 // --- Player functions ---
 
 void game__playerInit(void);
-void game__playerUpdate(void);
+void game__playerUpdate(float frameTime);
 Vector2 game__playerGetPos(void);

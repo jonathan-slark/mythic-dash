@@ -51,6 +51,12 @@ bool engine_init(int nativeWidth, int nativeHeight, const char* title);
 void engine_shutdown(void);
 
 /**
+ * @brief Get the frame time
+ * @return Frame time in seconds
+ */
+static inline float engine_getFrameTime(void) { return GetFrameTime(); }
+
+/**
  * @brief Check if the window should close
  * @return true if the window should close
  */
