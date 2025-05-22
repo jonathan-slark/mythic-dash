@@ -23,7 +23,7 @@ typedef struct engine_Sprite {
 } engine_Sprite;
 
 typedef struct engine_Texture engine_Texture; /**< Opaque texture type */
-typedef struct engine_Font engine_Font;       /**< Opaque font type */
+typedef struct engine_Font    engine_Font;    /**< Opaque font type */
 
 /** @} */
 
@@ -128,11 +128,11 @@ void engine_textureUnload(engine_Texture** texture);
  * @return Pointer to the loaded font or nullptr on failure
  */
 engine_Font* engine_fontLoad(const char* filepath,
-                             int glyphWidth,
-                             int glyphHeight,
-                             int asciiStart,
-                             int asciiEnd,
-                             int glyphSpacing);
+                             int         glyphWidth,
+                             int         glyphHeight,
+                             int         asciiStart,
+                             int         asciiEnd,
+                             int         glyphSpacing);
 
 /**
  * @brief Unload a font and free memory
@@ -179,6 +179,13 @@ void engine_drawSprite(const engine_Texture* texture, const engine_Sprite* sprit
  * @param background Texture to draw as background
  */
 void engine_drawBackground(engine_Texture* background);
+
+/**
+ * @brief Draw a rectangle outline
+ * @param rect Rectangle to draw
+ * @param color Color to use
+ */
+void engine_drawRectangleOutline(Rectangle rect, Color color);
 
 /**
  * @brief Begin drawing a new frame

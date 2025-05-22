@@ -10,7 +10,7 @@
 
 // --- Constants ---
 
-static const int LOG_LEVEL_RAYLIB         = LOG_WARNING;
+static const int        LOG_LEVEL_RAYLIB  = LOG_WARNING;
 
 static const log_Config LOG_CONFIG_ENGINE = {.minLevel      = LOG_LEVEL_DEBUG,
                                              .useColours    = true,
@@ -27,8 +27,8 @@ static const log_Config LOG_CONFIG_RAYLIB = {.minLevel      = LOG_LEVEL_DEBUG,
 // --- Global state ---
 
 engine__ScreenState engine__screenState;
-log_Log* engine__log;
-static log_Log* g_raylibLog;
+log_Log*            engine__log;
+static log_Log*     g_raylibLog;
 
 // --- Helper functions ---
 

@@ -6,7 +6,7 @@
 
 // --- Constants ---
 
-static const Vector2 PLAYER_START_POS = {101, 176};
+static const Vector2 PLAYER_START_POS = {109.0f, 184.0f};
 static const float   PLAYER_SPEED     = 100.0f;
 
 // --- Global state ---
@@ -21,26 +21,44 @@ void game__playerInit(void) {
 }
 
 void game__playerUpdate(float frameTime) {
-  float distance = PLAYER_SPEED * frameTime;
-  if (distance <= 0.0f) {
-    return;
+  Actor moved = g_player;
+
+  if (engine_isKeyDown(KEY_UP)) {
+    moved.dir = Up;
+  } else if (engine_isKeyDown(KEY_RIGHT)) {
+    moved.dir = Right;
+  } else if (engine_isKeyDown(KEY_DOWN)) {
+    moved.dir = Down;
+  } else if (engine_isKeyDown(KEY_LEFT)) {
+    moved.dir = Left;
   }
 
-  Dir dir = None;
-  if (engine_isKeyDown(KEY_LEFT) && game__actorCanMove(g_player, Left, distance)) dir = Left;
-  if (engine_isKeyDown(KEY_RIGHT) && game__actorCanMove(g_player, Right, distance)) dir = Right;
-  if (engine_isKeyDown(KEY_UP) && game__actorCanMove(g_player, Up, distance)) dir = Up;
-  if (engine_isKeyDown(KEY_DOWN) && game__actorCanMove(g_player, Down, distance)) dir = Down;
-
-  if (dir == None) {
-    dir = g_player.dir;
-    if (!game__actorCanMove(g_player, dir, distance)) return;
+  // Attempt to move the player
+  moved.pos = Vector2Add(g_player.pos, Vector2Scale(VELS[moved.dir], frameTime * PLAYER_SPEED));
+  if (game__isHittingWall(game__getActorAABB(moved))) {
+    // Attempt to continue moving the player in the same direction
+    moved     = g_player;
+    moved.pos = Vector2Add(g_player.pos, Vector2Scale(VELS[moved.dir], frameTime * PLAYER_SPEED));
+    if (game__isHittingWall(game__getActorAABB(moved))) {
+      return;
+    } else {
+      g_player = moved;
+      LOG_TRACE(game__log, "Moved player to %f, %f", g_player.pos.x, g_player.pos.y);
+    }
   } else {
-    g_player.dir = dir;
+    g_player = moved;
+    LOG_TRACE(game__log, "Moved player to %f, %f", g_player.pos.x, g_player.pos.y);
   }
-
-  g_player.pos = Vector2Add(g_player.pos, Vector2Scale(VELS[dir], distance));
-  LOG_TRACE(game__log, "Player moved to %f, %f", g_player.pos.x, g_player.pos.y);
 }
 
 Vector2 game__playerGetPos(void) { return g_player.pos; }
+
+#ifndef NDEBUG
+void game__playerOverlay(void) {
+  Actor adjusted = g_player;
+  adjusted.pos   = POS_ADJUST(adjusted.pos);
+  AABB aabb      = game__getActorAABB(adjusted);
+  engine_drawRectangleOutline((Rectangle) {aabb.min.x, aabb.min.y, aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y},
+                              RED);
+}
+#endif

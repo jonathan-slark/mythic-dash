@@ -1,2 +1,5 @@
 CompileFlags:
   CompilationDatabase: build\msys2-debug
+
+InlayHints:
+  Enabled: No
