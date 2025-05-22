@@ -14,10 +14,10 @@ static const int TILE_SIZE             = 8;
 // 0 = empty, 1 = wall
 static bool maze[MAZE_ROWS][MAZE_COLS] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1},
-    {1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+    {1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1},
+    {1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1},
@@ -107,13 +107,11 @@ bool game__isHittingWall(AABB aabb) {
 
 #ifndef NDEBUG
 void game__mazeOverlay(void) {
-  for (int row = 0; row < MAZE_ROWS; row++) {
-    for (int col = 0; col < MAZE_COLS; col++) {
-      if (maze[row][col]) {
-        engine_drawRectangleOutline(
-            (Rectangle) {MAZE_ORIGIN.x + col * TILE_SIZE, MAZE_ORIGIN.y + row * TILE_SIZE, TILE_SIZE, TILE_SIZE}, RED);
-      }
-    }
+  for (int i = 0; i < g_mazeAABBCount; i++) {
+    AABB      aabb     = g_mazeAABB[i];
+    Rectangle adjusted = (Rectangle) {MAZE_ORIGIN.x + aabb.min.x, MAZE_ORIGIN.y + aabb.min.y, aabb.max.x - aabb.min.x,
+                                      aabb.max.y - aabb.min.y};
+    engine_drawRectangleOutline(adjusted, OVERLAY_COLOUR);
   }
 }
 #endif

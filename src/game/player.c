@@ -21,6 +21,12 @@ void game__playerInit(void) {
 }
 
 void game__playerUpdate(float frameTime) {
+#ifndef NDEBUG
+  if (engine_isKeyPressed(KEY_O)) {
+    game__isOverlayEnabled = !game__isOverlayEnabled;
+  }
+#endif
+
   Actor moved = g_player;
 
   if (engine_isKeyDown(KEY_UP)) {
@@ -59,6 +65,6 @@ void game__playerOverlay(void) {
   adjusted.pos   = POS_ADJUST(adjusted.pos);
   AABB aabb      = game__getActorAABB(adjusted);
   engine_drawRectangleOutline((Rectangle) {aabb.min.x, aabb.min.y, aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y},
-                              RED);
+                              OVERLAY_COLOUR);
 }
 #endif

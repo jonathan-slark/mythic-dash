@@ -15,20 +15,23 @@
 #include "../engine/engine_internal.h"
 
 // Mock variables for testing
-static bool mockWindowShouldClose  = false;
-static bool mockInitWindowCalled   = false;
-static int mockScreenWidth         = 1280;
-static int mockScreenHeight        = 720;
-static int mockRefreshRate         = 60;
-static int mockCurrentMonitor      = 0;
-static bool mockTextureLoadSuccess = true;
-static bool mockFontLoadSuccess    = true;
-static char* mockLastDrawnText     = NULL;
-static float mockFrameTime         = 0.016667f;  // Default value (60 FPS)
+static bool      mockWindowShouldClose      = false;
+static bool      mockInitWindowCalled       = false;
+static int       mockScreenWidth            = 1280;
+static int       mockScreenHeight           = 720;
+static int       mockRefreshRate            = 60;
+static int       mockCurrentMonitor         = 0;
+static bool      mockTextureLoadSuccess     = true;
+static bool      mockFontLoadSuccess        = true;
+static char*     mockLastDrawnText          = NULL;
+static float     mockFrameTime              = 0.016667f;  // Default value (60 FPS)
+static Rectangle mockLastDrawnRectangle     = {0};
+static float     mockLastRectangleThickness = 0;
+static Color     mockLastRectangleColor     = {0};
 
 // Test resources
-static engine_Texture* testTexture = NULL;
-static engine_Font* testFont       = NULL;
+static engine_Texture* testTexture          = NULL;
+static engine_Font*    testFont             = NULL;
 
 // --- Mock implementations for Raylib functions ---
 
@@ -38,13 +41,13 @@ void InitWindow(int width [[maybe_unused]], int height [[maybe_unused]], const c
   mockInitWindowCalled = true;
 }
 
-int GetScreenWidth(void) { return mockScreenWidth; }
+int  GetScreenWidth(void) { return mockScreenWidth; }
 
-int GetScreenHeight(void) { return mockScreenHeight; }
+int  GetScreenHeight(void) { return mockScreenHeight; }
 
-int GetMonitorRefreshRate(int monitor [[maybe_unused]]) { return mockRefreshRate; }
+int  GetMonitorRefreshRate(int monitor [[maybe_unused]]) { return mockRefreshRate; }
 
-int GetCurrentMonitor(void) { return mockCurrentMonitor; }
+int  GetCurrentMonitor(void) { return mockCurrentMonitor; }
 
 void SetTargetFPS(int fps [[maybe_unused]]) {
   // Mock implementation
@@ -87,18 +90,24 @@ void UnloadTexture(Texture2D texture [[maybe_unused]]) {
 void DrawTexturePro(Texture2D texture [[maybe_unused]],
                     Rectangle sourceRec [[maybe_unused]],
                     Rectangle destRec [[maybe_unused]],
-                    Vector2 origin [[maybe_unused]],
-                    float rotation [[maybe_unused]],
-                    Color tint [[maybe_unused]]) {
+                    Vector2   origin [[maybe_unused]],
+                    float     rotation [[maybe_unused]],
+                    Color     tint [[maybe_unused]]) {
   // Mock implementation
 }
 
 void DrawTextureEx(Texture2D texture [[maybe_unused]],
-                   Vector2 position [[maybe_unused]],
-                   float rotation [[maybe_unused]],
-                   float scale [[maybe_unused]],
-                   Color tint [[maybe_unused]]) {
+                   Vector2   position [[maybe_unused]],
+                   float     rotation [[maybe_unused]],
+                   float     scale [[maybe_unused]],
+                   Color     tint [[maybe_unused]]) {
   // Mock implementation
+}
+
+void DrawRectangleLinesEx(Rectangle rec, float lineThick, Color color) {
+  mockLastDrawnRectangle     = rec;
+  mockLastRectangleThickness = lineThick;
+  mockLastRectangleColor     = color;
 }
 
 void BeginDrawing(void) {
@@ -118,15 +127,18 @@ float GetFrameTime(void) { return mockFrameTime; }
 // Setup and teardown
 static void test_setup(void) {
   // Reset mock state
-  mockWindowShouldClose  = false;
-  mockInitWindowCalled   = false;
-  mockScreenWidth        = 1280;
-  mockScreenHeight       = 720;
-  mockRefreshRate        = 60;
-  mockCurrentMonitor     = 0;
-  mockTextureLoadSuccess = true;
-  mockFontLoadSuccess    = true;
-  mockFrameTime          = 0.016667f;  // 60 FPS
+  mockWindowShouldClose      = false;
+  mockInitWindowCalled       = false;
+  mockScreenWidth            = 1280;
+  mockScreenHeight           = 720;
+  mockRefreshRate            = 60;
+  mockCurrentMonitor         = 0;
+  mockTextureLoadSuccess     = true;
+  mockFontLoadSuccess        = true;
+  mockFrameTime              = 0.016667f;  // 60 FPS
+  mockLastDrawnRectangle     = (Rectangle) {0};
+  mockLastRectangleThickness = 0;
+  mockLastRectangleColor     = (Color) {0};
 
   // Initialize engine with test values
   engine_init(320, 180, "Test");
@@ -298,6 +310,33 @@ MU_TEST(test_draw_background) {
   engine_drawBackground(testTexture);
 }
 
+MU_TEST(test_draw_rectangle_outline) {
+  Rectangle testRect         = {10, 10, 20, 20};
+  Color     testColor        = {255, 0, 0, 255};
+
+  // Reset mock values
+  mockLastDrawnRectangle     = (Rectangle) {0};
+  mockLastRectangleThickness = 0;
+  mockLastRectangleColor     = (Color) {0};
+
+  // Test the function
+  engine_drawRectangleOutline(testRect, testColor);
+
+  // Get scale from engine
+  int scale = engine__screenState.scale;
+
+  // Check results
+  mu_assert_int_eq(testRect.x * scale, mockLastDrawnRectangle.x);
+  mu_assert_int_eq(testRect.y * scale, mockLastDrawnRectangle.y);
+  mu_assert_int_eq(testRect.width * scale, mockLastDrawnRectangle.width);
+  mu_assert_int_eq(testRect.height * scale, mockLastDrawnRectangle.height);
+  mu_assert_double_eq(scale, mockLastRectangleThickness);
+  mu_assert_int_eq(testColor.r, mockLastRectangleColor.r);
+  mu_assert_int_eq(testColor.g, mockLastRectangleColor.g);
+  mu_assert_int_eq(testColor.b, mockLastRectangleColor.b);
+  mu_assert_int_eq(testColor.a, mockLastRectangleColor.a);
+}
+
 // Test frame management
 MU_TEST(test_frame_management) {
   // These just test that the functions don't crash
@@ -356,6 +395,7 @@ MU_TEST_SUITE(test_engine_suite) {
   // Drawing tests
   MU_RUN_TEST(test_draw_sprite);
   MU_RUN_TEST(test_draw_background);
+  MU_RUN_TEST(test_draw_rectangle_outline);
   MU_RUN_TEST(test_frame_management);
 
   // Input tests

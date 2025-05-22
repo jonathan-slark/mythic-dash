@@ -21,6 +21,7 @@ static const log_Config LOG_CONFIG_GAME   = {.minLevel      = LOG_LEVEL_TRACE,
 // --- Global state ---
 
 log_Log*               game__log;
+bool                   game__isOverlayEnabled = false;
 static engine_Texture* g_background;
 static engine_Texture* g_sprites;
 static engine_Font*    g_font;
@@ -57,8 +58,10 @@ void game_draw(void) {
   engine_drawSprite(g_sprites, &g_playerSprite);
 
 #ifndef NDEBUG
-  game__playerOverlay();
-  game__mazeOverlay();
+  if (game__isOverlayEnabled) {
+    game__playerOverlay();
+    game__mazeOverlay();
+  }
 #endif
 }
 

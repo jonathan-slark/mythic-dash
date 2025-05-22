@@ -12,6 +12,7 @@
   }
 
 #define POS_ADJUST(pos) Vector2Add(pos, MAZE_ORIGIN)
+#define OVERLAY_COLOUR (Color){100, 200, 255, 128}
 
 // --- Types ---
 
@@ -36,6 +37,7 @@ extern const Vector2 VELS[];
 // --- Global state ---
 
 extern log_Log* game__log;
+extern bool     game__isOverlayEnabled;
 
 // --- Actor functions (actor.c) ---
 

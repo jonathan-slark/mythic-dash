@@ -31,6 +31,7 @@ void engine_drawBackground(engine_Texture* background) {
 }
 
 void engine_drawRectangleOutline(Rectangle rect, Color color) {
-  DrawRectangleLines(rect.x * engine__screenState.scale, rect.y * engine__screenState.scale,
-                     rect.width * engine__screenState.scale, rect.height * engine__screenState.scale, color);
+  int       scale  = engine__screenState.scale;
+  Rectangle scaled = (Rectangle) {rect.x * scale, rect.y * scale, rect.width * scale, rect.height * scale};
+  DrawRectangleLinesEx(scaled, (float) scale, color);
 }
