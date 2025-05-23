@@ -46,7 +46,7 @@ bool game_load(void) {
   GAME_TRY(g_sprites = engine_textureLoad(FILE_SPRITES));
   GAME_TRY(g_font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
 
-  GAME_TRY(maze_init());
+  maze_init();
   GAME_TRY(player_init());
 
   LOG_INFO(game__log, "Game loading took %f seconds", GetTime() - start);
@@ -71,7 +71,6 @@ void game_draw(void) {
 
 void game_unload(void) {
   player_shutdown();
-  maze_shutdown();
   engine_fontUnload(&g_font);
   engine_textureUnload(&g_sprites);
   engine_textureUnload(&g_background);

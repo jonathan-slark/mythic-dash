@@ -17,6 +17,7 @@ typedef struct Actor {
 // --- Constants ---
 
 static const Vector2 VELS[] = {
+    {0.0f, 0.0f},   // None
     {0.0f, -1.0f},  // Up
     {1.0f, 0.0f},   // Right
     {0.0f, 1.0f},   // Down
@@ -25,29 +26,37 @@ static const Vector2 VELS[] = {
 
 // --- Helper functions ---
 
+/*
+ * Resolves a collision between an actor and a static wall AABB.
+ * Pushes the actor out along the axis of least penetration.
+ */
 static void resolveActorCollision(Actor* actor, AABB* wall) {
   assert(actor != nullptr);
   assert(wall != nullptr);
 
-  float overlapX = fminf((actor->pos.x + actor->size.x), wall->max.x) - fmaxf(actor->pos.x, wall->min.x);
-  float overlapY = fminf((actor->pos.y + actor->size.y), wall->max.y) - fmaxf(actor->pos.y, wall->min.y);
+  // Calculate how much the actor overlaps the wall on the X axis
+  float overlapX = fminf(actor->pos.x + actor->size.x, wall->max.x) - fmaxf(actor->pos.x, wall->min.x);
 
+  // Calculate how much the actor overlaps the wall on the Y axis
+  float overlapY = fminf(actor->pos.y + actor->size.y, wall->max.y) - fmaxf(actor->pos.y, wall->min.y);
+
+  // Choose the axis of minimum penetration to resolve the collision
   if (overlapX < overlapY) {
-    // X-axis collision (horizontal)
+    // Handle horizontal (X-axis) collision
     if (actor->pos.x < wall->min.x) {
-      // Actor hit the wall from the left side
+      // Actor is to the left of the wall: move it leftward out of the wall
       actor->pos.x -= overlapX;
     } else {
-      // Actor hit the wall from the right side
+      // Actor is to the right of the wall: move it rightward out of the wall
       actor->pos.x += overlapX;
     }
   } else {
-    // Y-axis collision (vertical)
+    // Handle vertical (Y-axis) collision
     if (actor->pos.y < wall->min.y) {
-      // Actor hit the wall from the top
+      // Actor is above the wall: move it upward out of the wall
       actor->pos.y -= overlapY;
     } else {
-      // Actor hit the wall from the bottom
+      // Actor is below the wall: move it downward out of the wall
       actor->pos.y += overlapY;
     }
   }
@@ -60,7 +69,7 @@ Actor* actor_create(Vector2 pos, Vector2 size, Dir dir, float speed) {
   assert(pos.y >= 0.0f);
   assert(size.x > 0.0f);
   assert(size.y > 0.0f);
-  assert(dir != None);
+  assert(dir != DIR_NONE);
   assert(speed > 0.0f);
 
   Actor* actor = (Actor*) malloc(sizeof(Actor));
@@ -101,7 +110,16 @@ Vector2 actor_getSize(const Actor* actor) {
 AABB actor_getAABB(const Actor* actor) {
   assert(actor != nullptr);
   return (AABB) {.min = (Vector2) {actor->pos.x, actor->pos.y},
-                 .max = (Vector2) {actor->pos.x + ACTOR_SIZE, actor->pos.y + ACTOR_SIZE}};
+                 .max = (Vector2) {actor->pos.x + actor->size.x, actor->pos.y + actor->size.x}};
+}
+
+bool actor_canMove(const Actor* actor, Dir dir) {
+  assert(actor != nullptr);
+  assert(dir != DIR_NONE);
+
+  Vector2 vel  = VELS[dir];
+  AABB    aabb = {.min = Vector2Add(actor->pos, vel), .max = Vector2Add(Vector2Add(actor->pos, actor->size), vel)};
+  return maze_isHittingWall(aabb) == nullptr;
 }
 
 void actor_move(Actor* actor, Dir dir, float frameTime) {
