@@ -1,6 +1,6 @@
 #include <raylib.h>
 #include "engine.h"
-#include "engine_internal.h"
+#include "internal.h"
 
 // --- Renderer functions ---
 

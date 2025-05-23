@@ -4,17 +4,17 @@
 #include <stdlib.h>  // malloc
 #include <string.h>  // strerror
 #include "engine.h"
-#include "engine_internal.h"
+#include "internal.h"
 #include "log/log.h"
 
 // --- Font functions ---
 
 engine_Font* engine_fontLoad(const char* filepath,
-                             int glyphWidth,
-                             int glyphHeight,
-                             int asciiStart,
-                             int asciiEnd,
-                             int glyphSpacing) {
+                             int         glyphWidth,
+                             int         glyphHeight,
+                             int         asciiStart,
+                             int         asciiEnd,
+                             int         glyphSpacing) {
   if (filepath == nullptr) {
     LOG_ERROR(engine__log, "Failed to load font: filepath is nullptr");
     return nullptr;
@@ -112,19 +112,19 @@ void engine_fontPrintfV(engine_Font* font, int x, int y, const char* format, va_
     if (c < font->asciiStart || c > font->asciiEnd) {
       continue;
     }
-    int charIndex = c - font->asciiStart;
-    int col       = charIndex % font->columns;
-    int row       = charIndex / font->columns;
-    int scale     = engine__screenState.scale;
+    int       charIndex = c - font->asciiStart;
+    int       col       = charIndex % font->columns;
+    int       row       = charIndex / font->columns;
+    int       scale     = engine__screenState.scale;
 
-    Rectangle src = {.x      = (float) (col * font->glyphWidth + (col + 1) * font->glyphSpacing),
-                     .y      = (float) (row * font->glyphHeight + (row + 1) * font->glyphSpacing),
-                     .width  = (float) (font->glyphWidth),
-                     .height = (float) (font->glyphHeight)};
-    Rectangle dst = {.x      = (float) ((x + i * font->glyphWidth) * scale),
-                     .y      = (float) (y * scale),
-                     .width  = (float) (font->glyphWidth * scale),
-                     .height = (float) (font->glyphHeight * scale)};
+    Rectangle src       = {.x      = (float) (col * font->glyphWidth + (col + 1) * font->glyphSpacing),
+                           .y      = (float) (row * font->glyphHeight + (row + 1) * font->glyphSpacing),
+                           .width  = (float) (font->glyphWidth),
+                           .height = (float) (font->glyphHeight)};
+    Rectangle dst       = {.x      = (float) ((x + i * font->glyphWidth) * scale),
+                           .y      = (float) (y * scale),
+                           .width  = (float) (font->glyphWidth * scale),
+                           .height = (float) (font->glyphHeight * scale)};
 
     DrawTexturePro(font->texture, src, dst, (Vector2) {0, 0}, 0, WHITE);
   }

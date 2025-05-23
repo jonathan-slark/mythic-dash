@@ -2,7 +2,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include "../engine/engine.h"
-#include "game_internal.h"
+#include "internal.h"
 
 // --- Constants ---
 
@@ -11,60 +11,56 @@ static const float   PLAYER_SPEED     = 100.0f;
 
 // --- Global state ---
 
-static Actor g_player;
+static Actor* g_player;
 
 // --- Player functions ---
 
-void game__playerInit(void) {
-  g_player.pos = PLAYER_START_POS;
-  g_player.dir = Left;
+bool player_init(void) {
+  assert(g_player == nullptr);
+  g_player = actor_create(PLAYER_START_POS, (Vector2) {ACTOR_SIZE, ACTOR_SIZE}, Left, PLAYER_SPEED);
+  return g_player != nullptr;
 }
 
-void game__playerUpdate(float frameTime) {
+void player_shutdown(void) {
+  assert(g_player != nullptr);
+  actor_destroy(&g_player);
+}
+
+void player_update(float frameTime) {
+  assert(g_player != nullptr);
+
 #ifndef NDEBUG
   if (engine_isKeyPressed(KEY_O)) {
     game__isOverlayEnabled = !game__isOverlayEnabled;
   }
 #endif
 
-  Actor moved = g_player;
-
+  Dir dir = actor_getDir(g_player);
   if (engine_isKeyDown(KEY_UP)) {
-    moved.dir = Up;
+    dir = Up;
   } else if (engine_isKeyDown(KEY_RIGHT)) {
-    moved.dir = Right;
+    dir = Right;
   } else if (engine_isKeyDown(KEY_DOWN)) {
-    moved.dir = Down;
+    dir = Down;
   } else if (engine_isKeyDown(KEY_LEFT)) {
-    moved.dir = Left;
+    dir = Left;
   }
 
-  // Attempt to move the player
-  moved.pos = Vector2Add(g_player.pos, Vector2Scale(VELS[moved.dir], frameTime * PLAYER_SPEED));
-  if (game__isHittingWall(game__getActorAABB(moved))) {
-    // Attempt to continue moving the player in the same direction
-    moved     = g_player;
-    moved.pos = Vector2Add(g_player.pos, Vector2Scale(VELS[moved.dir], frameTime * PLAYER_SPEED));
-    if (game__isHittingWall(game__getActorAABB(moved))) {
-      return;
-    } else {
-      g_player = moved;
-      LOG_TRACE(game__log, "Moved player to %f, %f", g_player.pos.x, g_player.pos.y);
-    }
-  } else {
-    g_player = moved;
-    LOG_TRACE(game__log, "Moved player to %f, %f", g_player.pos.x, g_player.pos.y);
-  }
+  actor_move(g_player, dir, frameTime);
+  actor_checkMazeCollision(g_player);
 }
 
-Vector2 game__playerGetPos(void) { return g_player.pos; }
+Vector2 player_getPos(void) {
+  assert(g_player != nullptr);
+  return actor_getPos(g_player);
+}
 
 #ifndef NDEBUG
-void game__playerOverlay(void) {
-  Actor adjusted = g_player;
-  adjusted.pos   = POS_ADJUST(adjusted.pos);
-  AABB aabb      = game__getActorAABB(adjusted);
-  engine_drawRectangleOutline((Rectangle) {aabb.min.x, aabb.min.y, aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y},
+void player_overlay(void) {
+  assert(g_player != nullptr);
+  Vector2 pos  = POS_ADJUST(player_getPos());
+  AABB    aabb = actor_getAABB(g_player);
+  engine_drawRectangleOutline((Rectangle) {pos.x, pos.y, aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y},
                               OVERLAY_COLOUR);
 }
 #endif

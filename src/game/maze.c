@@ -2,7 +2,7 @@
 #include <raylib.h>
 #include <stdlib.h>  // malloc, free
 #include "../engine/engine.h"
-#include "game_internal.h"
+#include "internal.h"
 
 // --- Constants ---
 
@@ -67,13 +67,11 @@ static void makeMazeAABB(void) {
   }
 }
 
-static bool isAABBCollision(AABB a, AABB b) {
-  return a.min.x < b.max.x && a.max.x > b.min.x && a.min.y < b.max.y && a.max.y > b.min.y;
-}
-
 // --- Maze functions ---
 
-bool game__mazeInit(void) {
+bool maze_init(void) {
+  assert(g_mazeAABB == nullptr);
+
   // TODO: Allocates more memory than needed, but it's fine for now
   g_mazeAABB = (AABB*) malloc(MAZE_ROWS * MAZE_COLS * sizeof(AABB));
   if (g_mazeAABB == nullptr) {
@@ -85,28 +83,29 @@ bool game__mazeInit(void) {
   return true;
 }
 
-void game__mazeUninit(void) {
-  if (g_mazeAABB == nullptr) {
-    LOG_WARN(game__log, "Maze AABB already uninitialized");
-    return;
-  }
+void maze_shutdown(void) {
+  assert(g_mazeAABB != nullptr);
 
   free(g_mazeAABB);
   g_mazeAABB = nullptr;
 }
 
-bool game__isHittingWall(AABB aabb) {
+AABB* maze_isHittingWall(AABB aabb) {
+  assert(g_mazeAABB != nullptr);
+  assert(g_mazeAABBCount > 0);
+
   for (int i = 0; i < g_mazeAABBCount; i++) {
-    if (isAABBCollision(aabb, g_mazeAABB[i])) {
-      return true;
-    }
+    if (aabb_isColliding(aabb, g_mazeAABB[i])) return &g_mazeAABB[i];
   }
 
-  return false;
+  return nullptr;
 }
 
 #ifndef NDEBUG
-void game__mazeOverlay(void) {
+void maze_overlay(void) {
+  assert(g_mazeAABB != nullptr);
+  assert(g_mazeAABBCount > 0);
+
   for (int i = 0; i < g_mazeAABBCount; i++) {
     AABB      aabb     = g_mazeAABB[i];
     Rectangle adjusted = (Rectangle) {MAZE_ORIGIN.x + aabb.min.x, MAZE_ORIGIN.y + aabb.min.y, aabb.max.x - aabb.min.x,

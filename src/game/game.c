@@ -4,7 +4,7 @@
 #include <raymath.h>
 #include "../engine/engine.h"
 #include "../log/log.h"
-#include "game_internal.h"
+#include "internal.h"
 
 // --- Constants ---
 
@@ -30,6 +30,10 @@ static engine_Sprite   g_playerSprite = {.size = {ACTOR_SIZE, ACTOR_SIZE}, .offs
 // --- Game functions ---
 
 bool game_load(void) {
+  if (game__log != nullptr) {
+    LOG_ERROR(game__log, "Game already loaded");
+    return false;
+  }
   game__log = log_create(&LOG_CONFIG_GAME);
   if (game__log == nullptr) {
     LOG_ERROR(game__log, "Failed to create log");
@@ -42,31 +46,32 @@ bool game_load(void) {
   GAME_TRY(g_sprites = engine_textureLoad(FILE_SPRITES));
   GAME_TRY(g_font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
 
-  GAME_TRY(game__mazeInit());
-  game__playerInit();
+  GAME_TRY(maze_init());
+  GAME_TRY(player_init());
 
   LOG_INFO(game__log, "Game loading took %f seconds", GetTime() - start);
   return true;
 }
 
-void game_update(float frameTime) { game__playerUpdate(frameTime); }
+void game_update(float frameTime) { player_update(frameTime); }
 
 void game_draw(void) {
   engine_drawBackground(g_background);
 
-  g_playerSprite.position = POS_ADJUST(game__playerGetPos());
+  g_playerSprite.position = POS_ADJUST(player_getPos());
   engine_drawSprite(g_sprites, &g_playerSprite);
 
 #ifndef NDEBUG
   if (game__isOverlayEnabled) {
-    game__playerOverlay();
-    game__mazeOverlay();
+    player_overlay();
+    maze_overlay();
   }
 #endif
 }
 
 void game_unload(void) {
-  game__mazeUninit();
+  player_shutdown();
+  maze_shutdown();
   engine_fontUnload(&g_font);
   engine_textureUnload(&g_sprites);
   engine_textureUnload(&g_background);

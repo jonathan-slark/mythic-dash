@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <raylib.h>
 #include "../log/log.h"
-#include "engine_internal.h"
+#include "internal.h"
 
 // --- Macros ---
 

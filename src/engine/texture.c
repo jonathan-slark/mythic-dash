@@ -1,5 +1,5 @@
 #include "engine.h"
-#include "engine_internal.h"
+#include "internal.h"
 
 #include <errno.h>   // errno
 #include <stdlib.h>  // malloc
