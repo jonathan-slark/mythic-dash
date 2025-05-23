@@ -87,3 +87,12 @@ if (DOXYGEN_FOUND)
 else()
   message(STATUS "Doxygen not found. Documentation target will be unavailable.")
 endif()
+
+# Custom target to zip the src directory
+add_custom_target(zip_source
+  COMMAND ${CMAKE_COMMAND} -E echo "[Zip] Creating zip archive of src/"
+  COMMAND zip -r ${CMAKE_CURRENT_SOURCE_DIR}/src.zip src
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMENT "Zipping the src directory"
+  VERBATIM
+)
