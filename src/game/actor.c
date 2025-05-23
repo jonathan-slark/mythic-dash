@@ -34,10 +34,8 @@ static void resolveActorCollision(Actor* actor, AABB* wall) {
   assert(actor != nullptr);
   assert(wall != nullptr);
 
-  // Calculate how much the actor overlaps the wall on the X axis
+  // Calculate how much the actor overlaps the wall on each axis
   float overlapX = fminf(actor->pos.x + actor->size.x, wall->max.x) - fmaxf(actor->pos.x, wall->min.x);
-
-  // Calculate how much the actor overlaps the wall on the Y axis
   float overlapY = fminf(actor->pos.y + actor->size.y, wall->max.y) - fmaxf(actor->pos.y, wall->min.y);
 
   // Choose the axis of minimum penetration to resolve the collision
@@ -113,13 +111,18 @@ AABB actor_getAABB(const Actor* actor) {
                  .max = (Vector2) {actor->pos.x + actor->size.x, actor->pos.y + actor->size.x}};
 }
 
+AABB actor_getFutureAABB(const Actor* actor, Dir dir) {
+  assert(actor != nullptr);
+  assert(dir != DIR_NONE);
+  Vector2 vel = VELS[dir];
+  return (AABB) {.min = Vector2Add(actor->pos, vel), .max = Vector2Add(Vector2Add(actor->pos, actor->size), vel)};
+}
+
 bool actor_canMove(const Actor* actor, Dir dir) {
   assert(actor != nullptr);
   assert(dir != DIR_NONE);
 
-  Vector2 vel  = VELS[dir];
-  AABB    aabb = {.min = Vector2Add(actor->pos, vel), .max = Vector2Add(Vector2Add(actor->pos, actor->size), vel)};
-  return maze_isHittingWall(aabb) == nullptr;
+  return maze_isHittingWall(actor_getFutureAABB(actor, dir)) == nullptr;
 }
 
 void actor_move(Actor* actor, Dir dir, float frameTime) {
