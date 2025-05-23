@@ -81,7 +81,7 @@ bool engine_init(int nativeWidth, int nativeHeight, const char* title) {
   SetTraceLogLevel(LOG_LEVEL_RAYLIB);
   SetTraceLogCallback(raylibLog);
 
-  SetConfigFlags(FLAG_VSYNC_HINT | FLAG_BORDERLESS_WINDOWED_MODE);
+  SetConfigFlags(FLAG_VSYNC_HINT | FLAG_BORDERLESS_WINDOWED_MODE | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_UNDECORATED);
   InitWindow(0, 0, title);
 
   int screenWidth       = GetScreenWidth();
