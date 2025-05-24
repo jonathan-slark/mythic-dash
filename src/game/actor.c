@@ -129,59 +129,40 @@ void actor_overlay(const Actor* actor, Dir dir) {
   assert(actor != nullptr);
   assert(dir != DIR_NONE && dir < DIR_COUNT);
 
-  AABB aabb1;
-  AABB aabb2;
-  AABB aabb3;
-  AABB aabb4;
+  // Base position calculation based on direction
+  Vector2 basePos;
+  Vector2 offset;
+
   switch (dir) {
     case DIR_UP:
-      aabb1 = maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y - TILE_SIZE / 2.0f});
-      aabb2 = maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 0.5f, actor->pos.y - TILE_SIZE / 2.0f});
-      aabb3 = maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 1.5f, actor->pos.y - TILE_SIZE / 2.0f});
-      aabb4 = maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 2.5f, actor->pos.y - TILE_SIZE / 2.0f});
+      basePos = (Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y - TILE_SIZE / 2.0f};
+      offset  = (Vector2) {TILE_SIZE, 0};
       break;
     case DIR_RIGHT:
-      aabb1 =
-          maze_getAABB((Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f});
-      aabb2 =
-          maze_getAABB((Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 0.5f});
-      aabb3 =
-          maze_getAABB((Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 1.5f});
-      aabb4 =
-          maze_getAABB((Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 2.5f});
+      basePos = (Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f};
+      offset  = (Vector2) {0, TILE_SIZE};
       break;
     case DIR_DOWN:
-      aabb1 =
-          maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f});
-      aabb2 =
-          maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 0.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f});
-      aabb3 =
-          maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 1.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f});
-      aabb4 =
-          maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 2.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f});
+      basePos = (Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f};
+      offset  = (Vector2) {TILE_SIZE, 0};
       break;
     case DIR_LEFT:
-      aabb1 = maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f});
-      aabb2 = maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 0.5f});
-      aabb3 = maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 1.5f});
-      aabb4 = maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 2.5f});
+      basePos = (Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f};
+      offset  = (Vector2) {0, TILE_SIZE};
       break;
-    default: assert(false);
+    default: assert(false); return;
   }
 
-  aabb1.min = POS_ADJUST(aabb1.min);
-  aabb1.max = POS_ADJUST(aabb1.max);
-  aabb2.min = POS_ADJUST(aabb2.min);
-  aabb2.max = POS_ADJUST(aabb2.max);
-  aabb3.min = POS_ADJUST(aabb3.min);
-  aabb3.max = POS_ADJUST(aabb3.max);
-  aabb4.min = POS_ADJUST(aabb4.min);
-  aabb4.max = POS_ADJUST(aabb4.max);
+  // Generate and draw all four AABBs in a loop
+  for (int i = 0; i < 4; i++) {
+    Vector2 position = Vector2Add(basePos, Vector2Scale(offset, i));
+    AABB    aabb     = maze_getAABB(position);
 
-  aabb_drawOverlay(aabb1, RED);
-  aabb_drawOverlay(aabb2, RED);
-  aabb_drawOverlay(aabb3, RED);
-  aabb_drawOverlay(aabb4, RED);
+    // Adjust position and draw
+    aabb.min         = POS_ADJUST(aabb.min);
+    aabb.max         = POS_ADJUST(aabb.max);
+    aabb_drawOverlay(aabb, RED);
+  }
 }
 
 void actor_move(Actor* actor, Dir dir, float frameTime) {
