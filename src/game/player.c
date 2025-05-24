@@ -63,6 +63,7 @@ void player_overlay(void) {
   Vector2 pos  = POS_ADJUST(player_getPos());
   AABB    aabb = actor_getAABB(g_player);
   engine_drawRectangleOutline((Rectangle) {pos.x, pos.y, aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y},
-                              OVERLAY_COLOUR);
+                              OVERLAY_COLOUR_PLAYER);
+  actor_overlay(g_player, actor_getDir(g_player));
 }
 #endif

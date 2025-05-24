@@ -13,7 +13,8 @@
   }
 
 #define POS_ADJUST(pos) Vector2Add(pos, MAZE_ORIGIN)
-#define OVERLAY_COLOUR (Color){100, 200, 255, 128}
+#define OVERLAY_COLOUR_PLAYER (Color){100, 200, 255, 128}
+#define OVERLAY_COLOUR_WALL (Color){255, 100, 100, 128}
 
 // --- Types ---
 
@@ -30,6 +31,7 @@ typedef struct Actor Actor;
 
 constexpr int        ACTOR_SIZE = 16;
 extern const Vector2 MAZE_ORIGIN;
+extern const float   TILE_SIZE;
 
 // --- Global state ---
 
@@ -56,6 +58,7 @@ Vector2 actor_getPos(const Actor* actor);
 Vector2 actor_getSize(const Actor* actor);
 AABB    actor_getAABB(const Actor* actor);
 bool    actor_canMove(const Actor* actor, Dir dir);
+void    actor_overlay(const Actor* actor, Dir dir);
 void    actor_move(Actor* actor, Dir dir, float frameTime);
 void    actor_checkMazeCollision(Actor* actor);
 
@@ -69,8 +72,7 @@ void    player_overlay(void);
 
 // --- Maze functions (maze.c) ---
 
-void maze_init(void);
-// TODO: pointer or value?
-AABB* maze_isHittingWall(AABB aabb);
-AABB* maze_getAABB(Vector2 pos);
-void  maze_overlay(void);
+void        maze_init(void);
+const AABB* maze_isHittingWall(AABB aabb);
+AABB        maze_getAABB(Vector2 pos);
+void        maze_overlay(void);

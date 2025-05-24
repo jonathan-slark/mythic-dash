@@ -30,7 +30,7 @@ static const Vector2 VELS[] = {
  * Resolves a collision between an actor and a static wall AABB.
  * Pushes the actor out along the axis of least penetration.
  */
-static void resolveActorCollision(Actor* actor, AABB* wall) {
+static void resolveActorCollision(Actor* actor, const AABB* wall) {
   assert(actor != nullptr);
   assert(wall != nullptr);
 
@@ -125,6 +125,65 @@ bool actor_canMove(const Actor* actor, Dir dir) {
   return maze_isHittingWall(actor_getFutureAABB(actor, dir)) == nullptr;
 }
 
+void actor_overlay(const Actor* actor, Dir dir) {
+  assert(actor != nullptr);
+  assert(dir != DIR_NONE && dir < DIR_COUNT);
+
+  AABB aabb1;
+  AABB aabb2;
+  AABB aabb3;
+  AABB aabb4;
+  switch (dir) {
+    case DIR_UP:
+      aabb1 = maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y - TILE_SIZE / 2.0f});
+      aabb2 = maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 0.5f, actor->pos.y - TILE_SIZE / 2.0f});
+      aabb3 = maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 1.5f, actor->pos.y - TILE_SIZE / 2.0f});
+      aabb4 = maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 2.5f, actor->pos.y - TILE_SIZE / 2.0f});
+      break;
+    case DIR_RIGHT:
+      aabb1 =
+          maze_getAABB((Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f});
+      aabb2 =
+          maze_getAABB((Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 0.5f});
+      aabb3 =
+          maze_getAABB((Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 1.5f});
+      aabb4 =
+          maze_getAABB((Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 2.5f});
+      break;
+    case DIR_DOWN:
+      aabb1 =
+          maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f});
+      aabb2 =
+          maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 0.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f});
+      aabb3 =
+          maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 1.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f});
+      aabb4 =
+          maze_getAABB((Vector2) {actor->pos.x + TILE_SIZE * 2.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f});
+      break;
+    case DIR_LEFT:
+      aabb1 = maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f});
+      aabb2 = maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 0.5f});
+      aabb3 = maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 1.5f});
+      aabb4 = maze_getAABB((Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y + TILE_SIZE * 2.5f});
+      break;
+    default: assert(false);
+  }
+
+  aabb1.min = POS_ADJUST(aabb1.min);
+  aabb1.max = POS_ADJUST(aabb1.max);
+  aabb2.min = POS_ADJUST(aabb2.min);
+  aabb2.max = POS_ADJUST(aabb2.max);
+  aabb3.min = POS_ADJUST(aabb3.min);
+  aabb3.max = POS_ADJUST(aabb3.max);
+  aabb4.min = POS_ADJUST(aabb4.min);
+  aabb4.max = POS_ADJUST(aabb4.max);
+
+  aabb_drawOverlay(aabb1, RED);
+  aabb_drawOverlay(aabb2, RED);
+  aabb_drawOverlay(aabb3, RED);
+  aabb_drawOverlay(aabb4, RED);
+}
+
 void actor_move(Actor* actor, Dir dir, float frameTime) {
   assert(actor != nullptr);
   actor->pos = Vector2Add(actor->pos, Vector2Scale(VELS[dir], frameTime * actor->speed));
@@ -133,7 +192,7 @@ void actor_move(Actor* actor, Dir dir, float frameTime) {
 
 void actor_checkMazeCollision(Actor* actor) {
   assert(actor != nullptr);
-  AABB* wall = maze_isHittingWall(actor_getAABB(actor));
+  const AABB* wall = maze_isHittingWall(actor_getAABB(actor));
   if (wall != nullptr) {
     resolveActorCollision(actor, wall);
   }

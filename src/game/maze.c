@@ -5,10 +5,10 @@
 
 // --- Constants ---
 
-const Vector2    MAZE_ORIGIN           = {124.0f, 7.0f};  // Screen offset to the actual maze
-constexpr int    MAZE_ROWS             = 32;
-constexpr int    MAZE_COLS             = 29;
-static const int TILE_SIZE             = 8;
+const Vector2 MAZE_ORIGIN              = {124.0f, 7.0f};  // Screen offset to the actual maze
+constexpr int MAZE_ROWS                = 32;
+constexpr int MAZE_COLS                = 29;
+const float   TILE_SIZE                = 8.0f;
 
 // 0 = empty, 1 = wall
 static bool maze[MAZE_ROWS][MAZE_COLS] = {
@@ -62,9 +62,9 @@ static void makeMazeAABB(void) {
 
 // --- Maze functions ---
 
-void  maze_init(void) { makeMazeAABB(); }
+void        maze_init(void) { makeMazeAABB(); }
 
-AABB* maze_isHittingWall(AABB aabb) {
+const AABB* maze_isHittingWall(AABB aabb) {
   for (int row = 0; row < MAZE_ROWS; row++) {
     for (int col = 0; col < MAZE_COLS; col++) {
       if (maze[row][col]) {
@@ -76,12 +76,12 @@ AABB* maze_isHittingWall(AABB aabb) {
   return nullptr;
 }
 
-AABB* maze_getAABB(Vector2 pos) {
+AABB maze_getAABB(Vector2 pos) {
   int row = (int) (pos.y / TILE_SIZE);
   int col = (int) (pos.x / TILE_SIZE);
   assert(row >= 0 && row < MAZE_ROWS);
   assert(col >= 0 && col < MAZE_COLS);
-  return &g_mazeAABB[row][col];
+  return g_mazeAABB[row][col];
 }
 
 #ifndef NDEBUG
@@ -92,7 +92,7 @@ void maze_overlay(void) {
         AABB      aabb     = g_mazeAABB[row][col];
         Rectangle adjusted = (Rectangle) {MAZE_ORIGIN.x + aabb.min.x, MAZE_ORIGIN.y + aabb.min.y,
                                           aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y};
-        engine_drawRectangleOutline(adjusted, OVERLAY_COLOUR);
+        engine_drawRectangleOutline(adjusted, OVERLAY_COLOUR_WALL);
       }
     }
   }
