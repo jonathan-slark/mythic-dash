@@ -2,6 +2,7 @@
 #pragma once
 
 #include <raylib.h>
+#include <raymath.h>
 #include "../engine/engine.h"
 #include "../log/log.h"
 
@@ -12,7 +13,7 @@
     return false;      \
   }
 
-#define POS_ADJUST(pos) Vector2Add(pos, MAZE_ORIGIN)
+#define POS_ADJUST(pos) Vector2Add((pos), MAZE_ORIGIN)
 #define OVERLAY_COLOUR_PLAYER (Color){100, 200, 255, 128}
 #define OVERLAY_COLOUR_WALL (Color){255, 100, 100, 128}
 
@@ -45,8 +46,9 @@ static inline bool aabb_isColliding(AABB a, AABB b) {
 }
 
 static inline void aabb_drawOverlay(AABB aabb, Color colour) {
-  engine_drawRectangleOutline((Rectangle) {aabb.min.x, aabb.min.y, aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y},
-                              colour);
+  Vector2 min = POS_ADJUST(aabb.min);
+  Vector2 max = POS_ADJUST(aabb.max);
+  engine_drawRectangleOutline((Rectangle) {min.x, min.y, max.x - min.x, max.y - min.y}, colour);
 }
 
 // --- Actor functions (actor.c) ---
@@ -57,10 +59,11 @@ Dir     actor_getDir(const Actor* actor);
 Vector2 actor_getPos(const Actor* actor);
 Vector2 actor_getSize(const Actor* actor);
 AABB    actor_getAABB(const Actor* actor);
+void    actor_getWalls(Actor* actor, Dir dir);
 bool    actor_canMove(const Actor* actor, Dir dir);
-void    actor_overlay(const Actor* actor, Dir dir);
+void    actor_overlay(const Actor* actor, Color colour);
+void    actor_wallsOverlay(const Actor* actor, Dir dir);
 void    actor_move(Actor* actor, Dir dir, float frameTime);
-void    actor_checkMazeCollision(Actor* actor);
 
 // --- Player functions (player.c) ---
 
@@ -75,4 +78,5 @@ void    player_overlay(void);
 void        maze_init(void);
 const AABB* maze_isHittingWall(AABB aabb);
 AABB        maze_getAABB(Vector2 pos);
+bool        maze_isWall(Vector2 pos);
 void        maze_overlay(void);

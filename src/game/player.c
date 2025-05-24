@@ -13,7 +13,7 @@ static const KeyboardKey PLAYER_KEYS[]    = {0, KEY_UP, KEY_RIGHT, KEY_DOWN, KEY
 
 // --- Global state ---
 
-static Actor* g_player;
+static Actor* g_player                    = nullptr;
 
 // --- Player functions ---
 
@@ -48,8 +48,8 @@ void player_update(float frameTime) {
     dir = actor_getDir(g_player);
   }
 
+  actor_getWalls(g_player, dir);
   actor_move(g_player, dir, frameTime);
-  actor_checkMazeCollision(g_player);
 }
 
 Vector2 player_getPos(void) {
@@ -60,10 +60,7 @@ Vector2 player_getPos(void) {
 #ifndef NDEBUG
 void player_overlay(void) {
   assert(g_player != nullptr);
-  Vector2 pos  = POS_ADJUST(player_getPos());
-  AABB    aabb = actor_getAABB(g_player);
-  engine_drawRectangleOutline((Rectangle) {pos.x, pos.y, aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y},
-                              OVERLAY_COLOUR_PLAYER);
-  actor_overlay(g_player, actor_getDir(g_player));
+  actor_overlay(g_player, OVERLAY_COLOUR_PLAYER);
+  actor_wallsOverlay(g_player, actor_getDir(g_player));
 }
 #endif

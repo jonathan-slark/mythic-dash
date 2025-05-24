@@ -84,6 +84,14 @@ AABB maze_getAABB(Vector2 pos) {
   return g_mazeAABB[row][col];
 }
 
+bool maze_isWall(Vector2 pos) {
+  int row = (int) (pos.y / TILE_SIZE);
+  int col = (int) (pos.x / TILE_SIZE);
+  assert(row >= 0 && row < MAZE_ROWS);
+  assert(col >= 0 && col < MAZE_COLS);
+  return maze[row][col];
+}
+
 #ifndef NDEBUG
 void maze_overlay(void) {
   for (int row = 0; row < MAZE_ROWS; row++) {

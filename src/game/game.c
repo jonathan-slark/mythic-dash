@@ -63,8 +63,8 @@ void game_draw(void) {
 
 #ifndef NDEBUG
   if (game__isOverlayEnabled) {
-    player_overlay();
     // maze_overlay();
+    player_overlay();
   }
 #endif
 }
