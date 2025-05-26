@@ -11,7 +11,7 @@ constexpr int MAZE_COLS                = 29;
 const float   TILE_SIZE                = 8.0f;
 
 // 0 = empty, 1 = wall
-static bool maze[MAZE_ROWS][MAZE_COLS] = {
+static bool MAZE[MAZE_ROWS][MAZE_COLS] = {
     {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
     {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -62,19 +62,7 @@ static void makeMazeAABB(void) {
 
 // --- Maze functions ---
 
-void        maze_init(void) { makeMazeAABB(); }
-
-const AABB* maze_isHittingWall(AABB aabb) {
-  for (int row = 0; row < MAZE_ROWS; row++) {
-    for (int col = 0; col < MAZE_COLS; col++) {
-      if (maze[row][col]) {
-        if (aabb_isColliding(aabb, g_mazeAABB[row][col])) return &g_mazeAABB[row][col];
-      }
-    }
-  }
-
-  return nullptr;
-}
+void maze_init(void) { makeMazeAABB(); }
 
 AABB maze_getAABB(Vector2 pos) {
   int row = (int) (pos.y / TILE_SIZE);
@@ -89,19 +77,18 @@ bool maze_isWall(Vector2 pos) {
   int col = (int) (pos.x / TILE_SIZE);
   assert(row >= 0 && row < MAZE_ROWS);
   assert(col >= 0 && col < MAZE_COLS);
-  return maze[row][col];
+  return MAZE[row][col];
 }
 
 #ifndef NDEBUG
 void maze_overlay(void) {
   for (int row = 0; row < MAZE_ROWS; row++) {
     for (int col = 0; col < MAZE_COLS; col++) {
-      if (maze[row][col]) {
-        AABB      aabb     = g_mazeAABB[row][col];
-        Rectangle adjusted = (Rectangle) {MAZE_ORIGIN.x + aabb.min.x, MAZE_ORIGIN.y + aabb.min.y,
-                                          aabb.max.x - aabb.min.x, aabb.max.y - aabb.min.y};
-        engine_drawRectangleOutline(adjusted, OVERLAY_COLOUR_WALL);
-      }
+      Color     colour   = MAZE[row][col] ? OVERLAY_COLOUR_TILE_WALL : OVERLAY_COLOUR_TILE_FLOOR;
+      AABB      aabb     = g_mazeAABB[row][col];
+      Rectangle adjusted = (Rectangle) {MAZE_ORIGIN.x + aabb.min.x, MAZE_ORIGIN.y + aabb.min.y, aabb.max.x - aabb.min.x,
+                                        aabb.max.y - aabb.min.y};
+      engine_drawRectangleOutline(adjusted, colour);
     }
   }
 }

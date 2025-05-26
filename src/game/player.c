@@ -28,7 +28,7 @@ void player_shutdown(void) {
   actor_destroy(&g_player);
 }
 
-void player_update(float frameTime) {
+void player_update([[maybe_unused]] float frameTime) {
   assert(g_player != nullptr);
 
 #ifndef NDEBUG
@@ -48,7 +48,6 @@ void player_update(float frameTime) {
     dir = actor_getDir(g_player);
   }
 
-  actor_getWalls(g_player, dir);
   actor_move(g_player, dir, frameTime);
 }
 
@@ -61,6 +60,6 @@ Vector2 player_getPos(void) {
 void player_overlay(void) {
   assert(g_player != nullptr);
   actor_overlay(g_player, OVERLAY_COLOUR_PLAYER);
-  actor_wallsOverlay(g_player, actor_getDir(g_player));
+  actor_wallsOverlay(g_player);
 }
 #endif
