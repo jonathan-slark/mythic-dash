@@ -7,18 +7,25 @@
 
 // --- Constants ---
 
-constexpr size_t WALLS_COUNT = 4;
+constexpr size_t   TILES_COUNT = 4;
+static const float MOVE_SLOP   = 0.5f;  // Slop for collision detection, to allow actor to turn at junctions
 
 // --- Types ---
+
+typedef struct Tile {
+  AABB aabb;
+  bool isWall;
+  bool isCollision;
+} Tile;
 
 typedef struct Actor {
   Vector2 pos;
   Vector2 size;
   Dir     dir;
   float   speed;
-  AABB    walls[WALLS_COUNT];        // AABB of the tiles in the direction of the actor
-  bool    isWall[WALLS_COUNT];       // Whether the tile is a wall
-  bool    isCollision[WALLS_COUNT];  // Whether the actor is colliding with the wall
+  Tile    tilesMove[TILES_COUNT];
+  Tile    tilesCanMove[TILES_COUNT];
+  bool    isCanMove;
 } Actor;
 
 // --- Constants ---
@@ -65,33 +72,78 @@ static void resolveActorCollision(Actor* actor, const AABB* wall) {
       actor->pos.y += overlapY;
     }
   }
-
-  // LOG_TRACE(game__log, "Resolved collision: %f, %f", actor->pos.x, actor->pos.y);
 }
 
-static const AABB* isMazeCollision(Actor* actor, Dir dir) {
+static Tile* isMazeCollision(Actor* actor, Dir dir) {
   assert(actor != nullptr);
   assert(dir != DIR_NONE);
 
-  AABB* wall = nullptr;
-  for (size_t i = 0; i < WALLS_COUNT; i++) {
-    if (actor->isWall[i] && aabb_isColliding(actor_getAABB(actor), actor->walls[i])) {
-      actor->isCollision[i] = true;
-      wall                  = &actor->walls[i];
+  Tile* tile = nullptr;
+  for (size_t i = 0; i < TILES_COUNT; i++) {
+    if (actor->tilesMove[i].isWall && aabb_isColliding(actor_getAABB(actor), actor->tilesMove[i].aabb)) {
+      actor->tilesMove[i].isCollision = true;
+      tile                            = &actor->tilesMove[i];
     } else {
-      actor->isCollision[i] = false;
+      actor->tilesMove[i].isCollision = false;
     }
   }
-  return wall;
+  return tile;
 }
 
 static void checkMazeCollision(Actor* actor) {
   assert(actor != nullptr);
-  const AABB* wall = isMazeCollision(actor, actor->dir);
-  if (wall != nullptr) {
-    resolveActorCollision(actor, wall);
+  Tile* tile = isMazeCollision(actor, actor->dir);
+  if (tile != nullptr) {
+    resolveActorCollision(actor, &tile->aabb);
   }
 }
+
+static void getWalls(Actor* actor, Tile tiles[], Dir dir) {
+  assert(actor != nullptr);
+  assert(dir != DIR_NONE && dir < DIR_COUNT);
+
+  // Base position calculation based on direction
+  Vector2 basePos;
+  Vector2 offset;
+
+  switch (dir) {
+    case DIR_UP:
+      basePos = (Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y - TILE_SIZE / 2.0f};
+      offset  = (Vector2) {TILE_SIZE, 0};
+      break;
+    case DIR_RIGHT:
+      basePos = (Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f};
+      offset  = (Vector2) {0, TILE_SIZE};
+      break;
+    case DIR_DOWN:
+      basePos = (Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f};
+      offset  = (Vector2) {TILE_SIZE, 0};
+      break;
+    case DIR_LEFT:
+      basePos = (Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f};
+      offset  = (Vector2) {0, TILE_SIZE};
+      break;
+    default: assert(false); return;
+  }
+
+  // Generate and draw all four AABBs in a loop
+  for (size_t i = 0; i < TILES_COUNT; i++) {
+    Vector2 position = Vector2Add(basePos, Vector2Scale(offset, i));
+    tiles[i].aabb    = maze_getAABB(position);
+    tiles[i].isWall  = maze_isWall(position);
+  }
+}
+
+static void drawTile(Tile tile) {
+  Color colour;
+  if (tile.isCollision) {
+    colour = OVERLAY_COLOUR_COLLISION;
+  } else {
+    colour = tile.isWall ? OVERLAY_COLOUR_TILE_WALL : OVERLAY_COLOUR_TILE_FLOOR;
+  }
+  aabb_drawOverlay(tile.aabb, colour);
+}
+
 // --- Actor functions ---
 
 Actor* actor_create(Vector2 pos, Vector2 size, Dir dir, float speed) {
@@ -147,33 +199,34 @@ bool actor_canMove(Actor* actor, Dir dir) {
   assert(actor != nullptr);
   assert(dir != DIR_NONE);
 
-  actor_getWalls(actor, dir);
+  actor->isCanMove = true;
+  getWalls(actor, actor->tilesCanMove, dir);
   AABB actorAABB = actor_getAABB(actor);
   bool canMove   = true;
-  for (size_t i = 0; i < WALLS_COUNT; i++) {
-    if (!actor->isWall[i]) {
-      actor->isCollision[i] = false;
+  for (size_t i = 0; i < TILES_COUNT; i++) {
+    if (!actor->tilesCanMove[i].isWall) {
+      actor->tilesCanMove[i].isCollision = false;
       continue;
     }
 
-    AABB wallAABB = actor->walls[i];
+    AABB wallAABB = actor->tilesCanMove[i].aabb;
     switch (dir) {
       case DIR_UP:
       case DIR_DOWN:
-        if (aabb_getOverlapX(actorAABB, wallAABB) > 0.0f && aabb_getOverlapY(actorAABB, wallAABB) == 0.0f) {
-          actor->isCollision[i] = true;
-          canMove               = false;
+        if (aabb_getOverlapX(actorAABB, wallAABB) > MOVE_SLOP && aabb_getOverlapY(actorAABB, wallAABB) == 0.0f) {
+          actor->tilesCanMove[i].isCollision = true;
+          canMove                            = false;
         } else {
-          actor->isCollision[i] = false;
+          actor->tilesCanMove[i].isCollision = false;
         }
         break;
       case DIR_LEFT:
       case DIR_RIGHT:
-        if (aabb_getOverlapY(actorAABB, wallAABB) > 0.0f && aabb_getOverlapX(actorAABB, wallAABB) == 0.0f) {
-          actor->isCollision[i] = true;
-          canMove               = false;
+        if (aabb_getOverlapY(actorAABB, wallAABB) > MOVE_SLOP && aabb_getOverlapX(actorAABB, wallAABB) == 0.0f) {
+          actor->tilesCanMove[i].isCollision = true;
+          canMove                            = false;
         } else {
-          actor->isCollision[i] = false;
+          actor->tilesCanMove[i].isCollision = false;
         }
         break;
       default: assert(false);
@@ -182,60 +235,22 @@ bool actor_canMove(Actor* actor, Dir dir) {
   return canMove;
 }
 
-void actor_getWalls(Actor* actor, Dir dir) {
-  assert(actor != nullptr);
-  assert(dir != DIR_NONE && dir < DIR_COUNT);
-
-  // Base position calculation based on direction
-  Vector2 basePos;
-  Vector2 offset;
-
-  switch (dir) {
-    case DIR_UP:
-      basePos = (Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y - TILE_SIZE / 2.0f};
-      offset  = (Vector2) {TILE_SIZE, 0};
-      break;
-    case DIR_RIGHT:
-      basePos = (Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f};
-      offset  = (Vector2) {0, TILE_SIZE};
-      break;
-    case DIR_DOWN:
-      basePos = (Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f};
-      offset  = (Vector2) {TILE_SIZE, 0};
-      break;
-    case DIR_LEFT:
-      basePos = (Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f};
-      offset  = (Vector2) {0, TILE_SIZE};
-      break;
-    default: assert(false); return;
-  }
-
-  // Generate and draw all four AABBs in a loop
-  for (size_t i = 0; i < WALLS_COUNT; i++) {
-    Vector2 position = Vector2Add(basePos, Vector2Scale(offset, i));
-    actor->walls[i]  = maze_getAABB(position);
-    actor->isWall[i] = maze_isWall(position);
-  }
-}
-
 void actor_overlay(const Actor* actor, Color colour) {
   assert(actor != nullptr);
   aabb_drawOverlay(actor_getAABB(actor), colour);
 }
 
 #ifndef NDEBUG
-void actor_wallsOverlay(const Actor* actor) {
+void actor_wallsOverlay(Actor* actor) {
   assert(actor != nullptr);
 
-  for (size_t i = 0; i < WALLS_COUNT; i++) {
-    Color colour;
-    if (actor->isCollision[i]) {
-      colour = OVERLAY_COLOUR_COLLISION;
-    } else {
-      colour = actor->isWall[i] ? OVERLAY_COLOUR_TILE_WALL : OVERLAY_COLOUR_TILE_FLOOR;
+  for (size_t i = 0; i < TILES_COUNT; i++) {
+    drawTile(actor->tilesMove[i]);
+    if (actor->isCanMove) {
+      drawTile(actor->tilesCanMove[i]);
     }
-    aabb_drawOverlay(actor->walls[i], colour);
   }
+  actor->isCanMove = false;
 }
 #endif
 
@@ -243,8 +258,7 @@ void actor_move(Actor* actor, Dir dir, float frameTime) {
   assert(actor != nullptr);
   actor->pos = Vector2Add(actor->pos, Vector2Scale(VELS[dir], frameTime * actor->speed));
   actor->dir = dir;
-  // LOG_TRACE(game__log, "Actor moved to: %f, %f", actor->pos.x, actor->pos.y);
 
-  actor_getWalls(actor, dir);
+  getWalls(actor, actor->tilesMove, dir);
   checkMazeCollision(actor);
 }

@@ -41,9 +41,10 @@ typedef struct engine_Font    engine_Font;    /**< Opaque font type */
  * @param nativeWidth Native canvas width
  * @param nativeHeight Native canvas height
  * @param title Window title
+ * @param fps Target FPS, 0 for current display refresh rate
  * @return true if successful
  */
-bool engine_init(int nativeWidth, int nativeHeight, const char* title);
+bool engine_init(int nativeWidth, int nativeHeight, const char* title, int fps);
 
 /**
  * @brief Shutdown the engine and free resources

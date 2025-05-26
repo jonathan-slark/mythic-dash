@@ -67,10 +67,9 @@ Dir     actor_getDir(const Actor* actor);
 Vector2 actor_getPos(const Actor* actor);
 Vector2 actor_getSize(const Actor* actor);
 AABB    actor_getAABB(const Actor* actor);
-void    actor_getWalls(Actor* actor, Dir dir);
 bool    actor_canMove(Actor* actor, Dir dir);
 void    actor_overlay(const Actor* actor, Color colour);
-void    actor_wallsOverlay(const Actor* actor);
+void    actor_wallsOverlay(Actor* actor);
 void    actor_move(Actor* actor, Dir dir, float frameTime);
 
 // --- Player functions (player.c) ---
@@ -86,4 +85,3 @@ void    player_overlay(void);
 void maze_init(void);
 AABB maze_getAABB(Vector2 pos);
 bool maze_isWall(Vector2 pos);
-void maze_overlay(void);

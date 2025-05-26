@@ -63,8 +63,8 @@ void game_draw(void) {
 
 #ifndef NDEBUG
   if (game__isOverlayEnabled) {
-    // maze_overlay();
     player_overlay();
+    DrawFPS(0, 0);
   }
 #endif
 }

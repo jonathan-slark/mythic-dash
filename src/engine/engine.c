@@ -53,7 +53,7 @@ static void raylibLog(int msgType, const char* text, va_list args) {
 
 // --- Engine functions ---
 
-bool engine_init(int nativeWidth, int nativeHeight, const char* title) {
+bool engine_init(int nativeWidth, int nativeHeight, const char* title, int fps) {
   if (nativeWidth <= 0 || nativeHeight <= 0) {
     LOG_ERROR(engine__log, "Invalid screen size: %d %d", nativeWidth, nativeHeight);
     return false;
@@ -81,7 +81,11 @@ bool engine_init(int nativeWidth, int nativeHeight, const char* title) {
   SetTraceLogLevel(LOG_LEVEL_RAYLIB);
   SetTraceLogCallback(raylibLog);
 
-  SetConfigFlags(FLAG_VSYNC_HINT | FLAG_BORDERLESS_WINDOWED_MODE | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_UNDECORATED);
+  int flags = FLAG_BORDERLESS_WINDOWED_MODE | FLAG_WINDOW_TOPMOST | FLAG_WINDOW_UNDECORATED;
+  if (fps == 0) {
+    flags |= FLAG_VSYNC_HINT;
+  }
+  SetConfigFlags(flags);
   InitWindow(0, 0, title);
 
   int screenWidth       = GetScreenWidth();
@@ -104,7 +108,12 @@ bool engine_init(int nativeWidth, int nativeHeight, const char* title) {
   LOG_INFO(engine__log, "Screen state: %dx%d @ %dHz, scale: %d", screenWidth, screenHeight, screenRefreshRate,
            screenScale);
 
-  SetTargetFPS(screenRefreshRate);
+  if (fps > 0) {
+    SetTargetFPS(fps);
+  } else {
+    SetTargetFPS(screenRefreshRate);
+  }
+
   HideCursor();
 
   LOG_INFO(engine__log, "Engine initialized");

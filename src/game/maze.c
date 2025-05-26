@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <raylib.h>
-#include "../engine/engine.h"
 #include "internal.h"
 
 // --- Constants ---
@@ -79,17 +78,3 @@ bool maze_isWall(Vector2 pos) {
   assert(col >= 0 && col < MAZE_COLS);
   return MAZE[row][col];
 }
-
-#ifndef NDEBUG
-void maze_overlay(void) {
-  for (int row = 0; row < MAZE_ROWS; row++) {
-    for (int col = 0; col < MAZE_COLS; col++) {
-      Color     colour   = MAZE[row][col] ? OVERLAY_COLOUR_TILE_WALL : OVERLAY_COLOUR_TILE_FLOOR;
-      AABB      aabb     = g_mazeAABB[row][col];
-      Rectangle adjusted = (Rectangle) {MAZE_ORIGIN.x + aabb.min.x, MAZE_ORIGIN.y + aabb.min.y, aabb.max.x - aabb.min.x,
-                                        aabb.max.y - aabb.min.y};
-      engine_drawRectangleOutline(adjusted, colour);
-    }
-  }
-}
-#endif
