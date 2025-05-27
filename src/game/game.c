@@ -24,6 +24,11 @@ static const log_Config LOG_CONFIG_GAME   = {.minLevel      = LOG_LEVEL_DEBUG,
 
 static const float      FPS[]             = {15, 30, 60, 0};
 
+const float             BASE_SLOP         = 0.25f;
+const float             BASE_DT           = (1.0f / 144.0f);  // Reference frame rate
+const float             MIN_SLOP          = 0.05f;
+const float             MAX_SLOP          = 0.5f;
+
 // --- Global state ---
 
 log_Log*               game__log;
@@ -54,6 +59,7 @@ static void checkFPSKeys(void) {
 }
 
 // --- Game functions ---
+
 bool game_load(void) {
   if (game__log != nullptr) {
     LOG_ERROR(game__log, "Game already loaded");

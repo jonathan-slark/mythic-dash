@@ -8,12 +8,12 @@
 
 static const Vector2     PLAYER_START_POS = {109.0f, 184.0f};
 static const float       PLAYER_SPEED     = 60.0f;
-static const Dir         PLAYER_START_DIR = DIR_LEFT;
+static const game__Dir   PLAYER_START_DIR = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]    = {0, KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT};
 
 // --- Global state ---
 
-static Actor* g_player                    = nullptr;
+static game__Actor* g_player = nullptr;
 
 // --- Player functions ---
 
@@ -32,27 +32,19 @@ void player_update(float frameTime, float slop) {
   assert(g_player != nullptr);
 
 #ifndef NDEBUG
-  if (engine_isKeyPressed(KEY_F)) {
-    debug_toggleFPSOverlay();
-  }
-  if (engine_isKeyPressed(KEY_M)) {
-    debug_toggleMoveOverlay();
-  }
-  if (engine_isKeyPressed(KEY_C)) {
-    debug_toggleCanMoveOverlay();
-  }
+  if (engine_isKeyPressed(KEY_F)) debug_toggleFPSOverlay();
+  if (engine_isKeyPressed(KEY_M)) debug_toggleMoveOverlay();
+  if (engine_isKeyPressed(KEY_C)) debug_toggleCanMoveOverlay();
 #endif
 
-  Dir dir = DIR_NONE;
+  game__Dir dir = DIR_NONE;
   for (int i = 0; i < DIR_COUNT; i++) {
-    if (PLAYER_KEYS[i] != 0 && engine_isKeyDown(PLAYER_KEYS[i]) && actor_canMove(g_player, (Dir) i, slop)) {
-      dir = (Dir) i;
+    if (PLAYER_KEYS[i] != 0 && engine_isKeyDown(PLAYER_KEYS[i]) && actor_canMove(g_player, (game__Dir) i, slop)) {
+      dir = (game__Dir) i;
       break;
     }
   }
-  if (dir == DIR_NONE) {
-    dir = actor_getDir(g_player);
-  }
+  if (dir == DIR_NONE) dir = actor_getDir(g_player);
 
   actor_move(g_player, dir, frameTime);
 }
@@ -67,7 +59,7 @@ void player_overlay(void) {
   actor_overlay(g_player, OVERLAY_COLOUR_PLAYER);
 }
 
-Actor* player_getActor(void) {
+game__Actor* player_getActor(void) {
   assert(g_player != nullptr);
   return g_player;
 }
