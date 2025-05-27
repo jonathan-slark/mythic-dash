@@ -32,8 +32,14 @@ void player_update(float frameTime, float slop) {
   assert(g_player != nullptr);
 
 #ifndef NDEBUG
-  if (engine_isKeyPressed(KEY_O)) {
-    game__isOverlayEnabled = !game__isOverlayEnabled;
+  if (engine_isKeyPressed(KEY_F)) {
+    debug_toggleFPSOverlay();
+  }
+  if (engine_isKeyPressed(KEY_M)) {
+    debug_toggleMoveOverlay();
+  }
+  if (engine_isKeyPressed(KEY_C)) {
+    debug_toggleCanMoveOverlay();
   }
 #endif
 
@@ -56,10 +62,12 @@ Vector2 player_getPos(void) {
   return actor_getPos(g_player);
 }
 
-#ifndef NDEBUG
 void player_overlay(void) {
   assert(g_player != nullptr);
   actor_overlay(g_player, OVERLAY_COLOUR_PLAYER);
-  actor_wallsOverlay(g_player);
 }
-#endif
+
+Actor* player_getActor(void) {
+  assert(g_player != nullptr);
+  return g_player;
+}

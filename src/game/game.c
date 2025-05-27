@@ -1,7 +1,7 @@
 #include "game.h"
 #include <assert.h>
+#include <math.h>
 #include <raylib.h>
-#include <raymath.h>
 #include "../engine/engine.h"
 #include "../log/log.h"
 #include "internal.h"
@@ -12,7 +12,7 @@ static const char       FILE_BACKGROUND[] = "../../asset/gfx/background.png";
 static const char       FILE_SPRITES[]    = "../../asset/gfx/sprites.png";
 static const char       FILE_FONT[]       = "../../asset/gfx/font.png";
 
-static const log_Config LOG_CONFIG_GAME   = {.minLevel      = LOG_LEVEL_TRACE,
+static const log_Config LOG_CONFIG_GAME   = {.minLevel      = LOG_LEVEL_DEBUG,
                                              .useColours    = true,
                                              .showTimestamp = true,
                                              .showFileLine  = true,
@@ -21,7 +21,6 @@ static const log_Config LOG_CONFIG_GAME   = {.minLevel      = LOG_LEVEL_TRACE,
 // --- Global state ---
 
 log_Log*               game__log;
-bool                   game__isOverlayEnabled = false;
 static engine_Texture* g_background;
 static engine_Texture* g_sprites;
 static engine_Font*    g_font;
@@ -68,11 +67,7 @@ void game_draw(void) {
   engine_drawSprite(g_sprites, &g_playerSprite);
 
 #ifndef NDEBUG
-  if (game__isOverlayEnabled) {
-    DrawFPS(0, 0);
-    maze_wallsOverlay();
-    player_overlay();
-  }
+  debug_drawOverlay();
 #endif
 }
 

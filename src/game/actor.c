@@ -95,7 +95,7 @@ static void checkMazeCollision(Actor* actor) {
   Tile* tile = isMazeCollision(actor, actor->dir);
   if (tile != nullptr) {
     resolveActorCollision(actor, &tile->aabb);
-    LOG_TRACE(game__log, "Collision detected, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
+    LOG_DEBUG(game__log, "Collision detected, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
     actor->isMoving = false;
   }
 }
@@ -136,7 +136,6 @@ static void getWalls(Actor* actor, Tile tiles[], Dir dir) {
   }
 }
 
-#ifndef NDEBUG
 static void drawTile(Tile tile) {
   Color colour;
   if (tile.isCollision) {
@@ -146,8 +145,20 @@ static void drawTile(Tile tile) {
   }
   aabb_drawOverlay(tile.aabb, colour);
 }
-#endif
 
+static void alignToPassage(Actor* actor, Dir dir, float distance) {
+  assert(actor != nullptr);
+  assert(dir != DIR_NONE);
+  assert(distance != 0.0f && distance < MAX_SLOP);
+
+  switch (dir) {
+    case DIR_UP:
+    case DIR_DOWN: actor->pos.x += distance; break;
+    case DIR_LEFT:
+    case DIR_RIGHT: actor->pos.y += distance; break;
+    default: assert(false);
+  }
+}
 // --- Actor functions ---
 
 Actor* actor_create(Vector2 pos, Vector2 size, Dir dir, float speed) {
@@ -208,18 +219,94 @@ bool actor_canMove(Actor* actor, Dir dir, float slop) {
   actor->isCanMove = true;
   getWalls(actor, actor->tilesCanMove, dir);
   AABB actorAABB = actor_getAABB(actor);
-  bool canMove   = true;
+
+  bool canMove   = false;
+  Tile tile0     = actor->tilesCanMove[0];
+  Tile tile1     = actor->tilesCanMove[1];
+  Tile tile2     = actor->tilesCanMove[2];
+  Tile tile3     = actor->tilesCanMove[3];
+  if (tile0.isWall && !tile1.isWall && !tile2.isWall && tile3.isWall) {
+    // Passage special case, allow actor to enter if close enough
+    AABB aabb0 = tile0.aabb;
+    AABB aabb3 = tile3.aabb;
+    switch (dir) {
+      case DIR_UP:
+      case DIR_DOWN:
+        float overlapX = aabb_getOverlapX(actorAABB, aabb0);
+        float overlapY = aabb_getOverlapY(actorAABB, aabb0);
+        if (overlapX > 0.0f && overlapX <= slop && overlapY == 0.0f) {
+          alignToPassage(actor, dir, overlapX);
+          LOG_DEBUG(game__log, "Actor can move up/down, moved actor to: %f, %f", actor->pos.x, actor->pos.y);
+          actor->tilesCanMove[0].isCollision = false;
+          actor->tilesCanMove[1].isCollision = false;
+          actor->tilesCanMove[2].isCollision = false;
+          actor->tilesCanMove[3].isCollision = false;
+          canMove                            = true;
+          break;
+        }
+        overlapX = aabb_getOverlapX(actorAABB, aabb3);
+        overlapY = aabb_getOverlapY(actorAABB, aabb3);
+        if (overlapX > 0.0f && overlapX <= slop && overlapY == 0.0f) {
+          alignToPassage(actor, dir, -overlapX);
+          LOG_DEBUG(game__log, "Actor can move up/down, moved actor to: %f, %f", actor->pos.x, actor->pos.y);
+          actor->tilesCanMove[0].isCollision = false;
+          actor->tilesCanMove[1].isCollision = false;
+          actor->tilesCanMove[2].isCollision = false;
+          actor->tilesCanMove[3].isCollision = false;
+          canMove                            = true;
+          break;
+        }
+        break;
+      case DIR_LEFT:
+      case DIR_RIGHT:
+        overlapX = aabb_getOverlapX(actorAABB, aabb0);
+        overlapY = aabb_getOverlapY(actorAABB, aabb0);
+        if (overlapY > 0.0f && overlapY <= slop && overlapX == 0.0f) {
+          alignToPassage(actor, dir, overlapY);
+          LOG_DEBUG(game__log, "Actor can move left/right, moved actor to: %f, %f", actor->pos.x, actor->pos.y);
+          actor->tilesCanMove[0].isCollision = false;
+          actor->tilesCanMove[1].isCollision = false;
+          actor->tilesCanMove[2].isCollision = false;
+          actor->tilesCanMove[3].isCollision = false;
+          canMove                            = true;
+          break;
+        }
+        overlapX = aabb_getOverlapX(actorAABB, aabb3);
+        overlapY = aabb_getOverlapY(actorAABB, aabb3);
+        if (overlapY > 0.0f && overlapY <= slop && overlapX == 0.0f) {
+          alignToPassage(actor, dir, -overlapY);
+          LOG_DEBUG(game__log, "Actor can move left/right, moved actor to: %f, %f", actor->pos.x, actor->pos.y);
+          actor->tilesCanMove[0].isCollision = false;
+          actor->tilesCanMove[1].isCollision = false;
+          actor->tilesCanMove[2].isCollision = false;
+          actor->tilesCanMove[3].isCollision = false;
+          canMove                            = true;
+          break;
+        }
+        break;
+      default: assert(false);
+    }
+  }
+  if (canMove) {
+    if (!actor->isMoving) {
+      actor->isMoving = true;
+    }
+    return true;
+  }
+
+  // Usual method, strict checking
+  canMove = true;
   for (size_t i = 0; i < TILES_COUNT; i++) {
     if (!actor->tilesCanMove[i].isWall) {
       actor->tilesCanMove[i].isCollision = false;
       continue;
     }
 
-    AABB wallAABB = actor->tilesCanMove[i].aabb;
+    AABB tileAABB = actor->tilesCanMove[i].aabb;
     switch (dir) {
       case DIR_UP:
       case DIR_DOWN:
-        if (aabb_getOverlapX(actorAABB, wallAABB) > slop && aabb_getOverlapY(actorAABB, wallAABB) == 0.0f) {
+        if (aabb_getOverlapX(actorAABB, tileAABB) > 0.0f && aabb_getOverlapY(actorAABB, tileAABB) == 0.0f) {
           actor->tilesCanMove[i].isCollision = true;
           canMove                            = false;
         } else {
@@ -228,7 +315,7 @@ bool actor_canMove(Actor* actor, Dir dir, float slop) {
         break;
       case DIR_LEFT:
       case DIR_RIGHT:
-        if (aabb_getOverlapY(actorAABB, wallAABB) > slop && aabb_getOverlapX(actorAABB, wallAABB) == 0.0f) {
+        if (aabb_getOverlapY(actorAABB, tileAABB) > 0.0f && aabb_getOverlapX(actorAABB, tileAABB) == 0.0f) {
           actor->tilesCanMove[i].isCollision = true;
           canMove                            = false;
         } else {
@@ -238,6 +325,7 @@ bool actor_canMove(Actor* actor, Dir dir, float slop) {
       default: assert(false);
     }
   }
+
   if (!actor->isMoving) {
     actor->isMoving = canMove;
   }
@@ -249,21 +337,24 @@ void actor_overlay(const Actor* actor, Color colour) {
   aabb_drawOverlay(actor_getAABB(actor), colour);
 }
 
-#ifndef NDEBUG
-void actor_wallsOverlay(Actor* actor) {
+void actor_moveOverlay(Actor* actor) {
   assert(actor != nullptr);
 
   for (size_t i = 0; i < TILES_COUNT; i++) {
-    if (!actor->isMoving) {
-      drawTile(actor->tilesMove[i]);
-    }
-    if (actor->isCanMove) {
-      drawTile(actor->tilesCanMove[i]);
-    }
+    drawTile(actor->tilesMove[i]);
+  }
+}
+
+void actor_canMoveOverlay(Actor* actor) {
+  assert(actor != nullptr);
+
+  if (!actor->isCanMove) return;
+
+  for (size_t i = 0; i < TILES_COUNT; i++) {
+    drawTile(actor->tilesCanMove[i]);
   }
   actor->isCanMove = false;
 }
-#endif
 
 void actor_move(Actor* actor, Dir dir, float frameTime) {
   assert(actor != nullptr);

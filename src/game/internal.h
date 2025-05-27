@@ -75,7 +75,8 @@ Vector2 actor_getSize(const Actor* actor);
 AABB    actor_getAABB(const Actor* actor);
 bool    actor_canMove(Actor* actor, Dir dir, float slop);
 void    actor_overlay(const Actor* actor, Color colour);
-void    actor_wallsOverlay(Actor* actor);
+void    actor_moveOverlay(Actor* actor);
+void    actor_canMoveOverlay(Actor* actor);
 void    actor_move(Actor* actor, Dir dir, float frameTime);
 
 // --- Player functions (player.c) ---
@@ -85,6 +86,7 @@ void    player_shutdown(void);
 void    player_update(float frameTime, float slop);
 Vector2 player_getPos(void);
 void    player_overlay(void);
+Actor*  player_getActor(void);
 
 // --- Maze functions (maze.c) ---
 
@@ -92,3 +94,10 @@ void maze_init(void);
 AABB maze_getAABB(Vector2 pos);
 bool maze_isWall(Vector2 pos);
 void maze_wallsOverlay(void);
+
+// --- Debug functions (debug.c) ---
+
+void debug_drawOverlay(void);
+void debug_toggleFPSOverlay(void);
+void debug_toggleMoveOverlay(void);
+void debug_toggleCanMoveOverlay(void);
