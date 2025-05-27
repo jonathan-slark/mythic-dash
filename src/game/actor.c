@@ -76,9 +76,8 @@ static void resolveActorCollision(game__Actor* actor, const game__AABB* wall) {
   }
 }
 
-static Tile* isMazeCollision(game__Actor* actor, game__Dir dir) {
+static Tile* isMazeCollision(game__Actor* actor) {
   assert(actor != nullptr);
-  assert(dir != DIR_NONE);
 
   Tile* tile = nullptr;
   for (size_t i = 0; i < TILES_COUNT; i++) {
@@ -94,7 +93,7 @@ static Tile* isMazeCollision(game__Actor* actor, game__Dir dir) {
 
 static void checkMazeCollision(game__Actor* actor) {
   assert(actor != nullptr);
-  Tile* tile = isMazeCollision(actor, actor->dir);
+  Tile* tile = isMazeCollision(actor);
   if (tile != nullptr) {
     resolveActorCollision(actor, &tile->aabb);
     LOG_DEBUG(game__log, "Collision detected, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
