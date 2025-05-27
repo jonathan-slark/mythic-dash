@@ -45,6 +45,12 @@ add_executable(test_engine ${SRC_DIR}/test/engine.c ${SOURCES})
 target_include_directories(test_engine PRIVATE ${COMMON_INCLUDES})
 target_link_libraries(test_engine PRIVATE log raylib)
 
+# Test game executable
+file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/game/*.c")
+add_executable(test_game ${SRC_DIR}/test/game.c)
+target_include_directories(test_game PRIVATE ${COMMON_INCLUDES})
+target_link_libraries(test_game PRIVATE log raylib)
+
 # Doxygen documentation setup
 find_package(Doxygen)
 if (DOXYGEN_FOUND)

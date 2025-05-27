@@ -10,8 +10,8 @@
 #include "../engine/engine.h"
 #include <minunit.h>
 #include <raylib.h>  // Include raylib directly to avoid redefinition issues
-#include <stdarg.h>  // For va_list
-#include <stdlib.h>
+#include <stdarg.h>  // va_list
+#include <stdlib.h>  // For malloc, free
 #include "../engine/internal.h"
 
 // Mock variables for testing
@@ -30,8 +30,8 @@ static float     mockLastRectangleThickness = 0;
 static Color     mockLastRectangleColor     = {0};
 
 // Test resources
-static engine_Texture* testTexture          = NULL;
-static engine_Font*    testFont             = NULL;
+static engine_Texture* testTexture = NULL;
+static engine_Font*    testFont    = NULL;
 
 // --- Mock implementations for Raylib functions ---
 
@@ -167,7 +167,7 @@ MU_TEST(test_engine_init_success) {
   mockInitWindowCalled = false;
 
   // Test
-  bool result          = engine_init(320, 180, "Test", 0);
+  bool result = engine_init(320, 180, "Test", 0);
 
   mu_assert(result, "Engine initialization should succeed");
   mu_assert(mockInitWindowCalled, "InitWindow should be called");
@@ -311,8 +311,8 @@ MU_TEST(test_draw_background) {
 }
 
 MU_TEST(test_draw_rectangle_outline) {
-  Rectangle testRect         = {10, 10, 20, 20};
-  Color     testColor        = {255, 0, 0, 255};
+  Rectangle testRect  = {10, 10, 20, 20};
+  Color     testColor = {255, 0, 0, 255};
 
   // Reset mock values
   mockLastDrawnRectangle     = (Rectangle) {0};
@@ -376,7 +376,7 @@ MU_TEST(test_engine_init_fps) {
   mockRefreshRate      = 60;
 
   // Test with 0 fps (use monitor refresh rate)
-  bool result          = engine_init(320, 180, "Test", 0);
+  bool result = engine_init(320, 180, "Test", 0);
   mu_assert(result, "Engine initialization should succeed with fps=0");
   mu_assert(mockInitWindowCalled, "InitWindow should be called");
 
