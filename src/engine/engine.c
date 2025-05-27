@@ -62,6 +62,10 @@ bool engine_init(int nativeWidth, int nativeHeight, const char* title, int fps) 
     LOG_ERROR(engine__log, "Invalid title: nullptr");
     return false;
   }
+  if (fps < 0) {
+    LOG_ERROR(engine__log, "Invalid fps: %d", fps);
+    return false;
+  }
 
   engine__log = log_create(&LOG_CONFIG_ENGINE);
   if (engine__log == nullptr) {

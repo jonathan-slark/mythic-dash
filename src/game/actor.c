@@ -7,8 +7,7 @@
 
 // --- Constants ---
 
-constexpr size_t   TILES_COUNT = 4;
-static const float MOVE_SLOP   = 0.5f;  // Slop for collision detection, to allow actor to turn at junctions
+constexpr size_t TILES_COUNT = 4;
 
 // --- Types ---
 
@@ -23,6 +22,7 @@ typedef struct Actor {
   Vector2 size;
   Dir     dir;
   float   speed;
+  bool    isMoving;
   Tile    tilesMove[TILES_COUNT];
   Tile    tilesCanMove[TILES_COUNT];
   bool    isCanMove;
@@ -93,8 +93,12 @@ static Tile* isMazeCollision(Actor* actor, Dir dir) {
 static void checkMazeCollision(Actor* actor) {
   assert(actor != nullptr);
   Tile* tile = isMazeCollision(actor, actor->dir);
-  if (tile != nullptr) {
+  if (tile == nullptr) {
+    actor->isMoving = true;
+  } else {
     resolveActorCollision(actor, &tile->aabb);
+    LOG_TRACE(game__log, "Collision detected, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
+    actor->isMoving = false;
   }
 }
 
@@ -160,10 +164,11 @@ Actor* actor_create(Vector2 pos, Vector2 size, Dir dir, float speed) {
     return nullptr;
   }
 
-  actor->pos   = pos;
-  actor->size  = size;
-  actor->dir   = dir;
-  actor->speed = speed;
+  actor->pos      = pos;
+  actor->size     = size;
+  actor->dir      = dir;
+  actor->speed    = speed;
+  actor->isMoving = true;
 
   return actor;
 }
@@ -195,7 +200,7 @@ AABB actor_getAABB(const Actor* actor) {
                  .max = (Vector2) {actor->pos.x + actor->size.x, actor->pos.y + actor->size.x}};
 }
 
-bool actor_canMove(Actor* actor, Dir dir) {
+bool actor_canMove(Actor* actor, Dir dir, float slop) {
   assert(actor != nullptr);
   assert(dir != DIR_NONE);
 
@@ -213,7 +218,7 @@ bool actor_canMove(Actor* actor, Dir dir) {
     switch (dir) {
       case DIR_UP:
       case DIR_DOWN:
-        if (aabb_getOverlapX(actorAABB, wallAABB) > MOVE_SLOP && aabb_getOverlapY(actorAABB, wallAABB) == 0.0f) {
+        if (aabb_getOverlapX(actorAABB, wallAABB) > slop && aabb_getOverlapY(actorAABB, wallAABB) == 0.0f) {
           actor->tilesCanMove[i].isCollision = true;
           canMove                            = false;
         } else {
@@ -222,7 +227,7 @@ bool actor_canMove(Actor* actor, Dir dir) {
         break;
       case DIR_LEFT:
       case DIR_RIGHT:
-        if (aabb_getOverlapY(actorAABB, wallAABB) > MOVE_SLOP && aabb_getOverlapX(actorAABB, wallAABB) == 0.0f) {
+        if (aabb_getOverlapY(actorAABB, wallAABB) > slop && aabb_getOverlapX(actorAABB, wallAABB) == 0.0f) {
           actor->tilesCanMove[i].isCollision = true;
           canMove                            = false;
         } else {
@@ -245,7 +250,9 @@ void actor_wallsOverlay(Actor* actor) {
   assert(actor != nullptr);
 
   for (size_t i = 0; i < TILES_COUNT; i++) {
-    drawTile(actor->tilesMove[i]);
+    if (!actor->isMoving) {
+      drawTile(actor->tilesMove[i]);
+    }
     if (actor->isCanMove) {
       drawTile(actor->tilesCanMove[i]);
     }
@@ -256,6 +263,7 @@ void actor_wallsOverlay(Actor* actor) {
 
 void actor_move(Actor* actor, Dir dir, float frameTime) {
   assert(actor != nullptr);
+
   actor->pos = Vector2Add(actor->pos, Vector2Scale(VELS[dir], frameTime * actor->speed));
   actor->dir = dir;
 

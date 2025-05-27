@@ -28,7 +28,7 @@ void player_shutdown(void) {
   actor_destroy(&g_player);
 }
 
-void player_update([[maybe_unused]] float frameTime) {
+void player_update(float frameTime, float slop) {
   assert(g_player != nullptr);
 
 #ifndef NDEBUG
@@ -39,7 +39,7 @@ void player_update([[maybe_unused]] float frameTime) {
 
   Dir dir = DIR_NONE;
   for (int i = 0; i < DIR_COUNT; i++) {
-    if (PLAYER_KEYS[i] != 0 && engine_isKeyDown(PLAYER_KEYS[i]) && actor_canMove(g_player, (Dir) i)) {
+    if (PLAYER_KEYS[i] != 0 && engine_isKeyDown(PLAYER_KEYS[i]) && actor_canMove(g_player, (Dir) i, slop)) {
       dir = (Dir) i;
       break;
     }

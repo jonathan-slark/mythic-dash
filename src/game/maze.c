@@ -78,3 +78,13 @@ bool maze_isWall(Vector2 pos) {
   assert(col >= 0 && col < MAZE_COLS);
   return MAZE[row][col];
 }
+
+void maze_wallsOverlay(void) {
+  for (int row = 0; row < MAZE_ROWS; row++) {
+    for (int col = 0; col < MAZE_COLS; col++) {
+      if (maze_isWall(g_mazeAABB[row][col].min)) {
+        aabb_drawOverlay(g_mazeAABB[row][col], OVERLAY_COLOUR_MAZE_WALL);
+      }
+    }
+  }
+}

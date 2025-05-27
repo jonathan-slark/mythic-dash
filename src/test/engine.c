@@ -12,7 +12,7 @@
 #include <raylib.h>  // Include raylib directly to avoid redefinition issues
 #include <stdarg.h>  // For va_list
 #include <stdlib.h>
-#include "../engine/engine_internal.h"
+#include "../engine/internal.h"
 
 // Mock variables for testing
 static bool      mockWindowShouldClose      = false;
@@ -141,7 +141,7 @@ static void test_setup(void) {
   mockLastRectangleColor     = (Color) {0};
 
   // Initialize engine with test values
-  engine_init(320, 180, "Test");
+  engine_init(320, 180, "Test", 0);
 }
 
 static void test_teardown(void) {
@@ -167,7 +167,7 @@ MU_TEST(test_engine_init_success) {
   mockInitWindowCalled = false;
 
   // Test
-  bool result          = engine_init(320, 180, "Test");
+  bool result          = engine_init(320, 180, "Test", 0);
 
   mu_assert(result, "Engine initialization should succeed");
   mu_assert(mockInitWindowCalled, "InitWindow should be called");
@@ -178,12 +178,12 @@ MU_TEST(test_engine_init_invalid_size) {
   engine_shutdown();
 
   // Test
-  bool result = engine_init(0, 180, "Test");
+  bool result = engine_init(0, 180, "Test", 0);
 
   mu_assert(!result, "Engine initialization should fail with width <= 0");
 
   // Test height
-  result = engine_init(320, 0, "Test");
+  result = engine_init(320, 0, "Test", 0);
 
   mu_assert(!result, "Engine initialization should fail with height <= 0");
 }
@@ -193,7 +193,7 @@ MU_TEST(test_engine_init_null_title) {
   engine_shutdown();
 
   // Test
-  bool result = engine_init(320, 180, NULL);
+  bool result = engine_init(320, 180, NULL, 0);
 
   mu_assert(!result, "Engine initialization should fail with NULL title");
 }
@@ -368,6 +368,32 @@ MU_TEST(test_engine_getFrameTime) {
   mu_assert_double_eq(0.0f, engine_getFrameTime());
 }
 
+// Test frame rate handling
+MU_TEST(test_engine_init_fps) {
+  // Reset from setup
+  engine_shutdown();
+  mockInitWindowCalled = false;
+  mockRefreshRate      = 60;
+
+  // Test with 0 fps (use monitor refresh rate)
+  bool result          = engine_init(320, 180, "Test", 0);
+  mu_assert(result, "Engine initialization should succeed with fps=0");
+  mu_assert(mockInitWindowCalled, "InitWindow should be called");
+
+  // Test with specific fps
+  engine_shutdown();
+  mockInitWindowCalled = false;
+  result               = engine_init(320, 180, "Test", 30);
+  mu_assert(result, "Engine initialization should succeed with fps=30");
+  mu_assert(mockInitWindowCalled, "InitWindow should be called");
+
+  // Test with negative fps
+  engine_shutdown();
+  mockInitWindowCalled = false;
+  result               = engine_init(320, 180, "Test", -1);
+  mu_assert(!result, "Engine initialization should fail with negative fps");
+}
+
 // Test suite
 MU_TEST_SUITE(test_engine_suite) {
   MU_SUITE_CONFIGURE(&test_setup, &test_teardown);
@@ -376,6 +402,7 @@ MU_TEST_SUITE(test_engine_suite) {
   MU_RUN_TEST(test_engine_init_success);
   MU_RUN_TEST(test_engine_init_invalid_size);
   MU_RUN_TEST(test_engine_init_null_title);
+  MU_RUN_TEST(test_engine_init_fps);
 
   // Window management tests
   MU_RUN_TEST(test_engine_shouldClose);

@@ -18,6 +18,7 @@
 #define OVERLAY_COLOUR_TILE_WALL (Color){255, 100, 100, 128}
 #define OVERLAY_COLOUR_TILE_FLOOR (Color){255, 100, 100, 32}
 #define OVERLAY_COLOUR_COLLISION (Color){255, 255, 100, 128}
+#define OVERLAY_COLOUR_MAZE_WALL (Color){128, 128, 128, 128}
 
 // --- Types ---
 
@@ -35,6 +36,11 @@ typedef struct Actor Actor;
 constexpr int        ACTOR_SIZE = 16;
 extern const Vector2 MAZE_ORIGIN;
 extern const float   TILE_SIZE;
+
+constexpr float      BASE_SLOP = 0.5f;
+constexpr float      BASE_DT   = (1.0f / 144.0f);  // Reference frame rate
+constexpr float      MIN_SLOP  = 0.5f;
+constexpr float      MAX_SLOP  = 2.0f;
 
 // --- Global state ---
 
@@ -67,7 +73,7 @@ Dir     actor_getDir(const Actor* actor);
 Vector2 actor_getPos(const Actor* actor);
 Vector2 actor_getSize(const Actor* actor);
 AABB    actor_getAABB(const Actor* actor);
-bool    actor_canMove(Actor* actor, Dir dir);
+bool    actor_canMove(Actor* actor, Dir dir, float slop);
 void    actor_overlay(const Actor* actor, Color colour);
 void    actor_wallsOverlay(Actor* actor);
 void    actor_move(Actor* actor, Dir dir, float frameTime);
@@ -76,7 +82,7 @@ void    actor_move(Actor* actor, Dir dir, float frameTime);
 
 bool    player_init(void);
 void    player_shutdown(void);
-void    player_update(float frameTime);
+void    player_update(float frameTime, float slop);
 Vector2 player_getPos(void);
 void    player_overlay(void);
 
@@ -85,3 +91,4 @@ void    player_overlay(void);
 void maze_init(void);
 AABB maze_getAABB(Vector2 pos);
 bool maze_isWall(Vector2 pos);
+void maze_wallsOverlay(void);

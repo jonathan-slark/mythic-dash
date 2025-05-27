@@ -53,7 +53,13 @@ bool game_load(void) {
   return true;
 }
 
-void game_update(float frameTime) { player_update(frameTime); }
+void game_update(float frameTime) {
+  float slop = BASE_SLOP * (frameTime / BASE_DT);
+  slop       = fminf(fmaxf(slop, MIN_SLOP), MAX_SLOP);
+
+  LOG_TRACE(game__log, "Slop: %f", slop);
+  player_update(frameTime, slop);
+}
 
 void game_draw(void) {
   engine_drawBackground(g_background);
@@ -63,8 +69,9 @@ void game_draw(void) {
 
 #ifndef NDEBUG
   if (game__isOverlayEnabled) {
-    player_overlay();
     DrawFPS(0, 0);
+    maze_wallsOverlay();
+    player_overlay();
   }
 #endif
 }
