@@ -6,6 +6,10 @@
 #include "../log/log.h"
 #include "internal.h"
 
+// --- Macros ---
+
+#define COUNT(array) (sizeof(array) / sizeof(array[0]))
+
 // --- Constants ---
 
 static const char       FILE_BACKGROUND[] = "../../asset/gfx/background.png";
@@ -18,6 +22,8 @@ static const log_Config LOG_CONFIG_GAME   = {.minLevel      = LOG_LEVEL_DEBUG,
                                              .showFileLine  = true,
                                              .subsystem     = "GAME"};
 
+static const float      FPS[]             = {15, 30, 60, 0};
+
 // --- Global state ---
 
 log_Log*               game__log;
@@ -25,9 +31,29 @@ static engine_Texture* g_background;
 static engine_Texture* g_sprites;
 static engine_Font*    g_font;
 static engine_Sprite   g_playerSprite = {.size = {ACTOR_SIZE, ACTOR_SIZE}, .offset = {0, 0}};
+static size_t          g_fpsIndex     = COUNT(FPS) - 1;
+
+// --- Helper functions ---
+
+static void checkFPSKeys(void) {
+  if (engine_isKeyPressed(KEY_MINUS)) {
+    if (g_fpsIndex == 0) {
+      g_fpsIndex = COUNT(FPS) - 1;
+    } else {
+      g_fpsIndex--;
+    }
+  }
+  if (engine_isKeyPressed(KEY_EQUAL)) {
+    if (g_fpsIndex == COUNT(FPS) - 1) {
+      g_fpsIndex = 0;
+    } else {
+      g_fpsIndex++;
+    }
+  }
+  SetTargetFPS(FPS[g_fpsIndex]);
+}
 
 // --- Game functions ---
-
 bool game_load(void) {
   if (game__log != nullptr) {
     LOG_ERROR(game__log, "Game already loaded");
@@ -55,6 +81,10 @@ bool game_load(void) {
 void game_update(float frameTime) {
   float slop = BASE_SLOP * (frameTime / BASE_DT);
   slop       = fminf(fmaxf(slop, MIN_SLOP), MAX_SLOP);
+
+#ifndef NDEBUG
+  checkFPSKeys();
+#endif
 
   LOG_TRACE(game__log, "Slop: %f", slop);
   player_update(frameTime, slop);

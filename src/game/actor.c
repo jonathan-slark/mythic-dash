@@ -326,8 +326,8 @@ bool actor_canMove(Actor* actor, Dir dir, float slop) {
     }
   }
 
-  if (!actor->isMoving) {
-    actor->isMoving = canMove;
+  if (!actor->isMoving && canMove) {
+    actor->isMoving = true;
   }
   return canMove;
 }
