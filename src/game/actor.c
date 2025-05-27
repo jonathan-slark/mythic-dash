@@ -178,11 +178,10 @@ static bool tryAlignToTile(game__Actor* actor,
                            bool         isPositive) {
   float overlapX = aabb_getOverlapX(actorAABB, tileAABB);
   float overlapY = aabb_getOverlapY(actorAABB, tileAABB);
-
   switch (dir) {
     case DIR_UP:
     case DIR_DOWN:
-      if (overlapX > 0.0f && overlapX <= slop && overlapY == 0.0f) {
+      if (overlapX > EPSILON && overlapX <= slop && fabsf(overlapY) < EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapX : -overlapX);
         LOG_DEBUG(game__log, "Actor can move up/down, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
         return true;
@@ -190,7 +189,7 @@ static bool tryAlignToTile(game__Actor* actor,
       break;
     case DIR_LEFT:
     case DIR_RIGHT:
-      if (overlapY > 0.0f && overlapY <= slop && overlapX == 0.0f) {
+      if (overlapY > EPSILON && overlapY <= slop && fabsf(overlapX) < EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapY : -overlapY);
         LOG_DEBUG(game__log, "Actor can move left/right, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
         return true;
@@ -227,16 +226,13 @@ static bool checkStrictMovement(game__Actor* actor, game__Dir dir, game__AABB ac
 
     game__AABB tileAABB     = actor->tilesCanMove[i].aabb;
     bool       hasCollision = false;
-
+    float      overlapX     = aabb_getOverlapX(actorAABB, tileAABB);
+    float      overlapY     = aabb_getOverlapY(actorAABB, tileAABB);
     switch (dir) {
       case DIR_UP:
-      case DIR_DOWN:
-        hasCollision = (aabb_getOverlapX(actorAABB, tileAABB) > 0.0f && aabb_getOverlapY(actorAABB, tileAABB) == 0.0f);
-        break;
+      case DIR_DOWN: hasCollision = (overlapX > EPSILON && fabsf(overlapY) < EPSILON); break;
       case DIR_LEFT:
-      case DIR_RIGHT:
-        hasCollision = (aabb_getOverlapY(actorAABB, tileAABB) > 0.0f && aabb_getOverlapX(actorAABB, tileAABB) == 0.0f);
-        break;
+      case DIR_RIGHT: hasCollision = (overlapY > EPSILON && fabsf(overlapX) < EPSILON); break;
       default: assert(false);
     }
 
