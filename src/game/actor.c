@@ -111,19 +111,19 @@ static void getWalls(game__Actor* actor, Tile tiles[], game__Dir dir) {
 
   switch (dir) {
     case DIR_UP:
-      basePos = (Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y - TILE_SIZE / 2.0f};
+      basePos = (Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE / 2.0f};
       offset  = (Vector2) {TILE_SIZE, 0};
       break;
     case DIR_RIGHT:
-      basePos = (Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f};
+      basePos = (Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE / 2.0f};
       offset  = (Vector2) {0, TILE_SIZE};
       break;
     case DIR_DOWN:
-      basePos = (Vector2) {actor->pos.x - TILE_SIZE * 0.5f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f};
+      basePos = (Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f};
       offset  = (Vector2) {TILE_SIZE, 0};
       break;
     case DIR_LEFT:
-      basePos = (Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE * 0.5f};
+      basePos = (Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE / 2.0f};
       offset  = (Vector2) {0, TILE_SIZE};
       break;
     default: assert(false); return;
@@ -298,7 +298,7 @@ Vector2 actor_getSize(const game__Actor* actor) {
 game__AABB actor_getAABB(const game__Actor* actor) {
   assert(actor != nullptr);
   return (game__AABB) {.min = (Vector2) {actor->pos.x, actor->pos.y},
-                       .max = (Vector2) {actor->pos.x + actor->size.x, actor->pos.y + actor->size.x}};
+                       .max = (Vector2) {actor->pos.x + actor->size.x, actor->pos.y + actor->size.y}};
 }
 
 bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
