@@ -37,10 +37,10 @@ constexpr int        ACTOR_SIZE = 16;
 extern const Vector2 MAZE_ORIGIN;
 extern const float   TILE_SIZE;
 
-constexpr float      BASE_SLOP = 0.5f;
+constexpr float      BASE_SLOP = 0.2f;
 constexpr float      BASE_DT   = (1.0f / 144.0f);  // Reference frame rate
-constexpr float      MIN_SLOP  = 0.5f;
-constexpr float      MAX_SLOP  = 2.0f;
+constexpr float      MIN_SLOP  = 0.05f;
+constexpr float      MAX_SLOP  = 0.5f;
 
 // --- Global state ---
 

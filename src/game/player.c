@@ -7,7 +7,7 @@
 // --- Constants ---
 
 static const Vector2     PLAYER_START_POS = {109.0f, 184.0f};
-static const float       PLAYER_SPEED     = 100.0f;
+static const float       PLAYER_SPEED     = 60.0f;
 static const Dir         PLAYER_START_DIR = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]    = {0, KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT};
 

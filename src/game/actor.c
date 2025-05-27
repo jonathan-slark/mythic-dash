@@ -93,9 +93,7 @@ static Tile* isMazeCollision(Actor* actor, Dir dir) {
 static void checkMazeCollision(Actor* actor) {
   assert(actor != nullptr);
   Tile* tile = isMazeCollision(actor, actor->dir);
-  if (tile == nullptr) {
-    actor->isMoving = true;
-  } else {
+  if (tile != nullptr) {
     resolveActorCollision(actor, &tile->aabb);
     LOG_TRACE(game__log, "Collision detected, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
     actor->isMoving = false;
@@ -138,6 +136,7 @@ static void getWalls(Actor* actor, Tile tiles[], Dir dir) {
   }
 }
 
+#ifndef NDEBUG
 static void drawTile(Tile tile) {
   Color colour;
   if (tile.isCollision) {
@@ -147,6 +146,7 @@ static void drawTile(Tile tile) {
   }
   aabb_drawOverlay(tile.aabb, colour);
 }
+#endif
 
 // --- Actor functions ---
 
@@ -203,6 +203,7 @@ AABB actor_getAABB(const Actor* actor) {
 bool actor_canMove(Actor* actor, Dir dir, float slop) {
   assert(actor != nullptr);
   assert(dir != DIR_NONE);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
   actor->isCanMove = true;
   getWalls(actor, actor->tilesCanMove, dir);
@@ -237,6 +238,9 @@ bool actor_canMove(Actor* actor, Dir dir, float slop) {
       default: assert(false);
     }
   }
+  if (!actor->isMoving) {
+    actor->isMoving = canMove;
+  }
   return canMove;
 }
 
@@ -263,6 +267,8 @@ void actor_wallsOverlay(Actor* actor) {
 
 void actor_move(Actor* actor, Dir dir, float frameTime) {
   assert(actor != nullptr);
+
+  if (!actor->isMoving) return;
 
   actor->pos = Vector2Add(actor->pos, Vector2Scale(VELS[dir], frameTime * actor->speed));
   actor->dir = dir;
