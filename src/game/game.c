@@ -28,6 +28,7 @@ const float             BASE_SLOP         = 0.25f;
 const float             BASE_DT           = (1.0f / 144.0f);  // Reference frame rate
 const float             MIN_SLOP          = 0.05f;
 const float             MAX_SLOP          = 0.5f;
+const float             OVERLAP_EPSILON   = 0.00001f;
 
 // --- Global state ---
 

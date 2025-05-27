@@ -41,6 +41,7 @@ extern const float   BASE_SLOP;
 extern const float   BASE_DT;
 extern const float   MIN_SLOP;
 extern const float   MAX_SLOP;
+extern const float   OVERLAP_EPSILON;
 
 // --- Global state ---
 

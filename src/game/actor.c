@@ -181,7 +181,7 @@ static bool tryAlignToTile(game__Actor* actor,
   switch (dir) {
     case DIR_UP:
     case DIR_DOWN:
-      if (overlapX > EPSILON && overlapX <= slop && fabsf(overlapY) < EPSILON) {
+      if (overlapX > OVERLAP_EPSILON && overlapX <= slop && fabsf(overlapY) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapX : -overlapX);
         LOG_DEBUG(game__log, "Actor can move up/down, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
         return true;
@@ -189,7 +189,7 @@ static bool tryAlignToTile(game__Actor* actor,
       break;
     case DIR_LEFT:
     case DIR_RIGHT:
-      if (overlapY > EPSILON && overlapY <= slop && fabsf(overlapX) < EPSILON) {
+      if (overlapY > OVERLAP_EPSILON && overlapY <= slop && fabsf(overlapX) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapY : -overlapY);
         LOG_DEBUG(game__log, "Actor can move left/right, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
         return true;
@@ -230,9 +230,9 @@ static bool checkStrictMovement(game__Actor* actor, game__Dir dir, game__AABB ac
     float      overlapY     = aabb_getOverlapY(actorAABB, tileAABB);
     switch (dir) {
       case DIR_UP:
-      case DIR_DOWN: hasCollision = (overlapX > EPSILON && fabsf(overlapY) < EPSILON); break;
+      case DIR_DOWN: hasCollision = (overlapX > OVERLAP_EPSILON && fabsf(overlapY) < OVERLAP_EPSILON); break;
       case DIR_LEFT:
-      case DIR_RIGHT: hasCollision = (overlapY > EPSILON && fabsf(overlapX) < EPSILON); break;
+      case DIR_RIGHT: hasCollision = (overlapY > OVERLAP_EPSILON && fabsf(overlapX) < OVERLAP_EPSILON); break;
       default: assert(false);
     }
 
