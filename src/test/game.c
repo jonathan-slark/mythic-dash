@@ -29,7 +29,7 @@ const float   BASE_SLOP   = 0.25f;
 const float   BASE_DT     = (1.0f / 144.0f);
 const float   MIN_SLOP    = 0.05f;
 const float   MAX_SLOP    = 0.5f;
-const Vector2 MAZE_ORIGIN = {124.0f, 7.0f};
+const Vector2 MAZE_ORIGIN = { 124.0f, 7.0f };
 
 // --- Test helper macros ---
 #define FLOAT_EPSILON 0.001f
@@ -61,11 +61,11 @@ static inline float aabb_getOverlapY(game__AABB a, game__AABB b) {
 
 // Simplified maze data (first few rows for testing)
 static bool MAZE_TEST[MAZE_ROWS][MAZE_COLS] = {
-    {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-    {1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1},
-    // ... rest filled with walls for simplicity
+  { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+  { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+  { 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1 },
+  // ... rest filled with walls for simplicity
 };
 
 static bool maze_isWall_test(Vector2 pos) {
@@ -81,8 +81,8 @@ static bool maze_isWall_test(Vector2 pos) {
 static game__AABB maze_getAABB_test(Vector2 pos) {
   int row = (int) (pos.y / TILE_SIZE);
   int col = (int) (pos.x / TILE_SIZE);
-  return (game__AABB) {.min = {col * TILE_SIZE, row * TILE_SIZE},
-                       .max = {(col + 1) * TILE_SIZE, (row + 1) * TILE_SIZE}};
+  return (game__AABB) { .min = { col * TILE_SIZE, row * TILE_SIZE },
+                        .max = { (col + 1) * TILE_SIZE, (row + 1) * TILE_SIZE } };
 }
 
 // --- Setup and Teardown ---
@@ -98,17 +98,17 @@ void test_teardown(void) {
 // --- AABB Tests ---
 
 MU_TEST(test_aabb_collision_detection) {
-  game__AABB a = {{0.0f, 0.0f}, {10.0f, 10.0f}};
-  game__AABB b = {{5.0f, 5.0f}, {15.0f, 15.0f}};
-  game__AABB c = {{20.0f, 20.0f}, {30.0f, 30.0f}};
+  game__AABB a = { { 0.0f, 0.0f }, { 10.0f, 10.0f } };
+  game__AABB b = { { 5.0f, 5.0f }, { 15.0f, 15.0f } };
+  game__AABB c = { { 20.0f, 20.0f }, { 30.0f, 30.0f } };
 
   mu_assert(aabb_isColliding(a, b), "Overlapping AABBs should collide");
   mu_assert(!aabb_isColliding(a, c), "Non-overlapping AABBs should not collide");
 }
 
 MU_TEST(test_aabb_overlap_calculation) {
-  game__AABB a        = {{0.0f, 0.0f}, {10.0f, 10.0f}};
-  game__AABB b        = {{5.0f, 3.0f}, {15.0f, 13.0f}};
+  game__AABB a        = { { 0.0f, 0.0f }, { 10.0f, 10.0f } };
+  game__AABB b        = { { 5.0f, 3.0f }, { 15.0f, 13.0f } };
 
   float      overlapX = aabb_getOverlapX(a, b);
   float      overlapY = aabb_getOverlapY(a, b);
@@ -118,8 +118,8 @@ MU_TEST(test_aabb_overlap_calculation) {
 }
 
 MU_TEST(test_aabb_no_overlap) {
-  game__AABB a = {{0.0f, 0.0f}, {5.0f, 5.0f}};
-  game__AABB b = {{10.0f, 10.0f}, {15.0f, 15.0f}};
+  game__AABB a = { { 0.0f, 0.0f }, { 5.0f, 5.0f } };
+  game__AABB b = { { 10.0f, 10.0f }, { 15.0f, 15.0f } };
 
   mu_assert(!aabb_isColliding(a, b), "Separated AABBs should not overlap");
   mu_assert(aabb_getOverlapX(a, b) <= 0.0f, "No X overlap expected");
@@ -128,8 +128,8 @@ MU_TEST(test_aabb_no_overlap) {
 
 MU_TEST(test_aabb_edge_cases) {
   // Test touching AABBs (should not collide)
-  game__AABB a = {{0.0f, 0.0f}, {5.0f, 5.0f}};
-  game__AABB b = {{5.0f, 0.0f}, {10.0f, 5.0f}};
+  game__AABB a = { { 0.0f, 0.0f }, { 5.0f, 5.0f } };
+  game__AABB b = { { 5.0f, 0.0f }, { 10.0f, 5.0f } };
 
   mu_assert(!aabb_isColliding(a, b), "Touching AABBs should not collide");
   mu_assert(aabb_getOverlapX(a, b) == 0.0f, "No overlap for touching AABBs");
@@ -139,20 +139,20 @@ MU_TEST(test_aabb_edge_cases) {
 
 MU_TEST(test_maze_wall_detection) {
   // Test corner positions that should be walls
-  mu_assert(maze_isWall_test((Vector2) {0.0f, 0.0f}), "Top-left corner should be wall");
-  mu_assert(maze_isWall_test((Vector2) {28 * TILE_SIZE, 0.0f}), "Top-right corner should be wall");
+  mu_assert(maze_isWall_test((Vector2) { 0.0f, 0.0f }), "Top-left corner should be wall");
+  mu_assert(maze_isWall_test((Vector2) { 28 * TILE_SIZE, 0.0f }), "Top-right corner should be wall");
 
   // Test some positions that should be floor
-  mu_assert(!maze_isWall_test((Vector2) {1 * TILE_SIZE, 1 * TILE_SIZE}), "Position (1,1) should be floor");
-  mu_assert(!maze_isWall_test((Vector2) {2 * TILE_SIZE, 2 * TILE_SIZE}), "Position (2,2) should be floor");
+  mu_assert(!maze_isWall_test((Vector2) { 1 * TILE_SIZE, 1 * TILE_SIZE }), "Position (1,1) should be floor");
+  mu_assert(!maze_isWall_test((Vector2) { 2 * TILE_SIZE, 2 * TILE_SIZE }), "Position (2,2) should be floor");
 }
 
 MU_TEST(test_maze_aabb_generation) {
-  Vector2    tile_pos     = {2 * TILE_SIZE, 3 * TILE_SIZE};
+  Vector2    tile_pos     = { 2 * TILE_SIZE, 3 * TILE_SIZE };
   game__AABB aabb         = maze_getAABB_test(tile_pos);
 
-  Vector2    expected_min = {2 * TILE_SIZE, 3 * TILE_SIZE};
-  Vector2    expected_max = {3 * TILE_SIZE, 4 * TILE_SIZE};
+  Vector2    expected_min = { 2 * TILE_SIZE, 3 * TILE_SIZE };
+  Vector2    expected_max = { 3 * TILE_SIZE, 4 * TILE_SIZE };
 
   mu_assert_vector2_eq(expected_min, aabb.min);
   mu_assert_vector2_eq(expected_max, aabb.max);
@@ -160,11 +160,11 @@ MU_TEST(test_maze_aabb_generation) {
 
 MU_TEST(test_maze_bounds) {
   // Test that out-of-bounds positions are treated as walls
-  mu_assert(maze_isWall_test((Vector2) {-1.0f, -1.0f}), "Out of bounds should be wall");
-  mu_assert(maze_isWall_test((Vector2) {1000.0f, 1000.0f}), "Out of bounds should be wall");
+  mu_assert(maze_isWall_test((Vector2) { -1.0f, -1.0f }), "Out of bounds should be wall");
+  mu_assert(maze_isWall_test((Vector2) { 1000.0f, 1000.0f }), "Out of bounds should be wall");
 
   // Test valid positions
-  Vector2    valid_pos = {5 * TILE_SIZE, 1 * TILE_SIZE};
+  Vector2    valid_pos = { 5 * TILE_SIZE, 1 * TILE_SIZE };
   game__AABB aabb      = maze_getAABB_test(valid_pos);
   mu_assert(aabb.min.x >= 0 && aabb.min.y >= 0, "AABB should have valid coordinates");
   mu_assert(aabb.max.x > aabb.min.x && aabb.max.y > aabb.min.y, "AABB should have positive dimensions");

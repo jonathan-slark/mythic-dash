@@ -12,17 +12,17 @@
 
 static const int        LOG_LEVEL_RAYLIB  = LOG_WARNING;
 
-static const log_Config LOG_CONFIG_ENGINE = {.minLevel      = LOG_LEVEL_DEBUG,
-                                             .useColours    = true,
-                                             .showTimestamp = true,
-                                             .showFileLine  = true,
-                                             .subsystem     = "ENG "};
+static const log_Config LOG_CONFIG_ENGINE = { .minLevel      = LOG_LEVEL_DEBUG,
+                                              .useColours    = true,
+                                              .showTimestamp = true,
+                                              .showFileLine  = true,
+                                              .subsystem     = "ENG " };
 
-static const log_Config LOG_CONFIG_RAYLIB = {.minLevel      = LOG_LEVEL_DEBUG,
-                                             .useColours    = true,
-                                             .showTimestamp = true,
-                                             .showFileLine  = false,
-                                             .subsystem     = "RAY "};
+static const log_Config LOG_CONFIG_RAYLIB = { .minLevel      = LOG_LEVEL_DEBUG,
+                                              .useColours    = true,
+                                              .showTimestamp = true,
+                                              .showFileLine  = false,
+                                              .subsystem     = "RAY " };
 
 // --- Global state ---
 
@@ -103,10 +103,10 @@ bool engine_init(int nativeWidth, int nativeHeight, const char* title, int fps) 
   }
 
   engine__screenState = (engine__ScreenState) {
-      .width       = screenWidth,
-      .height      = screenHeight,
-      .refreshRate = screenRefreshRate,
-      .scale       = screenScale,
+    .width       = screenWidth,
+    .height      = screenHeight,
+    .refreshRate = screenRefreshRate,
+    .scale       = screenScale,
   };
 
   LOG_INFO(engine__log, "Screen state: %dx%d @ %dHz, scale: %d", screenWidth, screenHeight, screenRefreshRate,

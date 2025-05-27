@@ -21,4 +21,5 @@ AlignConsecutiveDeclarations:
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: WithoutElse
+Cpp11BracedListStyle: false
 SpaceAfterCStyleCast: true

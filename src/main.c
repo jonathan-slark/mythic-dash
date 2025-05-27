@@ -10,11 +10,11 @@ static const char*      WINDOW_TITLE   = "Maze Muncher";
 static const int        ORG_SCR_WIDTH  = 480;
 static const int        ORG_SCR_HEIGHT = 270;
 
-static const log_Config LOG_CONFIG     = {.minLevel      = LOG_LEVEL_DEBUG,
-                                          .useColours    = true,
-                                          .showTimestamp = true,
-                                          .showFileLine  = true,
-                                          .subsystem     = "MAIN"};
+static const log_Config LOG_CONFIG     = { .minLevel      = LOG_LEVEL_DEBUG,
+                                           .useColours    = true,
+                                           .showTimestamp = true,
+                                           .showFileLine  = true,
+                                           .subsystem     = "MAIN" };
 
 // --- Main ---
 

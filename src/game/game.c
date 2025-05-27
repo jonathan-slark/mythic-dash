@@ -16,19 +16,19 @@ static const char       FILE_BACKGROUND[] = "../../asset/gfx/background.png";
 static const char       FILE_SPRITES[]    = "../../asset/gfx/sprites.png";
 static const char       FILE_FONT[]       = "../../asset/gfx/font.png";
 
-static const log_Config LOG_CONFIG_GAME   = {.minLevel      = LOG_LEVEL_DEBUG,
-                                             .useColours    = true,
-                                             .showTimestamp = true,
-                                             .showFileLine  = true,
-                                             .subsystem     = "GAME"};
+static const log_Config LOG_CONFIG_GAME   = { .minLevel      = LOG_LEVEL_DEBUG,
+                                              .useColours    = true,
+                                              .showTimestamp = true,
+                                              .showFileLine  = true,
+                                              .subsystem     = "GAME" };
 
-static const float      FPS[]             = {15, 30, 60, 0};
+static const float      FPS[]             = { 15, 30, 60, 0 };
 
-const float             BASE_SLOP         = 0.25f;
+const float             BASE_SLOP         = 0.2f;
 const float             BASE_DT           = (1.0f / 144.0f);  // Reference frame rate
 const float             MIN_SLOP          = 0.05f;
 const float             MAX_SLOP          = 0.5f;
-const float             OVERLAP_EPSILON   = 0.00001f;
+const float             OVERLAP_EPSILON   = 1e-5f;
 
 // --- Global state ---
 
@@ -36,7 +36,7 @@ log_Log*               game__log;
 static engine_Texture* g_background;
 static engine_Texture* g_sprites;
 static engine_Font*    g_font;
-static engine_Sprite   g_playerSprite = {.size = {ACTOR_SIZE, ACTOR_SIZE}, .offset = {0, 0}};
+static engine_Sprite   g_playerSprite = { .size = { ACTOR_SIZE, ACTOR_SIZE }, .offset = { 0, 0 } };
 static size_t          g_fpsIndex     = COUNT(FPS) - 1;
 
 // --- Helper functions ---

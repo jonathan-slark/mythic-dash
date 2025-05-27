@@ -14,11 +14,11 @@
   }
 
 #define POS_ADJUST(pos) Vector2Add((pos), MAZE_ORIGIN)
-#define OVERLAY_COLOUR_PLAYER (Color){100, 200, 255, 128}
-#define OVERLAY_COLOUR_TILE_WALL (Color){255, 100, 100, 128}
-#define OVERLAY_COLOUR_TILE_FLOOR (Color){255, 100, 100, 32}
-#define OVERLAY_COLOUR_COLLISION (Color){255, 255, 100, 128}
-#define OVERLAY_COLOUR_MAZE_WALL (Color){128, 128, 128, 128}
+#define OVERLAY_COLOUR_PLAYER (Color){ 100, 200, 255, 128 }
+#define OVERLAY_COLOUR_TILE_WALL (Color){ 255, 100, 100, 128 }
+#define OVERLAY_COLOUR_TILE_FLOOR (Color){ 255, 100, 100, 32 }
+#define OVERLAY_COLOUR_COLLISION (Color){ 255, 255, 100, 128 }
+#define OVERLAY_COLOUR_MAZE_WALL (Color){ 128, 128, 128, 128 }
 
 // --- Types ---
 
@@ -64,7 +64,7 @@ static inline float aabb_getOverlapY(game__AABB a, game__AABB b) {
 static inline void aabb_drawOverlay(game__AABB aabb, Color colour) {
   Vector2 min = POS_ADJUST(aabb.min);
   Vector2 max = POS_ADJUST(aabb.max);
-  engine_drawRectangleOutline((Rectangle) {min.x, min.y, max.x - min.x, max.y - min.y}, colour);
+  engine_drawRectangleOutline((Rectangle) { min.x, min.y, max.x - min.x, max.y - min.y }, colour);
 }
 
 // --- game__Actor functions (actor.c) ---

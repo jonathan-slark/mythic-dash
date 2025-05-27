@@ -6,10 +6,10 @@
 
 // --- Constants ---
 
-static const Vector2     PLAYER_START_POS = {109.0f, 184.0f};
+static const Vector2     PLAYER_START_POS = { 109.0f, 184.0f };
 static const float       PLAYER_SPEED     = 60.0f;
 static const game__Dir   PLAYER_START_DIR = DIR_LEFT;
-static const KeyboardKey PLAYER_KEYS[]    = {0, KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT};
+static const KeyboardKey PLAYER_KEYS[]    = { 0, KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
 
 // --- Global state ---
 
@@ -19,7 +19,7 @@ static game__Actor* g_player = nullptr;
 
 bool player_init(void) {
   assert(g_player == nullptr);
-  g_player = actor_create(PLAYER_START_POS, (Vector2) {ACTOR_SIZE, ACTOR_SIZE}, PLAYER_START_DIR, PLAYER_SPEED);
+  g_player = actor_create(PLAYER_START_POS, (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_START_DIR, PLAYER_SPEED);
   return g_player != nullptr;
 }
 

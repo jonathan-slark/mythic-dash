@@ -25,9 +25,9 @@ static bool      mockTextureLoadSuccess     = true;
 static bool      mockFontLoadSuccess        = true;
 static char*     mockLastDrawnText          = NULL;
 static float     mockFrameTime              = 0.016667f;  // Default value (60 FPS)
-static Rectangle mockLastDrawnRectangle     = {0};
+static Rectangle mockLastDrawnRectangle     = { 0 };
 static float     mockLastRectangleThickness = 0;
-static Color     mockLastRectangleColor     = {0};
+static Color     mockLastRectangleColor     = { 0 };
 
 // Test resources
 static engine_Texture* testTexture = NULL;
@@ -136,9 +136,9 @@ static void test_setup(void) {
   mockTextureLoadSuccess     = true;
   mockFontLoadSuccess        = true;
   mockFrameTime              = 0.016667f;  // 60 FPS
-  mockLastDrawnRectangle     = (Rectangle) {0};
+  mockLastDrawnRectangle     = (Rectangle) { 0 };
   mockLastRectangleThickness = 0;
-  mockLastRectangleColor     = (Color) {0};
+  mockLastRectangleColor     = (Color) { 0 };
 
   // Initialize engine with test values
   engine_init(320, 180, "Test", 0);
@@ -286,7 +286,7 @@ MU_TEST(test_font_unload) {
 // Test drawing functions
 MU_TEST(test_draw_sprite) {
   // This test just ensures the function doesn't crash
-  engine_Sprite sprite = {.position = {10, 10}, .size = {16, 16}, .offset = {0, 0}};
+  engine_Sprite sprite = { .position = { 10, 10 }, .size = { 16, 16 }, .offset = { 0, 0 } };
 
   // Test with NULL texture
   engine_drawSprite(NULL, &sprite);
@@ -311,13 +311,13 @@ MU_TEST(test_draw_background) {
 }
 
 MU_TEST(test_draw_rectangle_outline) {
-  Rectangle testRect  = {10, 10, 20, 20};
-  Color     testColor = {255, 0, 0, 255};
+  Rectangle testRect  = { 10, 10, 20, 20 };
+  Color     testColor = { 255, 0, 0, 255 };
 
   // Reset mock values
-  mockLastDrawnRectangle     = (Rectangle) {0};
+  mockLastDrawnRectangle     = (Rectangle) { 0 };
   mockLastRectangleThickness = 0;
-  mockLastRectangleColor     = (Color) {0};
+  mockLastRectangleColor     = (Color) { 0 };
 
   // Test the function
   engine_drawRectangleOutline(testRect, testColor);
@@ -341,7 +341,7 @@ MU_TEST(test_draw_rectangle_outline) {
 MU_TEST(test_frame_management) {
   // These just test that the functions don't crash
   engine_beginFrame();
-  engine_clearScreen((Color) {0, 0, 0, 255});
+  engine_clearScreen((Color) { 0, 0, 0, 255 });
   engine_endFrame();
 }
 

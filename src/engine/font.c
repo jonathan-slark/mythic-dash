@@ -117,16 +117,16 @@ void engine_fontPrintfV(engine_Font* font, int x, int y, const char* format, va_
     int       row       = charIndex / font->columns;
     int       scale     = engine__screenState.scale;
 
-    Rectangle src       = {.x      = (float) (col * font->glyphWidth + (col + 1) * font->glyphSpacing),
-                           .y      = (float) (row * font->glyphHeight + (row + 1) * font->glyphSpacing),
-                           .width  = (float) (font->glyphWidth),
-                           .height = (float) (font->glyphHeight)};
-    Rectangle dst       = {.x      = (float) ((x + i * font->glyphWidth) * scale),
-                           .y      = (float) (y * scale),
-                           .width  = (float) (font->glyphWidth * scale),
-                           .height = (float) (font->glyphHeight * scale)};
+    Rectangle src       = { .x      = (float) (col * font->glyphWidth + (col + 1) * font->glyphSpacing),
+                            .y      = (float) (row * font->glyphHeight + (row + 1) * font->glyphSpacing),
+                            .width  = (float) (font->glyphWidth),
+                            .height = (float) (font->glyphHeight) };
+    Rectangle dst       = { .x      = (float) ((x + i * font->glyphWidth) * scale),
+                            .y      = (float) (y * scale),
+                            .width  = (float) (font->glyphWidth * scale),
+                            .height = (float) (font->glyphHeight * scale) };
 
-    DrawTexturePro(font->texture, src, dst, (Vector2) {0, 0}, 0, WHITE);
+    DrawTexturePro(font->texture, src, dst, (Vector2) { 0, 0 }, 0, WHITE);
   }
 
   free(text);

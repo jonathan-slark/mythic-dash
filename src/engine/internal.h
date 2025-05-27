@@ -13,13 +13,13 @@ typedef struct engine_Texture {
 
 typedef struct engine_Font {
   Texture2D texture;
-  int glyphWidth;
-  int glyphHeight;
-  int columns;
-  int rows;
-  int asciiStart;
-  int asciiEnd;
-  int glyphSpacing;
+  int       glyphWidth;
+  int       glyphHeight;
+  int       columns;
+  int       rows;
+  int       asciiStart;
+  int       asciiEnd;
+  int       glyphSpacing;
 } engine_Font;
 
 typedef struct engine__ScreenState {
@@ -32,4 +32,4 @@ typedef struct engine__ScreenState {
 // --- Global state ---
 
 extern engine__ScreenState engine__screenState;
-extern log_Log* engine__log;
+extern log_Log*            engine__log;

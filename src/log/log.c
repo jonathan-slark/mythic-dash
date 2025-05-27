@@ -9,45 +9,46 @@
 // --- Constants ---
 
 // ANSI color codes for terminal output
-constexpr char COLOUR_RESET[] = "\033[0m";
-constexpr char COLOUR_RED[] = "\033[31m";
-constexpr char COLOUR_GREEN[] = "\033[32m";
-constexpr char COLOUR_YELLOW[] = "\033[33m";
-constexpr char COLOUR_BLUE[] = "\033[34m";
-constexpr char COLOUR_MAGENTA[] = "\033[35m";
-constexpr char COLOUR_CYAN[] = "\033[36m";
+constexpr char     COLOUR_RESET[]   = "\033[0m";
+constexpr char     COLOUR_RED[]     = "\033[31m";
+constexpr char     COLOUR_GREEN[]   = "\033[32m";
+constexpr char     COLOUR_YELLOW[]  = "\033[33m";
+constexpr char     COLOUR_BLUE[]    = "\033[34m";
+constexpr char     COLOUR_MAGENTA[] = "\033[35m";
+constexpr char     COLOUR_CYAN[]    = "\033[36m";
 
-constexpr int BUFFER_SIZE = 128;
-constexpr int TIMESTAMP_WIDTH = 8;
-constexpr int SUBSYSTEM_WIDTH = 4;
-constexpr int LEVEL_WIDTH = 5;
-constexpr int FILE_WIDTH = 14;
-constexpr int LINE_WIDTH = 3;
+constexpr int      BUFFER_SIZE      = 128;
+constexpr int      TIMESTAMP_WIDTH  = 8;
+constexpr int      SUBSYSTEM_WIDTH  = 4;
+constexpr int      LEVEL_WIDTH      = 5;
+constexpr int      FILE_WIDTH       = 14;
+constexpr int      LINE_WIDTH       = 3;
 
-static const char* LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+static const char* LEVEL_NAMES[]    = { "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL" };
 
-static const char* LEVEL_COLOURS[] = {COLOUR_CYAN,   COLOUR_BLUE, COLOUR_GREEN,
-                                      COLOUR_YELLOW, COLOUR_RED,  COLOUR_MAGENTA};
+static const char* LEVEL_COLOURS[]  = {
+  COLOUR_CYAN, COLOUR_BLUE, COLOUR_GREEN, COLOUR_YELLOW, COLOUR_RED, COLOUR_MAGENTA
+};
 
-static const char TIME_ERROR[] = "[TIME ERROR]";
+static const char       TIME_ERROR[]  = "[TIME ERROR]";
 
-static const log_Config defaultConfig = {.minLevel = LOG_LEVEL_INFO,
-                                         .useColours = true,
-                                         .showTimestamp = true,
-                                         .showFileLine = true,
-                                         .subsystem = "MAIN"};
+static const log_Config defaultConfig = { .minLevel      = LOG_LEVEL_INFO,
+                                          .useColours    = true,
+                                          .showTimestamp = true,
+                                          .showFileLine  = true,
+                                          .subsystem     = "MAIN" };
 
 // --- Types ---
 
 typedef struct TimestampCache {
   time_t lastUpdate;
-  char timestamp[BUFFER_SIZE];
+  char   timestamp[BUFFER_SIZE];
 } TimestampCache;
 
 typedef struct log_Log {
-  log_Config config;
+  log_Config     config;
   TimestampCache timestampCache;
-  bool ownsSubsystem;
+  bool           ownsSubsystem;
 } log_Log;
 
 // --- Helpers ---
@@ -86,7 +87,7 @@ static const char* getCachedTimestamp(log_Log* log) {
   assert(log != nullptr && "Log is null");
 
   time_t now;
-  if (time(&now) == (time_t)-1) {
+  if (time(&now) == (time_t) -1) {
     perror("time() failed");
     return TIME_ERROR;
   }
@@ -115,14 +116,14 @@ static const char* getCachedTimestamp(log_Log* log) {
 // --- Public API ---
 
 log_Log* log_create(const log_Config* newConfig) {
-  log_Log* log = (log_Log*)malloc(sizeof(log_Log));
+  log_Log* log = (log_Log*) malloc(sizeof(log_Log));
   if (log == nullptr) {
     perror("malloc() failed");
     return nullptr;
   }
 
   if (newConfig == nullptr) {
-    log->config = defaultConfig;
+    log->config        = defaultConfig;
     log->ownsSubsystem = false;
   } else {
     if (newConfig->minLevel < 0 || newConfig->minLevel >= LOG_LEVEL_COUNT) {
@@ -174,26 +175,26 @@ const log_Config* log_getConfig(const log_Log* log) {
 
 const log_Config* log_getDefaultConfig(void) { return &defaultConfig; }
 
-void log_message(log_Log* log,
-                 log_Level level,
-                 const char* file,
-                 int line,
-                 bool trailingNewline,
-                 const char* format,
-                 ...) {
+void              log_message(log_Log*    log,
+                              log_Level   level,
+                              const char* file,
+                              int         line,
+                              bool        trailingNewline,
+                              const char* format,
+                              ...) {
   va_list args;
   va_start(args, format);
   log_vmessage(log, level, file, line, trailingNewline, format, args);
   va_end(args);
 }
 
-void log_vmessage(log_Log* log,
-                  log_Level level,
+void log_vmessage(log_Log*    log,
+                  log_Level   level,
                   const char* file,
-                  int line,
-                  bool trailingNewline,
+                  int         line,
+                  bool        trailingNewline,
                   const char* format,
-                  va_list args) {
+                  va_list     args) {
   if (log == nullptr) {
     fprintfCheck(stderr, "Invalid log message: log is null\n");
     return;

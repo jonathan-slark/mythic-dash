@@ -30,11 +30,11 @@ typedef enum log_Level {
  * @brief Configuration options for a logger instance
  */
 typedef struct log_Config {
-  log_Level minLevel; /**< Minimum log level to display */
-  bool useColours;    /**< Whether to use coloured output */
-  bool showTimestamp; /**< Whether to show timestamps */
-  bool showFileLine;  /**< Whether to show file and line information */
-  char* subsystem;    /**< Subsystem name (e.g., "GFX", "AUDIO", "GAME") */
+  log_Level minLevel;      /**< Minimum log level to display */
+  bool      useColours;    /**< Whether to use coloured output */
+  bool      showTimestamp; /**< Whether to show timestamps */
+  bool      showFileLine;  /**< Whether to show file and line information */
+  char*     subsystem;     /**< Subsystem name (e.g., "GFX", "AUDIO", "GAME") */
 } log_Config;
 
 /**
@@ -91,11 +91,11 @@ const log_Config* log_getDefaultConfig(void);
  * @param format Printf-style format string
  * @param ... Additional arguments for the format string
  */
-void log_message(log_Log* log,
-                 log_Level level,
+void log_message(log_Log*    log,
+                 log_Level   level,
                  const char* file,
-                 int line,
-                 bool trailingNewline,
+                 int         line,
+                 bool        trailingNewline,
                  const char* format,
                  ...);
 
@@ -110,13 +110,13 @@ void log_message(log_Log* log,
  * @param format Printf-style format string
  * @param args Variable argument list
  */
-void log_vmessage(log_Log* log,
-                  log_Level level,
+void log_vmessage(log_Log*    log,
+                  log_Level   level,
                   const char* file,
-                  int line,
-                  bool trailingNewline,
+                  int         line,
+                  bool        trailingNewline,
                   const char* format,
-                  va_list args);
+                  va_list     args);
 
 // Convenience macros for different log levels
 #define LOG_LOG(log, level, ...) log_message(log, level, __FILE__, __LINE__, true, __VA_ARGS__)

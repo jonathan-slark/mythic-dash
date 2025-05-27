@@ -31,14 +31,14 @@ typedef struct game__Actor {
 // --- Constants ---
 
 static const Vector2 VELS[] = {
-    {0.0f, 0.0f},   // None
-    {0.0f, -1.0f},  // Up
-    {1.0f, 0.0f},   // Right
-    {0.0f, 1.0f},   // Down
-    {-1.0f, 0.0f}   // Left
+  { 0.0f, 0.0f },   // None
+  { 0.0f, -1.0f },  // Up
+  { 1.0f, 0.0f },   // Right
+  { 0.0f, 1.0f },   // Down
+  { -1.0f, 0.0f }   // Left
 };
 
-static const char* DIR_STRINGS[] = {"NONE", "UP", "RIGHT", "DOWN", "LEFT"};
+static const char* DIR_STRINGS[] = { "NONE", "UP", "RIGHT", "DOWN", "LEFT" };
 
 // --- Helper functions ---
 
@@ -111,20 +111,20 @@ static void getWalls(game__Actor* actor, Tile tiles[], game__Dir dir) {
 
   switch (dir) {
     case DIR_UP:
-      basePos = (Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE / 2.0f};
-      offset  = (Vector2) {TILE_SIZE, 0};
+      basePos = (Vector2) { actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE / 2.0f };
+      offset  = (Vector2) { TILE_SIZE, 0 };
       break;
     case DIR_RIGHT:
-      basePos = (Vector2) {actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE / 2.0f};
-      offset  = (Vector2) {0, TILE_SIZE};
+      basePos = (Vector2) { actor->pos.x + actor->size.x + TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE / 2.0f };
+      offset  = (Vector2) { 0, TILE_SIZE };
       break;
     case DIR_DOWN:
-      basePos = (Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f};
-      offset  = (Vector2) {TILE_SIZE, 0};
+      basePos = (Vector2) { actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y + actor->size.y + TILE_SIZE / 2.0f };
+      offset  = (Vector2) { TILE_SIZE, 0 };
       break;
     case DIR_LEFT:
-      basePos = (Vector2) {actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE / 2.0f};
-      offset  = (Vector2) {0, TILE_SIZE};
+      basePos = (Vector2) { actor->pos.x - TILE_SIZE / 2.0f, actor->pos.y - TILE_SIZE / 2.0f };
+      offset  = (Vector2) { 0, TILE_SIZE };
       break;
     default: assert(false); return;
   }
@@ -183,7 +183,8 @@ static bool tryAlignToTile(game__Actor* actor,
     case DIR_DOWN:
       if (overlapX > OVERLAP_EPSILON && overlapX <= slop && fabsf(overlapY) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapX : -overlapX);
-        LOG_DEBUG(game__log, "Actor can move up/down, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
+        LOG_DEBUG(game__log, "Actor can move up/down, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y,
+                  slop);
         return true;
       }
       break;
@@ -191,7 +192,8 @@ static bool tryAlignToTile(game__Actor* actor,
     case DIR_RIGHT:
       if (overlapY > OVERLAP_EPSILON && overlapY <= slop && fabsf(overlapX) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapY : -overlapY);
-        LOG_DEBUG(game__log, "Actor can move left/right, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
+        LOG_DEBUG(game__log, "Actor can move left/right, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y,
+                  slop);
         return true;
       }
       break;
@@ -293,8 +295,8 @@ Vector2 actor_getSize(const game__Actor* actor) {
 
 game__AABB actor_getAABB(const game__Actor* actor) {
   assert(actor != nullptr);
-  return (game__AABB) {.min = (Vector2) {actor->pos.x, actor->pos.y},
-                       .max = (Vector2) {actor->pos.x + actor->size.x, actor->pos.y + actor->size.y}};
+  return (game__AABB) { .min = (Vector2) { actor->pos.x, actor->pos.y },
+                        .max = (Vector2) { actor->pos.x + actor->size.x, actor->pos.y + actor->size.y } };
 }
 
 bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
