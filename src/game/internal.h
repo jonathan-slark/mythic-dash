@@ -67,7 +67,7 @@ static inline void aabb_drawOverlay(game__AABB aabb, Color colour) {
   engine_drawRectangleOutline((Rectangle) { min.x, min.y, max.x - min.x, max.y - min.y }, colour);
 }
 
-// --- game__Actor functions (actor.c) ---
+// --- Actor functions (actor.c) ---
 
 game__Actor* actor_create(Vector2 pos, Vector2 size, game__Dir dir, float speed);
 void         actor_destroy(game__Actor** actor);

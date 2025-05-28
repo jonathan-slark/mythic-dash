@@ -33,19 +33,19 @@ static void resolveActorCollision(game__Actor* actor, const game__AABB* wall) {
   if (overlapX < overlapY) {
     // Handle horizontal (X-axis) collision
     if (actor->pos.x < wall->min.x) {
-      // game__Actor is to the left of the wall: move it leftward out of the wall
+      // Actor is to the left of the wall: move it leftward out of the wall
       actor->pos.x -= overlapX;
     } else {
-      // game__Actor is to the right of the wall: move it rightward out of the wall
+      // Actor is to the right of the wall: move it rightward out of the wall
       actor->pos.x += overlapX;
     }
   } else {
     // Handle vertical (Y-axis) collision
     if (actor->pos.y < wall->min.y) {
-      // game__Actor is above the wall: move it upward out of the wall
+      // Actor is above the wall: move it upward out of the wall
       actor->pos.y -= overlapY;
     } else {
-      // game__Actor is below the wall: move it downward out of the wall
+      // Actor is below the wall: move it downward out of the wall
       actor->pos.y += overlapY;
     }
   }
