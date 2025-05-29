@@ -80,7 +80,7 @@ bool maze_isWall(Vector2 pos) {
   return MAZE[row][col];
 }
 
-void maze_wallsOverlay(void) {
+void maze_tilesOverlay(void) {
   for (int row = 0; row < MAZE_ROWS; row++) {
     for (int col = 0; col < MAZE_COLS; col++) {
       if (maze_isWall(g_mazeAABB[row][col].min)) {

@@ -1,3 +1,7 @@
+/*
+ * Actor functions are split into G files: actor.c and actor_move.c with header actor.h.
+ */
+
 #include "actor.h"
 #include <assert.h>
 #include <raylib.h>

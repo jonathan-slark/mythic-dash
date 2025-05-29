@@ -80,6 +80,7 @@ void         actor_overlay(const game__Actor* actor, Color colour);
 void         actor_moveOverlay(game__Actor* actor);
 void         actor_canMoveOverlay(game__Actor* actor);
 void         actor_move(game__Actor* actor, game__Dir dir, float frameTime);
+void         actor_update(game__Actor* actor, float frameTime);
 
 // --- Player functions (player.c) ---
 
@@ -95,7 +96,7 @@ game__Actor* player_getActor(void);
 void       maze_init(void);
 game__AABB maze_getAABB(Vector2 pos);
 bool       maze_isWall(Vector2 pos);
-void       maze_wallsOverlay(void);
+void       maze_tilesOverlay(void);
 
 // --- Debug functions (debug.c) ---
 

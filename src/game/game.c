@@ -10,6 +10,16 @@
 
 #define COUNT(array) (sizeof(array) / sizeof(array[0]))
 
+// --- Types ---
+
+typedef struct game__Anim {
+  engine_Sprite* frames;
+  size_t         frameCount;
+  size_t         currentFrame;
+  float          frameTime;
+  float          timeAccumulator;
+} game__Anim;
+
 // --- Constants ---
 
 static const char       FILE_BACKGROUND[] = "../../asset/gfx/background.png";
@@ -64,6 +74,18 @@ static void checkFPSKeys(void) {
   SetTargetFPS(FPS[g_fpsIndex]);
 }
 #endif
+
+void animUpdate(game__Anim* anim, float frameTime) {
+  anim->timeAccumulator += frameTime;
+  if (anim->timeAccumulator >= anim->frameTime) {
+    anim->timeAccumulator = 0.0f;
+    if (anim->currentFrame == anim->frameCount - 1) {
+      anim->currentFrame = 0;
+    } else {
+      anim->currentFrame++;
+    }
+  }
+}
 
 // --- Game functions ---
 

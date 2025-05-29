@@ -76,7 +76,7 @@ static void checkMazeCollision(game__Actor* actor) {
   }
 }
 
-static void getWalls(game__Actor* actor, game__Tile tiles[], game__Dir dir) {
+static void getTiles(game__Actor* actor, game__Tile tiles[], game__Dir dir) {
   assert(actor != nullptr);
   assert(dir != DIR_NONE && dir < DIR_COUNT);
 
@@ -217,7 +217,7 @@ bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
   actor->isCanMove = true;
-  getWalls(actor, actor->tilesCanMove, dir);
+  getTiles(actor, actor->tilesCanMove, dir);
   game__AABB actorAABB = actor_getAABB(actor);
 
   // Try passage movement first (special case for narrow passages)
@@ -244,6 +244,6 @@ void actor_move(game__Actor* actor, game__Dir dir, float frameTime) {
   actor->pos = Vector2Add(actor->pos, Vector2Scale(VELS[dir], frameTime * actor->speed));
   actor->dir = dir;
 
-  getWalls(actor, actor->tilesMove, dir);
+  getTiles(actor, actor->tilesMove, dir);
   checkMazeCollision(actor);
 }
