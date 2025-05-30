@@ -48,7 +48,6 @@ log_Log*               game__log;
 static engine_Texture* g_background;
 static engine_Texture* g_sprites;
 static engine_Font*    g_font;
-static engine_Sprite   g_playerSprite = { .size = { ACTOR_SIZE, ACTOR_SIZE }, .offset = { 0, 0 } };
 #ifndef NDEBUG
 static size_t g_fpsIndex = COUNT(FPS) - 1;
 #endif
@@ -127,9 +126,6 @@ void game_update(float frameTime) {
 
 void game_draw(void) {
   engine_drawBackground(g_background);
-
-  g_playerSprite.position = POS_ADJUST(player_getPos());
-  engine_drawSprite(g_sprites, &g_playerSprite);
 
 #ifndef NDEBUG
   debug_drawOverlay();

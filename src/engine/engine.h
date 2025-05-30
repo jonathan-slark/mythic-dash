@@ -16,12 +16,8 @@
 /**
  * @brief 2D sprite with position, size and offset
  */
-typedef struct engine_Sprite {
-  Vector2 position; /**< Position coordinates */
-  Vector2 size;     /**< Width and height */
-  Vector2 offset;   /**< Texture offset */
-} engine_Sprite;
 
+typedef struct engine_Sprite  engine_Sprite;  /**< Opaque sprite type */
 typedef struct engine_Texture engine_Texture; /**< Opaque texture type */
 typedef struct engine_Font    engine_Font;    /**< Opaque font type */
 
@@ -90,6 +86,35 @@ static inline bool engine_isKeyPressed(KeyboardKey key) { return IsKeyPressed(ke
  * @return true if key was released
  */
 static inline bool engine_isKeyReleased(KeyboardKey key) { return IsKeyReleased(key); }
+
+/** @} */
+
+/**
+ * @defgroup Sprites Sprite handling functions
+ * @{
+ */
+
+/**
+ * @brief Create a sprite
+ * @param position Sprite position coordinates
+ * @param position Sprite width and height
+ * @param position Texture offset
+ * @return Pointer to the newly created sprite
+ */
+engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offset);
+
+/**
+ * @brief Destroy as sprite
+ * @param sprite Pointer to sprite pointer (will be set to nullptr)
+ */
+void engine_destroySprite(engine_Sprite** sprite);
+
+/**
+ * @brief Draw a sprite with the given texture
+ * @param texture Texture to draw
+ * @param sprite Sprite properties
+ */
+void engine_drawSprite(const engine_Texture* texture, const engine_Sprite* sprite);
 
 /** @} */
 
@@ -168,11 +193,6 @@ void engine_fontPrintfV(engine_Font* font, int x, int y, const char* format, va_
  * @{
  */
 
-/**
- * @brief Draw a sprite with the given texture
- * @param texture Texture to draw
- * @param sprite Sprite properties
- */
 void engine_drawSprite(const engine_Texture* texture, const engine_Sprite* sprite);
 
 /**

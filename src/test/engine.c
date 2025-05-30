@@ -286,10 +286,10 @@ MU_TEST(test_font_unload) {
 // Test drawing functions
 MU_TEST(test_draw_sprite) {
   // This test just ensures the function doesn't crash
-  engine_Sprite sprite = { .position = { 10, 10 }, .size = { 16, 16 }, .offset = { 0, 0 } };
+  engine_Sprite* sprite = engine_createSprite((Vector2) { 10, 10 }, (Vector2) { 16, 16 }, (Vector2) { 0, 0 });
 
   // Test with NULL texture
-  engine_drawSprite(NULL, &sprite);
+  engine_drawSprite(NULL, sprite);
 
   // Test with NULL sprite
   mockTextureLoadSuccess = true;
@@ -297,7 +297,9 @@ MU_TEST(test_draw_sprite) {
   engine_drawSprite(testTexture, NULL);
 
   // Test with valid arguments
-  engine_drawSprite(testTexture, &sprite);
+  engine_drawSprite(testTexture, sprite);
+
+  engine_destroySprite(&sprite);
 }
 
 MU_TEST(test_draw_background) {

@@ -1,9 +1,8 @@
+#include <errno.h>   // errno
+#include <stdlib.h>  // malloc, free
+#include <string.h>  // strerror
 #include "engine.h"
 #include "internal.h"
-
-#include <errno.h>   // errno
-#include <stdlib.h>  // malloc
-#include <string.h>  // strerror
 
 engine_Texture* engine_textureLoad(const char* filepath) {
   if (filepath == nullptr) {
