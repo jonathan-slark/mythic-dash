@@ -97,8 +97,8 @@ static inline bool engine_isKeyReleased(KeyboardKey key) { return IsKeyReleased(
 /**
  * @brief Create a sprite
  * @param position Sprite position coordinates
- * @param position Sprite width and height
- * @param position Texture offset
+ * @param size Sprite width and height
+ * @param offset Texture offset
  * @return Pointer to the newly created sprite
  */
 engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offset);
