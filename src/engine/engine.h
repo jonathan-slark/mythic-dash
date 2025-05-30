@@ -193,8 +193,6 @@ void engine_fontPrintfV(engine_Font* font, int x, int y, const char* format, va_
  * @{
  */
 
-void engine_drawSprite(const engine_Texture* texture, const engine_Sprite* sprite);
-
 /**
  * @brief Draw a texture as full background
  * @param background Texture to draw as background
