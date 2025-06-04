@@ -6,23 +6,18 @@
 #include "engine.h"
 #include "internal.h"
 
-// --- Types ---
-
-typedef struct engine_Sprite {
-  Vector2 position; /**< Position coordinates */
-  Vector2 size;     /**< Width and height */
-  Vector2 offset;   /**< Texture offset */
-} engine_Sprite;
-
-// --- Helper functions ---
-
-static inline Vector2 getSpriteSheetOffset(int row, int col, Vector2 spriteSize) {
-  return (Vector2) { .x = col * spriteSize.x, .y = row * spriteSize.y };
-}
-
 // --- Sprite functions ---
 
 engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offset) {
+  if (size.x <= 0 || size.y <= 0) {
+    LOG_ERROR(engine__log, "Failed to create sprite: invalid size");
+    return nullptr;
+  }
+  if (offset.x < 0 || offset.y < 0) {
+    LOG_ERROR(engine__log, "Failed to create sprite: invalid offset");
+    return nullptr;
+  }
+
   engine_Sprite* sprite = (engine_Sprite*) malloc(sizeof(engine_Sprite));
   if (sprite == nullptr) {
     char* error = strerror(errno);
@@ -38,7 +33,16 @@ engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offse
 }
 
 engine_Sprite* engine_createSpriteFromSheet(Vector2 position, Vector2 size, int row, int col) {
-  Vector2 offset = getSpriteSheetOffset(row, col, size);
+  if (size.x <= 0 || size.y <= 0) {
+    LOG_ERROR(engine__log, "Failed to create sprite: invalid size");
+    return nullptr;
+  }
+  if (row < 0 || col < 0) {
+    LOG_ERROR(engine__log, "Failed to create sprite: row or col is < 0");
+    return nullptr;
+  }
+
+  Vector2 offset = engine__getSpriteSheetOffset(row, col, size);
   return engine_createSprite(position, size, offset);
 }
 
@@ -67,4 +71,13 @@ void engine_drawSprite(const engine_Texture* texture, const engine_Sprite* sprit
   Rectangle dst   = (Rectangle) { sprite->position.x * scale, sprite->position.y * scale, sprite->size.x * scale,
                                   sprite->size.y * scale };
   DrawTexturePro(texture->texture, src, dst, (Vector2) { 0, 0 }, 0, WHITE);
+}
+
+void engine_spriteSetPos(engine_Sprite* sprite, Vector2 position) {
+  if (sprite == nullptr) {
+    LOG_WARN(engine__log, "Sprite is nullptr");
+    return;
+  }
+
+  sprite->position = position;
 }

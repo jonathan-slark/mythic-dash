@@ -52,11 +52,6 @@ void actor_destroy(game__Actor** actor) {
   *actor = nullptr;
 }
 
-game__Dir actor_getDir(const game__Actor* actor) {
-  assert(actor != nullptr);
-  return actor->dir;
-}
-
 Vector2 actor_getPos(const game__Actor* actor) {
   assert(actor != nullptr);
   return actor->pos;
@@ -67,10 +62,22 @@ Vector2 actor_getSize(const game__Actor* actor) {
   return actor->size;
 }
 
+game__Dir actor_getDir(const game__Actor* actor) {
+  assert(actor != nullptr);
+  return actor->dir;
+}
+
+bool actor_isMoving(const game__Actor* actor) {
+  assert(actor != nullptr);
+  return actor->isMoving;
+}
+
 game__AABB actor_getAABB(const game__Actor* actor) {
   assert(actor != nullptr);
-  return (game__AABB) { .min = (Vector2) { actor->pos.x, actor->pos.y },
-                        .max = (Vector2) { actor->pos.x + actor->size.x, actor->pos.y + actor->size.y } };
+  return (game__AABB) {
+    .min = (Vector2) {                 actor->pos.x,                 actor->pos.y },
+    .max = (Vector2) { actor->pos.x + actor->size.x, actor->pos.y + actor->size.y }
+  };
 }
 
 void actor_overlay(const game__Actor* actor, Color colour) {

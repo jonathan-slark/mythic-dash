@@ -13,10 +13,7 @@
  * @{
  */
 
-/**
- * @brief 2D sprite with position, size and offset
- */
-
+typedef struct engine_Anim    engine_Anim;    /**< Opaque animation type */
 typedef struct engine_Sprite  engine_Sprite;  /**< Opaque sprite type */
 typedef struct engine_Texture engine_Texture; /**< Opaque texture type */
 typedef struct engine_Font    engine_Font;    /**< Opaque font type */
@@ -114,7 +111,7 @@ engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offse
 engine_Sprite* engine_createSpriteFromSheet(Vector2 position, Vector2 size, int row, int col);
 
 /**
- * @brief Destroy as sprite
+ * @brief Destroy a sprite
  * @param sprite Pointer to sprite pointer (will be set to nullptr)
  */
 void engine_destroySprite(engine_Sprite** sprite);
@@ -125,6 +122,44 @@ void engine_destroySprite(engine_Sprite** sprite);
  * @param sprite Sprite properties
  */
 void engine_drawSprite(const engine_Texture* texture, const engine_Sprite* sprite);
+
+/**
+ * @brief Set the position of an existing sprite
+ * @param sprite Pointer to sprite pointer
+ * @param position New sprite position
+ */
+void engine_spriteSetPos(engine_Sprite* sprite, Vector2 position);
+
+/** @} */
+
+/**
+ * @defgroup Anim Animimation handling functions
+ * @{
+ */
+
+/**
+ * @brief Create an anim
+ * @param sprite Pointer to sprite object
+ * @param row Row in sprite sheet
+ * @param startFrame First frame to render
+ * @param frameCount Number of frames
+ * @param frameTime Length of time in seconds to display each frame
+ * @return Pointer to the newly created anim
+ */
+engine_Anim* engine_createAnim(engine_Sprite* sprite, int row, int startFrame, int frameCount, float frameTime);
+
+/**
+ * @brief Destroy an anim
+ * @param anim Pointer to anim pointer (will be set to nullptr)
+ */
+void engine_destroyAnim(engine_Sprite** anim);
+
+/**
+ * @brief Update an animation, called once per game frame
+ * @param anim Anim to update
+ * @param deltaTime Amount of time elapsed since last game frame
+ */
+void engine_updateAnim(engine_Anim* anim, float deltaTime);
 
 /** @} */
 

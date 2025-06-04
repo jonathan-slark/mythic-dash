@@ -22,7 +22,7 @@
 
 // --- Types ---
 
-typedef enum game__Dir { DIR_NONE, DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT, DIR_COUNT } game__Dir;
+typedef enum game__Dir { DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT, DIR_COUNT, DIR_NONE } game__Dir;
 
 typedef struct game__AABB {
   Vector2 min;
@@ -71,9 +71,10 @@ static inline void aabb_drawOverlay(game__AABB aabb, Color colour) {
 
 game__Actor* actor_create(Vector2 pos, Vector2 size, game__Dir dir, float speed);
 void         actor_destroy(game__Actor** actor);
-game__Dir    actor_getDir(const game__Actor* actor);
 Vector2      actor_getPos(const game__Actor* actor);
 Vector2      actor_getSize(const game__Actor* actor);
+game__Dir    actor_getDir(const game__Actor* actor);
+bool         actor_isMoving(const game__Actor* actor);
 game__AABB   actor_getAABB(const game__Actor* actor);
 bool         actor_canMove(game__Actor* actor, game__Dir dir, float slop);
 void         actor_overlay(const game__Actor* actor, Color colour);
@@ -88,6 +89,8 @@ bool         player_init(void);
 void         player_shutdown(void);
 void         player_update(float frameTime, float slop);
 Vector2      player_getPos(void);
+game__Dir    player_getDir(void);
+bool         player_isMoving(void);
 void         player_overlay(void);
 game__Actor* player_getActor(void);
 

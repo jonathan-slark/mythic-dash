@@ -10,16 +10,6 @@
 
 #define COUNT(array) (sizeof(array) / sizeof(array[0]))
 
-// --- Types ---
-
-typedef struct game__Anim {
-  engine_Sprite* frames;
-  size_t         frameCount;
-  size_t         currentFrame;
-  float          frameTime;
-  float          timeAccumulator;
-} game__Anim;
-
 // --- Constants ---
 
 static const char       FILE_BACKGROUND[] = "../../asset/gfx/background.png";
@@ -36,17 +26,31 @@ static const log_Config LOG_CONFIG_GAME   = { .minLevel      = LOG_LEVEL_DEBUG,
 static const float FPS[] = { 15, 30, 60, 0 };
 #endif
 
-const float BASE_SLOP       = 0.25f;
-const float BASE_DT         = (1.0f / 144.0f);  // Reference frame rate
-const float MIN_SLOP        = 0.05f;
-const float MAX_SLOP        = 0.5f;
-const float OVERLAP_EPSILON = 1e-5f;
+const float          BASE_SLOP       = 0.25f;
+const float          BASE_DT         = (1.0f / 144.0f);  // Reference frame rate
+const float          MIN_SLOP        = 0.05f;
+const float          MAX_SLOP        = 0.5f;
+const float          OVERLAP_EPSILON = 1e-5f;
+
+static const Vector2 PLAYER_OFFSET   = { 0.0f, 0.0f };
+static const struct {
+  int   row;
+  int   frameCount;
+  float frameTime;
+} PLAYER_ANIMS[DIR_COUNT] = {
+  [1] = { 1, 3, 1.0f / 12.0f },
+  [0] = { 0, 3, 1.0f / 12.0f },
+  [2] = { 2, 3, 1.0f / 12.0f },
+  [3] = { 3, 3, 1.0f / 12.0f },
+};
 
 // --- Global state ---
 
 log_Log*               game__log;
 static engine_Texture* g_background;
 static engine_Texture* g_sprites;
+static engine_Sprite*  g_playerSprite;
+static engine_Anim*    g_playerAnim[DIR_COUNT];
 static engine_Font*    g_font;
 #ifndef NDEBUG
 static size_t g_fpsIndex = COUNT(FPS) - 1;
@@ -74,18 +78,6 @@ static void checkFPSKeys(void) {
 }
 #endif
 
-void animUpdate(game__Anim* anim, float frameTime) {
-  anim->timeAccumulator += frameTime;
-  if (anim->timeAccumulator >= anim->frameTime) {
-    anim->timeAccumulator = 0.0f;
-    if (anim->currentFrame == anim->frameCount - 1) {
-      anim->currentFrame = 0;
-    } else {
-      anim->currentFrame++;
-    }
-  }
-}
-
 // --- Game functions ---
 
 bool game_load(void) {
@@ -107,6 +99,12 @@ bool game_load(void) {
 
   maze_init();
   GAME_TRY(player_init());
+  GAME_TRY((g_playerSprite =
+                engine_createSprite(POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_OFFSET)));
+  for (int i = 0; i < DIR_COUNT; i++) {
+    GAME_TRY(g_playerAnim[i] = engine_createAnim(g_playerSprite, PLAYER_ANIMS[i].row, 0, PLAYER_ANIMS[i].frameCount,
+                                                 PLAYER_ANIMS[i].frameTime));
+  }
 
   LOG_INFO(game__log, "Game loading took %f seconds", GetTime() - start);
   return true;
@@ -122,10 +120,15 @@ void game_update(float frameTime) {
 
   LOG_TRACE(game__log, "Slop: %f", slop);
   player_update(frameTime, slop);
+  engine_spriteSetPos(g_playerSprite, POS_ADJUST(player_getPos()));
+  if (player_isMoving()) {
+    engine_updateAnim(g_playerAnim[player_getDir()], frameTime);
+  }
 }
 
 void game_draw(void) {
   engine_drawBackground(g_background);
+  engine_drawSprite(g_sprites, g_playerSprite);
 
 #ifndef NDEBUG
   debug_drawOverlay();

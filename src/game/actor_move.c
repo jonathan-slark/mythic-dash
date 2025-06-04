@@ -6,14 +6,13 @@
 // --- Constants ---
 
 static const Vector2 VELS[] = {
-  { 0.0f, 0.0f },   // None
-  { 0.0f, -1.0f },  // Up
-  { 1.0f, 0.0f },   // Right
-  { 0.0f, 1.0f },   // Down
-  { -1.0f, 0.0f }   // Left
+  {  0.0f, -1.0f }, // Up
+  {  1.0f,  0.0f }, // Right
+  {  0.0f,  1.0f }, // Down
+  { -1.0f,  0.0f }  // Left
 };
 
-static const char* DIR_STRINGS[] = { "NONE", "UP", "RIGHT", "DOWN", "LEFT" };
+static const char* DIR_STRINGS[] = { "UP", "RIGHT", "DOWN", "LEFT" };
 
 // --- Helper functions ---
 
@@ -78,7 +77,7 @@ static void checkMazeCollision(game__Actor* actor) {
 
 static void getTiles(game__Actor* actor, game__Tile tiles[], game__Dir dir) {
   assert(actor != nullptr);
-  assert(dir != DIR_NONE && dir < DIR_COUNT);
+  assert(dir < DIR_COUNT);
 
   Vector2 basePos;
   Vector2 offset;
@@ -112,7 +111,7 @@ static void getTiles(game__Actor* actor, game__Tile tiles[], game__Dir dir) {
 
 static void alignToPassage(game__Actor* actor, game__Dir dir, float distance) {
   assert(actor != nullptr);
-  assert(dir != DIR_NONE);
+  assert(dir < DIR_COUNT);
   assert(distance != 0.0f && distance < MAX_SLOP);
 
   switch (dir) {
@@ -213,7 +212,7 @@ static bool checkStrictMovement(game__Actor* actor, game__Dir dir, game__AABB ac
 
 bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
   assert(actor != nullptr);
-  assert(dir != DIR_NONE);
+  assert(dir < DIR_COUNT);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
   actor->isCanMove = true;

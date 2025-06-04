@@ -22,6 +22,12 @@ typedef struct engine_Font {
   int       glyphSpacing;
 } engine_Font;
 
+typedef struct engine_Sprite {
+  Vector2 position; /**< Position coordinates */
+  Vector2 size;     /**< Width and height */
+  Vector2 offset;   /**< Texture offset */
+} engine_Sprite;
+
 typedef struct engine__ScreenState {
   int width;
   int height;
@@ -33,3 +39,9 @@ typedef struct engine__ScreenState {
 
 extern engine__ScreenState engine__screenState;
 extern log_Log*            engine__log;
+
+// --- Helper functions ---
+
+static inline Vector2 engine__getSpriteSheetOffset(int row, int col, Vector2 size) {
+  return (Vector2) { .x = col * size.x, .y = row * size.y };
+}

@@ -9,7 +9,7 @@
 static const Vector2     PLAYER_START_POS = { 109.0f, 184.0f };
 static const float       PLAYER_SPEED     = 60.0f;
 static const game__Dir   PLAYER_START_DIR = DIR_LEFT;
-static const KeyboardKey PLAYER_KEYS[]    = { 0, KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
+static const KeyboardKey PLAYER_KEYS[]    = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
 
 // --- Global state ---
 
@@ -39,7 +39,7 @@ void player_update(float frameTime, float slop) {
 
   game__Dir dir = DIR_NONE;
   for (int i = 0; i < DIR_COUNT; i++) {
-    if (PLAYER_KEYS[i] != 0 && engine_isKeyDown(PLAYER_KEYS[i]) && actor_canMove(g_player, (game__Dir) i, slop)) {
+    if (engine_isKeyDown(PLAYER_KEYS[i]) && actor_canMove(g_player, (game__Dir) i, slop)) {
       dir = (game__Dir) i;
       break;
     }
@@ -52,6 +52,16 @@ void player_update(float frameTime, float slop) {
 Vector2 player_getPos(void) {
   assert(g_player != nullptr);
   return actor_getPos(g_player);
+}
+
+game__Dir player_getDir(void) {
+  assert(g_player != nullptr);
+  return actor_getDir(g_player);
+}
+
+bool player_isMoving(void) {
+  assert(g_player != nullptr);
+  return actor_isMoving(g_player);
 }
 
 void player_overlay(void) {
