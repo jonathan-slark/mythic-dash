@@ -14,6 +14,12 @@ typedef struct engine_Sprite {
   Vector2 offset;   /**< Texture offset */
 } engine_Sprite;
 
+// --- Helper functions ---
+
+static inline Vector2 getSpriteSheetOffset(int row, int col, Vector2 spriteSize) {
+  return (Vector2) { .x = col * spriteSize.x, .y = row * spriteSize.y };
+}
+
 // --- Sprite functions ---
 
 engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offset) {
@@ -29,6 +35,11 @@ engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offse
   sprite->offset   = offset;
 
   return sprite;
+}
+
+engine_Sprite* engine_createSpriteFromSheet(Vector2 position, Vector2 size, int row, int col) {
+  Vector2 offset = getSpriteSheetOffset(row, col, size);
+  return engine_createSprite(position, size, offset);
 }
 
 void engine_destroySprite(engine_Sprite** sprite) {

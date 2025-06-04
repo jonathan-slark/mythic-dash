@@ -104,6 +104,16 @@ static inline bool engine_isKeyReleased(KeyboardKey key) { return IsKeyReleased(
 engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offset);
 
 /**
+ * @brief Create a sprite from a sprite sheet
+ * @param position Sprite position coordinates
+ * @param size Sprite width and height
+ * @param row Row of sprite on the sheet
+ * @param col Column of sprite on the sheet
+ * @return Pointer to the newly created sprite
+ */
+engine_Sprite* engine_createSpriteFromSheet(Vector2 position, Vector2 size, int row, int col);
+
+/**
  * @brief Destroy as sprite
  * @param sprite Pointer to sprite pointer (will be set to nullptr)
  */
