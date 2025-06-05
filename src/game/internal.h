@@ -98,10 +98,11 @@ game__Actor* player_getActor(void);
 
 // --- Ghost functions (ghost.c) ---
 
-bool    ghost_init(void);
-void    ghost_shutdown(void);
-void    ghost_update(float frameTime, float slop);
-Vector2 ghost_getPos(int id);
+bool      ghost_init(void);
+void      ghost_shutdown(void);
+void      ghost_update(float frameTime, float slop);
+Vector2   ghost_getPos(int id);
+game__Dir ghost_getDir(int id);
 
 // --- Maze functions (maze.c) ---
 

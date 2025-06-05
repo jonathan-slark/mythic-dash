@@ -4,13 +4,12 @@
 #include "../log/log.h"
 #include "engine.h"
 #include "internal.h"
-#include "log/log.h"
 
 // --- Types ---
 
 typedef struct engine_Anim {
   engine_Sprite* sprite;       /**< The sprite to update */
-  int            startFrame;   /**< Starting frame index (column in sheet) */
+  int            startCol;     /**< Starting frame index (column in sheet) */
   int            frameCount;   /**< How many frames total */
   int            row;          /**< Which row in the sheet */
   float          frameTime;    /**< Time per frame (in seconds) */
@@ -20,13 +19,17 @@ typedef struct engine_Anim {
 
 // --- Anim functions ---
 
-engine_Anim* engine_createAnim(engine_Sprite* sprite, int row, int startFrame, int frameCount, float frameTime) {
+engine_Anim* engine_createAnim(engine_Sprite* sprite, int row, int startCol, int frameCount, float frameTime) {
   if (sprite == nullptr) {
     LOG_ERROR(engine__log, "Failed to create anim: sprite is nullptr");
     return nullptr;
   }
-  if (row < 0 || startFrame < 0 || frameCount < 0) {
+  if (row < 0 || startCol < 0) {
     LOG_ERROR(engine__log, "Failed to create sprite: negative parameter");
+    return nullptr;
+  }
+  if (frameCount <= 0) {
+    LOG_ERROR(engine__log, "Failed to create sprite: invalid frameCount");
     return nullptr;
   }
   if (frameTime <= 0.0f) {
@@ -43,7 +46,7 @@ engine_Anim* engine_createAnim(engine_Sprite* sprite, int row, int startFrame, i
 
   anim->sprite       = sprite;
   anim->row          = row;
-  anim->startFrame   = startFrame;
+  anim->startCol     = startCol;
   anim->frameCount   = frameCount;
   anim->frameTime    = frameTime;
   anim->timer        = 0.0f;
@@ -52,14 +55,14 @@ engine_Anim* engine_createAnim(engine_Sprite* sprite, int row, int startFrame, i
   return anim;
 }
 
-void engine_destroyAnim(engine_Sprite** anim) {
+void engine_destroyAnim(engine_Anim** anim) {
   if (anim == nullptr || *anim == nullptr) {
     LOG_WARN(engine__log, "Anim is nullptr");
     return;
   }
 
   free(*anim);
-  anim = nullptr;
+  *anim = nullptr;
 }
 
 void engine_updateAnim(engine_Anim* anim, float deltaTime) {
@@ -77,7 +80,7 @@ void engine_updateAnim(engine_Anim* anim, float deltaTime) {
     anim->timer          -= anim->frameTime;
     anim->currentFrame    = (anim->currentFrame + 1) % anim->frameCount;
 
-    int     col           = anim->startFrame + anim->currentFrame;
+    int     col           = anim->startCol + anim->currentFrame;
     Vector2 offset        = engine__getSpriteSheetOffset(anim->row, col, anim->sprite->size);
     anim->sprite->offset  = offset;
   }

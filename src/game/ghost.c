@@ -25,10 +25,10 @@ static const struct {
   game__Dir startDir;
   float     startSpeed;
 } GHOST_DATA[GHOST_COUNT] = {
-  [0] = {  { 100.0f, 80.0f }, DIR_LEFT, SPEEDS[SpeedSlow] },
-  [1] = { { 100.0f, 104.0f },   DIR_UP, SPEEDS[SpeedSlow] },
-  [2] = {  { 84.0f, 104.0f }, DIR_DOWN, SPEEDS[SpeedSlow] },
-  [3] = { { 116.0f, 104.0f }, DIR_DOWN, SPEEDS[SpeedSlow] },
+  [0] = {  { 108.0f, 88.0f }, DIR_LEFT, SPEEDS[SpeedSlow] },
+  [1] = { { 108.0f, 112.0f },   DIR_UP, SPEEDS[SpeedSlow] },
+  [2] = {  { 92.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow] },
+  [3] = { { 124.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow] },
 };
 
 // --- Global state ---
@@ -48,7 +48,7 @@ bool ghost_init(void) {
     g_ghosts[i].timer  = 0.0f;
     g_ghosts[i].actor  = actor_create(GHOST_DATA[i].startPos, (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
                                       GHOST_DATA[i].startDir, GHOST_DATA[i].startSpeed);
-    if (g_ghosts[i].actor != nullptr) return false;
+    if (g_ghosts[i].actor == nullptr) return false;
 #ifndef NDEBUG
     g_ghosts[i].id = i;
 #endif
@@ -67,6 +67,13 @@ void ghost_shutdown(void) {
 void    ghost_update(float frameTime [[maybe_unused]], float slop [[maybe_unused]]) {}
 
 Vector2 ghost_getPos(int id) {
+  assert(id >= 0 && id < GHOST_COUNT);
   assert(g_ghosts[id].actor != nullptr);
   return actor_getPos(g_ghosts[id].actor);
+}
+
+game__Dir ghost_getDir(int id) {
+  assert(id >= 0 && id < GHOST_COUNT);
+  assert(g_ghosts[id].actor != nullptr);
+  return actor_getDir(g_ghosts[id].actor);
 }

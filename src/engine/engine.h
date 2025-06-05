@@ -37,7 +37,7 @@ typedef struct engine_Font    engine_Font;    /**< Opaque font type */
  * @param fps Target FPS, 0 for current display refresh rate
  * @return true if successful
  */
-bool engine_init(int nativeWidth, int nativeHeight, const char* title, int fps);
+[[nodiscard]] bool engine_init(int nativeWidth, int nativeHeight, const char* title, int fps);
 
 /**
  * @brief Shutdown the engine and free resources
@@ -98,7 +98,7 @@ static inline bool engine_isKeyReleased(KeyboardKey key) { return IsKeyReleased(
  * @param offset Texture offset
  * @return Pointer to the newly created sprite
  */
-engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offset);
+[[nodiscard]] engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offset);
 
 /**
  * @brief Create a sprite from a sprite sheet
@@ -108,7 +108,7 @@ engine_Sprite* engine_createSprite(Vector2 position, Vector2 size, Vector2 offse
  * @param col Column of sprite on the sheet
  * @return Pointer to the newly created sprite
  */
-engine_Sprite* engine_createSpriteFromSheet(Vector2 position, Vector2 size, int row, int col);
+[[nodiscard]] engine_Sprite* engine_createSpriteFromSheet(Vector2 position, Vector2 size, int row, int col);
 
 /**
  * @brief Destroy a sprite
@@ -141,18 +141,22 @@ void engine_spriteSetPos(engine_Sprite* sprite, Vector2 position);
  * @brief Create an anim
  * @param sprite Pointer to sprite object
  * @param row Row in sprite sheet
- * @param startFrame First frame to render
+ * @param startCol First frame to render
  * @param frameCount Number of frames
  * @param frameTime Length of time in seconds to display each frame
  * @return Pointer to the newly created anim
  */
-engine_Anim* engine_createAnim(engine_Sprite* sprite, int row, int startFrame, int frameCount, float frameTime);
+[[nodiscard]] engine_Anim* engine_createAnim(engine_Sprite* sprite,
+                                             int            row,
+                                             int            startCol,
+                                             int            frameCount,
+                                             float          frameTime);
 
 /**
  * @brief Destroy an anim
  * @param anim Pointer to anim pointer (will be set to nullptr)
  */
-void engine_destroyAnim(engine_Sprite** anim);
+void engine_destroyAnim(engine_Anim** anim);
 
 /**
  * @brief Update an animation, called once per game frame
@@ -173,7 +177,7 @@ void engine_updateAnim(engine_Anim* anim, float deltaTime);
  * @param filepath Path to the image file
  * @return Pointer to the loaded texture or nullptr on failure
  */
-engine_Texture* engine_textureLoad(const char* filepath);
+[[nodiscard]] engine_Texture* engine_textureLoad(const char* filepath);
 
 /**
  * @brief Unload a texture and free memory
@@ -198,12 +202,12 @@ void engine_textureUnload(engine_Texture** texture);
  * @param glyphSpacing Spacing between characters
  * @return Pointer to the loaded font or nullptr on failure
  */
-engine_Font* engine_fontLoad(const char* filepath,
-                             int         glyphWidth,
-                             int         glyphHeight,
-                             int         asciiStart,
-                             int         asciiEnd,
-                             int         glyphSpacing);
+[[nodiscard]] engine_Font* engine_fontLoad(const char* filepath,
+                                           int         glyphWidth,
+                                           int         glyphHeight,
+                                           int         asciiStart,
+                                           int         asciiEnd,
+                                           int         glyphSpacing);
 
 /**
  * @brief Unload a font and free memory

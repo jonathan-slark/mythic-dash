@@ -56,7 +56,7 @@ typedef struct log_Log log_Log;
  *       - showFileLine: true
  *       - subsystem: "MAIN"
  */
-log_Log* log_create(const log_Config* config);
+[[nodiscard]] log_Log* log_create(const log_Config* config);
 
 /**
  * @brief Destroys a logger instance and frees associated resources

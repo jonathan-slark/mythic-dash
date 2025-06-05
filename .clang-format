@@ -23,4 +23,5 @@ AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: WithoutElse
 Cpp11BracedListStyle: false
+PenaltyBreakAssignment: 100
 SpaceAfterCStyleCast: true

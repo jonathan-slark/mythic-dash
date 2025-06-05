@@ -4,13 +4,25 @@
 #include <raylib.h>
 #include "../engine/engine.h"
 #include "../log/log.h"
+#include "game/internal.h"
 #include "internal.h"
 
 // --- Macros ---
 
 #define COUNT(array) (sizeof(array) / sizeof(array[0]))
 
+// --- Types ---
+
+typedef struct AnimData {
+  int   row;
+  int   startCol;
+  int   frameCount;
+  float frameTime;
+} AnimData;
+
 // --- Constants ---
+
+// static const char*      DIR_STRINGS[DIR_COUNT] = { "Up", "Right", "Down", "Left" };
 
 static const char       FILE_BACKGROUND[] = "../../asset/gfx/background.png";
 static const char       FILE_SPRITES[]    = "../../asset/gfx/sprites.png";
@@ -26,22 +38,42 @@ static const log_Config LOG_CONFIG_GAME   = { .minLevel      = LOG_LEVEL_DEBUG,
 static const float FPS[] = { 15, 30, 60, 0 };
 #endif
 
-const float          BASE_SLOP       = 0.25f;
-const float          BASE_DT         = (1.0f / 144.0f);  // Reference frame rate
-const float          MIN_SLOP        = 0.05f;
-const float          MAX_SLOP        = 0.5f;
-const float          OVERLAP_EPSILON = 1e-5f;
+const float           BASE_SLOP               = 0.25f;
+const float           BASE_DT                 = (1.0f / 144.0f);  // Reference frame rate
+const float           MIN_SLOP                = 0.05f;
+const float           MAX_SLOP                = 0.5f;
+const float           OVERLAP_EPSILON         = 1e-5f;
 
-static const Vector2 PLAYER_OFFSET   = { 0.0f, 0.0f };
-static const struct {
-  int   row;
-  int   frameCount;
-  float frameTime;
-} PLAYER_ANIMS[DIR_COUNT] = {
-  [0] = { 0, 3, 1.0f / 12.0f },
-  [1] = { 1, 3, 1.0f / 12.0f },
-  [2] = { 2, 3, 1.0f / 12.0f },
-  [3] = { 3, 3, 1.0f / 12.0f },
+static const Vector2  PLAYER_OFFSET           = { 0.0f, 0.0f };
+static const AnimData PLAYER_ANIMS[DIR_COUNT] = {
+  [DIR_UP]    = { 0, 0, 3, 1.0f / 12.0f },
+  [DIR_RIGHT] = { 1, 0, 3, 1.0f / 12.0f },
+  [DIR_DOWN]  = { 2, 0, 3, 1.0f / 12.0f },
+  [DIR_LEFT]  = { 3, 0, 3, 1.0f / 12.0f }
+};
+static const Vector2 GHOST_OFFSETS[GHOST_COUNT] = {
+  {  48.0f, 0.0f },
+  {  80.0f, 0.0f },
+  { 112.0f, 0.0f },
+  { 144.0f, 0.0f }
+};
+static const AnimData GHOST_ANIMS[GHOST_COUNT][DIR_COUNT] = {
+  { [DIR_UP]    = { 0, 3, 2, 1.0f / 12.0f },
+   [DIR_RIGHT] = { 1, 3, 2, 1.0f / 12.0f },
+   [DIR_DOWN]  = { 2, 3, 2, 1.0f / 12.0f },
+   [DIR_LEFT]  = { 3, 3, 2, 1.0f / 12.0f } },
+  { [DIR_UP]    = { 0, 5, 2, 1.0f / 12.0f },
+   [DIR_RIGHT] = { 1, 5, 2, 1.0f / 12.0f },
+   [DIR_DOWN]  = { 2, 5, 2, 1.0f / 12.0f },
+   [DIR_LEFT]  = { 3, 5, 2, 1.0f / 12.0f } },
+  { [DIR_UP]    = { 0, 7, 2, 1.0f / 12.0f },
+   [DIR_RIGHT] = { 1, 7, 2, 1.0f / 12.0f },
+   [DIR_DOWN]  = { 2, 7, 2, 1.0f / 12.0f },
+   [DIR_LEFT]  = { 3, 7, 2, 1.0f / 12.0f } },
+  { [DIR_UP]    = { 0, 9, 2, 1.0f / 12.0f },
+   [DIR_RIGHT] = { 1, 9, 2, 1.0f / 12.0f },
+   [DIR_DOWN]  = { 2, 9, 2, 1.0f / 12.0f },
+   [DIR_LEFT]  = { 3, 9, 2, 1.0f / 12.0f } }
 };
 
 // --- Global state ---
@@ -51,6 +83,8 @@ static engine_Texture* g_background;
 static engine_Texture* g_sprites;
 static engine_Sprite*  g_playerSprite;
 static engine_Anim*    g_playerAnim[DIR_COUNT];
+static engine_Sprite*  g_ghostSprites[GHOST_COUNT];
+static engine_Anim*    g_ghostAnims[GHOST_COUNT][DIR_COUNT];
 static engine_Font*    g_font;
 #ifndef NDEBUG
 static size_t g_fpsIndex = COUNT(FPS) - 1;
@@ -100,14 +134,23 @@ bool game_load(void) {
   maze_init();
 
   GAME_TRY(player_init());
-  GAME_TRY((g_playerSprite =
-                engine_createSprite(POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_OFFSET)));
+  GAME_TRY((g_playerSprite = engine_createSprite(POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
+                                                 PLAYER_OFFSET)));
   for (int i = 0; i < DIR_COUNT; i++) {
-    GAME_TRY(g_playerAnim[i] = engine_createAnim(g_playerSprite, PLAYER_ANIMS[i].row, 0, PLAYER_ANIMS[i].frameCount,
-                                                 PLAYER_ANIMS[i].frameTime));
+    GAME_TRY(g_playerAnim[i] = engine_createAnim(g_playerSprite, PLAYER_ANIMS[i].row, PLAYER_ANIMS[i].startCol,
+                                                 PLAYER_ANIMS[i].frameCount, PLAYER_ANIMS[i].frameTime));
   }
 
   GAME_TRY(ghost_init());
+  for (int i = 0; i < GHOST_COUNT; i++) {
+    GAME_TRY((g_ghostSprites[i] = engine_createSprite(POS_ADJUST(ghost_getPos(i)), (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
+                                                      GHOST_OFFSETS[i])));
+    for (int j = 0; j < DIR_COUNT; j++) {
+      GAME_TRY(g_ghostAnims[i][j] = engine_createAnim(g_ghostSprites[i], GHOST_ANIMS[i][j].row,
+                                                      GHOST_ANIMS[i][j].startCol, GHOST_ANIMS[i][j].frameCount,
+                                                      GHOST_ANIMS[i][j].frameTime));
+    }
+  }
 
   LOG_INFO(game__log, "Game loading took %f seconds", GetTime() - start);
   return true;
@@ -130,11 +173,18 @@ void game_update(float frameTime) {
   }
 
   ghost_update(frameTime, slop);
+  for (int i = 0; i < GHOST_COUNT; i++) {
+    engine_spriteSetPos(g_ghostSprites[i], POS_ADJUST(ghost_getPos(i)));
+    engine_updateAnim(g_ghostAnims[i][ghost_getDir(i)], frameTime);
+  }
 }
 
 void game_draw(void) {
   engine_drawBackground(g_background);
   engine_drawSprite(g_sprites, g_playerSprite);
+  for (int i = 0; i < GHOST_COUNT; i++) {
+    engine_drawSprite(g_sprites, g_ghostSprites[i]);
+  }
 
 #ifndef NDEBUG
   debug_drawOverlay();
@@ -142,7 +192,20 @@ void game_draw(void) {
 }
 
 void game_unload(void) {
+  ghost_shutdown();
+  for (int i = 0; i < GHOST_COUNT; i++) {
+    engine_destroySprite(&g_ghostSprites[i]);
+    for (int j = 0; j < DIR_COUNT; j++) {
+      engine_destroyAnim(&g_ghostAnims[i][j]);
+    }
+  }
+
   player_shutdown();
+  engine_destroySprite(&g_playerSprite);
+  for (int i = 0; i < DIR_COUNT; i++) {
+    engine_destroyAnim(&g_playerAnim[i]);
+  }
+
   engine_fontUnload(&g_font);
   engine_textureUnload(&g_sprites);
   engine_textureUnload(&g_background);
