@@ -12,7 +12,7 @@ static const Vector2 VELS[] = {
   { -1.0f,  0.0f }  // Left
 };
 
-static const char* DIR_STRINGS[] = { "UP", "RIGHT", "DOWN", "LEFT" };
+const char* DIR_STRINGS[] = { "UP", "RIGHT", "DOWN", "LEFT" };
 
 // --- Helper functions ---
 
@@ -233,7 +233,7 @@ bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
   if (!actor->isMoving && canMove) actor->isMoving = true;
 
   if (canMove) {
-    LOG_DEBUG(game__log, "Actor can move in direction: %s, pos: %f, %f", DIR_STRINGS[dir], actor->pos.x, actor->pos.y);
+    LOG_TRACE(game__log, "Actor can move in direction: %s, pos: %f, %f", DIR_STRINGS[dir], actor->pos.x, actor->pos.y);
   }
 
   return canMove;

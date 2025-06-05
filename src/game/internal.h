@@ -46,6 +46,8 @@ extern const float   MIN_SLOP;
 extern const float   MAX_SLOP;
 extern const float   OVERLAP_EPSILON;
 
+extern const char*   DIR_STRINGS[];
+
 // --- Global state ---
 
 extern log_Log* game__log;

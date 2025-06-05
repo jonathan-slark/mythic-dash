@@ -45,6 +45,7 @@ void player_update(float frameTime, float slop) {
       break;
     }
   }
+  // Player keeps continually moving till they hit a wall
   if (dir == DIR_NONE) dir = actor_getDir(g_player);
 
   actor_move(g_player, dir, frameTime);
