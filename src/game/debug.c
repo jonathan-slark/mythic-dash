@@ -23,19 +23,28 @@ void         debug_drawOverlay(void) {
   }
 
   if (g_debug.isMoveOverlayEnabled || g_debug.isCanMoveOverlayEnabled) {
-    player_overlay();
+    actor_overlay(player_getActor(), OVERLAY_COLOUR_PLAYER);
+    for (int i = 0; i < GHOST_COUNT; i++) {
+      actor_overlay(ghost_getActor(i), OVERLAY_COLOUR_GHOST);
+    }
   }
 
   if (g_debug.isMoveOverlayEnabled) {
     DrawText("Move overlay enabled", 0, yPos, 20, ORANGE);
     yPos += 20;
     actor_moveOverlay(player_getActor());
+    for (int i = 0; i < GHOST_COUNT; i++) {
+      actor_moveOverlay(ghost_getActor(i));
+    }
   }
 
   if (g_debug.isCanMoveOverlayEnabled) {
     DrawText("Can move overlay enabled", 0, yPos, 20, YELLOW);
     yPos += 20;
     actor_canMoveOverlay(player_getActor());
+    for (int i = 0; i < GHOST_COUNT; i++) {
+      actor_canMoveOverlay(ghost_getActor(i));
+    }
   }
 }
 

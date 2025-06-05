@@ -65,11 +65,6 @@ bool player_isMoving(void) {
   return actor_isMoving(g_player);
 }
 
-void player_overlay(void) {
-  assert(g_player != nullptr);
-  actor_overlay(g_player, OVERLAY_COLOUR_PLAYER);
-}
-
 game__Actor* player_getActor(void) {
   assert(g_player != nullptr);
   return g_player;

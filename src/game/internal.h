@@ -15,6 +15,7 @@
 
 #define POS_ADJUST(pos) Vector2Add((pos), MAZE_ORIGIN)
 #define OVERLAY_COLOUR_PLAYER (Color){ 100, 200, 255, 128 }
+#define OVERLAY_COLOUR_GHOST (Color){ 255, 128, 200, 128 }
 #define OVERLAY_COLOUR_TILE_WALL (Color){ 255, 100, 100, 128 }
 #define OVERLAY_COLOUR_TILE_FLOOR (Color){ 255, 100, 100, 32 }
 #define OVERLAY_COLOUR_COLLISION (Color){ 255, 255, 100, 128 }
@@ -93,16 +94,16 @@ void         player_update(float frameTime, float slop);
 Vector2      player_getPos(void);
 game__Dir    player_getDir(void);
 bool         player_isMoving(void);
-void         player_overlay(void);
 game__Actor* player_getActor(void);
 
 // --- Ghost functions (ghost.c) ---
 
-bool      ghost_init(void);
-void      ghost_shutdown(void);
-void      ghost_update(float frameTime, float slop);
-Vector2   ghost_getPos(int id);
-game__Dir ghost_getDir(int id);
+bool         ghost_init(void);
+void         ghost_shutdown(void);
+void         ghost_update(float frameTime, float slop);
+Vector2      ghost_getPos(int id);
+game__Dir    ghost_getDir(int id);
+game__Actor* ghost_getActor(int id);
 
 // --- Maze functions (maze.c) ---
 
