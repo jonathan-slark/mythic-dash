@@ -33,7 +33,9 @@ typedef struct game__Actor game__Actor;
 
 // --- Constants ---
 
-constexpr int        ACTOR_SIZE = 16;
+constexpr int        ACTOR_SIZE  = 16;
+constexpr int        GHOST_COUNT = 4;
+
 extern const Vector2 MAZE_ORIGIN;
 extern const float   TILE_SIZE;
 
@@ -93,6 +95,13 @@ game__Dir    player_getDir(void);
 bool         player_isMoving(void);
 void         player_overlay(void);
 game__Actor* player_getActor(void);
+
+// --- Ghost functions (ghost.c) ---
+
+bool    ghost_init(void);
+void    ghost_shutdown(void);
+void    ghost_update(float frameTime, float slop);
+Vector2 ghost_getPos(int id);
 
 // --- Maze functions (maze.c) ---
 

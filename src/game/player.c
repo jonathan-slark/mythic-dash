@@ -26,6 +26,7 @@ bool player_init(void) {
 void player_shutdown(void) {
   assert(g_player != nullptr);
   actor_destroy(&g_player);
+  assert(g_player == nullptr);
 }
 
 void player_update(float frameTime, float slop) {

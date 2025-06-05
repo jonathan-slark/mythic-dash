@@ -38,8 +38,8 @@ static const struct {
   int   frameCount;
   float frameTime;
 } PLAYER_ANIMS[DIR_COUNT] = {
-  [1] = { 1, 3, 1.0f / 12.0f },
   [0] = { 0, 3, 1.0f / 12.0f },
+  [1] = { 1, 3, 1.0f / 12.0f },
   [2] = { 2, 3, 1.0f / 12.0f },
   [3] = { 3, 3, 1.0f / 12.0f },
 };
@@ -98,6 +98,7 @@ bool game_load(void) {
   GAME_TRY(g_font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
 
   maze_init();
+
   GAME_TRY(player_init());
   GAME_TRY((g_playerSprite =
                 engine_createSprite(POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_OFFSET)));
@@ -105,6 +106,8 @@ bool game_load(void) {
     GAME_TRY(g_playerAnim[i] = engine_createAnim(g_playerSprite, PLAYER_ANIMS[i].row, 0, PLAYER_ANIMS[i].frameCount,
                                                  PLAYER_ANIMS[i].frameTime));
   }
+
+  GAME_TRY(ghost_init());
 
   LOG_INFO(game__log, "Game loading took %f seconds", GetTime() - start);
   return true;
@@ -119,11 +122,14 @@ void game_update(float frameTime) {
 #endif
 
   LOG_TRACE(game__log, "Slop: %f", slop);
+
   player_update(frameTime, slop);
   engine_spriteSetPos(g_playerSprite, POS_ADJUST(player_getPos()));
   if (player_isMoving()) {
     engine_updateAnim(g_playerAnim[player_getDir()], frameTime);
   }
+
+  ghost_update(frameTime, slop);
 }
 
 void game_draw(void) {
