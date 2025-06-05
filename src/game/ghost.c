@@ -46,8 +46,9 @@ bool ghost_init(void) {
     assert(g_ghosts[i].actor == nullptr);
     g_ghosts[i].update = wander;
     g_ghosts[i].timer  = 0.0f;
-    g_ghosts[i].actor  = actor_create(GHOST_DATA[i].startPos, (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
-                                      GHOST_DATA[i].startDir, GHOST_DATA[i].startSpeed);
+    g_ghosts[i].actor  = actor_create(
+        GHOST_DATA[i].startPos, (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, GHOST_DATA[i].startDir, GHOST_DATA[i].startSpeed
+    );
     if (g_ghosts[i].actor == nullptr) return false;
 #ifndef NDEBUG
     g_ghosts[i].id = i;

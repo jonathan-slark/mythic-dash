@@ -133,12 +133,14 @@ static void clearAllCollisionFlags(game__Tile tiles[]) {
   }
 }
 
-static bool tryAlignToTile(game__Actor* actor,
-                           game__Dir    dir,
-                           game__AABB   actorAABB,
-                           game__AABB   tileAABB,
-                           float        slop,
-                           bool         isPositive) {
+static bool tryAlignToTile(
+    game__Actor* actor,
+    game__Dir    dir,
+    game__AABB   actorAABB,
+    game__AABB   tileAABB,
+    float        slop,
+    bool         isPositive
+) {
   float overlapX = aabb_getOverlapX(actorAABB, tileAABB);
   float overlapY = aabb_getOverlapY(actorAABB, tileAABB);
   switch (dir) {
@@ -146,8 +148,9 @@ static bool tryAlignToTile(game__Actor* actor,
     case DIR_DOWN:
       if (overlapX > OVERLAP_EPSILON && overlapX <= slop && fabsf(overlapY) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapX : -overlapX);
-        LOG_DEBUG(game__log, "Actor can move up/down, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y,
-                  slop);
+        LOG_DEBUG(
+            game__log, "Actor can move up/down, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y, slop
+        );
         return true;
       }
       break;
@@ -155,8 +158,9 @@ static bool tryAlignToTile(game__Actor* actor,
     case DIR_RIGHT:
       if (overlapY > OVERLAP_EPSILON && overlapY <= slop && fabsf(overlapX) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapY : -overlapY);
-        LOG_DEBUG(game__log, "Actor can move left/right, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y,
-                  slop);
+        LOG_DEBUG(
+            game__log, "Actor can move left/right, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y, slop
+        );
         return true;
       }
       break;

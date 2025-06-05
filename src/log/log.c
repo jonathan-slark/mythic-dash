@@ -32,11 +32,13 @@ static const char* LEVEL_COLOURS[]  = {
 
 static const char       TIME_ERROR[]  = "[TIME ERROR]";
 
-static const log_Config defaultConfig = { .minLevel      = LOG_LEVEL_INFO,
-                                          .useColours    = true,
-                                          .showTimestamp = true,
-                                          .showFileLine  = true,
-                                          .subsystem     = "MAIN" };
+static const log_Config defaultConfig = {
+  .minLevel      = LOG_LEVEL_INFO,
+  .useColours    = true,
+  .showTimestamp = true,
+  .showFileLine  = true,
+  .subsystem     = "MAIN"
+};
 
 // --- Types ---
 
@@ -100,8 +102,9 @@ static const char* getCachedTimestamp(log_Log* log) {
       return TIME_ERROR;
     }
 
-    size_t timestampCount =
-        strftime(log->timestampCache.timestamp, sizeof(log->timestampCache.timestamp), "%H:%M:%S", timeInfo);
+    size_t timestampCount = strftime(
+        log->timestampCache.timestamp, sizeof(log->timestampCache.timestamp), "%H:%M:%S", timeInfo
+    );
     if (timestampCount == 0) {
       perror("strftime() failed");
       return TIME_ERROR;
@@ -175,26 +178,30 @@ const log_Config* log_getConfig(const log_Log* log) {
 
 const log_Config* log_getDefaultConfig(void) { return &defaultConfig; }
 
-void              log_message(log_Log*    log,
-                              log_Level   level,
-                              const char* file,
-                              int         line,
-                              bool        trailingNewline,
-                              const char* format,
-                              ...) {
+void              log_message(
+                 log_Log*    log,
+                 log_Level   level,
+                 const char* file,
+                 int         line,
+                 bool        trailingNewline,
+                 const char* format,
+                 ...
+             ) {
   va_list args;
   va_start(args, format);
   log_vmessage(log, level, file, line, trailingNewline, format, args);
   va_end(args);
 }
 
-void log_vmessage(log_Log*    log,
-                  log_Level   level,
-                  const char* file,
-                  int         line,
-                  bool        trailingNewline,
-                  const char* format,
-                  va_list     args) {
+void log_vmessage(
+    log_Log*    log,
+    log_Level   level,
+    const char* file,
+    int         line,
+    bool        trailingNewline,
+    const char* format,
+    va_list     args
+) {
   if (log == nullptr) {
     fprintfCheck(stderr, "Invalid log message: log is null\n");
     return;

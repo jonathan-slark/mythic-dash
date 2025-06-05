@@ -54,8 +54,10 @@ static game__AABB g_mazeAABB[MAZE_ROWS][MAZE_COLS];
 static void makeMazeAABB(void) {
   for (int row = 0; row < MAZE_ROWS; row++) {
     for (int col = 0; col < MAZE_COLS; col++) {
-      g_mazeAABB[row][col] = (game__AABB) { .min = (Vector2) { col * TILE_SIZE, row * TILE_SIZE },
-                                            .max = (Vector2) { (col + 1) * TILE_SIZE, (row + 1) * TILE_SIZE } };
+      g_mazeAABB[row][col] = (game__AABB) {
+        .min = (Vector2) {       col * TILE_SIZE,       row * TILE_SIZE },
+        .max = (Vector2) { (col + 1) * TILE_SIZE, (row + 1) * TILE_SIZE }
+      };
     }
   }
 }

@@ -146,11 +146,8 @@ void engine_spriteSetPos(engine_Sprite* sprite, Vector2 position);
  * @param frameTime Length of time in seconds to display each frame
  * @return Pointer to the newly created anim
  */
-[[nodiscard]] engine_Anim* engine_createAnim(engine_Sprite* sprite,
-                                             int            row,
-                                             int            startCol,
-                                             int            frameCount,
-                                             float          frameTime);
+[[nodiscard]] engine_Anim*
+engine_createAnim(engine_Sprite* sprite, int row, int startCol, int frameCount, float frameTime);
 
 /**
  * @brief Destroy an anim
@@ -202,12 +199,8 @@ void engine_textureUnload(engine_Texture** texture);
  * @param glyphSpacing Spacing between characters
  * @return Pointer to the loaded font or nullptr on failure
  */
-[[nodiscard]] engine_Font* engine_fontLoad(const char* filepath,
-                                           int         glyphWidth,
-                                           int         glyphHeight,
-                                           int         asciiStart,
-                                           int         asciiEnd,
-                                           int         glyphSpacing);
+[[nodiscard]] engine_Font*
+engine_fontLoad(const char* filepath, int glyphWidth, int glyphHeight, int asciiStart, int asciiEnd, int glyphSpacing);
 
 /**
  * @brief Unload a font and free memory

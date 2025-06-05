@@ -2,6 +2,7 @@
 Language: C
 BasedOnStyle: Chromium
 ColumnLimit: 120
+AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: Right
 AlignConsecutiveAssignments:
   Enabled: true
@@ -22,6 +23,9 @@ AlignConsecutiveDeclarations:
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: WithoutElse
+BinPackArguments: false
+BinPackParameters: OnePerLine
 Cpp11BracedListStyle: false
 PenaltyBreakAssignment: 100
 SpaceAfterCStyleCast: true
+PenaltyIndentedWhitespace: 1

@@ -91,13 +91,15 @@ const log_Config* log_getDefaultConfig(void);
  * @param format Printf-style format string
  * @param ... Additional arguments for the format string
  */
-void log_message(log_Log*    log,
-                 log_Level   level,
-                 const char* file,
-                 int         line,
-                 bool        trailingNewline,
-                 const char* format,
-                 ...);
+void log_message(
+    log_Log*    log,
+    log_Level   level,
+    const char* file,
+    int         line,
+    bool        trailingNewline,
+    const char* format,
+    ...
+);
 
 /**
  * @brief Logs a formatted message with the specified level using va_list
@@ -110,13 +112,15 @@ void log_message(log_Log*    log,
  * @param format Printf-style format string
  * @param args Variable argument list
  */
-void log_vmessage(log_Log*    log,
-                  log_Level   level,
-                  const char* file,
-                  int         line,
-                  bool        trailingNewline,
-                  const char* format,
-                  va_list     args);
+void log_vmessage(
+    log_Log*    log,
+    log_Level   level,
+    const char* file,
+    int         line,
+    bool        trailingNewline,
+    const char* format,
+    va_list     args
+);
 
 // Convenience macros for different log levels
 #define LOG_LOG(log, level, ...) log_message(log, level, __FILE__, __LINE__, true, __VA_ARGS__)

@@ -9,12 +9,8 @@
 
 // --- Font functions ---
 
-engine_Font* engine_fontLoad(const char* filepath,
-                             int         glyphWidth,
-                             int         glyphHeight,
-                             int         asciiStart,
-                             int         asciiEnd,
-                             int         glyphSpacing) {
+engine_Font*
+engine_fontLoad(const char* filepath, int glyphWidth, int glyphHeight, int asciiStart, int asciiEnd, int glyphSpacing) {
   if (filepath == nullptr) {
     LOG_ERROR(engine__log, "Failed to load font: filepath is nullptr");
     return nullptr;
@@ -46,8 +42,16 @@ engine_Font* engine_fontLoad(const char* filepath,
   font->asciiEnd     = asciiEnd;
   font->glyphSpacing = glyphSpacing;
 
-  LOG_INFO(engine__log, "Loaded font: %s, %dx%d, %d columns, %d row%s", filepath, font->glyphWidth, font->glyphHeight,
-           font->columns, font->rows, font->rows == 1 ? "" : "s");
+  LOG_INFO(
+      engine__log,
+      "Loaded font: %s, %dx%d, %d columns, %d row%s",
+      filepath,
+      font->glyphWidth,
+      font->glyphHeight,
+      font->columns,
+      font->rows,
+      font->rows == 1 ? "" : "s"
+  );
 
   return font;
 }
