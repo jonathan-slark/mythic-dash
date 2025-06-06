@@ -67,6 +67,7 @@ static game__Tile* isMazeCollision(game__Actor* actor) {
 
 static void checkMazeCollision(game__Actor* actor) {
   assert(actor != nullptr);
+
   game__Tile* tile = isMazeCollision(actor);
   if (tile != nullptr) {
     resolveActorCollision(actor, &tile->aabb);
@@ -77,7 +78,7 @@ static void checkMazeCollision(game__Actor* actor) {
 
 static void getTiles(game__Actor* actor, game__Tile tiles[], game__Dir dir) {
   assert(actor != nullptr);
-  assert(dir < DIR_COUNT);
+  assert(dir >= 0 && dir < DIR_COUNT);
 
   Vector2 basePos;
   Vector2 offset;
@@ -111,7 +112,7 @@ static void getTiles(game__Actor* actor, game__Tile tiles[], game__Dir dir) {
 
 static void alignToPassage(game__Actor* actor, game__Dir dir, float distance) {
   assert(actor != nullptr);
-  assert(dir < DIR_COUNT);
+  assert(dir >= 0 && dir < DIR_COUNT);
   assert(distance != 0.0f && distance < MAX_SLOP);
 
   switch (dir) {
@@ -141,6 +142,10 @@ static bool tryAlignToTile(
     float        slop,
     bool         isPositive
 ) {
+  assert(actor != nullptr);
+  assert(dir >= 0 && dir < DIR_COUNT);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
   float overlapX = aabb_getOverlapX(actorAABB, tileAABB);
   float overlapY = aabb_getOverlapY(actorAABB, tileAABB);
   switch (dir) {
@@ -170,6 +175,10 @@ static bool tryAlignToTile(
 }
 
 static bool checkPassageMovement(game__Actor* actor, game__Dir dir, game__AABB actorAABB, float slop) {
+  assert(actor != nullptr);
+  assert(dir >= 0 && dir < DIR_COUNT);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
   if (!isPassagePattern(actor->tilesCanMove)) {
     return false;
   }
@@ -185,6 +194,9 @@ static bool checkPassageMovement(game__Actor* actor, game__Dir dir, game__AABB a
 }
 
 static bool checkStrictMovement(game__Actor* actor, game__Dir dir, game__AABB actorAABB) {
+  assert(actor != nullptr);
+  assert(dir >= 0 && dir < DIR_COUNT);
+
   bool canMove = true;
 
   for (size_t i = 0; i < TILES_COUNT; i++) {
@@ -216,7 +228,7 @@ static bool checkStrictMovement(game__Actor* actor, game__Dir dir, game__AABB ac
 
 bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
   assert(actor != nullptr);
-  assert(dir < DIR_COUNT);
+  assert(dir >= 0 && dir < DIR_COUNT);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
   actor->isCanMove = true;
@@ -239,13 +251,23 @@ bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
   return canMove;
 }
 
-void actor_move(game__Actor* actor, game__Dir dir, float frameTime) {
+void actor_moveNoCheck(game__Actor* actor, game__Dir dir, float frameTime) {
   assert(actor != nullptr);
-
-  if (!actor->isMoving) return;
+  assert(dir >= 0 && dir < DIR_COUNT);
+  assert(frameTime >= 0.0f);
 
   actor->pos = Vector2Add(actor->pos, Vector2Scale(VELS[dir], frameTime * actor->speed));
   actor->dir = dir;
+}
+
+void actor_move(game__Actor* actor, game__Dir dir, float frameTime) {
+  assert(actor != nullptr);
+  assert(dir >= 0 && dir < DIR_COUNT);
+  assert(frameTime >= 0.0f);
+
+  if (!actor->isMoving) return;
+
+  actor_moveNoCheck(actor, dir, frameTime);
 
   getTiles(actor, actor->tilesMove, dir);
   checkMazeCollision(actor);

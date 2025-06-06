@@ -20,12 +20,15 @@ typedef struct Ghost {
 // --- Function prototypes ---
 
 static void idle(Ghost* ghost, float frameTime, float slop);
+static void pen(Ghost* ghost, float frameTime, float slop);
 static void wander(Ghost* ghost, float frameTime, float slop);
 
 // --- Constants ---
 
 static const float SPEEDS[]          = { 25.0f, 40.0f, 50.f, 100.0f };
 static const float DECISION_COOLDOWN = 0.5f;
+static const float PEN_TOP           = 108.0f;
+static const float PEN_BOT           = 116.0f;
 
 static const struct {
   Vector2   startPos;
@@ -35,9 +38,12 @@ static const struct {
 } GHOST_DATA[GHOST_COUNT] = {
   [0] = {  { 108.0f, 88.0f }, DIR_LEFT, SPEEDS[SpeedSlow], wander },
   [1] = { { 108.0f, 112.0f },   DIR_UP, SPEEDS[SpeedSlow],   idle },
-  [2] = {  { 92.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow],   idle },
-  [3] = { { 124.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow],   idle },
+  [2] = {  { 92.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow],    pen },
+  [3] = { { 124.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow],    pen },
 };
+
+static const char* STATE_PEN_STR    = "PEN";
+static const char* STATE_WANDER_STR = "WANDER";
 
 // --- Global state ---
 
@@ -45,10 +51,24 @@ static Ghost g_ghosts[GHOST_COUNT];
 
 // --- Helper functions ---
 
-static inline game__Dir getOppositeDir(game__Dir dir) { return (dir + 2) % DIR_COUNT; }
+static inline game__Dir getOppositeDir(game__Dir dir) {
+  assert(dir >= 0 && dir < DIR_COUNT);
+  return (dir + 2) % DIR_COUNT;
+}
 
-static int getValidDirs(game__Actor* actor, game__Dir current_dir, game__Dir* validDirs, float slop) {
-  game__Dir opposite = getOppositeDir(current_dir);
+static inline game__Dir randomSelect(game__Dir* dirs, int count) {
+  assert(dirs != nullptr);
+  assert(count > 0);
+  return dirs[GetRandomValue(0, count - 1)];
+}
+
+static int getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* validDirs, float slop) {
+  assert(actor != nullptr);
+  assert(currentDir >= 0 && currentDir < DIR_COUNT);
+  assert(validDirs != nullptr);
+  assert(slop > 0.0f);
+
+  game__Dir opposite = getOppositeDir(currentDir);
   int       count    = 0;
 
   for (game__Dir dir = DIR_UP; dir < DIR_COUNT; dir++) {
@@ -59,39 +79,70 @@ static int getValidDirs(game__Actor* actor, game__Dir current_dir, game__Dir* va
   return count;
 }
 
-static inline game__Dir randomSelect(game__Dir* directions, int count) {
-  return directions[GetRandomValue(0, count - 1)];
-}
-
 static void idle(Ghost* ghost [[maybe_unused]], float frameTime [[maybe_unused]], float slop [[maybe_unused]]) {}
 
 static void wander(Ghost* ghost, float frameTime, float slop) {
-  game__Dir currentDir = actor_getDir(ghost->actor);
-  actor_move(ghost->actor, currentDir, frameTime);
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
+  game__Actor* actor      = ghost->actor;
+  game__Dir    currentDir = actor_getDir(actor);
+  actor_move(actor, currentDir, frameTime);
 
   ghost->decisionCooldown -= frameTime;
   if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
 
   // Check if we hit a wall or can make a direction decision
-  if (!actor_canMove(ghost->actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
+  if (!actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
     game__Dir validDirs[DIR_COUNT - 1];
-    int       count = getValidDirs(ghost->actor, currentDir, validDirs, slop);
+    int       count = getValidDirs(actor, currentDir, validDirs, slop);
 
     if (count == 0) {
       // Should never happen - log error
-      Vector2 pos = actor_getPos(ghost->actor);
+      Vector2 pos = actor_getPos(actor);
       LOG_ERROR(game__log, "Ghost %u has no valid directions at (%.2f, %.2f)", ghost->id, pos.x, pos.y);
-      actor_setDir(ghost->actor, getOppositeDir(currentDir));
+      actor_setDir(actor, getOppositeDir(currentDir));
       ghost->decisionCooldown = DECISION_COOLDOWN;
     } else {
       game__Dir newDir = randomSelect(validDirs, count);
       // Check if we were at a junction
       if (count > 1 || currentDir != newDir) {
-        actor_setDir(ghost->actor, newDir);
+        actor_setDir(actor, newDir);
         LOG_DEBUG(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[newDir]);
         ghost->decisionCooldown = DECISION_COOLDOWN;
       }
     }
+  }
+}
+
+static void pen(Ghost* ghost, float frameTime, float slop [[maybe_unused]]) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
+  game__Actor* actor = ghost->actor;
+  assert(actor != nullptr);
+  game__Dir dir = actor_getDir(actor);
+  assert(dir == DIR_UP || dir == DIR_DOWN);
+
+  actor_moveNoCheck(actor, dir, frameTime);
+  Vector2 pos = actor_getPos(actor);
+
+  if (pos.y <= PEN_TOP) {
+    actor_setPos(actor, (Vector2) { pos.x, PEN_TOP });
+    actor_setDir(actor, DIR_DOWN);
+  } else if (pos.y >= PEN_BOT) {
+    actor_setPos(actor, (Vector2) { pos.x, PEN_BOT });
+    actor_setDir(actor, DIR_UP);
+  }
+
+  // Release the ho... er... ghosts!
+  if (ghost->timer <= frameTime) {
+    ghost->timer = 0.0f;
+    // ghost->update = penToStart;
+  } else {
+    ghost->timer -= frameTime;
   }
 }
 
@@ -123,6 +174,9 @@ void ghost_shutdown(void) {
 }
 
 void ghost_update(float frameTime, float slop) {
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
   for (int i = 0; i < GHOST_COUNT; i++) {
     assert(g_ghosts[i].actor != nullptr);
     g_ghosts[i].update(&g_ghosts[i], frameTime, slop);
@@ -151,4 +205,19 @@ float ghost_getDecisionCooldown(int id) {
   assert(id >= 0 && id < GHOST_COUNT);
   assert(g_ghosts[id].actor != nullptr);
   return g_ghosts[id].decisionCooldown;
+}
+
+const char* ghost_getStateStr(int id) {
+  assert(id >= 0 && id < GHOST_COUNT);
+  assert(id >= 0 && id < GHOST_COUNT);
+  assert(g_ghosts[id].actor != nullptr);
+
+  if (g_ghosts[id].update == pen) {
+    return STATE_PEN_STR;
+  }
+  if (g_ghosts[id].update == wander) {
+    return STATE_WANDER_STR;
+  }
+
+  return "";
 }

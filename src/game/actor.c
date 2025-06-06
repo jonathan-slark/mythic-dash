@@ -57,6 +57,11 @@ Vector2 actor_getPos(const game__Actor* actor) {
   return actor->pos;
 }
 
+void actor_setPos(game__Actor* actor, Vector2 pos) {
+  assert(actor != nullptr);
+  actor->pos = pos;
+}
+
 Vector2 actor_getSize(const game__Actor* actor) {
   assert(actor != nullptr);
   return actor->size;

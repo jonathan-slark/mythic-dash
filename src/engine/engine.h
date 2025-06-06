@@ -45,6 +45,12 @@ typedef struct engine_Font    engine_Font;    /**< Opaque font type */
 void engine_shutdown(void);
 
 /**
+ * @brief Get the scale being used by the engine
+ * @return Scale as an int
+ */
+int engine_getScale(void);
+
+/**
  * @brief Get the frame time
  * @return Frame time in seconds
  */

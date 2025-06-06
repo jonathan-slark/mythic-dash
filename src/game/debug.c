@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <stdio.h>
+#include "actor.h"
 #include "internal.h"
 
 // --- Types ---
@@ -30,6 +31,8 @@ static Debug g_debug = {
 // --- Helper functions ---
 
 static void drawNumber(float number, Vector2 pos, int size, Color colour) {
+  assert(size > 0);
+
   char numberText[BUFFER_SIZE];
 
   snprintf(numberText, sizeof(numberText), "%.2f", number);
@@ -37,6 +40,8 @@ static void drawNumber(float number, Vector2 pos, int size, Color colour) {
 }
 
 static void drawArrow(Vector2 start, Vector2 end, float size, Color colour) {
+  assert(size > 0);
+
   DrawLineV(start, end, colour);
 
   // Calculate angle of the line
@@ -52,16 +57,21 @@ static void drawArrow(Vector2 start, Vector2 end, float size, Color colour) {
 }
 
 static void drawActorArrow(game__Actor* actor) {
-  Vector2 pos   = Vector2Scale(POS_ADJUST(actor_getPos(actor)), 4.0f);
-  Vector2 start = Vector2Add(pos, (Vector2) { ACTOR_SIZE * 2.0f, ACTOR_SIZE * 2.0f });
+  assert(actor != nullptr);
+
+  int     scale = engine_getScale();
+  Vector2 pos   = Vector2Scale(POS_ADJUST(actor_getPos(actor)), scale);
+  Vector2 start = Vector2Add(pos, (Vector2) { ACTOR_SIZE * scale / 2.0f, ACTOR_SIZE * scale / 2.0f });
+
   Vector2 end;
   switch (actor_getDir(actor)) {
-    case DIR_UP: end = Vector2Add(pos, (Vector2) { ACTOR_SIZE * 2.0f, 0.0f }); break;
-    case DIR_RIGHT: end = Vector2Add(pos, (Vector2) { ACTOR_SIZE * 4.0f, ACTOR_SIZE * 2.0f }); break;
-    case DIR_DOWN: end = Vector2Add(pos, (Vector2) { ACTOR_SIZE * 2.0f, ACTOR_SIZE * 4.0f }); break;
-    case DIR_LEFT: end = Vector2Add(pos, (Vector2) { 0.0f, ACTOR_SIZE * 2.0f }); break;
+    case DIR_UP: end = Vector2Add(pos, (Vector2) { ACTOR_SIZE * scale / 2.0f, 0.0f }); break;
+    case DIR_RIGHT: end = Vector2Add(pos, (Vector2) { ACTOR_SIZE * scale, ACTOR_SIZE * scale / 2.0f }); break;
+    case DIR_DOWN: end = Vector2Add(pos, (Vector2) { ACTOR_SIZE * scale / 2.0f, ACTOR_SIZE * scale }); break;
+    case DIR_LEFT: end = Vector2Add(pos, (Vector2) { 0.0f, ACTOR_SIZE * scale / 2.0f }); break;
     default: assert(false);
   }
+
   drawArrow(start, end, ACTOR_SIZE, WHITE);
 }
 
@@ -94,13 +104,22 @@ void debug_drawOverlay(void) {
   if (g_debug.isGhostOverlayEnabled) {
     DrawText("Ghost overlay enabled", 0, yPos, 20, OVERLAY_COLOUR_GHOST);
     yPos += 20;
+
     for (int i = 0; i < GHOST_COUNT; i++) {
       game__Actor* actor = ghost_getActor(i);
       actor_overlay(actor, OVERLAY_COLOUR_GHOST);
-      float cooldown = ghost_getDecisionCooldown(i);
-      Color colour   = cooldown == 0.0f ? WHITE : RED;
-      drawNumber(cooldown, Vector2Scale(POS_ADJUST(actor_getPos(actor)), 4.0f), OVERLAY_TEXT_SIZE, colour);
       drawActorArrow(actor);
+
+      float   cooldown = ghost_getDecisionCooldown(i);
+      Color   colour   = cooldown == 0.0f ? WHITE : RED;
+      int     scale    = engine_getScale();
+      Vector2 pos      = Vector2Scale(POS_ADJUST(actor_getPos(actor)), scale);
+      drawNumber(cooldown, Vector2AddValue(pos, 1), OVERLAY_NUMBER_SIZE, BLACK);
+      drawNumber(cooldown, pos, OVERLAY_NUMBER_SIZE, colour);
+
+      const char* str = ghost_getStateStr(i);
+      DrawText(str, pos.x + 1, pos.y + ACTOR_SIZE * scale - OVERLAY_TEXT_SIZE + 1, OVERLAY_TEXT_SIZE, BLACK);
+      DrawText(str, pos.x, pos.y + ACTOR_SIZE * scale - OVERLAY_TEXT_SIZE, OVERLAY_TEXT_SIZE, WHITE);
     }
   }
 }

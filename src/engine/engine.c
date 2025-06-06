@@ -10,7 +10,7 @@
 
 // --- Constants ---
 
-static const int        LOG_LEVEL_RAYLIB  = LOG_WARNING;
+static const int LOG_LEVEL_RAYLIB         = LOG_WARNING;
 
 static const log_Config LOG_CONFIG_ENGINE = {
   .minLevel      = LOG_LEVEL_DEBUG,
@@ -145,3 +145,5 @@ void engine_shutdown(void) {
     log_destroy(&engine__log);
   }
 }
+
+int engine_getScale(void) { return engine__screenState.scale; }
