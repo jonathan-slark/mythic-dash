@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <math.h>
 #include "internal.h"
 
 // --- Types ---
@@ -19,31 +20,34 @@ typedef struct Ghost {
 
 // --- Function prototypes ---
 
-static void idle(Ghost* ghost, float frameTime, float slop);
 static void pen(Ghost* ghost, float frameTime, float slop);
+static void penToStart(Ghost* ghost, float frameTime, float slop);
 static void wander(Ghost* ghost, float frameTime, float slop);
 
 // --- Constants ---
 
-static const float SPEEDS[]          = { 25.0f, 40.0f, 50.f, 100.0f };
-static const float DECISION_COOLDOWN = 0.5f;
-static const float PEN_TOP           = 108.0f;
-static const float PEN_BOT           = 116.0f;
+static const float SPEEDS[]           = { 25.0f, 40.0f, 50.f, 100.0f };
+static const float DECISION_COOLDOWN  = 0.5f;
+static const float PEN_TOP            = 108.0f;
+static const float PEN_BOT            = 116.0f;
 
+static const Vector2 GHOST_MAZE_START = { 108.0f, 88.0f };
 static const struct {
   Vector2   startPos;
   game__Dir startDir;
   float     startSpeed;
   void      (*update)(Ghost*, float, float);
 } GHOST_DATA[GHOST_COUNT] = {
-  [0] = {  { 108.0f, 88.0f }, DIR_LEFT, SPEEDS[SpeedSlow], wander },
-  [1] = { { 108.0f, 112.0f },   DIR_UP, SPEEDS[SpeedSlow],   idle },
-  [2] = {  { 92.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow],    pen },
-  [3] = { { 124.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow],    pen },
+  [0] = {   GHOST_MAZE_START, DIR_LEFT, SPEEDS[SpeedSlow],     wander },
+  [1] = { { 108.0f, 112.0f },   DIR_UP, SPEEDS[SpeedSlow], penToStart },
+  [2] = {  { 92.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow],        pen },
+  [3] = { { 124.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow],        pen },
 };
 
-static const char* STATE_PEN_STR    = "PEN";
-static const char* STATE_WANDER_STR = "WANDER";
+static const float GHOST_CHASETIMER     = 10.0f;
+static const char* STATE_PEN_STR        = "PEN";
+static const char* STATE_PETTOSTART_STR = "PEN2STA";
+static const char* STATE_WANDER_STR     = "WANDER";
 
 // --- Global state ---
 
@@ -79,8 +83,69 @@ static int getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* val
   return count;
 }
 
-static void idle(Ghost* ghost [[maybe_unused]], float frameTime [[maybe_unused]], float slop [[maybe_unused]]) {}
+// Ghost moves up and down in pen till released
+static void pen(Ghost* ghost, float frameTime, float slop) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
+  game__Actor* actor = ghost->actor;
+  assert(actor != nullptr);
+  game__Dir dir = actor_getDir(actor);
+  assert(dir == DIR_UP || dir == DIR_DOWN);
+
+  actor_moveNoCheck(actor, dir, frameTime);
+  Vector2 pos = actor_getPos(actor);
+
+  if (pos.y <= PEN_TOP) {
+    actor_setDir(actor, DIR_DOWN);
+    actor_setPos(actor, (Vector2) { pos.x, PEN_TOP });
+  } else if (pos.y >= PEN_BOT) {
+    actor_setDir(actor, DIR_UP);
+    actor_setPos(actor, (Vector2) { pos.x, PEN_BOT });
+  }
+
+  // Release the ho... er... ghosts!
+  if (ghost->timer <= frameTime) {
+    ghost->timer = 0.0f;
+    // ghost->update = penToStart;
+  } else {
+    ghost->timer -= frameTime;
+  }
+}
+
+// Ghost moves from pen to start position
+static void penToStart(Ghost* ghost, float frameTime, float slop) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
+  game__Actor* actor = ghost->actor;
+  assert(actor != nullptr);
+  game__Dir dir = actor_getDir(actor);
+  assert(dir == DIR_UP || dir == DIR_DOWN);
+
+  float   startX = GHOST_MAZE_START.x;  // First ghost starts outside
+  Vector2 pos    = actor_getPos(actor);
+  if (fabsf(pos.x - startX) > OVERLAP_EPSILON) {
+    // Move to below door
+    actor_setDir(actor, pos.x < startX ? DIR_RIGHT : DIR_LEFT);
+    actor_moveNoCheck(actor, dir, frameTime);
+  } else {
+    // Move through door, we're a ghost!
+    actor_setDir(actor, DIR_UP);
+    actor_moveNoCheck(actor, dir, frameTime);
+    float startY = GHOST_MAZE_START.y;
+    if (pos.y <= startY) {
+      actor_setPos(actor, (Vector2) { pos.x, startY });
+      actor_setDir(actor, DIR_UP);
+      ghost->timer  = GHOST_CHASETIMER;
+      ghost->update = wander;
+    }
+  }
+}
+
+// Ghost wanders randomly
 static void wander(Ghost* ghost, float frameTime, float slop) {
   assert(ghost != nullptr);
   assert(frameTime >= 0.0f);
@@ -113,36 +178,6 @@ static void wander(Ghost* ghost, float frameTime, float slop) {
         ghost->decisionCooldown = DECISION_COOLDOWN;
       }
     }
-  }
-}
-
-static void pen(Ghost* ghost, float frameTime, float slop [[maybe_unused]]) {
-  assert(ghost != nullptr);
-  assert(frameTime >= 0.0f);
-  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
-
-  game__Actor* actor = ghost->actor;
-  assert(actor != nullptr);
-  game__Dir dir = actor_getDir(actor);
-  assert(dir == DIR_UP || dir == DIR_DOWN);
-
-  actor_moveNoCheck(actor, dir, frameTime);
-  Vector2 pos = actor_getPos(actor);
-
-  if (pos.y <= PEN_TOP) {
-    actor_setPos(actor, (Vector2) { pos.x, PEN_TOP });
-    actor_setDir(actor, DIR_DOWN);
-  } else if (pos.y >= PEN_BOT) {
-    actor_setPos(actor, (Vector2) { pos.x, PEN_BOT });
-    actor_setDir(actor, DIR_UP);
-  }
-
-  // Release the ho... er... ghosts!
-  if (ghost->timer <= frameTime) {
-    ghost->timer = 0.0f;
-    // ghost->update = penToStart;
-  } else {
-    ghost->timer -= frameTime;
   }
 }
 
@@ -215,9 +250,12 @@ const char* ghost_getStateStr(int id) {
   if (g_ghosts[id].update == pen) {
     return STATE_PEN_STR;
   }
+  if (g_ghosts[id].update == penToStart) {
+    return STATE_PETTOSTART_STR;
+  }
   if (g_ghosts[id].update == wander) {
     return STATE_WANDER_STR;
   }
 
-  return "";
+  assert(false);
 }

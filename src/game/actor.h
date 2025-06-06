@@ -1,3 +1,7 @@
+/*
+ * actor.h: Internal to actor.c and actor_move.c, don't include in other units.
+ */
+
 #pragma once
 // Clang format Language: C
 
