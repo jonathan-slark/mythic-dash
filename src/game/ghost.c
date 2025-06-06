@@ -24,9 +24,8 @@ static void wander(Ghost* ghost, float frameTime, float slop);
 
 // --- Constants ---
 
-static const float     SPEEDS[]                = { 25.0f, 40.0f, 50.f, 100.0f };
-static const game__Dir OPPOSITE_DIR[DIR_COUNT] = { DIR_DOWN, DIR_LEFT, DIR_UP, DIR_RIGHT };
-static const float     DECISION_COOLDOWN       = 1.0f / 3.0f;
+static const float SPEEDS[]          = { 25.0f, 40.0f, 50.f, 100.0f };
+static const float DECISION_COOLDOWN = 0.5f;
 
 static const struct {
   Vector2   startPos;
@@ -46,53 +45,53 @@ static Ghost g_ghosts[GHOST_COUNT];
 
 // --- Helper functions ---
 
-static void      idle(Ghost* ghost [[maybe_unused]], float frameTime [[maybe_unused]], float slop [[maybe_unused]]) {}
+static inline game__Dir getOppositeDir(game__Dir dir) { return (dir + 2) % DIR_COUNT; }
 
-static game__Dir randomDir(Ghost* ghost, float slop) {
-  // Record available directions
-  game__Dir currentDir = actor_getDir(ghost->actor);
-  game__Dir canMove[DIR_COUNT];
-  int       canMoveCount = 0;
-  for (game__Dir dir = 0; dir < DIR_COUNT; dir++) {
-    if (dir == OPPOSITE_DIR[currentDir]) continue;  // Don't go back the way we came
-    if (actor_canMove(ghost->actor, dir, slop)) canMove[canMoveCount++] = dir;
-  }
+static int getValidDirs(game__Actor* actor, game__Dir current_dir, game__Dir* validDirs, float slop) {
+  game__Dir opposite = getOppositeDir(current_dir);
+  int       count    = 0;
 
-  if (canMoveCount == 0) assert(false);
-  if (canMoveCount == 1) {
-    return canMove[0];
-  } else {
-    return canMove[GetRandomValue(0, canMoveCount - 1)];
+  for (game__Dir dir = DIR_UP; dir < DIR_COUNT; dir++) {
+    if (dir != opposite && actor_canMove(actor, dir, slop)) {
+      validDirs[count++] = dir;
+    }
   }
+  return count;
 }
 
+static inline game__Dir randomSelect(game__Dir* directions, int count) {
+  return directions[GetRandomValue(0, count - 1)];
+}
+
+static void idle(Ghost* ghost [[maybe_unused]], float frameTime [[maybe_unused]], float slop [[maybe_unused]]) {}
+
 static void wander(Ghost* ghost, float frameTime, float slop) {
-  assert(ghost != nullptr);
-  assert(ghost->decisionCooldown >= 0.0f);
-  assert(frameTime >= 0.0f);
-  assert(slop >= 0.0f);
+  game__Dir currentDir = actor_getDir(ghost->actor);
+  actor_move(ghost->actor, currentDir, frameTime);
 
-  game__Dir dir = actor_getDir(ghost->actor);
-  actor_move(ghost->actor, dir, frameTime);
+  ghost->decisionCooldown -= frameTime;
+  if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
 
-  if (actor_isMoving(ghost->actor)) {
-    if (ghost->decisionCooldown == 0.0f) {
-      // Try changing direction
-      game__Dir newDir = randomDir(ghost, slop);
-      if (dir != newDir) {
-        actor_setDir(ghost->actor, newDir);
-        ghost->decisionCooldown = DECISION_COOLDOWN;
-        LOG_DEBUG(game__log, "Made decision: dir is %s", DIR_STRINGS[dir]);
-      }
+  // Check if we hit a wall or can make a direction decision
+  if (!actor_canMove(ghost->actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
+    game__Dir validDirs[DIR_COUNT - 1];
+    int       count = getValidDirs(ghost->actor, currentDir, validDirs, slop);
+
+    if (count == 0) {
+      // Should never happen - log error
+      Vector2 pos = actor_getPos(ghost->actor);
+      LOG_ERROR(game__log, "Ghost %u has no valid directions at (%.2f, %.2f)", ghost->id, pos.x, pos.y);
+      actor_setDir(ghost->actor, getOppositeDir(currentDir));
+      ghost->decisionCooldown = DECISION_COOLDOWN;
     } else {
-      ghost->decisionCooldown -= frameTime;
-      if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
+      game__Dir newDir = randomSelect(validDirs, count);
+      // Check if we were at a junction
+      if (count > 1 || currentDir != newDir) {
+        actor_setDir(ghost->actor, newDir);
+        LOG_DEBUG(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[newDir]);
+        ghost->decisionCooldown = DECISION_COOLDOWN;
+      }
     }
-  } else {
-    // If ghost stopped change direction to keep up the flow
-    actor_move(ghost->actor, randomDir(ghost, slop), frameTime);
-    ghost->decisionCooldown = DECISION_COOLDOWN;
-    LOG_DEBUG(game__log, "Made decision: dir is %s", DIR_STRINGS[actor_getDir(ghost->actor)]);
   }
 }
 
