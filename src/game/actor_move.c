@@ -12,7 +12,9 @@ static const Vector2 VELS[] = {
   { -1.0f,  0.0f }  // Left
 };
 
-const char* DIR_STRINGS[] = { "UP", "RIGHT", "DOWN", "LEFT" };
+const char* DIR_STRINGS[]      = { "UP", "RIGHT", "DOWN", "LEFT" };
+const float MAZE_TELEPORTLEFT  = 16.0f;
+const float MAZE_TELEPORTRIGHT = 206.0f;
 
 // --- Helper functions ---
 
@@ -258,6 +260,9 @@ void actor_moveNoCheck(game__Actor* actor, game__Dir dir, float frameTime) {
 
   actor->pos = Vector2Add(actor->pos, Vector2Scale(VELS[dir], frameTime * actor->speed));
   actor->dir = dir;
+
+  // if (actor->pos.x < MAZE_TELEPORTLEFT) actor->pos.x = MAZE_TELEPORTRIGHT;
+  // if (actor->pos.x > MAZE_TELEPORTRIGHT) actor->pos.x = MAZE_TELEPORTLEFT;
 }
 
 void actor_move(game__Actor* actor, game__Dir dir, float frameTime) {

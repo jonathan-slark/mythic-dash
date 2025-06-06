@@ -26,25 +26,27 @@ static void wander(Ghost* ghost, float frameTime, float slop);
 
 // --- Constants ---
 
-static const float SPEEDS[]           = { 25.0f, 40.0f, 50.f, 100.0f };
-static const float DECISION_COOLDOWN  = 0.5f;
-static const float PEN_TOP            = 108.0f;
-static const float PEN_BOT            = 116.0f;
+static const float SPEEDS[]             = { 25.0f, 40.0f, 50.f, 100.0f };
+static const float DECISION_COOLDOWN    = 0.5f;
+static const float PEN_TOP              = 108.0f;
+static const float PEN_BOT              = 116.0f;
 
-static const Vector2 GHOST_MAZE_START = { 108.0f, 88.0f };
+static const Vector2   GHOST_MAZE_START = { 108.0f, 88.0f };
+static const game__Dir GHOST_START_DIR  = DIR_LEFT;
+static const float     GHOST_CHASETIMER = 10.0f;
 static const struct {
   Vector2   startPos;
   game__Dir startDir;
   float     startSpeed;
+  float     startTimer;
   void      (*update)(Ghost*, float, float);
 } GHOST_DATA[GHOST_COUNT] = {
-  [0] = {   GHOST_MAZE_START, DIR_LEFT, SPEEDS[SpeedSlow],     wander },
-  [1] = { { 108.0f, 112.0f },   DIR_UP, SPEEDS[SpeedSlow], penToStart },
-  [2] = {  { 92.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow],        pen },
-  [3] = { { 124.0f, 112.0f }, DIR_DOWN, SPEEDS[SpeedSlow],        pen },
+  [0] = {   GHOST_MAZE_START, DIR_LEFT, SPEEDS[SpeedNormal], GHOST_CHASETIMER,     wander },
+  [1] = { { 108.0f, 112.0f },   DIR_UP,   SPEEDS[SpeedSlow],             0.0f, penToStart },
+  [2] = {  { 92.0f, 112.0f }, DIR_DOWN,   SPEEDS[SpeedSlow],            10.0f,        pen },
+  [3] = { { 124.0f, 112.0f }, DIR_DOWN,   SPEEDS[SpeedSlow],             20.f,        pen },
 };
 
-static const float GHOST_CHASETIMER     = 10.0f;
 static const char* STATE_PEN_STR        = "PEN";
 static const char* STATE_PETTOSTART_STR = "PEN2STA";
 static const char* STATE_WANDER_STR     = "WANDER";
@@ -107,8 +109,8 @@ static void pen(Ghost* ghost, float frameTime, float slop) {
 
   // Release the ho... er... ghosts!
   if (ghost->timer <= frameTime) {
-    ghost->timer = 0.0f;
-    // ghost->update = penToStart;
+    ghost->timer  = 0.0f;
+    ghost->update = penToStart;
   } else {
     ghost->timer -= frameTime;
   }
@@ -122,23 +124,26 @@ static void penToStart(Ghost* ghost, float frameTime, float slop) {
 
   game__Actor* actor = ghost->actor;
   assert(actor != nullptr);
-  game__Dir dir = actor_getDir(actor);
-  assert(dir == DIR_UP || dir == DIR_DOWN);
+  game__Dir dir  = actor_getDir(actor);
 
   float   startX = GHOST_MAZE_START.x;  // First ghost starts outside
   Vector2 pos    = actor_getPos(actor);
-  if (fabsf(pos.x - startX) > OVERLAP_EPSILON) {
+  if (fabsf(pos.x - startX) > slop) {
     // Move to below door
-    actor_setDir(actor, pos.x < startX ? DIR_RIGHT : DIR_LEFT);
+    LOG_TRACE(game__log, "Moving to below door");
+    dir = pos.x < startX ? DIR_RIGHT : DIR_LEFT;
+    actor_setDir(actor, dir);
     actor_moveNoCheck(actor, dir, frameTime);
   } else {
     // Move through door, we're a ghost!
+    LOG_TRACE(game__log, "Moving though door");
     actor_setDir(actor, DIR_UP);
-    actor_moveNoCheck(actor, dir, frameTime);
+    actor_moveNoCheck(actor, DIR_UP, frameTime);
     float startY = GHOST_MAZE_START.y;
     if (pos.y <= startY) {
       actor_setPos(actor, (Vector2) { pos.x, startY });
-      actor_setDir(actor, DIR_UP);
+      actor_setDir(actor, GHOST_START_DIR);
+      actor_setSpeed(actor, SPEEDS[SpeedNormal]);
       ghost->timer  = GHOST_CHASETIMER;
       ghost->update = wander;
     }
@@ -187,7 +192,7 @@ bool ghost_init(void) {
   for (int i = 0; i < GHOST_COUNT; i++) {
     assert(g_ghosts[i].actor == nullptr);
     g_ghosts[i].update           = GHOST_DATA[i].update;
-    g_ghosts[i].timer            = 0.0f;
+    g_ghosts[i].timer            = GHOST_DATA[i].startTimer;
     g_ghosts[i].decisionCooldown = 0.0f;
     g_ghosts[i].actor            = actor_create(
         GHOST_DATA[i].startPos, (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, GHOST_DATA[i].startDir, GHOST_DATA[i].startSpeed

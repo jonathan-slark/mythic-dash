@@ -22,29 +22,29 @@ typedef struct AnimData {
 
 // --- Constants ---
 
-static const char       FILE_BACKGROUND[] = "../../asset/gfx/background.png";
-static const char       FILE_SPRITES[]    = "../../asset/gfx/sprites.png";
-static const char       FILE_FONT[]       = "../../asset/gfx/font.png";
+static const char FILE_BACKGROUND[]     = "../../asset/gfx/background.png";
+static const char FILE_SPRITES[]        = "../../asset/gfx/sprites.png";
+static const char FILE_FONT[]           = "../../asset/gfx/font.png";
 
-static const log_Config LOG_CONFIG_GAME   = {
-    .minLevel      = LOG_LEVEL_DEBUG,
-    .useColours    = true,
-    .showTimestamp = true,
-    .showFileLine  = true,
-    .subsystem     = "GAME"
+static const log_Config LOG_CONFIG_GAME = {
+  .minLevel      = LOG_LEVEL_TRACE,
+  .useColours    = true,
+  .showTimestamp = true,
+  .showFileLine  = true,
+  .subsystem     = "GAME"
 };
 
 #ifndef NDEBUG
 static const float FPS[] = { 15, 30, 60, 0 };
 #endif
 
-const float           BASE_SLOP               = 0.35f;
-const float           BASE_DT                 = (1.0f / 144.0f);
-const float           MIN_SLOP                = 0.05f;
-const float           MAX_SLOP                = 0.7f;
-const float           OVERLAP_EPSILON         = 1e-5f;
+const float BASE_SLOP                         = 0.35f;
+const float BASE_DT                           = (1.0f / 144.0f);
+const float MIN_SLOP                          = 0.05f;
+const float MAX_SLOP                          = 0.7f;
+const float OVERLAP_EPSILON                   = 1e-5f;
 
-static const float    FRAME_TIME              = (1.0f / 12.0f);
+static const float FRAME_TIME                 = (1.0f / 12.0f);
 
 static const Vector2  PLAYER_OFFSET           = { 0.0f, 0.0f };
 static const AnimData PLAYER_ANIMS[DIR_COUNT] = {

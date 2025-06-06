@@ -64,7 +64,7 @@ static void makeMazeAABB(void) {
 
 // --- Maze functions ---
 
-void       maze_init(void) { makeMazeAABB(); }
+void maze_init(void) { makeMazeAABB(); }
 
 game__AABB maze_getAABB(Vector2 pos) {
   int row = (int) (pos.y / TILE_SIZE);
