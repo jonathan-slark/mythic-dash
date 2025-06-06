@@ -148,7 +148,7 @@ static bool tryAlignToTile(
     case DIR_DOWN:
       if (overlapX > OVERLAP_EPSILON && overlapX <= slop && fabsf(overlapY) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapX : -overlapX);
-        LOG_DEBUG(
+        LOG_TRACE(
             game__log, "Actor can move up/down, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y, slop
         );
         return true;
@@ -158,7 +158,7 @@ static bool tryAlignToTile(
     case DIR_RIGHT:
       if (overlapY > OVERLAP_EPSILON && overlapY <= slop && fabsf(overlapX) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapY : -overlapY);
-        LOG_DEBUG(
+        LOG_TRACE(
             game__log, "Actor can move left/right, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y, slop
         );
         return true;

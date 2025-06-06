@@ -28,4 +28,4 @@ BinPackParameters: OnePerLine
 Cpp11BracedListStyle: false
 PenaltyBreakAssignment: 100
 SpaceAfterCStyleCast: true
-PenaltyIndentedWhitespace: 1
+PenaltyIndentedWhitespace: 10

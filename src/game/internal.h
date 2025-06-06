@@ -20,6 +20,7 @@
 #define OVERLAY_COLOUR_TILE_FLOOR (Color){ 255, 100, 100, 32 }
 #define OVERLAY_COLOUR_COLLISION (Color){ 255, 255, 100, 128 }
 #define OVERLAY_COLOUR_MAZE_WALL (Color){ 128, 128, 128, 128 }
+#define OVERLAY_TEXT_SIZE 20
 
 // --- Types ---
 
@@ -79,6 +80,7 @@ void         actor_destroy(game__Actor** actor);
 Vector2      actor_getPos(const game__Actor* actor);
 Vector2      actor_getSize(const game__Actor* actor);
 game__Dir    actor_getDir(const game__Actor* actor);
+void         actor_setDir(game__Actor* actor, game__Dir dir);
 bool         actor_isMoving(const game__Actor* actor);
 game__AABB   actor_getAABB(const game__Actor* actor);
 bool         actor_canMove(game__Actor* actor, game__Dir dir, float slop);
@@ -106,6 +108,7 @@ void         ghost_update(float frameTime, float slop);
 Vector2      ghost_getPos(int id);
 game__Dir    ghost_getDir(int id);
 game__Actor* ghost_getActor(int id);
+float        ghost_getDecisionCooldown(int id);
 
 // --- Maze functions (maze.c) ---
 
@@ -120,3 +123,4 @@ void debug_drawOverlay(void);
 void debug_toggleFPSOverlay(void);
 void debug_toggleMoveOverlay(void);
 void debug_toggleCanMoveOverlay(void);
+void debug_toggleGhostOverlay(void);

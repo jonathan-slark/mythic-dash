@@ -36,6 +36,7 @@ void player_update(float frameTime, float slop) {
   if (engine_isKeyPressed(KEY_F)) debug_toggleFPSOverlay();
   if (engine_isKeyPressed(KEY_M)) debug_toggleMoveOverlay();
   if (engine_isKeyPressed(KEY_C)) debug_toggleCanMoveOverlay();
+  if (engine_isKeyPressed(KEY_G)) debug_toggleGhostOverlay();
 #endif
 
   game__Dir dir = DIR_NONE;

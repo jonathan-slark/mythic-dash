@@ -38,10 +38,10 @@ static const log_Config LOG_CONFIG_GAME   = {
 static const float FPS[] = { 15, 30, 60, 0 };
 #endif
 
-const float           BASE_SLOP               = 0.25f;
+const float           BASE_SLOP               = 0.35f;
 const float           BASE_DT                 = (1.0f / 144.0f);
 const float           MIN_SLOP                = 0.05f;
-const float           MAX_SLOP                = 0.5f;
+const float           MAX_SLOP                = 0.7f;
 const float           OVERLAP_EPSILON         = 1e-5f;
 
 static const float    FRAME_TIME              = (1.0f / 12.0f);
@@ -128,9 +128,8 @@ static bool loadAssets(void) {
 static bool initPlayer(void) {
   GAME_TRY(player_init());
   GAME_TRY(
-      g_playerSprite = engine_createSprite(
-          POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_OFFSET
-      )
+      g_playerSprite =
+          engine_createSprite(POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_OFFSET)
   );
   for (int i = 0; i < DIR_COUNT; i++) {
     GAME_TRY(
@@ -150,9 +149,8 @@ static bool initGhosts(void) {
   GAME_TRY(ghost_init());
   for (int i = 0; i < GHOST_COUNT; i++) {
     GAME_TRY(
-        g_ghostSprites[i] = engine_createSprite(
-            POS_ADJUST(ghost_getPos(i)), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, GHOST_OFFSETS[i]
-        )
+        g_ghostSprites[i] =
+            engine_createSprite(POS_ADJUST(ghost_getPos(i)), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, GHOST_OFFSETS[i])
     );
     for (int j = 0; j < DIR_COUNT; j++) {
       GAME_TRY(

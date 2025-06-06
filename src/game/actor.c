@@ -67,6 +67,12 @@ game__Dir actor_getDir(const game__Actor* actor) {
   return actor->dir;
 }
 
+void actor_setDir(game__Actor* actor, game__Dir dir) {
+  assert(actor != nullptr);
+  assert(dir >= 0 && dir < DIR_COUNT);
+  actor->dir = dir;
+}
+
 bool actor_isMoving(const game__Actor* actor) {
   assert(actor != nullptr);
   return actor->isMoving;

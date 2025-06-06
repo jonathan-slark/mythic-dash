@@ -26,7 +26,7 @@ static void wander(Ghost* ghost, float frameTime, float slop);
 
 static const float     SPEEDS[]                = { 25.0f, 40.0f, 50.f, 100.0f };
 static const game__Dir OPPOSITE_DIR[DIR_COUNT] = { DIR_DOWN, DIR_LEFT, DIR_UP, DIR_RIGHT };
-static const float     DECISION_COOLDOWN       = 1.0f / 2.0f;
+static const float     DECISION_COOLDOWN       = 1.0f / 3.0f;
 
 static const struct {
   Vector2   startPos;
@@ -58,10 +58,7 @@ static game__Dir randomDir(Ghost* ghost, float slop) {
     if (actor_canMove(ghost->actor, dir, slop)) canMove[canMoveCount++] = dir;
   }
 
-  if (canMoveCount == 0) {
-    assert(false);
-  }
-
+  if (canMoveCount == 0) assert(false);
   if (canMoveCount == 1) {
     return canMove[0];
   } else {
@@ -71,25 +68,26 @@ static game__Dir randomDir(Ghost* ghost, float slop) {
 
 static void wander(Ghost* ghost, float frameTime, float slop) {
   assert(ghost != nullptr);
+  assert(ghost->decisionCooldown >= 0.0f);
   assert(frameTime >= 0.0f);
   assert(slop >= 0.0f);
 
   game__Dir dir = actor_getDir(ghost->actor);
-
-  // Try changing direction
-  if (ghost->decisionCooldown <= 0.0f) {
-    game__Dir newDir = randomDir(ghost, slop);
-    if (dir != newDir) {
-      dir                     = newDir;
-      ghost->decisionCooldown = DECISION_COOLDOWN;
-      LOG_DEBUG(game__log, "Made decision: dir is %s", DIR_STRINGS[dir]);
-    }
-  }
-
   actor_move(ghost->actor, dir, frameTime);
 
   if (actor_isMoving(ghost->actor)) {
-    ghost->decisionCooldown -= frameTime;
+    if (ghost->decisionCooldown == 0.0f) {
+      // Try changing direction
+      game__Dir newDir = randomDir(ghost, slop);
+      if (dir != newDir) {
+        actor_setDir(ghost->actor, newDir);
+        ghost->decisionCooldown = DECISION_COOLDOWN;
+        LOG_DEBUG(game__log, "Made decision: dir is %s", DIR_STRINGS[dir]);
+      }
+    } else {
+      ghost->decisionCooldown -= frameTime;
+      if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
+    }
   } else {
     // If ghost stopped change direction to keep up the flow
     actor_move(ghost->actor, randomDir(ghost, slop), frameTime);
@@ -148,4 +146,10 @@ game__Actor* ghost_getActor(int id) {
   assert(id >= 0 && id < GHOST_COUNT);
   assert(g_ghosts[id].actor != nullptr);
   return g_ghosts[id].actor;
+}
+
+float ghost_getDecisionCooldown(int id) {
+  assert(id >= 0 && id < GHOST_COUNT);
+  assert(g_ghosts[id].actor != nullptr);
+  return g_ghosts[id].decisionCooldown;
 }
