@@ -18,6 +18,10 @@ typedef struct Debug {
 // --- Constants ---
 
 constexpr int BUFFER_SIZE = 32;
+#define OVERLAY_COLOUR_PLAYER (Color){ 100, 200, 255, 128 }
+#define OVERLAY_COLOUR_GHOST (Color){ 255, 128, 200, 128 }
+#define OVERLAY_NUMBER_SIZE 20
+#define OVERLAY_TEXT_SIZE 12
 
 // --- Global state ---
 

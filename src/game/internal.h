@@ -14,14 +14,6 @@
   }
 
 #define POS_ADJUST(pos) Vector2Add((pos), MAZE_ORIGIN)
-#define OVERLAY_COLOUR_PLAYER (Color){ 100, 200, 255, 128 }
-#define OVERLAY_COLOUR_GHOST (Color){ 255, 128, 200, 128 }
-#define OVERLAY_COLOUR_TILE_WALL (Color){ 255, 100, 100, 128 }
-#define OVERLAY_COLOUR_TILE_FLOOR (Color){ 255, 100, 100, 32 }
-#define OVERLAY_COLOUR_COLLISION (Color){ 255, 255, 100, 128 }
-#define OVERLAY_COLOUR_MAZE_WALL (Color){ 128, 128, 128, 128 }
-#define OVERLAY_NUMBER_SIZE 20
-#define OVERLAY_TEXT_SIZE 12
 
 // --- Types ---
 
