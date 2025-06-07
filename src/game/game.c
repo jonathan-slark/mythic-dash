@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <math.h>
 #include <raylib.h>
+#include <stddef.h>
 #include "../engine/engine.h"
 #include "../log/log.h"
 #include "game/internal.h"
@@ -89,6 +90,15 @@ static const AnimData GHOST_ANIMS[GHOST_COUNT][DIR_COUNT] = {
   }
 };
 // clang-format on
+
+static const Vector2 TELEPORT_COVER_POSS[] = {
+  { 100.0f, 119.0f },
+  { 352.0f, 119.0f }
+};
+static const Vector2 TELEPORT_COVER_SIZES[] = {
+  { TILE_SIZE * 3.5f, TILE_SIZE * 2.0f },
+  { TILE_SIZE * 3.5f, TILE_SIZE * 2.0f }
+};
 
 // --- Global state ---
 
@@ -183,6 +193,21 @@ static void updateGhosts(float frameTime, float slop) {
   }
 }
 
+static void drawTeleportCovers(void) {
+  assert(COUNT(TELEPORT_COVER_POSS) == COUNT(TELEPORT_COVER_SIZES));
+
+  int scale = engine_getScale();
+  for (size_t i = 0; i < COUNT(TELEPORT_COVER_POSS); i++) {
+    DrawRectangle(
+        TELEPORT_COVER_POSS[i].x * scale,
+        TELEPORT_COVER_POSS[i].y * scale,
+        TELEPORT_COVER_SIZES[i].x * scale,
+        TELEPORT_COVER_SIZES[i].y * scale,
+        BLACK
+    );
+  }
+}
+
 static void unloadPlayer(void) {
   player_shutdown();
   engine_destroySprite(&g_playerSprite);
@@ -243,6 +268,7 @@ void game_draw(void) {
   for (int i = 0; i < GHOST_COUNT; i++) {
     engine_drawSprite(g_sprites, g_ghostSprites[i]);
   }
+  drawTeleportCovers();
 #ifndef NDEBUG
   debug_drawOverlay();
 #endif

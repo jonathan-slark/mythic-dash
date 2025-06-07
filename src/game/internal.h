@@ -30,9 +30,9 @@ typedef struct game__Actor game__Actor;
 
 constexpr int ACTOR_SIZE  = 16;
 constexpr int GHOST_COUNT = 4;
+constexpr int TILE_SIZE   = 8;
 
 extern const Vector2 MAZE_ORIGIN;
-extern const float   TILE_SIZE;
 
 extern const float BASE_SLOP;
 extern const float BASE_DT;

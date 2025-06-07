@@ -7,7 +7,6 @@
 const Vector2 MAZE_ORIGIN = { 100.0f, 7.0f };  // Screen offset to the actual maze
 constexpr int MAZE_ROWS   = 32;
 constexpr int MAZE_COLS   = 35;
-const float   TILE_SIZE   = 8.0f;
 #define OVERLAY_COLOUR_MAZE_WALL (Color){ 128, 128, 128, 128 }
 
 // 0 = empty, 1 = wall
