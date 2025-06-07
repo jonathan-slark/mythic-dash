@@ -10,8 +10,8 @@
 
 typedef struct Debug {
   bool isFPSOverlayEnabled;
-  bool isMoveOverlayEnabled;
-  bool isCanMoveOverlayEnabled;
+  bool isMazeOverlayEnabled;
+  bool isPlayerOverlayEnabled;
   bool isGhostOverlayEnabled;
 } Debug;
 
@@ -26,10 +26,10 @@ constexpr int BUFFER_SIZE = 32;
 // --- Global state ---
 
 static Debug g_debug = {
-  .isFPSOverlayEnabled     = false,
-  .isMoveOverlayEnabled    = false,
-  .isCanMoveOverlayEnabled = false,
-  .isGhostOverlayEnabled   = false
+  .isFPSOverlayEnabled    = false,
+  .isMazeOverlayEnabled   = false,
+  .isPlayerOverlayEnabled = false,
+  .isGhostOverlayEnabled  = false
 };
 
 // --- Helper functions ---
@@ -89,20 +89,18 @@ void debug_drawOverlay(void) {
     yPos += 20;
   }
 
-  if (g_debug.isMoveOverlayEnabled || g_debug.isCanMoveOverlayEnabled) {
+  if (g_debug.isMazeOverlayEnabled) {
+    DrawText("Maze overlay enabled", 0, yPos, 20, BLUE);
+    yPos += 20;
+    maze_tilesOverlay();
+  }
+
+  if (g_debug.isPlayerOverlayEnabled) {
+    DrawText("Player overlay enabled", 0, yPos, 20, ORANGE);
+    yPos += 20;
     actor_overlay(player_getActor(), OVERLAY_COLOUR_PLAYER);
-  }
-
-  if (g_debug.isMoveOverlayEnabled) {
-    DrawText("Move overlay enabled", 0, yPos, 20, ORANGE);
-    yPos += 20;
-    actor_moveOverlay(player_getActor());
-  }
-
-  if (g_debug.isCanMoveOverlayEnabled) {
-    DrawText("Can move overlay enabled", 0, yPos, 20, YELLOW);
-    yPos += 20;
     actor_canMoveOverlay(player_getActor());
+    actor_moveOverlay(player_getActor());
   }
 
   if (g_debug.isGhostOverlayEnabled) {
@@ -130,8 +128,8 @@ void debug_drawOverlay(void) {
 
 void debug_toggleFPSOverlay(void) { g_debug.isFPSOverlayEnabled = !g_debug.isFPSOverlayEnabled; }
 
-void debug_toggleMoveOverlay(void) { g_debug.isMoveOverlayEnabled = !g_debug.isMoveOverlayEnabled; }
+void debug_toggleMazeOverlay(void) { g_debug.isMazeOverlayEnabled = !g_debug.isMazeOverlayEnabled; }
 
-void debug_toggleCanMoveOverlay(void) { g_debug.isCanMoveOverlayEnabled = !g_debug.isCanMoveOverlayEnabled; }
+void debug_togglePlayerOverlay(void) { g_debug.isPlayerOverlayEnabled = !g_debug.isPlayerOverlayEnabled; }
 
 void debug_toggleGhostOverlay(void) { g_debug.isGhostOverlayEnabled = !g_debug.isGhostOverlayEnabled; }

@@ -31,7 +31,7 @@ static const float DECISION_COOLDOWN    = 0.5f;
 static const float PEN_TOP              = 108.0f;
 static const float PEN_BOT              = 116.0f;
 
-static const Vector2   GHOST_MAZE_START = { 108.0f, 88.0f };
+static const Vector2   GHOST_MAZE_START = { 132.0f, 88.0f };
 static const game__Dir GHOST_START_DIR  = DIR_LEFT;
 static const float     GHOST_CHASETIMER = 10.0f;
 static const struct {
@@ -42,9 +42,9 @@ static const struct {
   void      (*update)(Ghost*, float, float);
 } GHOST_DATA[GHOST_COUNT] = {
   [0] = {   GHOST_MAZE_START, DIR_LEFT, SPEEDS[SpeedNormal], GHOST_CHASETIMER,     wander },
-  [1] = { { 108.0f, 112.0f },   DIR_UP,   SPEEDS[SpeedSlow],             0.0f, penToStart },
-  [2] = {  { 92.0f, 112.0f }, DIR_DOWN,   SPEEDS[SpeedSlow],            10.0f,        pen },
-  [3] = { { 124.0f, 112.0f }, DIR_DOWN,   SPEEDS[SpeedSlow],             20.f,        pen },
+  [1] = { { 132.0f, 112.0f },   DIR_UP,   SPEEDS[SpeedSlow],             0.0f, penToStart },
+  [2] = { { 116.0f, 112.0f }, DIR_DOWN,   SPEEDS[SpeedSlow],            10.0f,        pen },
+  [3] = { { 148.0f, 112.0f }, DIR_DOWN,   SPEEDS[SpeedSlow],             20.f,        pen },
 };
 
 static const char* STATE_PEN_STR        = "PEN";

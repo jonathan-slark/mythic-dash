@@ -6,7 +6,7 @@
 
 // --- Constants ---
 
-static const Vector2     PLAYER_START_POS = { 109.0f, 184.0f };
+static const Vector2     PLAYER_START_POS = { 133.0f, 184.0f };
 static const float       PLAYER_SPEED     = 60.0f;
 static const game__Dir   PLAYER_START_DIR = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]    = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
@@ -34,8 +34,8 @@ void player_update(float frameTime, float slop) {
 
 #ifndef NDEBUG
   if (engine_isKeyPressed(KEY_F)) debug_toggleFPSOverlay();
-  if (engine_isKeyPressed(KEY_M)) debug_toggleMoveOverlay();
-  if (engine_isKeyPressed(KEY_C)) debug_toggleCanMoveOverlay();
+  if (engine_isKeyPressed(KEY_M)) debug_toggleMazeOverlay();
+  if (engine_isKeyPressed(KEY_P)) debug_togglePlayerOverlay();
   if (engine_isKeyPressed(KEY_G)) debug_toggleGhostOverlay();
 #endif
 

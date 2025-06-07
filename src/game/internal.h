@@ -118,6 +118,6 @@ void       maze_tilesOverlay(void);
 
 void debug_drawOverlay(void);
 void debug_toggleFPSOverlay(void);
-void debug_toggleMoveOverlay(void);
-void debug_toggleCanMoveOverlay(void);
+void debug_toggleMazeOverlay(void);
+void debug_togglePlayerOverlay(void);
 void debug_toggleGhostOverlay(void);
