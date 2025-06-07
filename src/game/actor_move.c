@@ -181,14 +181,14 @@ static bool checkPassageMovement(game__Actor* actor, game__Dir dir, game__AABB a
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  if (!isPassagePattern(actor->tilesCanMove)) {
+  if (!isPassagePattern(actor->tilesCanMove[dir])) {
     return false;
   }
 
   // Try aligning to tile0 first, then tile3
-  if (tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[0].aabb, slop, true) ||
-      tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[3].aabb, slop, false)) {
-    clearAllCollisionFlags(actor->tilesCanMove);
+  if (tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][0].aabb, slop, true) ||
+      tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][3].aabb, slop, false)) {
+    clearAllCollisionFlags(actor->tilesCanMove[dir]);
     return true;
   }
 
@@ -202,12 +202,12 @@ static bool checkStrictMovement(game__Actor* actor, game__Dir dir, game__AABB ac
   bool canMove = true;
 
   for (size_t i = 0; i < TILES_COUNT; i++) {
-    if (!actor->tilesCanMove[i].isWall) {
-      actor->tilesCanMove[i].isCollision = false;
+    if (!actor->tilesCanMove[dir][i].isWall) {
+      actor->tilesCanMove[dir][i].isCollision = false;
       continue;
     }
 
-    game__AABB tileAABB     = actor->tilesCanMove[i].aabb;
+    game__AABB tileAABB     = actor->tilesCanMove[dir][i].aabb;
     bool       hasCollision = false;
     float      overlapX     = aabb_getOverlapX(actorAABB, tileAABB);
     float      overlapY     = aabb_getOverlapY(actorAABB, tileAABB);
@@ -219,7 +219,7 @@ static bool checkStrictMovement(game__Actor* actor, game__Dir dir, game__AABB ac
       default: assert(false);
     }
 
-    actor->tilesCanMove[i].isCollision = hasCollision;
+    actor->tilesCanMove[dir][i].isCollision = hasCollision;
     if (hasCollision) canMove = false;
   }
 
@@ -233,8 +233,8 @@ bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  actor->isCanMove = true;
-  getTiles(actor, actor->tilesCanMove, dir);
+  actor->isCanMove[dir] = true;
+  getTiles(actor, actor->tilesCanMove[dir], dir);
   game__AABB actorAABB = actor_getAABB(actor);
 
   // Try passage movement first (special case for narrow passages)

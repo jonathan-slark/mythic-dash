@@ -27,6 +27,6 @@ typedef struct game__Actor {
   float speed;
   bool isMoving;
   game__Tile tilesMove[TILES_COUNT];
-  game__Tile tilesCanMove[TILES_COUNT];
-  bool isCanMove;
+  game__Tile tilesCanMove[DIR_COUNT][TILES_COUNT];
+  bool isCanMove[DIR_COUNT];
 } game__Actor;

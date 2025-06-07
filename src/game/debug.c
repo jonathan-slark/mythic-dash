@@ -100,7 +100,7 @@ void debug_drawOverlay(void) {
     yPos += 20;
     actor_overlay(player_getActor(), OVERLAY_COLOUR_PLAYER);
     actor_canMoveOverlay(player_getActor());
-    actor_moveOverlay(player_getActor());
+    // actor_moveOverlay(player_getActor());
   }
 
   if (g_debug.isGhostOverlayEnabled) {
@@ -110,6 +110,7 @@ void debug_drawOverlay(void) {
     for (int i = 0; i < GHOST_COUNT; i++) {
       game__Actor* actor = ghost_getActor(i);
       actor_overlay(actor, OVERLAY_COLOUR_GHOST);
+      actor_canMoveOverlay(actor);
       drawActorArrow(actor);
 
       float   cooldown = ghost_getDecisionCooldown(i);
