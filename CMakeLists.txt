@@ -19,14 +19,10 @@ add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 find_package(raylib REQUIRED)
 file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/*.c" "${SRC_DIR}/engine/*.c" "${SRC_DIR}/game/*.c")
 
-# Build log library
-add_library(log STATIC ${SRC_DIR}/log/log.c)
-target_include_directories(log PUBLIC ${SRC_DIR})
-
 # Main executable
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${COMMON_INCLUDES})
-target_link_libraries(${PROJECT_NAME} 
+target_link_libraries(${PROJECT_NAME}
   raylib
   winmm
   gdi32
@@ -34,26 +30,17 @@ target_link_libraries(${PROJECT_NAME}
   log
 )
 
-# Test log executable
-add_executable(test_log ${SRC_DIR}/test/log.c)
-target_include_directories(test_log PRIVATE ${COMMON_INCLUDES})
-target_link_libraries(test_log PRIVATE log)
-
-# Test engine executable
-file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/engine/*.c")
-add_executable(test_engine ${SRC_DIR}/test/engine.c ${SOURCES})
-target_include_directories(test_engine PRIVATE ${COMMON_INCLUDES})
-target_link_libraries(test_engine PRIVATE log raylib)
-
 # Test game executable
 file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/game/*.c")
 add_executable(test_game ${SRC_DIR}/test/game.c)
 target_include_directories(test_game PRIVATE ${COMMON_INCLUDES})
-target_link_libraries(test_game PRIVATE log raylib)
+add_subdirectory(extern/engine)
+add_subdirectory(extern/log)
+target_link_libraries(test_game PRIVATE engine log raylib)
 
 # Doxygen documentation setup
 find_package(Doxygen)
-if (DOXYGEN_FOUND)
+if(DOXYGEN_FOUND)
   set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
   set(DOXYGEN_OUTPUT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/doc)
 
@@ -65,29 +52,29 @@ if (DOXYGEN_FOUND)
     VERBATIM
   )
 
-  if (WIN32)
+  if(WIN32)
     add_custom_command(TARGET doc POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
       COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
-        start "" "${DOXYGEN_OUTPUT_DIR}/html/index.html"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        VERBATIM
+      start "" "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      VERBATIM
     )
   elseif(APPLE)
     add_custom_command(TARGET doc POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
       COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
-        open "${DOXYGEN_OUTPUT_DIR}/html/index.html"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        VERBATIM
+      open "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      VERBATIM
     )
   elseif(UNIX)
     add_custom_command(TARGET doc POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E echo "[Doxygen] Opening Doxygen HTML docs"
       COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_IN} &&
-        xdg-open "${DOXYGEN_OUTPUT_DIR}/html/index.html"
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        VERBATIM
+      xdg-open "${DOXYGEN_OUTPUT_DIR}/html/index.html"
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+      VERBATIM
     )
   endif()
 else()

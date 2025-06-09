@@ -1,7 +1,7 @@
 #include <assert.h>
+#include <engine/engine.h>
 #include <raylib.h>
 #include <raymath.h>
-#include "../engine/engine.h"
 #include "internal.h"
 
 // --- Constants ---

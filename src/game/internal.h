@@ -1,10 +1,10 @@
 // clang-format Language: C
 #pragma once
 
+#include <engine/engine.h>
+#include <log/log.h>
 #include <raylib.h>
 #include <raymath.h>
-#include "../engine/engine.h"
-#include "../log/log.h"
 
 // --- Helper macros ---
 

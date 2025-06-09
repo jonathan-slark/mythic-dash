@@ -1,0 +1,6 @@
+[submodule "extern/log"]
+	path = extern/log
+	url = https://github.com/jonathan-slark/log.git
+[submodule "extern/engine"]
+	path = extern/engine
+	url = https://github.com/jonathan-slark/engine.git

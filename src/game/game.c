@@ -1,10 +1,10 @@
 #include "game.h"
 #include <assert.h>
+#include <engine/engine.h>
+#include <log/log.h>
 #include <math.h>
 #include <raylib.h>
 #include <stddef.h>
-#include "../engine/engine.h"
-#include "../log/log.h"
 #include "anim.h"
 #include "game/internal.h"
 #include "internal.h"
