@@ -105,7 +105,7 @@ Vector2      ghost_getPos(int id);
 game__Dir    ghost_getDir(int id);
 game__Actor* ghost_getActor(int id);
 float        ghost_getDecisionCooldown(int id);
-const char*  ghost_getStateStr(int id);
+const char*  ghost_getStateString(int id);
 
 // --- Maze functions (maze.c) ---
 

@@ -1,8 +1,6 @@
 #include <assert.h>
-#include <math.h>
 #include <raylib.h>
 #include <raymath.h>
-#include <stdio.h>
 #include "actor.h"
 #include "internal.h"
 
@@ -17,7 +15,6 @@ typedef struct Debug {
 
 // --- Constants ---
 
-constexpr int BUFFER_SIZE = 32;
 #define OVERLAY_COLOUR_PLAYER (Color){ 100, 200, 255, 128 }
 #define OVERLAY_COLOUR_GHOST (Color){ 255, 128, 200, 128 }
 #define OVERLAY_NUMBER_SIZE 20
@@ -33,32 +30,6 @@ static Debug g_debug = {
 };
 
 // --- Helper functions ---
-
-static void drawNumber(float number, Vector2 pos, int size, Color colour) {
-  assert(size > 0);
-
-  char numberText[BUFFER_SIZE];
-
-  snprintf(numberText, sizeof(numberText), "%.2f", number);
-  DrawText(numberText, pos.x, pos.y, size, colour);
-}
-
-static void drawArrow(Vector2 start, Vector2 end, float size, Color colour) {
-  assert(size > 0);
-
-  DrawLineV(start, end, colour);
-
-  // Calculate angle of the line
-  float angle = atan2f(end.y - start.y, end.x - start.x);
-
-  // Arrowhead points
-  Vector2 right = { end.x - size * cosf(angle - PI / 6), end.y - size * sinf(angle - PI / 6) };
-
-  Vector2 left  = { end.x - size * cosf(angle + PI / 6), end.y - size * sinf(angle + PI / 6) };
-
-  DrawLineV(end, right, colour);
-  DrawLineV(end, left, colour);
-}
 
 static void drawActorArrow(game__Actor* actor) {
   assert(actor != nullptr);
@@ -76,7 +47,7 @@ static void drawActorArrow(game__Actor* actor) {
     default: assert(false);
   }
 
-  drawArrow(start, end, ACTOR_SIZE, WHITE);
+  engine_drawArrow(start, end, ACTOR_SIZE, WHITE);
 }
 
 // --- Debug functions ---
@@ -115,14 +86,14 @@ void debug_drawOverlay(void) {
 
       float   cooldown = ghost_getDecisionCooldown(i);
       Color   colour   = cooldown == 0.0f ? WHITE : RED;
-      int     scale    = engine_getScale();
-      Vector2 pos      = Vector2Scale(POS_ADJUST(actor_getPos(actor)), scale);
-      drawNumber(cooldown, Vector2AddValue(pos, 1), OVERLAY_NUMBER_SIZE, BLACK);
-      drawNumber(cooldown, pos, OVERLAY_NUMBER_SIZE, colour);
+      Vector2 pos      = POS_ADJUST(actor_getPos(actor));
+      engine_drawFloat(cooldown, pos, OVERLAY_NUMBER_SIZE, colour);
 
-      const char* str = ghost_getStateStr(i);
-      DrawText(str, pos.x + 1, pos.y + ACTOR_SIZE * scale - OVERLAY_TEXT_SIZE + 1, OVERLAY_TEXT_SIZE, BLACK);
-      DrawText(str, pos.x, pos.y + ACTOR_SIZE * scale - OVERLAY_TEXT_SIZE, OVERLAY_TEXT_SIZE, WHITE);
+      const char* string = ghost_getStateString(i);
+      float       scale  = engine_getScale();
+      engine_drawText(
+          string, (Vector2) { pos.x, pos.y + ACTOR_SIZE - OVERLAY_TEXT_SIZE / scale }, OVERLAY_TEXT_SIZE, WHITE
+      );
     }
   }
 }

@@ -247,7 +247,7 @@ float ghost_getDecisionCooldown(int id) {
   return g_ghosts[id].decisionCooldown;
 }
 
-const char* ghost_getStateStr(int id) {
+const char* ghost_getStateString(int id) {
   assert(id >= 0 && id < GHOST_COUNT);
   assert(id >= 0 && id < GHOST_COUNT);
   assert(g_ghosts[id].actor != nullptr);

@@ -255,6 +255,33 @@ void engine_drawBackground(engine_Texture* background);
 void engine_drawRectangleOutline(Rectangle rect, Color color);
 
 /**
+ * @brief Draw text, using the default font
+ * @param text The text to draw
+ * @param pos The position to draw the text
+ * @param size Font size
+ * @param colour Text colour
+ */
+void engine_drawText(const char* text, Vector2 pos, int size, Color colour);
+
+/**
+ * @brief Draw a float number, using the default font
+ * @param number The number to draw
+ * @param pos The position to draw the number
+ * @param size Font size
+ * @param colour Text colour
+ */
+void engine_drawFloat(float number, Vector2 pos, int size, Color colour);
+
+/**
+ * @brief Draw an arrow, using lines
+ * @param start Start vector of the arrow
+ * @param end End vector of the arrow
+ * @param size Size of the arrow head
+ * @param colour Colour of the lines
+ */
+void engine_drawArrow(Vector2 start, Vector2 end, float size, Color colour);
+
+/**
  * @brief Begin drawing a new frame
  */
 static inline void engine_beginFrame(void) { BeginDrawing(); }
