@@ -5,15 +5,14 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Define common paths
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(EXTERN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern)
-
-# Common include directories
 set(COMMON_INCLUDES
   ${SRC_DIR}
   ${EXTERN_DIR}
 )
+add_subdirectory(extern/engine)
+add_subdirectory(extern/log)
 
 add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 find_package(raylib REQUIRED)
@@ -27,6 +26,7 @@ target_link_libraries(${PROJECT_NAME}
   winmm
   gdi32
   opengl32
+  engine
   log
 )
 
@@ -34,8 +34,6 @@ target_link_libraries(${PROJECT_NAME}
 file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/game/*.c")
 add_executable(test_game ${SRC_DIR}/test/game.c)
 target_include_directories(test_game PRIVATE ${COMMON_INCLUDES})
-add_subdirectory(extern/engine)
-add_subdirectory(extern/log)
 target_link_libraries(test_game PRIVATE engine log raylib)
 
 # Doxygen documentation setup
