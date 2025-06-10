@@ -1,7 +1,7 @@
 #include <raylib.h>
 
 #include "engine/engine.h"
-#include "game/game.h"
+#include "game.h"
 #include "log/log.h"
 
 // --- Constants ---

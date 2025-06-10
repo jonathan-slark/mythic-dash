@@ -6,7 +6,6 @@
 #include <raylib.h>
 #include <stddef.h>
 #include "anim.h"
-#include "game/internal.h"
 #include "internal.h"
 
 // --- Macros ---

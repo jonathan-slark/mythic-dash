@@ -8,10 +8,8 @@ add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 find_package(raylib REQUIRED)
 add_subdirectory(extern/engine)
-add_subdirectory(extern/log)
 
 set(ENGINE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/engine/include)
-set(LOG_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/log/include)
 set(MINUNIT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/minunit/include)
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
@@ -19,7 +17,7 @@ set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 # Main executable
 file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/*.c")
 add_executable(${PROJECT_NAME} ${SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR} ${LOG_DIR})
+target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC
   raylib
