@@ -11,22 +11,17 @@ add_subdirectory(extern/engine)
 
 set(ENGINE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/engine/include)
 set(MINUNIT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/minunit/include)
-set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src/game)
 set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 # Main executable
-file(GLOB SOURCES CONFIGURE_DEPENDS "${SRC_DIR}/*.c")
+file(GLOB SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c ${SRC_DIR}/*.c)
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR})
-target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
-target_link_libraries(${PROJECT_NAME} PUBLIC
-  raylib
-  winmm
-  gdi32
-  opengl32
-  engine
-  log
-)
+target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} PUBLIC raylib winmm gdi32 opengl32)
+target_link_libraries(${PROJECT_NAME} PRIVATE engine log)
 
 # Test game executable
 set(TEST_GAME test_game)
