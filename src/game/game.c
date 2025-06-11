@@ -12,6 +12,18 @@
 
 #define COUNT(array) (sizeof(array) / sizeof(array[0]))
 
+// --- Types ---
+
+typedef struct game__Assets {
+  engine_Texture* background;
+  engine_Texture* sprites;
+  engine_Sprite*  playerSprite;
+  engine_Anim*    playerAnim[DIR_COUNT];
+  engine_Sprite*  ghostSprites[GHOST_COUNT];
+  engine_Anim*    ghostAnims[GHOST_COUNT][DIR_COUNT];
+  engine_Font*    font;
+} game__Assets;
+
 // --- Constants ---
 
 static const char FILE_BACKGROUND[]     = "../../asset/gfx/background.png";
@@ -47,14 +59,8 @@ static const Vector2 TELEPORT_COVER_SIZES[] = {
 
 // --- Global state ---
 
-log_Log*               game__log;
-static engine_Texture* g_background;
-static engine_Texture* g_sprites;
-static engine_Sprite*  g_playerSprite;
-static engine_Anim*    g_playerAnim[DIR_COUNT];
-static engine_Sprite*  g_ghostSprites[GHOST_COUNT];
-static engine_Anim*    g_ghostAnims[GHOST_COUNT][DIR_COUNT];
-static engine_Font*    g_font;
+log_Log*            game__log;
+static game__Assets g_assets;
 #ifndef NDEBUG
 static size_t g_fpsIndex = COUNT(FPS) - 1;
 #endif
@@ -74,26 +80,26 @@ static void checkFPSKeys(void) {
 #endif
 
 static bool loadAssets(void) {
-  GAME_TRY(g_background = engine_textureLoad(FILE_BACKGROUND));
-  GAME_TRY(g_sprites = engine_textureLoad(FILE_SPRITES));
-  GAME_TRY(g_font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
+  GAME_TRY(g_assets.background = engine_textureLoad(FILE_BACKGROUND));
+  GAME_TRY(g_assets.sprites = engine_textureLoad(FILE_SPRITES));
+  GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
   return true;
 }
 
 static bool initPlayer(void) {
   GAME_TRY(player_init());
   GAME_TRY(
-      g_playerSprite =
-          engine_createSprite(POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_OFFSET)
+      g_assets.playerSprite =
+          engine_createSprite(POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_DATA.offset)
   );
   for (int i = 0; i < DIR_COUNT; i++) {
     GAME_TRY(
-        g_playerAnim[i] = engine_createAnim(
-            g_playerSprite,
-            PLAYER_ANIMS[i].row,
-            PLAYER_ANIMS[i].startCol,
-            PLAYER_ANIMS[i].frameCount,
-            PLAYER_ANIMS[i].frameTime
+        g_assets.playerAnim[i] = engine_createAnim(
+            g_assets.playerSprite,
+            PLAYER_DATA.animData[i].row,
+            PLAYER_DATA.animData[i].startCol,
+            PLAYER_DATA.animData[i].frameCount,
+            PLAYER_DATA.animData[i].frameTime
         )
     );
   }
@@ -104,17 +110,17 @@ static bool initGhosts(void) {
   GAME_TRY(ghost_init());
   for (int i = 0; i < GHOST_COUNT; i++) {
     GAME_TRY(
-        g_ghostSprites[i] =
-            engine_createSprite(POS_ADJUST(ghost_getPos(i)), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, GHOST_OFFSETS[i])
+        g_assets.ghostSprites[i] =
+            engine_createSprite(POS_ADJUST(ghost_getPos(i)), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, GHOST_DATA[i].offset)
     );
     for (int j = 0; j < DIR_COUNT; j++) {
       GAME_TRY(
-          g_ghostAnims[i][j] = engine_createAnim(
-              g_ghostSprites[i],
-              GHOST_ANIMS[i][j].row,
-              GHOST_ANIMS[i][j].startCol,
-              GHOST_ANIMS[i][j].frameCount,
-              GHOST_ANIMS[i][j].frameTime
+          g_assets.ghostAnims[i][j] = engine_createAnim(
+              g_assets.ghostSprites[i],
+              GHOST_DATA[i].animData[j].row,
+              GHOST_DATA[i].animData[j].startCol,
+              GHOST_DATA[i].animData[j].frameCount,
+              GHOST_DATA[i].animData[j].frameTime
           )
       );
     }
@@ -124,17 +130,17 @@ static bool initGhosts(void) {
 
 static void updatePlayer(float frameTime, float slop) {
   player_update(frameTime, slop);
-  engine_spriteSetPos(g_playerSprite, POS_ADJUST(player_getPos()));
+  engine_spriteSetPos(g_assets.playerSprite, POS_ADJUST(player_getPos()));
   if (player_isMoving()) {
-    engine_updateAnim(g_playerAnim[player_getDir()], frameTime);
+    engine_updateAnim(g_assets.playerAnim[player_getDir()], frameTime);
   }
 }
 
 static void updateGhosts(float frameTime, float slop) {
   ghost_update(frameTime, slop);
   for (int i = 0; i < GHOST_COUNT; i++) {
-    engine_spriteSetPos(g_ghostSprites[i], POS_ADJUST(ghost_getPos(i)));
-    engine_updateAnim(g_ghostAnims[i][ghost_getDir(i)], frameTime);
+    engine_spriteSetPos(g_assets.ghostSprites[i], POS_ADJUST(ghost_getPos(i)));
+    engine_updateAnim(g_assets.ghostAnims[i][ghost_getDir(i)], frameTime);
   }
 }
 
@@ -155,18 +161,18 @@ static void drawTeleportCovers(void) {
 
 static void unloadPlayer(void) {
   player_shutdown();
-  engine_destroySprite(&g_playerSprite);
+  engine_destroySprite(&g_assets.playerSprite);
   for (int i = 0; i < DIR_COUNT; i++) {
-    engine_destroyAnim(&g_playerAnim[i]);
+    engine_destroyAnim(&g_assets.playerAnim[i]);
   }
 }
 
 static void unloadGhosts(void) {
   ghost_shutdown();
   for (int i = 0; i < GHOST_COUNT; i++) {
-    engine_destroySprite(&g_ghostSprites[i]);
+    engine_destroySprite(&g_assets.ghostSprites[i]);
     for (int j = 0; j < DIR_COUNT; j++) {
-      engine_destroyAnim(&g_ghostAnims[i][j]);
+      engine_destroyAnim(&g_assets.ghostAnims[i][j]);
     }
   }
 }
@@ -208,10 +214,10 @@ void game_update(float frameTime) {
 }
 
 void game_draw(void) {
-  engine_drawBackground(g_background);
-  engine_drawSprite(g_sprites, g_playerSprite);
+  engine_drawBackground(g_assets.background);
+  engine_drawSprite(g_assets.sprites, g_assets.playerSprite);
   for (int i = 0; i < GHOST_COUNT; i++) {
-    engine_drawSprite(g_sprites, g_ghostSprites[i]);
+    engine_drawSprite(g_assets.sprites, g_assets.ghostSprites[i]);
   }
   drawTeleportCovers();
 #ifndef NDEBUG
@@ -222,8 +228,8 @@ void game_draw(void) {
 void game_unload(void) {
   unloadGhosts();
   unloadPlayer();
-  engine_fontUnload(&g_font);
-  engine_textureUnload(&g_sprites);
-  engine_textureUnload(&g_background);
+  engine_fontUnload(&g_assets.font);
+  engine_textureUnload(&g_assets.sprites);
+  engine_textureUnload(&g_assets.background);
   log_destroy(&game__log);
 }
