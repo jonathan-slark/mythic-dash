@@ -41,3 +41,4 @@ maze_muncher/
 ## Asset Credits
 
 [Cursive2 font](https://opengameart.org/content/new-original-grafx2-font-collection) - CC0
+[Puny Characters](https://merchant-shade.itch.io/16x16-puny-characters) - CC0

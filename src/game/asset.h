@@ -1,0 +1,90 @@
+/*
+ * anim.h: Animation data, only to be used by game.c
+ */
+
+#include "internal.h"
+#include <raylib.h>
+
+// --- Types ---
+
+typedef struct AnimData {
+  int row;
+  int startCol;
+  int frameCount;
+  float frameTime;
+} AnimData;
+
+typedef struct ActorData {
+  Vector2 size;
+  Vector2 offset;
+  Vector2 inset;
+  AnimData animData[DIR_COUNT];
+} ActorData;
+
+// --- Constants ---
+
+static const char FILE_BACKGROUND[] = "../../asset/gfx/background.png";
+static const char FILE_CREATURES[] = "../../asset/gfx/creatures.png";
+static const char FILE_PLAYER[] = "../../asset/gfx/player.png";
+static const char FILE_FONT[] = "../../asset/gfx/font.png";
+
+static const float FRAME_TIME = (1.0f / 12.0f);
+
+// clang-format off
+static const ActorData PLAYER_DATA = {
+  .inset    = { 8.0f, 8.0f },
+  .animData = {
+    [DIR_UP]    = { .row = 4, .startCol = 0, .frameCount = 5, FRAME_TIME},
+    [DIR_RIGHT] = { .row = 2, .startCol = 0, .frameCount = 5, FRAME_TIME},
+    [DIR_DOWN]  = { .row = 0, .startCol = 0, .frameCount = 5, FRAME_TIME},
+    [DIR_LEFT]  = { .row = 6, .startCol = 0, .frameCount = 5, FRAME_TIME}
+  }
+};
+
+static const ActorData CREATURE_DATA[CREATURE_COUNT] = {
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,  0.0f  },
+    .animData = {
+      [DIR_UP]    = { .row = 3, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 0, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,  0.0f },
+    .animData = {
+      [DIR_UP]    = { .row = 3, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 3, .frameCount = 3, FRAME_TIME }
+    },
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .animData = {
+      [DIR_UP]    = { .row = 3, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 6, .frameCount = 3, FRAME_TIME }
+    },
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .animData = {
+      [DIR_UP]    = { .row = 3, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 9, .frameCount = 3, FRAME_TIME }
+    }
+  }
+};
+// clang-format on

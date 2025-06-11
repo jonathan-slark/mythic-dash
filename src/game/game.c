@@ -4,8 +4,9 @@
 #include <log/log.h>
 #include <math.h>
 #include <raylib.h>
+#include <raymath.h>
 #include <stddef.h>
-#include "anim.h"
+#include "asset.h"
 #include "internal.h"
 
 // --- Macros ---
@@ -16,24 +17,19 @@
 
 typedef struct game__Assets {
   engine_Texture* background;
-  engine_Texture* sprites;
-  engine_Texture* playerSprites;
+  engine_Texture* creatureSpriteSheet;
+  engine_Texture* playerSpriteSheet;
   engine_Sprite*  playerSprite;
   engine_Anim*    playerAnim[DIR_COUNT];
-  engine_Sprite*  ghostSprites[GHOST_COUNT];
-  engine_Anim*    ghostAnims[GHOST_COUNT][DIR_COUNT];
+  engine_Sprite*  creatureSprites[CREATURE_COUNT];
+  engine_Anim*    creatureAnims[CREATURE_COUNT][DIR_COUNT];
   engine_Font*    font;
 } game__Assets;
 
 // --- Constants ---
 
-static const char FILE_BACKGROUND[]     = "../../asset/gfx/background.png";
-static const char FILE_SPRITES[]        = "../../asset/gfx/sprites.png";
-static const char FILE_PLAYER[]         = "../../asset/gfx/Human-Worker-Red.png";
-static const char FILE_FONT[]           = "../../asset/gfx/font.png";
-
 static const log_Config LOG_CONFIG_GAME = {
-  .minLevel      = LOG_LEVEL_TRACE,
+  .minLevel      = LOG_LEVEL_DEBUG,
   .useColours    = true,
   .showTimestamp = true,
   .showFileLine  = true,
@@ -83,8 +79,8 @@ static void checkFPSKeys(void) {
 
 static bool loadAssets(void) {
   GAME_TRY(g_assets.background = engine_textureLoad(FILE_BACKGROUND));
-  GAME_TRY(g_assets.sprites = engine_textureLoad(FILE_SPRITES));
-  GAME_TRY(g_assets.playerSprites = engine_textureLoad(FILE_PLAYER));
+  GAME_TRY(g_assets.creatureSpriteSheet = engine_textureLoad(FILE_CREATURES));
+  GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
   GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
   return true;
 }
@@ -92,8 +88,9 @@ static bool loadAssets(void) {
 static bool initPlayer(void) {
   GAME_TRY(player_init());
   GAME_TRY(
-      g_assets.playerSprite =
-          engine_createSprite(POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_DATA.offset)
+      g_assets.playerSprite = engine_createSprite(
+          POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, (Vector2) { 0.0f, 0.0f }
+      )
   );
   for (int i = 0; i < DIR_COUNT; i++) {
     GAME_TRY(
@@ -112,20 +109,20 @@ static bool initPlayer(void) {
 
 static bool initGhosts(void) {
   GAME_TRY(ghost_init());
-  for (int i = 0; i < GHOST_COUNT; i++) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
     GAME_TRY(
-        g_assets.ghostSprites[i] =
-            engine_createSprite(POS_ADJUST(ghost_getPos(i)), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, GHOST_DATA[i].offset)
+        g_assets.creatureSprites[i] =
+            engine_createSprite(POS_ADJUST(ghost_getPos(i)), CREATURE_DATA[i].size, (Vector2) { 0.0f, 0.0f })
     );
     for (int j = 0; j < DIR_COUNT; j++) {
       GAME_TRY(
-          g_assets.ghostAnims[i][j] = engine_createAnim(
-              g_assets.ghostSprites[i],
-              GHOST_DATA[i].animData[j].row,
-              GHOST_DATA[i].animData[j].startCol,
-              GHOST_DATA[i].animData[j].frameCount,
-              GHOST_DATA[i].animData[j].frameTime,
-              GHOST_DATA[i].inset
+          g_assets.creatureAnims[i][j] = engine_createAnim(
+              g_assets.creatureSprites[i],
+              CREATURE_DATA[i].animData[j].row,
+              CREATURE_DATA[i].animData[j].startCol,
+              CREATURE_DATA[i].animData[j].frameCount,
+              CREATURE_DATA[i].animData[j].frameTime,
+              CREATURE_DATA[i].inset
           )
       );
     }
@@ -143,9 +140,10 @@ static void updatePlayer(float frameTime, float slop) {
 
 static void updateGhosts(float frameTime, float slop) {
   ghost_update(frameTime, slop);
-  for (int i = 0; i < GHOST_COUNT; i++) {
-    engine_spriteSetPos(g_assets.ghostSprites[i], POS_ADJUST(ghost_getPos(i)));
-    engine_updateAnim(g_assets.ghostAnims[i][ghost_getDir(i)], frameTime);
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    Vector2 pos = Vector2Add(POS_ADJUST(ghost_getPos(i)), CREATURE_DATA[i].offset);
+    engine_spriteSetPos(g_assets.creatureSprites[i], pos);
+    engine_updateAnim(g_assets.creatureAnims[i][ghost_getDir(i)], frameTime);
   }
 }
 
@@ -174,10 +172,10 @@ static void unloadPlayer(void) {
 
 static void unloadGhosts(void) {
   ghost_shutdown();
-  for (int i = 0; i < GHOST_COUNT; i++) {
-    engine_destroySprite(&g_assets.ghostSprites[i]);
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    engine_destroySprite(&g_assets.creatureSprites[i]);
     for (int j = 0; j < DIR_COUNT; j++) {
-      engine_destroyAnim(&g_assets.ghostAnims[i][j]);
+      engine_destroyAnim(&g_assets.creatureAnims[i][j]);
     }
   }
 }
@@ -220,9 +218,9 @@ void game_update(float frameTime) {
 
 void game_draw(void) {
   engine_drawBackground(g_assets.background);
-  engine_drawSprite(g_assets.playerSprites, g_assets.playerSprite);
-  for (int i = 0; i < GHOST_COUNT; i++) {
-    engine_drawSprite(g_assets.sprites, g_assets.ghostSprites[i]);
+  engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerSprite);
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    engine_drawSprite(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i]);
   }
   drawTeleportCovers();
 #ifndef NDEBUG
@@ -234,8 +232,8 @@ void game_unload(void) {
   unloadGhosts();
   unloadPlayer();
   engine_fontUnload(&g_assets.font);
-  engine_textureUnload(&g_assets.playerSprites);
-  engine_textureUnload(&g_assets.sprites);
+  engine_textureUnload(&g_assets.playerSpriteSheet);
+  engine_textureUnload(&g_assets.creatureSpriteSheet);
   engine_textureUnload(&g_assets.background);
   log_destroy(&game__log);
 }

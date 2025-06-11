@@ -40,7 +40,7 @@ static const struct {
   float     startSpeed;
   float     startTimer;
   void      (*update)(Ghost*, float, float);
-} GHOST_DATA[GHOST_COUNT] = {
+} CREATURE_DATA[CREATURE_COUNT] = {
   [0] = {   GHOST_MAZE_START, DIR_LEFT, SPEEDS[SpeedNormal], GHOST_CHASETIMER,     wander },
   [1] = { { 132.0f, 112.0f },   DIR_UP,   SPEEDS[SpeedSlow],             0.0f, penToStart },
   [2] = { { 116.0f, 112.0f }, DIR_DOWN,   SPEEDS[SpeedSlow],            10.0f,        pen },
@@ -53,7 +53,7 @@ static const char* STATE_WANDER_STR     = "WANDER";
 
 // --- Global state ---
 
-static Ghost g_ghosts[GHOST_COUNT];
+static Ghost g_ghosts[CREATURE_COUNT];
 
 // --- Helper functions ---
 
@@ -189,13 +189,16 @@ static void wander(Ghost* ghost, float frameTime, float slop) {
 // --- Ghost functions ---
 
 bool ghost_init(void) {
-  for (int i = 0; i < GHOST_COUNT; i++) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
     assert(g_ghosts[i].actor == nullptr);
-    g_ghosts[i].update           = GHOST_DATA[i].update;
-    g_ghosts[i].timer            = GHOST_DATA[i].startTimer;
+    g_ghosts[i].update           = CREATURE_DATA[i].update;
+    g_ghosts[i].timer            = CREATURE_DATA[i].startTimer;
     g_ghosts[i].decisionCooldown = 0.0f;
     g_ghosts[i].actor            = actor_create(
-        GHOST_DATA[i].startPos, (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, GHOST_DATA[i].startDir, GHOST_DATA[i].startSpeed
+        CREATURE_DATA[i].startPos,
+        (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
+        CREATURE_DATA[i].startDir,
+        CREATURE_DATA[i].startSpeed
     );
     if (g_ghosts[i].actor == nullptr) return false;
 #ifndef NDEBUG
@@ -206,7 +209,7 @@ bool ghost_init(void) {
 }
 
 void ghost_shutdown(void) {
-  for (int i = 0; i < GHOST_COUNT; i++) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
     assert(g_ghosts[i].actor != nullptr);
     actor_destroy(&g_ghosts[i].actor);
     assert(g_ghosts[i].actor == nullptr);
@@ -217,39 +220,39 @@ void ghost_update(float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  for (int i = 0; i < GHOST_COUNT; i++) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
     assert(g_ghosts[i].actor != nullptr);
     g_ghosts[i].update(&g_ghosts[i], frameTime, slop);
   }
 }
 
 Vector2 ghost_getPos(int id) {
-  assert(id >= 0 && id < GHOST_COUNT);
+  assert(id >= 0 && id < CREATURE_COUNT);
   assert(g_ghosts[id].actor != nullptr);
   return actor_getPos(g_ghosts[id].actor);
 }
 
 game__Dir ghost_getDir(int id) {
-  assert(id >= 0 && id < GHOST_COUNT);
+  assert(id >= 0 && id < CREATURE_COUNT);
   assert(g_ghosts[id].actor != nullptr);
   return actor_getDir(g_ghosts[id].actor);
 }
 
 game__Actor* ghost_getActor(int id) {
-  assert(id >= 0 && id < GHOST_COUNT);
+  assert(id >= 0 && id < CREATURE_COUNT);
   assert(g_ghosts[id].actor != nullptr);
   return g_ghosts[id].actor;
 }
 
 float ghost_getDecisionCooldown(int id) {
-  assert(id >= 0 && id < GHOST_COUNT);
+  assert(id >= 0 && id < CREATURE_COUNT);
   assert(g_ghosts[id].actor != nullptr);
   return g_ghosts[id].decisionCooldown;
 }
 
 const char* ghost_getStateString(int id) {
-  assert(id >= 0 && id < GHOST_COUNT);
-  assert(id >= 0 && id < GHOST_COUNT);
+  assert(id >= 0 && id < CREATURE_COUNT);
+  assert(id >= 0 && id < CREATURE_COUNT);
   assert(g_ghosts[id].actor != nullptr);
 
   if (g_ghosts[id].update == pen) {

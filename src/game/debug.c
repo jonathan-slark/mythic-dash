@@ -79,7 +79,7 @@ void debug_drawOverlay(void) {
     DrawText("Ghost overlay enabled", 0, yPos, 20, OVERLAY_COLOUR_GHOST);
     yPos += 20;
 
-    for (int i = 0; i < GHOST_COUNT; i++) {
+    for (int i = 0; i < CREATURE_COUNT; i++) {
       game__Actor* actor = ghost_getActor(i);
       actor_overlay(actor, OVERLAY_COLOUR_GHOST);
       actor_canMoveOverlay(actor);

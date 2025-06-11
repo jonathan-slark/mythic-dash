@@ -28,9 +28,9 @@ typedef struct game__Actor game__Actor;
 
 // --- Constants ---
 
-constexpr int ACTOR_SIZE  = 16;
-constexpr int GHOST_COUNT = 4;
-constexpr int TILE_SIZE   = 8;
+constexpr int ACTOR_SIZE     = 16;
+constexpr int CREATURE_COUNT = 4;
+constexpr int TILE_SIZE      = 8;
 
 extern const Vector2 MAZE_ORIGIN;
 
