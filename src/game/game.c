@@ -17,6 +17,7 @@
 typedef struct game__Assets {
   engine_Texture* background;
   engine_Texture* sprites;
+  engine_Texture* playerSprites;
   engine_Sprite*  playerSprite;
   engine_Anim*    playerAnim[DIR_COUNT];
   engine_Sprite*  ghostSprites[GHOST_COUNT];
@@ -28,6 +29,7 @@ typedef struct game__Assets {
 
 static const char FILE_BACKGROUND[]     = "../../asset/gfx/background.png";
 static const char FILE_SPRITES[]        = "../../asset/gfx/sprites.png";
+static const char FILE_PLAYER[]         = "../../asset/gfx/Human-Worker-Red.png";
 static const char FILE_FONT[]           = "../../asset/gfx/font.png";
 
 static const log_Config LOG_CONFIG_GAME = {
@@ -82,6 +84,7 @@ static void checkFPSKeys(void) {
 static bool loadAssets(void) {
   GAME_TRY(g_assets.background = engine_textureLoad(FILE_BACKGROUND));
   GAME_TRY(g_assets.sprites = engine_textureLoad(FILE_SPRITES));
+  GAME_TRY(g_assets.playerSprites = engine_textureLoad(FILE_PLAYER));
   GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
   return true;
 }
@@ -99,7 +102,8 @@ static bool initPlayer(void) {
             PLAYER_DATA.animData[i].row,
             PLAYER_DATA.animData[i].startCol,
             PLAYER_DATA.animData[i].frameCount,
-            PLAYER_DATA.animData[i].frameTime
+            PLAYER_DATA.animData[i].frameTime,
+            PLAYER_DATA.inset
         )
     );
   }
@@ -120,7 +124,8 @@ static bool initGhosts(void) {
               GHOST_DATA[i].animData[j].row,
               GHOST_DATA[i].animData[j].startCol,
               GHOST_DATA[i].animData[j].frameCount,
-              GHOST_DATA[i].animData[j].frameTime
+              GHOST_DATA[i].animData[j].frameTime,
+              GHOST_DATA[i].inset
           )
       );
     }
@@ -215,7 +220,7 @@ void game_update(float frameTime) {
 
 void game_draw(void) {
   engine_drawBackground(g_assets.background);
-  engine_drawSprite(g_assets.sprites, g_assets.playerSprite);
+  engine_drawSprite(g_assets.playerSprites, g_assets.playerSprite);
   for (int i = 0; i < GHOST_COUNT; i++) {
     engine_drawSprite(g_assets.sprites, g_assets.ghostSprites[i]);
   }
@@ -229,6 +234,7 @@ void game_unload(void) {
   unloadGhosts();
   unloadPlayer();
   engine_fontUnload(&g_assets.font);
+  engine_textureUnload(&g_assets.playerSprites);
   engine_textureUnload(&g_assets.sprites);
   engine_textureUnload(&g_assets.background);
   log_destroy(&game__log);
