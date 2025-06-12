@@ -29,8 +29,8 @@ typedef struct game__Actor game__Actor;
 // --- Constants ---
 
 constexpr int ACTOR_SIZE     = 16;
+constexpr int TILE_SIZE      = 16;
 constexpr int CREATURE_COUNT = 4;
-constexpr int TILE_SIZE      = 8;
 
 extern const Vector2 MAZE_ORIGIN;
 
@@ -109,10 +109,10 @@ const char*  ghost_getStateString(int id);
 
 // --- Maze functions (maze.c) ---
 
-void       maze_init(void);
-game__AABB maze_getAABB(Vector2 pos);
-bool       maze_isWall(Vector2 pos);
-void       maze_tilesOverlay(void);
+[[nodiscard]] bool maze_init(void);
+game__AABB         maze_getAABB(Vector2 pos);
+bool               maze_isWall(Vector2 pos);
+void               maze_tilesOverlay(void);
 
 // --- Debug functions (debug.c) ---
 

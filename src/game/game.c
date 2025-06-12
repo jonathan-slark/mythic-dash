@@ -16,7 +16,6 @@
 // --- Types ---
 
 typedef struct game__Assets {
-  engine_Texture* background;
   engine_Texture* creatureSpriteSheet;
   engine_Texture* playerSpriteSheet;
   engine_Sprite*  playerSprite;
@@ -40,11 +39,11 @@ static const log_Config LOG_CONFIG_GAME = {
 static const float FPS[] = { 15, 30, 60, 0 };
 #endif
 
-const float BASE_SLOP                      = 0.35f;
-const float BASE_DT                        = (1.0f / 144.0f);
-const float MIN_SLOP                       = 0.05f;
-const float MAX_SLOP                       = 0.7f;
-const float OVERLAP_EPSILON                = 1e-5f;
+const float BASE_SLOP       = 0.35f;
+const float BASE_DT         = (1.0f / 144.0f);
+const float MIN_SLOP        = 0.05f;
+const float MAX_SLOP        = 0.7f;
+const float OVERLAP_EPSILON = 1e-5f;
 
 static const Vector2 TELEPORT_COVER_POSS[] = {
   { 100.0f, 119.0f },
@@ -78,7 +77,6 @@ static void checkFPSKeys(void) {
 #endif
 
 static bool loadAssets(void) {
-  GAME_TRY(g_assets.background = engine_textureLoad(FILE_BACKGROUND));
   GAME_TRY(g_assets.creatureSpriteSheet = engine_textureLoad(FILE_CREATURES));
   GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
   GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
@@ -195,7 +193,7 @@ bool game_load(void) {
 
   double start = GetTime();
   GAME_TRY(loadAssets());
-  maze_init();
+  GAME_TRY(maze_init());
   GAME_TRY(initPlayer());
   GAME_TRY(initGhosts());
 
@@ -217,7 +215,6 @@ void game_update(float frameTime) {
 }
 
 void game_draw(void) {
-  engine_drawBackground(g_assets.background);
   engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerSprite);
   for (int i = 0; i < CREATURE_COUNT; i++) {
     engine_drawSprite(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i]);
@@ -234,6 +231,5 @@ void game_unload(void) {
   engine_fontUnload(&g_assets.font);
   engine_textureUnload(&g_assets.playerSpriteSheet);
   engine_textureUnload(&g_assets.creatureSpriteSheet);
-  engine_textureUnload(&g_assets.background);
   log_destroy(&game__log);
 }
