@@ -14,6 +14,15 @@
     return false;     \
   } while (0)
 
+// --- Types ---
+
+typedef struct game__Maze {
+  cute_tiled_map_t* map;
+  game__AABB*       aabbs;
+  engine_Texture*   tileSet;
+  engine_Sprite**   tileSprites;
+} game__Maze;
+
 // --- Constants ---
 
 const Vector2 MAZE_ORIGIN = { 0.0f, 8.0f };  // Screen offset to the actual maze
@@ -24,26 +33,24 @@ constexpr int      BUFFER_SIZE = 1024;
 
 // --- Global state ---
 
-static cute_tiled_map_t* g_maze;
-static game__AABB*       g_AABBs;
-static engine_Texture*   g_tileSet;
+static game__Maze g_maze;
 
 // --- Helper functions ---
 
 static bool makeMazeAABB(void) {
   // Only use top layer
-  cute_tiled_layer_t* layer = g_maze->layers;
+  cute_tiled_layer_t* layer = g_maze.map->layers;
   if (layer == nullptr) {
     LOG_FATAL(game__log, "Layer is NULL");
     return false;
   } else {
-    int count = layer->data_count;
-    g_AABBs   = (game__AABB*) malloc(count * sizeof(game__AABB));
+    int count    = layer->data_count;
+    g_maze.aabbs = (game__AABB*) malloc(count * sizeof(game__AABB));
 
     for (int i = 0; i < count; i++) {
-      int row    = i / g_maze->width;
-      int col    = i % g_maze->width;
-      g_AABBs[i] = (game__AABB) {
+      int row         = i / g_maze.map->width;
+      int col         = i % g_maze.map->width;
+      g_maze.aabbs[i] = (game__AABB) {
         .min = (Vector2) {       col * TILE_SIZE,       row * TILE_SIZE },
         .max = (Vector2) { (col + 1) * TILE_SIZE, (row + 1) * TILE_SIZE }
       };
@@ -53,15 +60,15 @@ static bool makeMazeAABB(void) {
 }
 
 static bool loadMazeTileSet(void) {
-  assert(g_maze != nullptr);
-  if (g_maze->tilesets == nullptr || g_maze->tilesets->image.ptr == nullptr) {
+  assert(g_maze.map != nullptr);
+  if (g_maze.map->tilesets == nullptr || g_maze.map->tilesets->image.ptr == nullptr) {
     LOG_FATAL(game__log, "Tileset path is NULL");
     return false;
   }
 
   char buffer[BUFFER_SIZE] = ASSET_DIR "map/";
 
-  size_t filenameLen = strnlen_s(g_maze->tilesets->image.ptr, sizeof buffer);
+  size_t filenameLen = strnlen_s(g_maze.map->tilesets->image.ptr, sizeof buffer);
   if (filenameLen == sizeof buffer) {
     LOG_FATAL(game__log, "Tileset file name too long to fit buffer");
     return false;
@@ -72,48 +79,118 @@ static bool loadMazeTileSet(void) {
     return false;
   }
 
-  int result = strncat_s(buffer, sizeof buffer, g_maze->tilesets->image.ptr, filenameLen);
+  int result = strncat_s(buffer, sizeof buffer, g_maze.map->tilesets->image.ptr, filenameLen);
   if (result != 0) {
     LOG_FATAL(game__log, "strncat_s failed: %s", strerror(result));
     return false;
   }
-  GAME_TRY(g_tileSet = engine_textureLoad(buffer));
+  GAME_TRY(g_maze.tileSet = engine_textureLoad(buffer));
 
   return true;
+}
+
+static bool createMazeTileSetSprites(void) {
+  assert(g_maze.map != nullptr && g_maze.map->layers != nullptr);
+  assert(g_maze.tileSprites == nullptr);
+
+  cute_tiled_tileset_t* tileset = g_maze.map->tilesets;
+  int                   count   = tileset->tilecount;
+  g_maze.tileSprites            = (engine_Sprite**) malloc(count * sizeof(engine_Sprite*));
+  if (g_maze.tileSprites == nullptr) {
+    LOG_FATAL(game__log, "Failed to allocate memory for tileset sprites");
+    return false;
+  }
+
+  int width   = tileset->tilewidth;
+  int height  = tileset->tileheight;
+  int columns = tileset->columns;
+  int rows    = count / columns;
+  for (int i = 0; i < count; i++) {
+    int row               = i / columns;
+    int col               = i % columns;
+    LOG_INFO(game__log, "i = %d, row = %d, col = %d", i, row, col);
+    g_maze.tileSprites[i] = engine_createSpriteFromSheet(
+        (Vector2) { 0.0f, 0.0f }, (Vector2) { width, height }, row, col, (Vector2) { 0.0f, 0.0f }
+    );
+  }
+  LOG_INFO(game__log, "Created %d tileset (%d x %d) sprites", count, rows, columns);
+
+  return true;
+}
+
+static void destroyMazeTileSetSprites(void) {
+  assert(g_maze.tileSprites != nullptr);
+  assert(g_maze.map->tilesets != nullptr);
+
+  cute_tiled_tileset_t* tileset = g_maze.map->tilesets;
+  for (int i = 0; i < tileset->tilecount; i++) {
+    assert(g_maze.tileSprites[i] != nullptr);
+    engine_destroySprite(&g_maze.tileSprites[i]);
+  }
+  free(g_maze.tileSprites);
+  g_maze.tileSprites = nullptr;
 }
 
 // --- Maze functions ---
 
 bool maze_init(void) {
-  GAME_TRY(g_maze = cute_tiled_load_map_from_file(FILE_MAZE, nullptr));
-  LOG_INFO(game__log, "Map loaded: %s (%d x %d)", FILE_MAZE, g_maze->width, g_maze->height);
+  GAME_TRY(g_maze.map = cute_tiled_load_map_from_file(FILE_MAZE, nullptr));
+  LOG_INFO(game__log, "Map loaded: %s (%d x %d)", FILE_MAZE, g_maze.map->width, g_maze.map->height);
   GAME_TRY(loadMazeTileSet());
+  GAME_TRY(createMazeTileSetSprites());
   GAME_TRY(makeMazeAABB());
   return true;
 }
 
-void maze_shutdown(void) { cute_tiled_free_map(g_maze); }
+void maze_shutdown(void) {
+  destroyMazeTileSetSprites();
+  cute_tiled_free_map(g_maze.map);
+}
 
 game__AABB maze_getAABB(Vector2 pos) {
   int row = (int) (pos.y / TILE_SIZE);
   int col = (int) (pos.x / TILE_SIZE);
-  assert(row >= 0 && row < g_maze->height);
-  assert(col >= 0 && col < g_maze->width);
-  return g_AABBs[row * g_maze->width + col];
+  assert(row >= 0 && row < g_maze.map->height);
+  assert(col >= 0 && col < g_maze.map->width);
+  return g_maze.aabbs[row * g_maze.map->width + col];
 }
 
 bool maze_isWall(Vector2 pos) {
   int row = (int) (pos.y / TILE_SIZE);
   int col = (int) (pos.x / TILE_SIZE);
-  assert(row >= 0 && row < g_maze->height);
-  assert(col >= 0 && col < g_maze->width);
-  return g_maze->layers->data[row * g_maze->width + col] != 5;
+  assert(row >= 0 && row < g_maze.map->height);
+  assert(col >= 0 && col < g_maze.map->width);
+  // TODO: custom tile property
+  return g_maze.map->layers->data[row * g_maze.map->width + col] != 5;
 }
 
 void maze_tilesOverlay(void) {
-  for (int i = 0; i < g_maze->layers->data_count; i++) {
-    if (maze_isWall(g_AABBs[i].min)) {
-      aabb_drawOverlay(g_AABBs[i], OVERLAY_COLOUR_MAZE_WALL);
+  cute_tiled_layer_t* layer = g_maze.map->layers;
+  for (int i = 0; i < layer->data_count; i++) {
+    if (maze_isWall(g_maze.aabbs[i].min)) {
+      aabb_drawOverlay(g_maze.aabbs[i], OVERLAY_COLOUR_MAZE_WALL);
     }
+  }
+}
+
+void maze_draw(void) {
+  assert(g_maze.map->layers != nullptr);
+  assert(g_maze.map->tilesets != nullptr);
+  assert(g_maze.tileSprites != nullptr);
+
+  cute_tiled_layer_t*   layer   = g_maze.map->layers;
+  cute_tiled_tileset_t* tileset = g_maze.map->tilesets;
+  int mapWidth = g_maze.map->width;
+  int                   tileWidth   = tileset->tilewidth;
+  int                   tileHeight  = tileset->tileheight;
+  for (int i = 0; i < layer->data_count; i++) {
+    int            row    = i / mapWidth;
+    int            col    = i % mapWidth;
+    Vector2        pos    = {(float) col * tileWidth , (float) row * tileHeight};
+    pos = Vector2Add(pos, MAZE_ORIGIN);
+    engine_Sprite* sprite = g_maze.tileSprites[layer->data[i]-1];
+    assert(sprite != nullptr);
+    engine_spriteSetPos(sprite, pos);
+    engine_drawSprite(g_maze.tileSet, sprite);
   }
 }

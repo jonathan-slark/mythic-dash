@@ -26,10 +26,10 @@ static void wander(Ghost* ghost, float frameTime, float slop);
 
 // --- Constants ---
 
-static const float SPEEDS[]             = { 25.0f, 40.0f, 50.f, 100.0f };
-static const float DECISION_COOLDOWN    = 0.5f;
-static const float PEN_TOP              = 108.0f;
-static const float PEN_BOT              = 116.0f;
+static const float SPEEDS[]          = { 25.0f, 40.0f, 50.f, 100.0f };
+static const float DECISION_COOLDOWN = 0.5f;
+static const float PEN_TOP           = 108.0f;
+static const float PEN_BOT           = 116.0f;
 
 static const Vector2   GHOST_MAZE_START = { 132.0f, 88.0f };
 static const game__Dir GHOST_START_DIR  = DIR_LEFT;
@@ -41,10 +41,10 @@ static const struct {
   float     startTimer;
   void      (*update)(Ghost*, float, float);
 } CREATURE_DATA[CREATURE_COUNT] = {
-  [0] = {   GHOST_MAZE_START, DIR_LEFT, SPEEDS[SpeedNormal], GHOST_CHASETIMER,     wander },
-  [1] = { { 132.0f, 112.0f },   DIR_UP,   SPEEDS[SpeedSlow],             0.0f, penToStart },
-  [2] = { { 116.0f, 112.0f }, DIR_DOWN,   SPEEDS[SpeedSlow],            10.0f,        pen },
-  [3] = { { 148.0f, 112.0f }, DIR_DOWN,   SPEEDS[SpeedSlow],             20.f,        pen },
+  [0] = {   { 1 * TILE_SIZE, 1 * TILE_SIZE }, DIR_RIGHT, SPEEDS[SpeedNormal], GHOST_CHASETIMER, wander },
+  [1] = {  { 28 * TILE_SIZE, 1 * TILE_SIZE },  DIR_LEFT, SPEEDS[SpeedNormal],             0.0f, wander },
+  [2] = {  { 1 * TILE_SIZE, 14 * TILE_SIZE }, DIR_RIGHT, SPEEDS[SpeedNormal],            10.0f, wander },
+  [3] = { { 28 * TILE_SIZE, 14 * TILE_SIZE },  DIR_LEFT, SPEEDS[SpeedNormal],             20.f, wander },
 };
 
 static const char* STATE_PEN_STR        = "PEN";
@@ -124,7 +124,7 @@ static void penToStart(Ghost* ghost, float frameTime, float slop) {
 
   game__Actor* actor = ghost->actor;
   assert(actor != nullptr);
-  game__Dir dir  = actor_getDir(actor);
+  game__Dir dir = actor_getDir(actor);
 
   float   startX = GHOST_MAZE_START.x;  // First ghost starts outside
   Vector2 pos    = actor_getPos(actor);

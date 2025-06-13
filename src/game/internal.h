@@ -115,6 +115,7 @@ void               maze_shutdown(void);
 game__AABB         maze_getAABB(Vector2 pos);
 bool               maze_isWall(Vector2 pos);
 void               maze_tilesOverlay(void);
+void               maze_draw(void);
 
 // --- Debug functions (debug.c) ---
 

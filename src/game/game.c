@@ -197,6 +197,7 @@ void game_update(float frameTime) {
 }
 
 void game_draw(void) {
+  maze_draw();
   engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerSprite);
   for (int i = 0; i < CREATURE_COUNT; i++) {
     engine_drawSprite(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i]);
