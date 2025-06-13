@@ -10,7 +10,7 @@
 
 // --- Constants ---
 
-constexpr size_t TILES_COUNT = 4;
+constexpr size_t TILES_COUNT = 3;
 
 // --- Types ---
 

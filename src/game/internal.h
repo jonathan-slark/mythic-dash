@@ -110,6 +110,7 @@ const char*  ghost_getStateString(int id);
 // --- Maze functions (maze.c) ---
 
 [[nodiscard]] bool maze_init(void);
+void               maze_shutdown(void);
 game__AABB         maze_getAABB(Vector2 pos);
 bool               maze_isWall(Vector2 pos);
 void               maze_tilesOverlay(void);

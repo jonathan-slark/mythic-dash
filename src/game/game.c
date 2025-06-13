@@ -45,15 +45,6 @@ const float MIN_SLOP        = 0.05f;
 const float MAX_SLOP        = 0.7f;
 const float OVERLAP_EPSILON = 1e-5f;
 
-static const Vector2 TELEPORT_COVER_POSS[] = {
-  { 100.0f, 119.0f },
-  { 352.0f, 119.0f }
-};
-static const Vector2 TELEPORT_COVER_SIZES[] = {
-  { TILE_SIZE * 3.5f, TILE_SIZE * 2.0f },
-  { TILE_SIZE * 3.5f, TILE_SIZE * 2.0f }
-};
-
 // --- Global state ---
 
 log_Log*            game__log;
@@ -81,6 +72,12 @@ static bool loadAssets(void) {
   GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
   GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
   return true;
+}
+
+static void unloadAssets(void) {
+  engine_fontUnload(&g_assets.font);
+  engine_textureUnload(&g_assets.playerSpriteSheet);
+  engine_textureUnload(&g_assets.creatureSpriteSheet);
 }
 
 static bool initPlayer(void) {
@@ -145,21 +142,6 @@ static void updateGhosts(float frameTime, float slop) {
   }
 }
 
-static void drawTeleportCovers(void) {
-  assert(COUNT(TELEPORT_COVER_POSS) == COUNT(TELEPORT_COVER_SIZES));
-
-  int scale = engine_getScale();
-  for (size_t i = 0; i < COUNT(TELEPORT_COVER_POSS); i++) {
-    DrawRectangle(
-        TELEPORT_COVER_POSS[i].x * scale,
-        TELEPORT_COVER_POSS[i].y * scale,
-        TELEPORT_COVER_SIZES[i].x * scale,
-        TELEPORT_COVER_SIZES[i].y * scale,
-        BLACK
-    );
-  }
-}
-
 static void unloadPlayer(void) {
   player_shutdown();
   engine_destroySprite(&g_assets.playerSprite);
@@ -219,7 +201,6 @@ void game_draw(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     engine_drawSprite(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i]);
   }
-  drawTeleportCovers();
 #ifndef NDEBUG
   debug_drawOverlay();
 #endif
@@ -228,8 +209,7 @@ void game_draw(void) {
 void game_unload(void) {
   unloadGhosts();
   unloadPlayer();
-  engine_fontUnload(&g_assets.font);
-  engine_textureUnload(&g_assets.playerSpriteSheet);
-  engine_textureUnload(&g_assets.creatureSpriteSheet);
+  maze_shutdown();
+  unloadAssets();
   log_destroy(&game__log);
 }

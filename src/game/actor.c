@@ -123,11 +123,6 @@ void actor_canMoveOverlay(game__Actor* actor) {
     if (!actor->isCanMove[dir]) continue;
     for (size_t i = 0; i < TILES_COUNT; i++) {
       // TODO: mark an array when when tile is drawn
-      // Don't draw the same tile twice
-      if (i == 0 && dir == DIR_RIGHT && actor->isCanMove[DIR_UP]) continue;
-      if (i == 3 && dir == DIR_DOWN && actor->isCanMove[DIR_RIGHT]) continue;
-      if (i == 3 && dir == DIR_LEFT && actor->isCanMove[DIR_DOWN]) continue;
-      if (i == 0 && dir == DIR_LEFT && actor->isCanMove[DIR_UP]) continue;
       drawTile(actor->tilesCanMove[dir][i]);
     }
     actor->isCanMove[dir] = false;

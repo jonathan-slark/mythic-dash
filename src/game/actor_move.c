@@ -12,9 +12,9 @@ static const Vector2 VELS[] = {
   { -1.0f,  0.0f }  // Left
 };
 
-const char* DIR_STRINGS[]      = { "UP", "RIGHT", "DOWN", "LEFT" };
-const float MAZE_TELEPORTLEFT  = 8.0f;
-const float MAZE_TELEPORTRIGHT = 256.0f;
+const char* DIR_STRINGS[] = { "UP", "RIGHT", "DOWN", "LEFT" };
+// const float MAZE_TELEPORTLEFT  = 8.0f;
+// const float MAZE_TELEPORTRIGHT = 256.0f;
 
 // --- Helper functions ---
 
@@ -187,7 +187,7 @@ static bool checkPassageMovement(game__Actor* actor, game__Dir dir, game__AABB a
 
   // Try aligning to tile0 first, then tile3
   if (tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][0].aabb, slop, true) ||
-      tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][3].aabb, slop, false)) {
+      tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][2].aabb, slop, false)) {
     clearAllCollisionFlags(actor->tilesCanMove[dir]);
     return true;
   }
@@ -261,8 +261,8 @@ void actor_moveNoCheck(game__Actor* actor, game__Dir dir, float frameTime) {
   actor->pos = Vector2Add(actor->pos, Vector2Scale(VELS[dir], frameTime * actor->speed));
   actor->dir = dir;
 
-  if (actor->pos.x < MAZE_TELEPORTLEFT) actor->pos.x = MAZE_TELEPORTRIGHT;
-  if (actor->pos.x > MAZE_TELEPORTRIGHT) actor->pos.x = MAZE_TELEPORTLEFT;
+  // if (actor->pos.x < MAZE_TELEPORTLEFT) actor->pos.x = MAZE_TELEPORTRIGHT;
+  // if (actor->pos.x > MAZE_TELEPORTRIGHT) actor->pos.x = MAZE_TELEPORTLEFT;
 }
 
 void actor_move(game__Actor* actor, game__Dir dir, float frameTime) {
