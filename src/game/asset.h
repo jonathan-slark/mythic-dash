@@ -23,10 +23,10 @@ typedef struct ActorData {
 
 // --- Constants ---
 
-static const char FILE_BACKGROUND[] = "../../asset/gfx/background.png";
-static const char FILE_CREATURES[] = "../../asset/gfx/creatures.png";
-static const char FILE_PLAYER[] = "../../asset/gfx/player.png";
-static const char FILE_FONT[] = "../../asset/gfx/font.png";
+static const char FILE_BACKGROUND[] = ASSET_DIR "gfx/background.png";
+static const char FILE_CREATURES[] = ASSET_DIR "gfx/creatures.png";
+static const char FILE_PLAYER[] = ASSET_DIR "gfx/player.png";
+static const char FILE_FONT[] = ASSET_DIR "gfx/font.png";
 
 static const float FRAME_TIME = (1.0f / 12.0f);
 

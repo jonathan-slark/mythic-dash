@@ -2,6 +2,8 @@
 #include <cute_headers/cute_tiled.h>
 #include <raylib.h>
 #include <stdlib.h>
+#include <string.h>
+#include "engine/engine.h"
 #include "internal.h"
 #include "log/log.h"
 
@@ -17,12 +19,14 @@
 const Vector2 MAZE_ORIGIN = { 0.0f, 8.0f };  // Screen offset to the actual maze
 #define OVERLAY_COLOUR_MAZE_WALL (Color){ 128, 128, 128, 128 }
 
-static const char* FILE_MAZE = "../../asset/map/maze01.tmj";
+static const char* FILE_MAZE   = ASSET_DIR "map/maze01.tmj";
+constexpr int      BUFFER_SIZE = 1024;
 
 // --- Global state ---
 
 static cute_tiled_map_t* g_maze;
 static game__AABB*       g_AABBs;
+static engine_Texture*   g_tileSet;
 
 // --- Helper functions ---
 
@@ -48,11 +52,42 @@ static bool makeMazeAABB(void) {
   return true;
 }
 
+static bool loadMazeTileSet(void) {
+  assert(g_maze != nullptr);
+  if (g_maze->tilesets == nullptr || g_maze->tilesets->image.ptr == nullptr) {
+    LOG_FATAL(game__log, "Tileset path is NULL");
+    return false;
+  }
+
+  char buffer[BUFFER_SIZE] = ASSET_DIR "map/";
+
+  size_t filenameLen = strnlen_s(g_maze->tilesets->image.ptr, sizeof buffer);
+  if (filenameLen == sizeof buffer) {
+    LOG_FATAL(game__log, "Tileset file name too long to fit buffer");
+    return false;
+  }
+  size_t folderLen = strnlen_s(buffer, sizeof buffer);
+  if (folderLen + filenameLen >= sizeof buffer - 1) {
+    LOG_FATAL(game__log, "Tileset file name too long to fit buffer");
+    return false;
+  }
+
+  int result = strncat_s(buffer, sizeof buffer, g_maze->tilesets->image.ptr, filenameLen);
+  if (result != 0) {
+    LOG_FATAL(game__log, "strncat_s failed: %s", strerror(result));
+    return false;
+  }
+  GAME_TRY(g_tileSet = engine_textureLoad(buffer));
+
+  return true;
+}
+
 // --- Maze functions ---
 
 bool maze_init(void) {
   GAME_TRY(g_maze = cute_tiled_load_map_from_file(FILE_MAZE, nullptr));
   LOG_INFO(game__log, "Map loaded: %s (%d x %d)", FILE_MAZE, g_maze->width, g_maze->height);
+  GAME_TRY(loadMazeTileSet());
   GAME_TRY(makeMazeAABB());
   return true;
 }
