@@ -127,7 +127,7 @@ static void alignToPassage(game__Actor* actor, game__Dir dir, float distance) {
 }
 
 static bool isPassagePattern(const game__Tile tiles[]) {
-  return tiles[0].isWall && !tiles[1].isWall && !tiles[2].isWall && tiles[3].isWall;
+  return tiles[0].isWall && !tiles[1].isWall && tiles[2].isWall;
 }
 
 static void clearAllCollisionFlags(game__Tile tiles[]) {
@@ -185,7 +185,7 @@ static bool checkPassageMovement(game__Actor* actor, game__Dir dir, game__AABB a
     return false;
   }
 
-  // Try aligning to tile0 first, then tile3
+  // Try aligning to tile0 first, then tile2
   if (tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][0].aabb, slop, true) ||
       tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][2].aabb, slop, false)) {
     clearAllCollisionFlags(actor->tilesCanMove[dir]);

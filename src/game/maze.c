@@ -35,12 +35,10 @@ static bool makeMazeAABB(void) {
   } else {
     int count = layer->data_count;
     g_AABBs   = (game__AABB*) malloc(count * sizeof(game__AABB));
-    LOG_INFO(game__log, "Map: %d x %d", g_maze->width, g_maze->height);
 
     for (int i = 0; i < count; i++) {
-      int row = i / g_maze->width;
-      int col = i % g_maze->width;
-      LOG_INFO(game__log, "Tile id: %d", layer->data[i]);
+      int row    = i / g_maze->width;
+      int col    = i % g_maze->width;
       g_AABBs[i] = (game__AABB) {
         .min = (Vector2) {       col * TILE_SIZE,       row * TILE_SIZE },
         .max = (Vector2) { (col + 1) * TILE_SIZE, (row + 1) * TILE_SIZE }
@@ -54,6 +52,7 @@ static bool makeMazeAABB(void) {
 
 bool maze_init(void) {
   GAME_TRY(g_maze = cute_tiled_load_map_from_file(FILE_MAZE, nullptr));
+  LOG_INFO(game__log, "Map loaded: %s (%d x %d)", FILE_MAZE, g_maze->width, g_maze->height);
   GAME_TRY(makeMazeAABB());
   return true;
 }
