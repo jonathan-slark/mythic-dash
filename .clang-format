@@ -20,6 +20,9 @@ AlignConsecutiveDeclarations:
   AlignFunctionDeclarations: true
   AlignFunctionPointers: true
   PadOperators: true
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 2
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: WithoutElse

@@ -17,9 +17,9 @@
 // --- Types ---
 
 typedef struct game__Maze {
-  cute_tiled_map_t* map;
-  game__AABB*       aabbs;
-  engine_Texture*   tileSet;
+  cute_tiled_map_t* map;          // Map data loaded by cute_tiled.h
+  game__AABB*       aabbs;        // AABB for each tile
+  engine_Texture*   tileSet;      // Tileset texture
   engine_Sprite**   tileSprites;  // Sprite for each tile
   bool*             tileIsWalls;  // isWalls property for each tile
   bool*             isWalls;      // Map array holding wall data
@@ -28,7 +28,7 @@ typedef struct game__Maze {
 // --- Constants ---
 
 const Vector2 MAZE_ORIGIN = { 8.0f, 16.0f };  // Screen offset to the actual maze
-#define OVERLAY_COLOUR_MAZE_WALL (Color){ 128, 128, 128, 128 }
+#define OVERLAY_COLOUR_MAZE_WALL (Color){ 0, 0, 128, 128 }
 
 static const char* FILE_MAZE   = ASSET_DIR "map/maze01.tmj";
 constexpr int      BUFFER_SIZE = 1024;
@@ -48,6 +48,10 @@ static bool makeMazeAABB(void) {
   } else {
     int count    = layer->data_count;
     g_maze.aabbs = (game__AABB*) malloc(count * sizeof(game__AABB));
+    if (g_maze.aabbs == nullptr) {
+      LOG_INFO(game__log, "Unable to allocate memory for AABBs");
+      return false;
+    }
 
     for (int i = 0; i < count; i++) {
       int row         = i / g_maze.map->width;
