@@ -6,9 +6,9 @@
 
 // --- Constants ---
 
-static const Vector2     PLAYER_START_POS = { 1 * TILE_SIZE, 7 * TILE_SIZE };
+static const Vector2     PLAYER_START_POS = { 14 * TILE_SIZE, 13 * TILE_SIZE };
 static const float       PLAYER_SPEED     = 60.0f;
-static const game__Dir   PLAYER_START_DIR = DIR_DOWN;
+static const game__Dir   PLAYER_START_DIR = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]    = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
 
 // --- Global state ---

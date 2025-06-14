@@ -197,6 +197,7 @@ void game_update(float frameTime) {
 }
 
 void game_draw(void) {
+  engine_fontPrintf(g_assets.font, 0, 0, "MAZE MUNCHER");
   maze_draw();
   engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerSprite);
   for (int i = 0; i < CREATURE_COUNT; i++) {

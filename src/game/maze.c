@@ -20,14 +20,14 @@ typedef struct game__Maze {
   cute_tiled_map_t* map;
   game__AABB*       aabbs;
   engine_Texture*   tileSet;
-  engine_Sprite**   tileSprites;
-  bool*             tileIsWalls;
-  bool*             isWalls;
+  engine_Sprite**   tileSprites;  // Sprite for each tile
+  bool*             tileIsWalls;  // isWalls property for each tile
+  bool*             isWalls;      // Map array holding wall data
 } game__Maze;
 
 // --- Constants ---
 
-const Vector2 MAZE_ORIGIN = { 0.0f, 8.0f };  // Screen offset to the actual maze
+const Vector2 MAZE_ORIGIN = { 8.0f, 16.0f };  // Screen offset to the actual maze
 #define OVERLAY_COLOUR_MAZE_WALL (Color){ 128, 128, 128, 128 }
 
 static const char* FILE_MAZE   = ASSET_DIR "map/maze01.tmj";
