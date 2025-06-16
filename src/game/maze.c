@@ -83,7 +83,15 @@ static bool createMaze(cute_tiled_map_t* map, TileType tileTypes[], int tileType
   assert(map != nullptr && map->layers != nullptr);
   assert(tileTypesCount > 0);
 
-  // TODO: per layer
+  if (map->layers == nullptr) {
+    LOG_FATAL(game__log, "There are no layers in the map file");
+    return false;
+  }
+  if (map->tilesets == nullptr) {
+    LOG_FATAL(game__log, "There is no tileset in the map file");
+    return false;
+  }
+
   cute_tiled_layer_t*   layer      = map->layers;
   cute_tiled_tileset_t* tileset    = map->tilesets;
   int                   count      = layer->data_count;
@@ -92,40 +100,62 @@ static bool createMaze(cute_tiled_map_t* map, TileType tileTypes[], int tileType
   int                   tileWidth  = tileset->tilewidth;
   int                   tileHeight = tileset->tileheight;
   int                   tileCols   = tileset->columns;
-  Tile*                 tiles      = (Tile*) malloc(count * sizeof(Tile));
+
+  // Get number of layers
+  int layerCount = 0;
+  while (layer != nullptr) {
+    layerCount++;
+    layer = layer->next;
+  }
+
+  Tile* tiles = (Tile*) malloc(count * sizeof(Tile) * layerCount);
   if (tiles == nullptr) {
     LOG_FATAL(game__log, "Unable to allocate memory for maze tiles");
     return false;
   }
 
-  for (int i = 0; i < count; i++) {
-    int     row   = i / cols;
-    int     col   = i % cols;
-    Vector2 pos   = { (float) col * tileWidth, (float) row * tileHeight };
-    Vector2 min   = pos;
-    pos           = Vector2Add(pos, MAZE_ORIGIN);
-    Vector2 size  = { (float) tileWidth, (float) tileHeight };
-    Vector2 inset = { 0.0f, 0.0f };
-    Vector2 max   = { (float) (col + 1) * tileWidth, (float) (row + 1) * tileHeight };
+  layer        = map->layers;
+  int layerNum = 0;
+  while (layer != nullptr) {
+    for (int i = 0; i < count; i++) {
+      int     row   = i / cols;
+      int     col   = i % cols;
+      Vector2 pos   = { (float) col * tileWidth, (float) row * tileHeight };
+      Vector2 min   = pos;
+      pos           = Vector2Add(pos, MAZE_ORIGIN);
+      Vector2 size  = { (float) tileWidth, (float) tileHeight };
+      Vector2 inset = { 0.0f, 0.0f };
+      Vector2 max   = { (float) (col + 1) * tileWidth, (float) (row + 1) * tileHeight };
 
-    int tileId     = layer->data[i] - 1;
-    int tilesetRow = tileId / tileCols;
-    int tilesetCol = tileId % tileCols;
+      int tileIdx = i + layerNum * count;
+      if (!layer->data[i]) {
+        tiles[tileIdx].type = TILE_NONE;
+      } else {
+        int tileId     = layer->data[i] - 1;
+        int tilesetRow = tileId / tileCols;
+        int tilesetCol = tileId % tileCols;
 
-    tiles[i].type               = tileTypes[tileId];
-    tiles[i].linkedTeleportTile = -1;  // Currently unused
-    tiles[i].sprite             = engine_createSpriteFromSheet(pos, size, tilesetRow, tilesetCol, inset);
-    tiles[i].aabb               = (game__AABB) { .min = min, .max = max };
+        tiles[tileIdx].type   = tileTypes[tileId];
+        tiles[tileIdx].sprite = engine_createSpriteFromSheet(pos, size, tilesetRow, tilesetCol, inset);
+        tiles[tileIdx].aabb   = (game__AABB) { .min = min, .max = max };
+      }
+      tiles[tileIdx].linkedTeleportTile = -1;  // Currently unused
+    }
+
+    layerNum++;
+    layer = layer->next;
   }
 
   LOG_INFO(
       game__log,
-      "Created maze: %d x %d (%d tiles), tileWidth = %d, tileHeight = %d",
+      "Created maze: %d x %d tiles (%d total; size: %d x %d), %d layer%s",
       cols,
       rows,
       count,
       tileWidth,
-      tileHeight
+      tileHeight,
+      layerCount,
+      layerCount == 1 ? "" : "s"
   );
 
   g_maze = (Maze) {
@@ -134,7 +164,7 @@ static bool createMaze(cute_tiled_map_t* map, TileType tileTypes[], int tileType
     .count      = count,
     .tileWidth  = tileWidth,
     .tileHeight = tileHeight,
-    .layerCount = 1,
+    .layerCount = layerCount,
     .tileset    = nullptr,
     .tiles      = tiles,
   };
@@ -170,7 +200,7 @@ static void destroyMaze(void) {
 static bool loadMazetileset(cute_tiled_map_t* map) {
   assert(map != nullptr);
   if (map->tilesets == nullptr || map->tilesets->image.ptr == nullptr) {
-    LOG_FATAL(game__log, "Tileset path is NULL");
+    LOG_FATAL(game__log, "There is no tileset in the map file");
     return false;
   }
 
@@ -199,14 +229,31 @@ static bool loadMazetileset(cute_tiled_map_t* map) {
 
 static void unloadMazetileset(void) { engine_textureUnload(&g_maze.tileset); }
 
+static Tile* getTileAt(Vector2 pos) {
+  int row = (int) (pos.y / g_maze.tileHeight);
+  int col = (int) (pos.x / g_maze.tileWidth);
+  assert(row >= 0 && row < g_maze.rows);
+  assert(col >= 0 && col < g_maze.cols);
+  return &g_maze.tiles[row * g_maze.cols + col];
+}
+
 // --- Maze functions ---
 
 bool maze_init(void) {
   cute_tiled_map_t* map;
   GAME_TRY(map = cute_tiled_load_map_from_file(FILE_MAZE, nullptr));
-  LOG_INFO(game__log, "Map loaded: %s (%d x %d)", FILE_MAZE, map->width, map->height);
-  GAME_TRY(convertMap(map));
-  GAME_TRY(loadMazetileset(map));
+  LOG_INFO(game__log, "Map loaded: %s (%d x %d)", FILE_MAZE);
+  if (!convertMap(map)) {
+    cute_tiled_free_map(map);
+    LOG_INFO(game__log, "Failed to convert map");
+    return false;
+  }
+  if (!loadMazetileset(map)) {
+    destroyMaze();
+    cute_tiled_free_map(map);
+    LOG_INFO(game__log, "Failed to load map tileset");
+    return false;
+  }
   cute_tiled_free_map(map);
 
   return true;
@@ -218,21 +265,13 @@ void maze_shutdown(void) {
 }
 
 game__AABB maze_getAABB(Vector2 pos) {
-  int row = (int) (pos.y / g_maze.tileHeight);
-  int col = (int) (pos.x / g_maze.tileWidth);
-  assert(row >= 0 && row < g_maze.rows);
-  assert(col >= 0 && col < g_maze.cols);
-
-  return g_maze.tiles[row * g_maze.cols + col].aabb;
+  Tile* tile = getTileAt(pos);
+  return tile->aabb;
 }
 
 bool maze_isWall(Vector2 pos) {
-  int row = (int) (pos.y / g_maze.tileHeight);
-  int col = (int) (pos.x / g_maze.tileWidth);
-  assert(row >= 0 && row < g_maze.rows);
-  assert(col >= 0 && col < g_maze.cols);
-
-  return g_maze.tiles[row * g_maze.cols + col].type == TILE_WALL;
+  Tile* tile = getTileAt(pos);
+  return tile->type == TILE_WALL;
 }
 
 void maze_tilesOverlay(void) {
@@ -247,8 +286,13 @@ void maze_draw(void) {
   assert(g_maze.tileset != nullptr);
   assert(g_maze.count > 0);
 
-  for (int i = 0; i < g_maze.count; i++) {
-    assert(g_maze.tiles[i].sprite != nullptr);
-    engine_drawSprite(g_maze.tileset, g_maze.tiles[i].sprite);
+  for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
+    for (int i = 0; i < g_maze.count; i++) {
+      int idx = i + layerNum * g_maze.count;
+      if (g_maze.tiles[idx].type != TILE_NONE) {
+        assert(g_maze.tiles[idx].sprite != nullptr);
+        engine_drawSprite(g_maze.tileset, g_maze.tiles[idx].sprite);
+      }
+    }
   }
 }
