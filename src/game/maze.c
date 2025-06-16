@@ -34,7 +34,7 @@ typedef struct Maze {
 #define OVERLAY_COLOUR_MAZE_WALL (Color){ 0, 0, 128, 128 }
 const Vector2      MAZE_ORIGIN = { 8.0f, 16.0f };  // Screen offset to the actual maze
 static const char* FILE_MAZE   = ASSET_DIR "map/maze01.tmj";
-constexpr int      BUFFER_SIZE = 1024;
+constexpr size_t   BUFFER_SIZE = 1024;
 
 // --- Global state ---
 
@@ -83,15 +83,6 @@ static bool createMaze(cute_tiled_map_t* map, TileType tileTypes[], int tileType
   assert(map != nullptr && map->layers != nullptr);
   assert(tileTypesCount > 0);
 
-  if (map->layers == nullptr) {
-    LOG_FATAL(game__log, "There are no layers in the map file");
-    return false;
-  }
-  if (map->tilesets == nullptr) {
-    LOG_FATAL(game__log, "There is no tileset in the map file");
-    return false;
-  }
-
   cute_tiled_layer_t*   layer      = map->layers;
   cute_tiled_tileset_t* tileset    = map->tilesets;
   int                   count      = layer->data_count;
@@ -100,6 +91,12 @@ static bool createMaze(cute_tiled_map_t* map, TileType tileTypes[], int tileType
   int                   tileWidth  = tileset->tilewidth;
   int                   tileHeight = tileset->tileheight;
   int                   tileCols   = tileset->columns;
+
+  if (layer == nullptr || tileset == nullptr || count <= 0 || rows <= 0 || cols <= 0 || tileWidth <= 0 ||
+      tileHeight <= 0 || tileCols <= 0) {
+    LOG_FATAL(game__log, "Invalid map file");
+    return false;
+  }
 
   // Get number of layers
   int layerCount = 0;
@@ -186,15 +183,14 @@ static bool convertMap(cute_tiled_map_t* map) {
 }
 
 static void destroyMaze(void) {
-  assert(g_maze.tiles != nullptr);
+  if (g_maze.tiles != nullptr) {
+    for (int i = 0; i < g_maze.count; i++) {
+      if (g_maze.tiles[i].sprite != nullptr) engine_destroySprite(&g_maze.tiles[i].sprite);
+    }
 
-  for (int i = 0; i < g_maze.count; i++) {
-    assert(g_maze.tiles[i].sprite != nullptr);
-    engine_destroySprite(&g_maze.tiles[i].sprite);
+    free(g_maze.tiles);
+    g_maze.tiles = nullptr;
   }
-
-  free(g_maze.tiles);
-  g_maze.tiles = nullptr;
 }
 
 static bool loadMazetileset(cute_tiled_map_t* map) {
@@ -217,7 +213,7 @@ static bool loadMazetileset(cute_tiled_map_t* map) {
     return false;
   }
 
-  int result = strncat_s(buffer, sizeof buffer, map->tilesets->image.ptr, filenameLen);
+  int result = strncat_s(buffer, sizeof buffer - strlen(buffer) - 1, map->tilesets->image.ptr, filenameLen);
   if (result != 0) {
     LOG_FATAL(game__log, "strncat_s failed: %s", strerror(result));
     return false;
@@ -244,6 +240,7 @@ bool maze_init(void) {
   GAME_TRY(map = cute_tiled_load_map_from_file(FILE_MAZE, nullptr));
   LOG_INFO(game__log, "Map loaded: %s (%d x %d)", FILE_MAZE);
   if (!convertMap(map)) {
+    destroyMaze();
     cute_tiled_free_map(map);
     LOG_INFO(game__log, "Failed to convert map");
     return false;
