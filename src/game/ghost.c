@@ -41,10 +41,10 @@ static const struct {
   float     startTimer;
   void      (*update)(Ghost*, float, float);
 } CREATURE_DATA[CREATURE_COUNT] = {
-  [0] = { { 11 * TILE_SIZE, 5 * TILE_SIZE },    DIR_UP, SPEEDS[SpeedNormal], GHOST_CHASETIMER, wander },
-  [1] = { { 17 * TILE_SIZE, 5 * TILE_SIZE },    DIR_UP, SPEEDS[SpeedNormal],             0.0f, wander },
-  [2] = { { 11 * TILE_SIZE, 9 * TILE_SIZE },  DIR_LEFT, SPEEDS[SpeedNormal],            10.0f, wander },
-  [3] = { { 17 * TILE_SIZE, 9 * TILE_SIZE }, DIR_RIGHT, SPEEDS[SpeedNormal],             20.f, wander },
+  [0] = { { 13 * TILE_SIZE, 6 * TILE_SIZE },  DIR_DOWN, SPEEDS[SpeedSlow], GHOST_CHASETIMER, wander },
+  [1] = { { 15 * TILE_SIZE, 6 * TILE_SIZE },  DIR_LEFT, SPEEDS[SpeedSlow],             0.0f, wander },
+  [2] = { { 13 * TILE_SIZE, 9 * TILE_SIZE }, DIR_RIGHT, SPEEDS[SpeedSlow],            10.0f, wander },
+  [3] = { { 15 * TILE_SIZE, 9 * TILE_SIZE },    DIR_UP, SPEEDS[SpeedSlow],             20.f, wander },
 };
 
 static const char* STATE_PEN_STR        = "PEN";
