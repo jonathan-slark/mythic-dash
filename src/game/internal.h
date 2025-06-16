@@ -13,6 +13,7 @@
     return false;      \
   }
 
+#define COUNT(array) (sizeof(array) / sizeof(array[0]))
 #define POS_ADJUST(pos) Vector2Add((pos), MAZE_ORIGIN)
 
 // --- Types ---
@@ -116,6 +117,7 @@ game__AABB         maze_getAABB(Vector2 pos);
 bool               maze_isWall(Vector2 pos);
 void               maze_tilesOverlay(void);
 void               maze_draw(void);
+void               maze_update(float frameTime);
 
 // --- Debug functions (debug.c) ---
 

@@ -9,10 +9,6 @@
 #include "asset.h"
 #include "internal.h"
 
-// --- Macros ---
-
-#define COUNT(array) (sizeof(array) / sizeof(array[0]))
-
 // --- Types ---
 
 typedef struct game__Assets {
@@ -194,10 +190,11 @@ void game_update(float frameTime) {
   LOG_TRACE(game__log, "Slop: %f", slop);
   updatePlayer(frameTime, slop);
   updateGhosts(frameTime, slop);
+  maze_update(frameTime);
 }
 
 void game_draw(void) {
-  engine_fontPrintf(g_assets.font, 0, 0, "MAZE MUNCHER");
+  engine_fontPrintf(g_assets.font, 0, 0, "MYTHIC DASH");
   maze_draw();
   engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerSprite);
   for (int i = 0; i < CREATURE_COUNT; i++) {

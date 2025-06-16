@@ -11,12 +11,19 @@
 
 typedef enum TileType { TILE_NONE, TILE_FLOOR, TILE_WALL, TILE_TELEPORT } TileType;
 
-typedef struct Tile {
+// Temporary storage for tiles from map tileset during loading
+typedef struct MapTile {
+  TileType type;
+  int      animCount;
+} MapTile;
+
+typedef struct MazeTile {
   TileType       type;
   int            linkedTeleportTile;
   engine_Sprite* sprite;
+  engine_Anim*   anim;
   game__AABB     aabb;
-} Tile;
+} MazeTile;
 
 typedef struct Maze {
   int             rows;
@@ -26,7 +33,7 @@ typedef struct Maze {
   int             tileHeight;
   int             layerCount;
   engine_Texture* tileset;
-  Tile*           tiles;
+  MazeTile*       tiles;
 } Maze;
 
 // --- Constants ---
@@ -35,6 +42,7 @@ typedef struct Maze {
 const Vector2      MAZE_ORIGIN = { 8.0f, 16.0f };  // Screen offset to the actual maze
 static const char* FILE_MAZE   = ASSET_DIR "map/maze01.tmj";
 constexpr size_t   BUFFER_SIZE = 1024;
+static const float FRAME_TIME  = (1.0f / 12.0f);
 
 // --- Global state ---
 
@@ -42,25 +50,25 @@ Maze g_maze;
 
 // --- Helper functions ---
 
-static bool getTileProperties(cute_tiled_map_t* map, TileType** tileTypes, int* tileTypesCount) {
+static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* tileCount) {
   assert(map != nullptr);
-  assert(tileTypes != nullptr && *tileTypes == nullptr);
-  assert(tileTypesCount != nullptr && *tileTypesCount == 0);
+  assert(tileData != nullptr && *tileData == nullptr);
+  assert(tileCount != nullptr && *tileCount == 0);
 
   cute_tiled_tileset_t* tileset = map->tilesets;
-  *tileTypesCount               = tileset->tilecount;
-  if (*tileTypesCount <= 0) {
+  *tileCount                    = tileset->tilecount;
+  if (*tileCount <= 0) {
     LOG_FATAL(game__log, "No tiles in tileset");
     return false;
   }
 
-  *tileTypes = (TileType*) malloc(*tileTypesCount * sizeof(TileType));
-  if (*tileTypes == nullptr) {
+  *tileData = (MapTile*) malloc(*tileCount * sizeof(MapTile));
+  if (*tileData == nullptr) {
     LOG_FATAL(game__log, "Unable to allocate memory for tileset tileIsWalls");
     return false;
   }
 
-  int                           i    = *tileTypesCount - 1;
+  int                           i    = *tileCount - 1;
   cute_tiled_tile_descriptor_t* tile = tileset->tiles;
   while (tile != nullptr) {
     if (i < 0) {
@@ -71,17 +79,18 @@ static bool getTileProperties(cute_tiled_map_t* map, TileType** tileTypes, int* 
       LOG_FATAL(game__log, "Invalid property count in tile linked list");
       return false;
     }
-    (*tileTypes)[i] = tile->properties[0].data.boolean ? TILE_WALL : TILE_FLOOR;
-    tile            = tile->next;
+    (*tileData)[i].type      = tile->properties[0].data.boolean ? TILE_WALL : TILE_FLOOR;
+    (*tileData)[i].animCount = tile->frame_count;
+    tile                     = tile->next;
     i--;
   }
 
   return true;
 }
 
-static bool createMaze(cute_tiled_map_t* map, TileType tileTypes[], int tileTypesCount) {
+static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount) {
   assert(map != nullptr && map->layers != nullptr);
-  assert(tileTypesCount > 0);
+  assert(tileCount > 0);
 
   cute_tiled_layer_t*   layer      = map->layers;
   cute_tiled_tileset_t* tileset    = map->tilesets;
@@ -105,7 +114,7 @@ static bool createMaze(cute_tiled_map_t* map, TileType tileTypes[], int tileType
     layer = layer->next;
   }
 
-  Tile* tiles = (Tile*) malloc(count * sizeof(Tile) * layerCount);
+  MazeTile* tiles = (MazeTile*) malloc(count * sizeof(MazeTile) * layerCount);
   if (tiles == nullptr) {
     LOG_FATAL(game__log, "Unable to allocate memory for maze tiles");
     return false;
@@ -115,6 +124,12 @@ static bool createMaze(cute_tiled_map_t* map, TileType tileTypes[], int tileType
   int layerNum = 0;
   while (layer != nullptr) {
     for (int i = 0; i < count; i++) {
+      TileType       type               = TILE_NONE;
+      int            linkedTeleportTile = -1;  // Currently unused
+      engine_Sprite* sprite             = nullptr;
+      engine_Anim*   anim               = nullptr;
+      game__AABB     aabb               = {};
+
       int     row   = i / cols;
       int     col   = i % cols;
       Vector2 pos   = { (float) col * tileWidth, (float) row * tileHeight };
@@ -125,18 +140,27 @@ static bool createMaze(cute_tiled_map_t* map, TileType tileTypes[], int tileType
       Vector2 max   = { (float) (col + 1) * tileWidth, (float) (row + 1) * tileHeight };
 
       int tileIdx = i + layerNum * count;
-      if (!layer->data[i]) {
-        tiles[tileIdx].type = TILE_NONE;
-      } else {
+      if (layer->data[i]) {
         int tileId     = layer->data[i] - 1;
         int tilesetRow = tileId / tileCols;
         int tilesetCol = tileId % tileCols;
+        int animCount  = tileData[tileId].animCount;
 
-        tiles[tileIdx].type   = tileTypes[tileId];
-        tiles[tileIdx].sprite = engine_createSpriteFromSheet(pos, size, tilesetRow, tilesetCol, inset);
-        tiles[tileIdx].aabb   = (game__AABB) { .min = min, .max = max };
+        type   = tileData[tileId].type;
+        sprite = engine_createSpriteFromSheet(pos, size, tilesetRow, tilesetCol, inset);
+        aabb   = (game__AABB) { .min = min, .max = max };
+
+        if (animCount > 0) {
+          LOG_INFO(game__log, "New animation: layer: %d, tile %d, %d, frame count: %d", layerNum, row, col, animCount);
+          anim = engine_createAnim(sprite, tilesetRow, tilesetCol, animCount, FRAME_TIME, inset);
+        }
       }
-      tiles[tileIdx].linkedTeleportTile = -1;  // Currently unused
+
+      tiles[tileIdx].type               = type;
+      tiles[tileIdx].linkedTeleportTile = linkedTeleportTile;
+      tiles[tileIdx].sprite             = sprite;
+      tiles[tileIdx].anim               = anim;
+      tiles[tileIdx].aabb               = aabb;
     }
 
     layerNum++;
@@ -171,14 +195,17 @@ static bool createMaze(cute_tiled_map_t* map, TileType tileTypes[], int tileType
 
 // Convert cute tiled map to our format
 static bool convertMap(cute_tiled_map_t* map) {
-  TileType* tileTypes      = nullptr;
-  int       tileTypesCount = 0;
-  GAME_TRY(getTileProperties(map, &tileTypes, &tileTypesCount));
-  assert(tileTypes != nullptr);
-  assert(tileTypesCount > 0);
-  GAME_TRY(createMaze(map, tileTypes, tileTypesCount));
-  assert(tileTypes != nullptr);
-  free(tileTypes);
+  MapTile* tileData  = nullptr;
+  int      tileCount = 0;
+  GAME_TRY(getTileProperties(map, &tileData, &tileCount));
+  assert(tileData != nullptr);
+  assert(tileCount > 0);
+  if (!createMaze(map, tileData, tileCount)) {
+    free(tileData);
+    return false;
+  }
+  assert(tileData != nullptr);
+  free(tileData);
   return true;
 }
 
@@ -225,7 +252,7 @@ static bool loadMazetileset(cute_tiled_map_t* map) {
 
 static void unloadMazetileset(void) { engine_textureUnload(&g_maze.tileset); }
 
-static Tile* getTileAt(Vector2 pos) {
+static MazeTile* getTileAt(Vector2 pos) {
   int row = (int) (pos.y / g_maze.tileHeight);
   int col = (int) (pos.x / g_maze.tileWidth);
   assert(row >= 0 && row < g_maze.rows);
@@ -262,12 +289,12 @@ void maze_shutdown(void) {
 }
 
 game__AABB maze_getAABB(Vector2 pos) {
-  Tile* tile = getTileAt(pos);
+  MazeTile* tile = getTileAt(pos);
   return tile->aabb;
 }
 
 bool maze_isWall(Vector2 pos) {
-  Tile* tile = getTileAt(pos);
+  MazeTile* tile = getTileAt(pos);
   return tile->type == TILE_WALL;
 }
 
@@ -280,15 +307,34 @@ void maze_tilesOverlay(void) {
 }
 
 void maze_draw(void) {
+  assert(g_maze.layerCount >= 0);
+  assert(g_maze.count > 0);
   assert(g_maze.tileset != nullptr);
+
+  for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
+    for (int i = 0; i < g_maze.count; i++) {
+      int idx = i + layerNum * g_maze.count;
+      if (g_maze.tiles[idx].type != TILE_NONE) {
+        engine_Sprite* sprite = g_maze.tiles[idx].sprite;
+        assert(sprite != nullptr);
+        engine_drawSprite(g_maze.tileset, sprite);
+      }
+    }
+  }
+}
+
+void maze_update(float frameTime) {
+  assert(g_maze.layerCount >= 0);
   assert(g_maze.count > 0);
 
   for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
     for (int i = 0; i < g_maze.count; i++) {
       int idx = i + layerNum * g_maze.count;
       if (g_maze.tiles[idx].type != TILE_NONE) {
-        assert(g_maze.tiles[idx].sprite != nullptr);
-        engine_drawSprite(g_maze.tileset, g_maze.tiles[idx].sprite);
+        engine_Anim* anim = g_maze.tiles[idx].anim;
+        if (anim != nullptr) {
+          engine_updateAnim(anim, frameTime);
+        }
       }
     }
   }
