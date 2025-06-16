@@ -28,10 +28,8 @@ static void wander(Ghost* ghost, float frameTime, float slop);
 
 static const float SPEEDS[]          = { 25.0f, 40.0f, 50.f, 100.0f };
 static const float DECISION_COOLDOWN = 0.5f;
-static const float PEN_TOP           = 108.0f;
-static const float PEN_BOT           = 116.0f;
 
-static const Vector2   GHOST_MAZE_START = { 132.0f, 88.0f };
+static const Vector2   GHOST_MAZE_START = { 11 * TILE_SIZE, 7 * TILE_SIZE };
 static const game__Dir GHOST_START_DIR  = DIR_LEFT;
 static const float     GHOST_CHASETIMER = 10.0f;
 static const struct {
@@ -41,10 +39,10 @@ static const struct {
   float     startTimer;
   void      (*update)(Ghost*, float, float);
 } CREATURE_DATA[CREATURE_COUNT] = {
-  [0] = { { 13 * TILE_SIZE, 6 * TILE_SIZE },  DIR_DOWN, SPEEDS[SpeedSlow], GHOST_CHASETIMER, wander },
-  [1] = { { 15 * TILE_SIZE, 6 * TILE_SIZE },  DIR_LEFT, SPEEDS[SpeedSlow],             0.0f, wander },
-  [2] = { { 13 * TILE_SIZE, 9 * TILE_SIZE }, DIR_RIGHT, SPEEDS[SpeedSlow],            10.0f, wander },
-  [3] = { { 15 * TILE_SIZE, 9 * TILE_SIZE },    DIR_UP, SPEEDS[SpeedSlow],             20.f, wander },
+  [0] = { { 13 * TILE_SIZE, 6 * TILE_SIZE },  DIR_DOWN, SPEEDS[SpeedSlow], GHOST_CHASETIMER * 0.0f, pen },
+  [1] = { { 15 * TILE_SIZE, 6 * TILE_SIZE },  DIR_LEFT, SPEEDS[SpeedSlow], GHOST_CHASETIMER * 1.0f, pen },
+  [2] = { { 13 * TILE_SIZE, 9 * TILE_SIZE }, DIR_RIGHT, SPEEDS[SpeedSlow], GHOST_CHASETIMER * 2.0f, pen },
+  [3] = { { 15 * TILE_SIZE, 9 * TILE_SIZE },    DIR_UP, SPEEDS[SpeedSlow], GHOST_CHASETIMER * 3.0f, pen },
 };
 
 static const char* STATE_PEN_STR        = "PEN";
@@ -85,27 +83,16 @@ static int getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* val
   return count;
 }
 
-// Ghost moves up and down in pen till released
+// Ghost moves back and forth in pen till released
 static void pen(Ghost* ghost, float frameTime, float slop) {
   assert(ghost != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  game__Actor* actor = ghost->actor;
-  assert(actor != nullptr);
-  game__Dir dir = actor_getDir(actor);
-  assert(dir == DIR_UP || dir == DIR_DOWN);
-
-  actor_moveNoCheck(actor, dir, frameTime);
-  Vector2 pos = actor_getPos(actor);
-
-  if (pos.y <= PEN_TOP) {
-    actor_setDir(actor, DIR_DOWN);
-    actor_setPos(actor, (Vector2) { pos.x, PEN_TOP });
-  } else if (pos.y >= PEN_BOT) {
-    actor_setDir(actor, DIR_UP);
-    actor_setPos(actor, (Vector2) { pos.x, PEN_BOT });
-  }
+  game__Actor* actor      = ghost->actor;
+  game__Dir    currentDir = actor_getDir(actor);
+  actor_move(actor, currentDir, frameTime);
+  if (!actor_canMove(actor, currentDir, slop)) actor_setDir(actor, getOppositeDir(currentDir));
 
   // Release the ho... er... ghosts!
   if (ghost->timer <= frameTime) {
@@ -126,22 +113,20 @@ static void penToStart(Ghost* ghost, float frameTime, float slop) {
   assert(actor != nullptr);
   game__Dir dir = actor_getDir(actor);
 
-  float   startX = GHOST_MAZE_START.x;  // First ghost starts outside
+  float   startY = GHOST_MAZE_START.y;
   Vector2 pos    = actor_getPos(actor);
-  if (fabsf(pos.x - startX) > slop) {
-    // Move to below door
-    LOG_TRACE(game__log, "Moving to below door");
-    dir = pos.x < startX ? DIR_RIGHT : DIR_LEFT;
+  if (fabsf(pos.y - startY) > slop) {
+    LOG_TRACE(game__log, "Moving to line up wth exit");
+    dir = pos.y < startY ? DIR_DOWN : DIR_UP;
     actor_setDir(actor, dir);
     actor_moveNoCheck(actor, dir, frameTime);
   } else {
-    // Move through door, we're a ghost!
-    LOG_TRACE(game__log, "Moving though door");
-    actor_setDir(actor, DIR_UP);
-    actor_moveNoCheck(actor, DIR_UP, frameTime);
-    float startY = GHOST_MAZE_START.y;
-    if (pos.y <= startY) {
-      actor_setPos(actor, (Vector2) { pos.x, startY });
+    LOG_TRACE(game__log, "Moving to start tile");
+    actor_setDir(actor, DIR_LEFT);
+    actor_moveNoCheck(actor, DIR_LEFT, frameTime);
+    float startX = GHOST_MAZE_START.x;
+    if (pos.x <= startX) {
+      actor_setPos(actor, (Vector2) { startX, pos.y });
       actor_setDir(actor, GHOST_START_DIR);
       actor_setSpeed(actor, SPEEDS[SpeedNormal]);
       ghost->timer  = GHOST_CHASETIMER;
