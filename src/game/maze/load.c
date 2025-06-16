@@ -2,8 +2,8 @@
 #include <cute_headers/cute_tiled.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../internal.h"
-#include "internal.h"
+#include "../game.h"
+#include "maze.h"
 
 // --- Types ---
 

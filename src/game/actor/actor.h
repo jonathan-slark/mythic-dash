@@ -5,7 +5,7 @@
 #pragma once
 // Clang format Language: C
 
-#include "../internal.h"
+#include "../game.h"
 #include <stddef.h> // size_t
 
 // --- Constants ---

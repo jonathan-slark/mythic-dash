@@ -1,9 +1,9 @@
+#include "maze.h"
 #include <assert.h>
 #include <engine/engine.h>
 #include <log/log.h>
 #include <raylib.h>
-#include "../internal.h"
-#include "internal.h"
+#include "../game.h"
 
 // --- Constants ---
 

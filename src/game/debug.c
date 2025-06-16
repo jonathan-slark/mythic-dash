@@ -2,8 +2,8 @@
 #include <engine/engine.h>
 #include <raylib.h>
 #include <raymath.h>
-#include "actor/internal.h"
-#include "internal.h"
+#include "actor/actor.h"
+#include "game.h"
 
 // --- Types ---
 

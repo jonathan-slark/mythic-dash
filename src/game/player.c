@@ -2,7 +2,7 @@
 #include <engine/engine.h>
 #include <raylib.h>
 #include <raymath.h>
-#include "internal.h"
+#include "game.h"
 
 // --- Constants ---
 

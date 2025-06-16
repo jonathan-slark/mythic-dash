@@ -1,4 +1,4 @@
-#include "../internal.h"
+#include "../game.h"
 #include <engine/engine.h>
 
 // --- Types ---

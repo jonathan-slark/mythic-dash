@@ -1,3 +1,4 @@
+#include "game.h"
 #include <assert.h>
 #include <engine/engine.h>
 #include <game/game.h>
@@ -7,7 +8,6 @@
 #include <raymath.h>
 #include <stddef.h>
 #include "asset.h"
-#include "internal.h"
 
 // --- Types ---
 

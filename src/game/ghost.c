@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <math.h>
-#include "internal.h"
+#include "game.h"
 
 // --- Types ---
 
