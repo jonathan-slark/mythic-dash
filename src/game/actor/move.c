@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <math.h>  // fminf, fmaxf
 #include "../internal.h"
-#include "actor.h"
+#include "internal.h"
 
 // --- Constants ---
 
