@@ -10,9 +10,9 @@
 
 // Temporary storage for tiles from map tileset during loading
 typedef struct MapTile {
-  TileType type;
-  int      teleportType;
-  int      animCount;
+  maze__TileType type;
+  int            teleportType;
+  int            animCount;
 } MapTile;
 
 // --- Constants ---
@@ -91,7 +91,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount)
     layer = layer->next;
   }
 
-  MazeTile* tiles = (MazeTile*) malloc(count * sizeof(MazeTile) * layerCount);
+  maze__Tile* tiles = (maze__Tile*) malloc(count * sizeof(maze__Tile) * layerCount);
   if (tiles == nullptr) {
     LOG_FATAL(game__log, "Unable to allocate memory for maze tiles");
     return false;
@@ -101,7 +101,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount)
   int layerNum = 0;
   while (layer != nullptr) {
     for (int i = 0; i < count; i++) {
-      TileType       type   = TILE_NONE;
+      maze__TileType type   = TILE_NONE;
       engine_Sprite* sprite = nullptr;
       engine_Anim*   anim   = nullptr;
       game__AABB     aabb   = {};
@@ -127,7 +127,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount)
         aabb   = (game__AABB) { .min = min, .max = max };
 
         if (animCount > 0) {
-          LOG_INFO(game__log, "New animation: layer: %d, tile %d, %d, frame count: %d", layerNum, row, col, animCount);
+          LOG_TRACE(game__log, "New animation: layer: %d, tile %d, %d, frame count: %d", layerNum, row, col, animCount);
           anim = engine_createAnim(sprite, tilesetRow, tilesetCol, animCount, FRAME_TIME, inset);
         }
 
@@ -172,7 +172,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount)
       layerCount == 1 ? "" : "s"
   );
 
-  g_maze = (Maze) {
+  g_maze = (maze__Maze) {
     .rows       = rows,
     .cols       = cols,
     .count      = count,
@@ -245,7 +245,7 @@ static bool loadMazetileset(cute_tiled_map_t* map) {
 
 static void unloadMazetileset(void) { engine_textureUnload(&g_maze.tileset); }
 
-// --- Maze functions ---
+// --- maze__Maze functions ---
 
 bool maze_init(void) {
   cute_tiled_map_t* map;

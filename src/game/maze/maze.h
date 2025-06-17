@@ -1,24 +1,31 @@
+/*
+ * maze.h: Internal to maze units, don't include in other units.
+ */
+
+#pragma once
+// Clang format Language: C
+
 #include "../game.h"
 #include <engine/engine.h>
 
 // --- Types ---
 
-typedef enum TileType {
+typedef enum maze__TileType {
   TILE_NONE,
   TILE_FLOOR,
   TILE_WALL,
   TILE_TELEPORT
-} TileType;
+} maze__TileType;
 
-typedef struct MazeTile {
-  TileType type;
+typedef struct maze__Tile {
+  maze__TileType type;
   int linkedTeleportTile;
   engine_Sprite *sprite;
   engine_Anim *anim;
   game__AABB aabb;
-} MazeTile;
+} maze__Tile;
 
-typedef struct Maze {
+typedef struct maze__Maze {
   int rows;
   int cols;
   int count;
@@ -26,9 +33,9 @@ typedef struct Maze {
   int tileHeight;
   int layerCount;
   engine_Texture *tileset;
-  MazeTile *tiles;
-} Maze;
+  maze__Tile *tiles;
+} maze__Maze;
 
 // --- Global state ---
 
-extern Maze g_maze;
+extern maze__Maze g_maze;

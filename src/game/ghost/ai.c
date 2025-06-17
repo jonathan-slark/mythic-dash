@@ -1,0 +1,149 @@
+#include <assert.h>
+#include "ghost.h"
+
+// --- Constants ---
+
+static const char* STATE_PEN_STR        = "PEN";
+static const char* STATE_PETTOSTART_STR = "PEN2STA";
+static const char* STATE_WANDER_STR     = "WANDER";
+
+// --- Helper functions ---
+
+static inline game__Dir getOppositeDir(game__Dir dir) {
+  assert(dir >= 0 && dir < DIR_COUNT);
+  return (dir + 2) % DIR_COUNT;
+}
+
+static inline game__Dir randomSelect(game__Dir* dirs, int count) {
+  assert(dirs != nullptr);
+  assert(count > 0);
+  return dirs[GetRandomValue(0, count - 1)];
+}
+
+static int getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* validDirs, float slop) {
+  assert(actor != nullptr);
+  assert(currentDir >= 0 && currentDir < DIR_COUNT);
+  assert(validDirs != nullptr);
+  assert(slop > 0.0f);
+
+  game__Dir opposite = getOppositeDir(currentDir);
+  int       count    = 0;
+
+  for (game__Dir dir = DIR_UP; dir < DIR_COUNT; dir++) {
+    if (dir != opposite && actor_canMove(actor, dir, slop)) {
+      validDirs[count++] = dir;
+    }
+  }
+  return count;
+}
+
+// --- Ghost state functions ---
+
+// Ghost moves back and forth in pen till released
+void ghost__pen(ghost__Ghost* ghost, float frameTime, float slop) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
+  game__Actor* actor      = ghost->actor;
+  game__Dir    currentDir = actor_getDir(actor);
+  actor_move(actor, currentDir, frameTime);
+  if (!actor_canMove(actor, currentDir, slop)) actor_setDir(actor, getOppositeDir(currentDir));
+
+  // Release the ho... er... ghosts!
+  if (ghost->timer <= frameTime) {
+    ghost->timer  = 0.0f;
+    ghost->update = ghost__penToStart;
+  } else {
+    ghost->timer -= frameTime;
+  }
+}
+
+// Ghost moves from pen to start position
+void ghost__penToStart(ghost__Ghost* ghost, float frameTime, float slop) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
+  game__Actor* actor = ghost->actor;
+  assert(actor != nullptr);
+  game__Dir dir = actor_getDir(actor);
+
+  float   startY = ghost->mazeStart.y;
+  Vector2 pos    = actor_getPos(actor);
+  if (fabsf(pos.y - startY) > slop) {
+    LOG_TRACE(game__log, "Moving to line up wth exit");
+    dir = pos.y < startY ? DIR_DOWN : DIR_UP;
+    actor_setDir(actor, dir);
+    actor_moveNoCheck(actor, dir, frameTime);
+  } else {
+    LOG_TRACE(game__log, "Moving to start tile");
+    float startX = ghost->mazeStart.x;
+    dir          = pos.x < startX ? DIR_RIGHT : DIR_LEFT;
+    actor_setDir(actor, dir);
+    actor_moveNoCheck(actor, dir, frameTime);
+    if (fabsf(pos.x - startX) < slop) {
+      actor_setPos(actor, (Vector2) { startX, pos.y });
+      actor_setDir(actor, GHOST_START_DIR);
+      actor_setSpeed(actor, SPEEDS[SpeedNormal]);
+      ghost->timer  = GHOST_CHASETIMER;
+      ghost->update = ghost__wander;
+    }
+  }
+}
+
+// Ghost wanders randomly
+void ghost__wander(ghost__Ghost* ghost, float frameTime, float slop) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
+  game__Actor* actor      = ghost->actor;
+  game__Dir    currentDir = actor_getDir(actor);
+  actor_move(actor, currentDir, frameTime);
+
+  ghost->decisionCooldown -= frameTime;
+  if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
+
+  // Check if we hit a wall or can make a direction decision
+  if (!actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
+    game__Dir validDirs[DIR_COUNT - 1];
+    int       count = getValidDirs(actor, currentDir, validDirs, slop);
+
+    if (count == 0) {
+      // Should never happen - log error
+      Vector2 pos = actor_getPos(actor);
+      LOG_ERROR(game__log, "ghost__Ghost %u has no valid directions at (%.2f, %.2f)", ghost->id, pos.x, pos.y);
+      actor_setDir(actor, getOppositeDir(currentDir));
+      ghost->decisionCooldown = DECISION_COOLDOWN;
+    } else {
+      game__Dir newDir = randomSelect(validDirs, count);
+      // Check if we were at a junction
+      if (count > 1 || currentDir != newDir) {
+        actor_setDir(actor, newDir);
+        LOG_DEBUG(game__log, "ghost__Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[newDir]);
+        ghost->decisionCooldown = DECISION_COOLDOWN;
+      }
+    }
+  }
+}
+
+// --- Ghost functions ---
+
+const char* ghost_getStateString(int id) {
+  assert(id >= 0 && id < CREATURE_COUNT);
+  assert(id >= 0 && id < CREATURE_COUNT);
+  assert(g_ghosts[id].actor != nullptr);
+
+  if (g_ghosts[id].update == ghost__pen) {
+    return STATE_PEN_STR;
+  }
+  if (g_ghosts[id].update == ghost__penToStart) {
+    return STATE_PETTOSTART_STR;
+  }
+  if (g_ghosts[id].update == ghost__wander) {
+    return STATE_WANDER_STR;
+  }
+
+  assert(false);
+}

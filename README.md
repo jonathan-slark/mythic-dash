@@ -1,4 +1,4 @@
-# Maze Muncher
+# maze__Maze Muncher
 
 ```sh
 maze-muncher/
@@ -8,7 +8,7 @@ maze-muncher/
 │   ├── game.c/.h         # Core game logic, update/draw loop
 │   │
 │   ├── player.c/.h       # Player movement, collision, drawing
-│   ├── maze.c/.h         # Maze generation, tiles, collisions
+│   ├── maze.c/.h         # maze__Maze generation, tiles, collisions
 │   ├── ghost.c/.h        # AI for enemies / ghost pathing
 │   ├── item.c/.h         # Pickups like pellets, power-ups
 │   │

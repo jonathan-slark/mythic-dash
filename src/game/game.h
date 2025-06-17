@@ -98,7 +98,7 @@ game__Dir    player_getDir(void);
 bool         player_isMoving(void);
 game__Actor* player_getActor(void);
 
-// --- Ghost functions (ghost.c) ---
+// --- ghost__Ghost functions (ghost.c) ---
 
 bool         ghost_init(void);
 void         ghost_shutdown(void);
@@ -109,7 +109,7 @@ game__Actor* ghost_getActor(int id);
 float        ghost_getDecisionCooldown(int id);
 const char*  ghost_getStateString(int id);
 
-// --- Maze functions (maze.c) ---
+// --- maze__Maze functions (maze.c) ---
 
 [[nodiscard]] bool maze_init(void);
 void               maze_shutdown(void);

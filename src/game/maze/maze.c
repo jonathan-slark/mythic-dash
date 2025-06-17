@@ -12,9 +12,9 @@ const Vector2 MAZE_ORIGIN = { 8.0f, 16.0f };  // Screen offset to the actual maz
 
 // --- Global state ---
 
-Maze g_maze;
+maze__Maze g_maze;
 
-static MazeTile* getTileAt(Vector2 pos) {
+static maze__Tile* getTileAt(Vector2 pos) {
   int row = (int) (pos.y / g_maze.tileHeight);
   int col = (int) (pos.x / g_maze.tileWidth);
   assert(row >= 0 && row < g_maze.rows);
@@ -22,21 +22,21 @@ static MazeTile* getTileAt(Vector2 pos) {
   return &g_maze.tiles[row * g_maze.cols + col];
 }
 
-// --- Maze functions ---
+// --- maze__Maze functions ---
 
 game__AABB maze_getAABB(Vector2 pos) {
-  MazeTile* tile = getTileAt(pos);
+  maze__Tile* tile = getTileAt(pos);
   return tile->aabb;
 }
 
 bool maze_isWall(Vector2 pos) {
-  MazeTile* tile = getTileAt(pos);
+  maze__Tile* tile = getTileAt(pos);
   return tile->type == TILE_WALL;
 }
 
 bool maze_isTeleport(Vector2 pos, Vector2* dest) {
-  MazeTile* tile   = getTileAt(pos);
-  int       linked = tile->linkedTeleportTile;
+  maze__Tile* tile   = getTileAt(pos);
+  int         linked = tile->linkedTeleportTile;
   if (linked >= 0) {
     *dest = g_maze.tiles[linked].aabb.min;
     return true;

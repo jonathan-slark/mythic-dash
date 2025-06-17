@@ -6,7 +6,7 @@
 
 // --- Constants ---
 
-static const char* WINDOW_TITLE   = "Maze Muncher";
+static const char* WINDOW_TITLE   = "maze__Maze Muncher";
 static const int   ORG_SCR_WIDTH  = 480;  // Base canvas size
 static const int   ORG_SCR_HEIGHT = 270;
 

@@ -1,5 +1,5 @@
 /*
- * actor.h: Internal to actor.c and actor_move.c, don't include in other units.
+ * actor.h: Internal to actor units, don't include in other units.
  */
 
 #pragma once

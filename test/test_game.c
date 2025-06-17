@@ -56,7 +56,7 @@ static inline float aabb_getOverlapY(game__AABB a, game__AABB b) {
   return fmin(a.max.y, b.max.y) - fmax(a.min.y, b.min.y);
 }
 
-// --- Maze simulation for testing ---
+// --- maze__Maze simulation for testing ---
 
 #define MAZE_ROWS 32
 #define MAZE_COLS 29
@@ -74,7 +74,7 @@ static bool maze_isWall_test(Vector2 pos) {
   int row = (int) (pos.y / TILE_SIZE);
   int col = (int) (pos.x / TILE_SIZE);
   if (row < 0 || row >= MAZE_ROWS || col < 0 || col >= MAZE_COLS) {
-    return true;  // Out of bounds is wall
+    return true;              // Out of bounds is wall
   }
   if (row >= 4) return true;  // Simplify: rows 4+ are walls for testing
   return MAZE_TEST[row][col];
@@ -166,7 +166,7 @@ MU_TEST(test_aabb_edge_cases) {
   mu_assert(aabb_getOverlapX(a, b) == 0.0f, "No overlap for touching AABBs");
 }
 
-// --- Maze Tests ---
+// --- maze__Maze Tests ---
 
 MU_TEST(test_maze_wall_detection) {
   // Test corner positions that should be walls
@@ -179,8 +179,8 @@ MU_TEST(test_maze_wall_detection) {
 }
 
 MU_TEST(test_maze_aabb_generation) {
-  Vector2    tile_pos  = { 2 * TILE_SIZE, 3 * TILE_SIZE };
-  game__AABB aabb      = maze_getAABB_test(tile_pos);
+  Vector2    tile_pos = { 2 * TILE_SIZE, 3 * TILE_SIZE };
+  game__AABB aabb     = maze_getAABB_test(tile_pos);
 
   Vector2 expected_min = { 2 * TILE_SIZE, 3 * TILE_SIZE };
   Vector2 expected_max = { 3 * TILE_SIZE, 4 * TILE_SIZE };
@@ -235,8 +235,8 @@ MU_TEST(test_slop_calculation) {
   float frameTime1 = BASE_DT;
   float frameTime2 = BASE_DT * 2;
 
-  float slop1      = BASE_SLOP * (frameTime1 / BASE_DT);
-  float slop2      = BASE_SLOP * (frameTime2 / BASE_DT);
+  float slop1 = BASE_SLOP * (frameTime1 / BASE_DT);
+  float slop2 = BASE_SLOP * (frameTime2 / BASE_DT);
 
   mu_assert_float_eq(BASE_SLOP, slop1);
   mu_assert_float_eq(BASE_SLOP * 2, slop2);
@@ -283,7 +283,7 @@ int main(void) {
   printf("Running AABB Tests...\n");
   MU_RUN_SUITE(aabb_suite);
 
-  printf("\nRunning Maze Tests...\n");
+  printf("\nRunning maze__Maze Tests...\n");
   MU_RUN_SUITE(maze_suite);
 
   printf("\nRunning Constants Tests...\n");

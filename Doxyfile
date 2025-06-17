@@ -1,7 +1,7 @@
 # Doxygen configuration for a simple C game project
 
 # Project info
-PROJECT_NAME           = "Maze Muncher"
+PROJECT_NAME           = "maze__Maze Muncher"
 PROJECT_BRIEF          = "A faithful recreation of an arcade classic."
 OUTPUT_DIRECTORY       = doc
 GENERATE_HTML          = YES
