@@ -45,6 +45,29 @@ vec2 ghost_target_tile(Ghost *ghost, Player *player) {
 }
 ```
 
+```c
+// Pseudocode
+Direction choose_direction(Ghost *ghost, Maze *maze, Tile target_tile) {
+    Direction best_dir = NONE;
+    int min_distance = INT_MAX;
+
+    for (Direction dir : all_directions) {
+        if (is_wall(maze, ghost->tile, dir)) continue;
+        if (dir == opposite_of(ghost->last_direction) && !ghost->can_reverse) continue;
+
+        Tile next_tile = move_tile(ghost->tile, dir);
+        int dist = manhattan_distance(next_tile, target_tile);
+
+        if (dist < min_distance || (dist == min_distance && dir < best_dir)) {
+            best_dir = dir;
+            min_distance = dist;
+        }
+    }
+
+    return best_dir;
+}
+```
+
 ## Asset Credits
 
 [Cursive2 font](https://opengameart.org/content/new-original-grafx2-font-collection) - CC0

@@ -17,7 +17,7 @@
 
 // --- Helper functions ---
 
-static void drawTile(game__Tile tile) {
+static void drawTile(actor__Tile tile) {
   Color colour;
   if (tile.isCollision) {
     colour = OVERLAY_COLOUR_COLLISION;
@@ -127,4 +127,17 @@ void actor_canMoveOverlay(game__Actor* actor) {
     }
     actor->isCanMove[dir] = false;
   }
+}
+
+game__Tile actor_nextTile(game__Actor* actor, game__Dir dir) {
+  Vector2 pos  = actor->pos;
+  Vector2 size = actor->size;
+  switch (dir) {
+    case DIR_UP: pos = (Vector2) { pos.x + TILE_SIZE / 2.0f, pos.y - TILE_SIZE / 2.0f }; break;
+    case DIR_RIGHT: pos = (Vector2) { pos.x + size.x + TILE_SIZE / 2.0f, pos.y + TILE_SIZE / 2.0f }; break;
+    case DIR_DOWN: pos = (Vector2) { pos.x + TILE_SIZE / 2.0f, pos.y + size.y + TILE_SIZE / 2.0f }; break;
+    case DIR_LEFT: pos = (Vector2) { pos.x - TILE_SIZE / 2.0f, pos.y + TILE_SIZE / 2.0f }; break;
+    default: assert(false);
+  }
+  return maze_getTile(pos);
 }

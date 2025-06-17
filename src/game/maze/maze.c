@@ -85,3 +85,15 @@ void maze_update(float frameTime) {
     }
   }
 }
+
+game__Tile maze_getTile(Vector2 pos) { return (game__Tile) { pos.x / TILE_SIZE, pos.y / TILE_SIZE }; }
+
+int maze_manhattanDistance(game__Tile nextTile, game__Tile targetTile) {
+  int x1    = nextTile.col;
+  int y1    = nextTile.row;
+  int x2    = targetTile.col;
+  int y2    = targetTile.row;
+  int distX = x1 < x2 ? x2 - x1 : x1 - x2;
+  int distY = y1 < y2 ? y2 - y1 : y1 - y2;
+  return distX + distY;
+}

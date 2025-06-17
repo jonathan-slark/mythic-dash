@@ -25,6 +25,11 @@ typedef struct game__AABB {
   Vector2 max;
 } game__AABB;
 
+typedef struct game__Tile {
+  int row;
+  int col;
+} game__Tile;
+
 typedef struct game__Actor game__Actor;
 
 // --- Constants ---
@@ -87,6 +92,7 @@ void         actor_canMoveOverlay(game__Actor* actor);
 void         actor_moveNoCheck(game__Actor* actor, game__Dir dir, float frameTime);
 void         actor_move(game__Actor* actor, game__Dir dir, float frameTime);
 void         actor_update(game__Actor* actor, float frameTime);
+game__Tile   actor_nextTile(game__Actor* actor, game__Dir dir);
 
 // --- Player functions (player.c) ---
 
@@ -119,6 +125,8 @@ bool               maze_isTeleport(Vector2 pos, Vector2* dest);
 void               maze_tilesOverlay(void);
 void               maze_draw(void);
 void               maze_update(float frameTime);
+game__Tile         maze_getTile(Vector2 pos);
+int                maze_manhattanDistance(game__Tile nextTile, game__Tile targetTile);
 
 // --- Debug functions (debug.c) ---
 
