@@ -71,3 +71,8 @@ float ghost_getDecisionCooldown(int id) {
   assert(g_ghosts[id].actor != nullptr);
   return g_ghosts[id].decisionCooldown;
 }
+
+game__Tile ghost_getTarget(int id) {
+  assert(id >= 0 && id < CREATURE_COUNT);
+  return g_ghosts[id].targetTile;
+}

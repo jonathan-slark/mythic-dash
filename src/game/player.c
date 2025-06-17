@@ -71,3 +71,15 @@ game__Actor* player_getActor(void) {
   assert(g_player != nullptr);
   return g_player;
 }
+
+game__Tile player_tileAhead(int tileNum) {
+  game__Tile tile = maze_getTile(player_getPos());
+  switch (player_getDir()) {
+    case DIR_UP: tile.row -= tileNum; break;
+    case DIR_RIGHT: tile.col += tileNum; break;
+    case DIR_DOWN: tile.row += tileNum; break;
+    case DIR_LEFT: tile.col -= tileNum; break;
+    default: assert(false);
+  }
+  return tile;
+}

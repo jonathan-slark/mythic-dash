@@ -39,7 +39,7 @@ static int getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* val
   return count;
 }
 
-game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int count, game__Tile targetTile) {
+static game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int count, game__Tile targetTile) {
   assert(count > 0);
 
   game__Dir bestDir = DIR_NONE;
@@ -53,6 +53,28 @@ game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int count, game
     }
   }
   return bestDir;
+}
+
+static game__Tile getTargetTile(ghost__Ghost* ghost) {
+  game__Tile targetTile;
+  game__Tile playerTile = maze_getTile(player_getPos());
+  switch (ghost->id) {
+    case 0: targetTile = playerTile; break;
+    case 1: targetTile = player_tileAhead(4); break;
+    case 2:
+      game__Tile ghost0Tile = maze_getTile(actor_getPos(ghost_getActor(0)));
+      targetTile            = maze_doubleVectorBetween(ghost0Tile, player_tileAhead(2));
+      break;
+    case 3:
+      if (maze_manhattanDistance(maze_getTile(actor_getPos(ghost->actor)), maze_getTile(player_getPos())) < 8) {
+        targetTile = ghost->cornerTile;
+      } else {
+        targetTile = playerTile;
+      }
+      break;
+    default: assert(false);
+  }
+  return targetTile;
 }
 
 // --- Ghost state functions ---
@@ -176,7 +198,8 @@ void ghost__chase(ghost__Ghost* ghost, float frameTime, float slop) {
       actor_setDir(actor, getOppositeDir(currentDir));
       ghost->decisionCooldown = DECISION_COOLDOWN;
     } else {
-      game__Dir bestDir = greedyDirSelect(ghost, validDirs, count, maze_getTile(player_getPos()));
+      ghost->targetTile = getTargetTile(ghost);
+      game__Dir bestDir = greedyDirSelect(ghost, validDirs, count, ghost->targetTile);
       // Check if we were at a junction
       if (count > 1 || currentDir != bestDir) {
         actor_setDir(actor, bestDir);
@@ -211,7 +234,8 @@ void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
       actor_setDir(actor, getOppositeDir(currentDir));
       ghost->decisionCooldown = DECISION_COOLDOWN;
     } else {
-      game__Dir bestDir = greedyDirSelect(ghost, validDirs, count, ghost->cornerTile);
+      ghost->targetTile = ghost->cornerTile;
+      game__Dir bestDir = greedyDirSelect(ghost, validDirs, count, ghost->targetTile);
       // Check if we were at a junction
       if (count > 1 || currentDir != bestDir) {
         actor_setDir(actor, bestDir);

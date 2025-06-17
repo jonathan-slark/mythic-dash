@@ -95,6 +95,12 @@ void debug_drawOverlay(void) {
       engine_drawText(
           string, (Vector2) { pos.x, pos.y + ACTOR_SIZE - OVERLAY_TEXT_SIZE / scale }, OVERLAY_TEXT_SIZE, WHITE
       );
+
+      Vector2 start = POS_ADJUST(actor_getPos(actor));
+      start         = Vector2AddValue(start, TILE_SIZE / 2.0f);
+      Vector2 end   = POS_ADJUST(maze_getPos(ghost_getTarget(i)));
+      end           = Vector2AddValue(end, TILE_SIZE / 2.0f);
+      engine_drawLine(start, end, OVERLAY_COLOUR_GHOST);
     }
   }
 }

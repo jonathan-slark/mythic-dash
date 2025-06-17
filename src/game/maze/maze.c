@@ -88,6 +88,8 @@ void maze_update(float frameTime) {
 
 game__Tile maze_getTile(Vector2 pos) { return (game__Tile) { pos.x / TILE_SIZE, pos.y / TILE_SIZE }; }
 
+Vector2 maze_getPos(game__Tile tile) { return (Vector2) { tile.col * TILE_SIZE, tile.row * TILE_SIZE }; }
+
 int maze_manhattanDistance(game__Tile nextTile, game__Tile targetTile) {
   int x1    = nextTile.col;
   int y1    = nextTile.row;
@@ -96,4 +98,10 @@ int maze_manhattanDistance(game__Tile nextTile, game__Tile targetTile) {
   int distX = x1 < x2 ? x2 - x1 : x1 - x2;
   int distY = y1 < y2 ? y2 - y1 : y1 - y2;
   return distX + distY;
+}
+
+game__Tile maze_doubleVectorBetween(game__Tile from, game__Tile to) {
+  game__Tile diff   = { to.col - from.col, to.row - from.row };
+  game__Tile target = { to.col + diff.col, to.row + diff.row };
+  return target;
 }

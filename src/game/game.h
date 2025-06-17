@@ -103,8 +103,9 @@ Vector2      player_getPos(void);
 game__Dir    player_getDir(void);
 bool         player_isMoving(void);
 game__Actor* player_getActor(void);
+game__Tile   player_tileAhead(int tileNum);
 
-// --- ghost__Ghost functions (ghost.c) ---
+// --- Ghost functions (ghost.c) ---
 
 bool         ghost_init(void);
 void         ghost_shutdown(void);
@@ -114,8 +115,9 @@ game__Dir    ghost_getDir(int id);
 game__Actor* ghost_getActor(int id);
 float        ghost_getDecisionCooldown(int id);
 const char*  ghost_getStateString(int id);
+game__Tile   ghost_getTarget(int id);
 
-// --- maze__Maze functions (maze.c) ---
+// --- Maze functions (maze.c) ---
 
 [[nodiscard]] bool maze_init(void);
 void               maze_shutdown(void);
@@ -126,7 +128,9 @@ void               maze_tilesOverlay(void);
 void               maze_draw(void);
 void               maze_update(float frameTime);
 game__Tile         maze_getTile(Vector2 pos);
+Vector2            maze_getPos(game__Tile tile);
 int                maze_manhattanDistance(game__Tile nextTile, game__Tile targetTile);
+game__Tile         maze_doubleVectorBetween(game__Tile from, game__Tile to);
 
 // --- Debug functions (debug.c) ---
 

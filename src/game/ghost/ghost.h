@@ -21,6 +21,7 @@ typedef struct ghost__Ghost {
   float timer;
   Vector2 mazeStart;
   game__Tile cornerTile;
+  game__Tile targetTile;
   float decisionCooldown;
   game__Actor *actor;
   unsigned id;
