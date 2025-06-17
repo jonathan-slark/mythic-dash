@@ -20,21 +20,19 @@ typedef struct ghost__Ghost {
   void (*update)(struct ghost__Ghost *, float, float);
   float timer;
   Vector2 mazeStart;
+  game__Tile cornerTile;
   float decisionCooldown;
   game__Actor *actor;
-
-#ifndef NDEBUG
   unsigned id;
-#endif // NDEBUG
-
 } ghost__Ghost;
 
 // --- Ghost state function prototypes ---
 
 void ghost__pen(ghost__Ghost *ghost, float frameTime, float slop);
 void ghost__penToStart(ghost__Ghost *ghost, float frameTime, float slop);
-void ghost__wander(ghost__Ghost *ghost, float frameTime, float slop);
+void ghost__frightened(ghost__Ghost *ghost, float frameTime, float slop);
 void ghost__chase(ghost__Ghost *ghost, float frameTime, float slop);
+void ghost__scatter(ghost__Ghost *ghost, float frameTime, float slop);
 
 // --- Constants ---
 
@@ -48,6 +46,7 @@ static const float GHOST_CHASETIMER = 10.0f;
 static const struct {
   Vector2 startPos;
   Vector2 mazeStart;
+  game__Tile cornerTile;
   game__Dir startDir;
   float startSpeed;
   float startTimer;
@@ -55,24 +54,28 @@ static const struct {
 } CREATURE_DATA[CREATURE_COUNT] = {
     [0] = {{13 * TILE_SIZE, 6 * TILE_SIZE},
            GHOST_MAZE_START[0],
+           {1, 1},
            DIR_RIGHT,
            SPEEDS[SpeedSlow],
            GHOST_CHASETIMER * 2.0f,
            ghost__pen},
     [1] = {{15 * TILE_SIZE, 7 * TILE_SIZE},
            GHOST_MAZE_START[1],
+           {27, 1},
            DIR_LEFT,
            SPEEDS[SpeedSlow],
            GHOST_CHASETIMER * 0.0f,
            ghost__pen},
     [2] = {{13 * TILE_SIZE, 8 * TILE_SIZE},
            GHOST_MAZE_START[0],
+           {1, 13},
            DIR_RIGHT,
            SPEEDS[SpeedSlow],
            GHOST_CHASETIMER * 1.0f,
            ghost__pen},
     [3] = {{15 * TILE_SIZE, 9 * TILE_SIZE},
            GHOST_MAZE_START[1],
+           {27, 13},
            DIR_LEFT,
            SPEEDS[SpeedSlow],
            GHOST_CHASETIMER * 3.0f,

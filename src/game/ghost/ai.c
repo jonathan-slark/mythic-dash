@@ -6,8 +6,9 @@
 
 static const char* STATE_PEN_STR        = "PEN";
 static const char* STATE_PETTOSTART_STR = "PEN2STA";
-static const char* STATE_WANDER_STR     = "WANDER";
+static const char* STATE_FRIGHTENED_STR = "FRIGHT";
 static const char* STATE_CHASE_STR      = "CHASE";
+static const char* STATE_SCATTER_STR    = "SCATTER";
 
 // --- Helper functions ---
 
@@ -16,8 +17,7 @@ static inline game__Dir getOppositeDir(game__Dir dir) {
   return (dir + 2) % DIR_COUNT;
 }
 
-static inline game__Dir randomSelect(game__Dir* dirs, int count) {
-  assert(dirs != nullptr);
+static inline game__Dir randomSelect(game__Dir dirs[], int count) {
   assert(count > 0);
   return dirs[GetRandomValue(0, count - 1)];
 }
@@ -37,6 +37,22 @@ static int getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* val
     }
   }
   return count;
+}
+
+game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int count, game__Tile targetTile) {
+  assert(count > 0);
+
+  game__Dir bestDir = DIR_NONE;
+  int       minDist = INT_MAX;
+  for (int i = 0; i < count; i++) {
+    game__Tile nextTile = actor_nextTile(ghost->actor, dirs[i]);
+    int        dist     = maze_manhattanDistance(nextTile, targetTile);
+    if (dist < minDist) {
+      bestDir = dirs[i];
+      minDist = dist;
+    }
+  }
+  return bestDir;
 }
 
 // --- Ghost state functions ---
@@ -89,13 +105,13 @@ void ghost__penToStart(ghost__Ghost* ghost, float frameTime, float slop) {
       actor_setDir(actor, GHOST_START_DIR);
       actor_setSpeed(actor, SPEEDS[SpeedNormal]);
       ghost->timer  = GHOST_CHASETIMER;
-      ghost->update = ghost__wander;
+      ghost->update = ghost__scatter;
     }
   }
 }
 
 // Ghost wanders randomly
-void ghost__wander(ghost__Ghost* ghost, float frameTime, float slop) {
+void ghost__frightened(ghost__Ghost* ghost, float frameTime, float slop) {
   assert(ghost != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -160,16 +176,7 @@ void ghost__chase(ghost__Ghost* ghost, float frameTime, float slop) {
       actor_setDir(actor, getOppositeDir(currentDir));
       ghost->decisionCooldown = DECISION_COOLDOWN;
     } else {
-      game__Dir bestDir = DIR_NONE;
-      int       minDist = INT_MAX;
-      for (int i = 0; i < count; i++) {
-        game__Tile nextTile = actor_nextTile(ghost->actor, validDirs[i]);
-        int        dist     = maze_manhattanDistance(nextTile, maze_getTile(player_getPos()));
-        if (dist < minDist) {
-          bestDir = validDirs[i];
-          minDist = dist;
-        }
-      }
+      game__Dir bestDir = greedyDirSelect(ghost, validDirs, count, maze_getTile(player_getPos()));
       // Check if we were at a junction
       if (count > 1 || currentDir != bestDir) {
         actor_setDir(actor, bestDir);
@@ -177,6 +184,48 @@ void ghost__chase(ghost__Ghost* ghost, float frameTime, float slop) {
         ghost->decisionCooldown = DECISION_COOLDOWN;
       }
     }
+  }
+}
+
+// Ghost heads to it's assigned corners
+void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
+  game__Actor* actor      = ghost->actor;
+  game__Dir    currentDir = actor_getDir(actor);
+  actor_move(actor, currentDir, frameTime);
+
+  ghost->decisionCooldown -= frameTime;
+  if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
+
+  // Check if we hit a wall or can make a direction decision
+  if (!actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
+    game__Dir validDirs[DIR_COUNT - 1];
+    int       count = getValidDirs(actor, currentDir, validDirs, slop);
+    if (count == 0) {
+      // Should never happen - log error
+      Vector2 pos = actor_getPos(actor);
+      LOG_ERROR(game__log, "Ghost %u has no valid directions at (%.2f, %.2f)", ghost->id, pos.x, pos.y);
+      actor_setDir(actor, getOppositeDir(currentDir));
+      ghost->decisionCooldown = DECISION_COOLDOWN;
+    } else {
+      game__Dir bestDir = greedyDirSelect(ghost, validDirs, count, ghost->cornerTile);
+      // Check if we were at a junction
+      if (count > 1 || currentDir != bestDir) {
+        actor_setDir(actor, bestDir);
+        LOG_DEBUG(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[bestDir]);
+        ghost->decisionCooldown = DECISION_COOLDOWN;
+      }
+    }
+  }
+
+  if (ghost->timer <= frameTime) {
+    ghost->timer  = GHOST_CHASETIMER;
+    ghost->update = ghost__chase;
+  } else {
+    ghost->timer -= frameTime;
   }
 }
 
@@ -193,11 +242,14 @@ const char* ghost_getStateString(int id) {
   if (g_ghosts[id].update == ghost__penToStart) {
     return STATE_PETTOSTART_STR;
   }
-  if (g_ghosts[id].update == ghost__wander) {
-    return STATE_WANDER_STR;
+  if (g_ghosts[id].update == ghost__frightened) {
+    return STATE_FRIGHTENED_STR;
   }
   if (g_ghosts[id].update == ghost__chase) {
     return STATE_CHASE_STR;
+  }
+  if (g_ghosts[id].update == ghost__scatter) {
+    return STATE_SCATTER_STR;
   }
 
   assert(false);
