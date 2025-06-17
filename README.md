@@ -1,41 +1,24 @@
-# maze__Maze Muncher
+# Mythic Dash
 
-```sh
-maze-muncher/
-├── asset/                # Images, sounds, fonts, etc.
-├── src/
-│   ├── main.c            # Entry point, handles init/game loop
-│   ├── game.c/.h         # Core game logic, update/draw loop
-│   │
-│   ├── player.c/.h       # Player movement, collision, drawing
-│   ├── maze.c/.h         # maze__Maze generation, tiles, collisions
-│   ├── ghost.c/.h        # AI for enemies / ghost pathing
-│   ├── item.c/.h         # Pickups like pellets, power-ups
-│   │
-│   ├── assets.c/.h       # Texture/font/sound loading
-│   ├── state.c/.h        # Game state management (title, play, game over)
-│   ├── ui.c/.h           # Score display, menus
-│   │
-│   └── common.h          # Shared types, constants, macros
-```
+## Gameplay
 
-## Abstration layer
+* 3 lives
+* +1 life at 10,000, 20,000, 30,000 - display next goal
+* Difficulty ramps by ghost speed, AI aggression and power pellet duration
+* Ghosts switch between chase and scatter phases
+* Ghosts have personalities
+* Level 1-4: ghosts get a bit faster
+* Level 5-10: less scatter, more chase
+* Level 11+: minimal scatter, ghosts hit max speed (~90% of player speed)
+* Power pellet gradually loses duration
+* Cap at 16 levels
+* Reduce player speed when eating dots
+* Practice mode
+* Save states for continuing game
 
-```sh
-maze_muncher/
-├── engine/
-│   ├── engine.h
-│   ├── window.h
-│   ├── renderer.h
-│   ├── texture.h
-│   ├── bitmap_font.h
-│   └── input.h
-├── assets/
-│   ├── font.png
-│   └── tileset.png
-├── src/
-│   └── main.c
-├── Makefile
+```c
+float player_speed = 1.0f;
+float ghost_speed = fminf(0.75f + level * 0.02f, 0.95f);
 ```
 
 ## Asset Credits
@@ -43,3 +26,4 @@ maze_muncher/
 [Cursive2 font](https://opengameart.org/content/new-original-grafx2-font-collection) - CC0
 [Puny Characters](https://merchant-shade.itch.io/16x16-puny-characters) - CC0
 [Philippine Mythological Creature Sprites](https://merchant-shade.itch.io/ph-myth-creatures) - CC0
+[Puny Dungeon](https://merchant-shade.itch.io/16x16-puny-dungeon) - CC0

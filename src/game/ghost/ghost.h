@@ -29,11 +29,12 @@ typedef struct ghost__Ghost {
 
 } ghost__Ghost;
 
-// --- Function prototypes ---
+// --- Ghost state function prototypes ---
 
 void ghost__pen(ghost__Ghost *ghost, float frameTime, float slop);
 void ghost__penToStart(ghost__Ghost *ghost, float frameTime, float slop);
 void ghost__wander(ghost__Ghost *ghost, float frameTime, float slop);
+void ghost__chase(ghost__Ghost *ghost, float frameTime, float slop);
 
 // --- Constants ---
 

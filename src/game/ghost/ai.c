@@ -128,6 +128,10 @@ void ghost__wander(ghost__Ghost* ghost, float frameTime, float slop) {
   }
 }
 
+// Ghost chases player
+void ghost__chase(ghost__Ghost* ghost [[maybe_unused]], float frameTime [[maybe_unused]], float slop [[maybe_unused]]) {
+}
+
 // --- Ghost functions ---
 
 const char* ghost_getStateString(int id) {
