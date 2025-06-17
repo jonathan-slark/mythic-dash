@@ -6,8 +6,16 @@
 * +1 life at 10,000, 20,000, 30,000 - display next goal
 * Difficulty ramps by ghost speed, AI aggression and power pellet duration
 * Ghosts switch between chase and scatter phases
+* Ghosts only reverse on mode change
+* Scatter phase ghosts retreat to corners
 * Ghosts have personalities
 * Level 1-4: ghosts get a bit faster
+
+```c
+float player_speed = 1.0f;
+float ghost_speed = fminf(0.75f + level * 0.02f, 0.95f);
+```
+
 * Level 5-10: less scatter, more chase
 * Level 11+: minimal scatter, ghosts hit max speed (~90% of player speed)
 * Power pellet gradually loses duration
@@ -16,9 +24,25 @@
 * Practice mode
 * Save states for continuing game
 
+## Pac-man Ghosts
+
+| Ghost      | Nickname | Colour | Chase Logic                                                                                                 |
+| ---------- | -------- | ------ | ----------------------------------------------------------------------------------------------------------- |
+| **Blinky** | Shadow   | Red    | Directly targets Pac-Man’s **current tile**.                                                                |
+| **Pinky**  | Speedy   | Pink   | Targets **four tiles ahead** of Pac-Man, based on his current direction.                                    |
+| **Inky**   | Bashful  | Cyan   | Uses a vector based on **both** Blinky’s position **and** four tiles ahead of Pac-Man — very unpredictable. |
+| **Clyde**  | Pokey    | Orange | Chases Pac-Man until close, then retreats to a corner — kind of derpy on purpose.                           |
+
 ```c
-float player_speed = 1.0f;
-float ghost_speed = fminf(0.75f + level * 0.02f, 0.95f);
+// pseudocode
+vec2 ghost_target_tile(Ghost *ghost, Player *player) {
+    switch (ghost->type) {
+        case BLINKY: return player->tile;
+        case PINKY:  return tile_ahead(player, 4);
+        case INKY:   return vector_between(blinky->tile, tile_ahead(player, 2));
+        case CLYDE:  return dist(ghost, player) < 8 ? ghost->corner_tile : player->tile;
+    }
+}
 ```
 
 ## Asset Credits

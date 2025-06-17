@@ -9,7 +9,6 @@
 #include <stdlib.h>  // malloc, free
 #include "../game.h"
 
-
 // --- Constants ---
 
 #define OVERLAY_COLOUR_TILE_WALL (Color){ 255, 100, 100, 128 }
