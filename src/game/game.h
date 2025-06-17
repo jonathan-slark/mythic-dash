@@ -115,6 +115,7 @@ const char*  ghost_getStateString(int id);
 void               maze_shutdown(void);
 game__AABB         maze_getAABB(Vector2 pos);
 bool               maze_isWall(Vector2 pos);
+bool               maze_isTeleport(Vector2 pos, Vector2* dest);
 void               maze_tilesOverlay(void);
 void               maze_draw(void);
 void               maze_update(float frameTime);

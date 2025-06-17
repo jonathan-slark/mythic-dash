@@ -34,6 +34,16 @@ bool maze_isWall(Vector2 pos) {
   return tile->type == TILE_WALL;
 }
 
+bool maze_isTeleport(Vector2 pos, Vector2* dest) {
+  MazeTile* tile   = getTileAt(pos);
+  int       linked = tile->linkedTeleportTile;
+  if (linked >= 0) {
+    *dest = g_maze.tiles[linked].aabb.min;
+    return true;
+  }
+  return false;
+}
+
 void maze_tilesOverlay(void) {
   for (int i = 0; i < g_maze.count; i++) {
     if (maze_isWall(g_maze.tiles[i].aabb.min)) {

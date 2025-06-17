@@ -13,8 +13,6 @@ static const Vector2 VELS[] = {
 };
 
 const char* DIR_STRINGS[] = { "UP", "RIGHT", "DOWN", "LEFT" };
-// const float MAZE_TELEPORTLEFT  = 8.0f;
-// const float MAZE_TELEPORTRIGHT = 256.0f;
 
 // --- Helper functions ---
 
@@ -226,6 +224,28 @@ static bool checkStrictMovement(game__Actor* actor, game__Dir dir, game__AABB ac
   return canMove;
 }
 
+static void checkTeleport(game__Actor* actor, game__Dir dir) {
+  assert(actor != nullptr);
+  assert(dir >= 0 && dir < DIR_COUNT);
+
+  Vector2 destPos;
+  // Don't teleport till right on top of the tile
+  if ((dir == DIR_UP && maze_isTeleport((Vector2) { actor->pos.x, actor->pos.y + actor->size.x - 1 }, &destPos)) ||
+      (dir == DIR_RIGHT && maze_isTeleport(actor->pos, &destPos)) ||
+      (dir == DIR_DOWN && maze_isTeleport(actor->pos, &destPos)) ||
+      (dir == DIR_LEFT && maze_isTeleport((Vector2) { actor->pos.x + actor->size.x - 1, actor->pos.y }, &destPos))) {
+    if (!actor->hasTeleported) {
+      LOG_DEBUG(
+          game__log, "Teleporting actor from %.2f, %.2f to %.2f, %.2f", actor->pos.x, actor->pos.y, destPos.x, destPos.y
+      );
+      actor->pos           = destPos;
+      actor->hasTeleported = true;
+    }
+  } else {
+    actor->hasTeleported = false;
+  }
+}
+
 // --- Actor movement functions ---
 
 bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
@@ -260,9 +280,6 @@ void actor_moveNoCheck(game__Actor* actor, game__Dir dir, float frameTime) {
 
   actor->pos = Vector2Add(actor->pos, Vector2Scale(VELS[dir], frameTime * actor->speed));
   actor->dir = dir;
-
-  // if (actor->pos.x < MAZE_TELEPORTLEFT) actor->pos.x = MAZE_TELEPORTRIGHT;
-  // if (actor->pos.x > MAZE_TELEPORTRIGHT) actor->pos.x = MAZE_TELEPORTLEFT;
 }
 
 void actor_move(game__Actor* actor, game__Dir dir, float frameTime) {
@@ -274,6 +291,8 @@ void actor_move(game__Actor* actor, game__Dir dir, float frameTime) {
 
   actor_moveNoCheck(actor, dir, frameTime);
 
+  // Teleport before collision check to avoid actor being stopped
+  checkTeleport(actor, dir);
   getTiles(actor, actor->tilesMove, dir);
   checkMazeCollision(actor);
 }

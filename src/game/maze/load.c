@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../game.h"
+#include "log/log.h"
 #include "maze.h"
 
 // --- Types ---
@@ -10,14 +11,16 @@
 // Temporary storage for tiles from map tileset during loading
 typedef struct MapTile {
   TileType type;
+  int      teleportType;
   int      animCount;
 } MapTile;
 
 // --- Constants ---
 
-static const char* FILE_MAZE   = ASSET_DIR "map/maze01.tmj";
-constexpr size_t   BUFFER_SIZE = 1024;
-static const float FRAME_TIME  = (1.0f / 12.0f);
+static const char* FILE_MAZE      = ASSET_DIR "map/maze01.tmj";
+constexpr size_t   BUFFER_SIZE    = 1024;
+static const float FRAME_TIME     = 0.1f;
+static const int   PROPERTY_TYPES = 2;
 
 // --- Helper functions ---
 
@@ -46,13 +49,14 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
       LOG_FATAL(game__log, "Incomplete tile linked list");
       return false;
     }
-    if (tile->property_count != 1 || tile->properties == nullptr) {
+    if (tile->property_count != PROPERTY_TYPES || tile->properties == nullptr) {
       LOG_FATAL(game__log, "Invalid property count in tile linked list");
       return false;
     }
-    (*tileData)[i].type      = tile->properties[0].data.boolean ? TILE_WALL : TILE_FLOOR;
-    (*tileData)[i].animCount = tile->frame_count;
-    tile                     = tile->next;
+    (*tileData)[i].type         = tile->properties[0].data.boolean ? TILE_WALL : TILE_FLOOR;
+    (*tileData)[i].teleportType = tile->properties[1].data.integer;
+    (*tileData)[i].animCount    = tile->frame_count;
+    tile                        = tile->next;
     i--;
   }
 
@@ -63,14 +67,16 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount)
   assert(map != nullptr && map->layers != nullptr);
   assert(tileCount > 0);
 
-  cute_tiled_layer_t*   layer      = map->layers;
-  cute_tiled_tileset_t* tileset    = map->tilesets;
-  int                   count      = layer->data_count;
-  int                   rows       = map->height;
-  int                   cols       = map->width;
-  int                   tileWidth  = tileset->tilewidth;
-  int                   tileHeight = tileset->tileheight;
-  int                   tileCols   = tileset->columns;
+  cute_tiled_layer_t*   layer         = map->layers;
+  cute_tiled_tileset_t* tileset       = map->tilesets;
+  int                   count         = layer->data_count;
+  int                   rows          = map->height;
+  int                   cols          = map->width;
+  int                   tileWidth     = tileset->tilewidth;
+  int                   tileHeight    = tileset->tileheight;
+  int                   tileCols      = tileset->columns;
+  int                   teleportCount = 0;
+  int                   teleports[2];
 
   if (layer == nullptr || tileset == nullptr || count <= 0 || rows <= 0 || cols <= 0 || tileWidth <= 0 ||
       tileHeight <= 0 || tileCols <= 0) {
@@ -95,11 +101,10 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount)
   int layerNum = 0;
   while (layer != nullptr) {
     for (int i = 0; i < count; i++) {
-      TileType       type               = TILE_NONE;
-      int            linkedTeleportTile = -1;  // Currently unused
-      engine_Sprite* sprite             = nullptr;
-      engine_Anim*   anim               = nullptr;
-      game__AABB     aabb               = {};
+      TileType       type   = TILE_NONE;
+      engine_Sprite* sprite = nullptr;
+      engine_Anim*   anim   = nullptr;
+      game__AABB     aabb   = {};
 
       int     row   = i / cols;
       int     col   = i % cols;
@@ -125,10 +130,19 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount)
           LOG_INFO(game__log, "New animation: layer: %d, tile %d, %d, frame count: %d", layerNum, row, col, animCount);
           anim = engine_createAnim(sprite, tilesetRow, tilesetCol, animCount, FRAME_TIME, inset);
         }
+
+        if (teleportCount != -1 && tileData[tileId].teleportType == 1) {
+          if (teleportCount < 2)
+            teleports[teleportCount++] = i;
+          else {
+            LOG_WARN(game__log, "Too many teleports of same type found in map");
+            teleportCount = -1;
+          }
+        }
       }
 
       tiles[tileIdx].type               = type;
-      tiles[tileIdx].linkedTeleportTile = linkedTeleportTile;
+      tiles[tileIdx].linkedTeleportTile = -1;
       tiles[tileIdx].sprite             = sprite;
       tiles[tileIdx].anim               = anim;
       tiles[tileIdx].aabb               = aabb;
@@ -136,6 +150,14 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount)
 
     layerNum++;
     layer = layer->next;
+  }
+
+  if (teleportCount == 2) {
+    tiles[teleports[0]].linkedTeleportTile = teleports[1];
+    tiles[teleports[1]].linkedTeleportTile = teleports[0];
+    LOG_INFO(game__log, "Linked teleports %d and %d", teleports[0], teleports[1]);
+  } else if (teleportCount == 1) {
+    LOG_WARN(game__log, "Found one teleport but not matching twin");
   }
 
   LOG_INFO(
