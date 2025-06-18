@@ -14,7 +14,8 @@ typedef enum maze__TileType {
   TILE_NONE,
   TILE_FLOOR,
   TILE_WALL,
-  TILE_TELEPORT
+  TILE_TELEPORT,
+  TILE_COIN
 } maze__TileType;
 
 typedef struct maze__Tile {

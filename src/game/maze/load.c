@@ -20,7 +20,7 @@ typedef struct MapTile {
 static const char* FILE_MAZE      = ASSET_DIR "map/maze01.tmj";
 constexpr size_t   BUFFER_SIZE    = 1024;
 static const float FRAME_TIME     = 0.1f;
-static const int   PROPERTY_TYPES = 2;
+static const int   PROPERTY_TYPES = 3;
 
 // --- Helper functions ---
 
@@ -53,10 +53,26 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
       LOG_FATAL(game__log, "Invalid property count in tile linked list");
       return false;
     }
-    (*tileData)[i].type         = tile->properties[0].data.boolean ? TILE_WALL : TILE_FLOOR;
-    (*tileData)[i].teleportType = tile->properties[1].data.integer;
-    (*tileData)[i].animCount    = tile->frame_count;
-    tile                        = tile->next;
+    (*tileData)[i].type      = TILE_FLOOR;
+    (*tileData)[i].animCount = tile->frame_count;
+    for (int j = 0; j < tile->property_count; j++) {
+      if (tile->properties[j].type == CUTE_TILED_PROPERTY_INT) {
+        if (strcmp(tile->properties[j].name.ptr, "teleportType") == 0 && tile->properties[j].data.integer > 0) {
+          (*tileData)[i].type         = TILE_TELEPORT;
+          (*tileData)[i].teleportType = tile->properties[j].data.integer;
+          LOG_TRACE(game__log, "Tile %d is a teleport, type %d", i, (*tileData)[i].teleportType);
+        }
+      } else if (tile->properties[j].type == CUTE_TILED_PROPERTY_BOOL) {
+        if (strcmp(tile->properties[j].name.ptr, "isCoin") == 0 && tile->properties[j].data.boolean) {
+          (*tileData)[i].type = TILE_COIN;
+          LOG_TRACE(game__log, "Tile %d isCoin", i);
+        } else if (strcmp(tile->properties[j].name.ptr, "isWall") == 0 && tile->properties[j].data.boolean) {
+          (*tileData)[i].type = TILE_WALL;
+          LOG_TRACE(game__log, "Tile %d isWall", i);
+        }
+      }
+    }
+    tile = tile->next;
     i--;
   }
 
