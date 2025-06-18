@@ -1,6 +1,7 @@
 #include "ghost.h"
 #include <assert.h>
 #include "../game.h"
+#include "ghost.h"
 #include "log/log.h"
 
 // --- Constants ---
@@ -18,37 +19,52 @@ ghost__State g_state = { .update = nullptr, .stateNum = 0, .stateTimer = 0.0f };
 
 // --- Helper functions ---
 
+static inline bool shouldUpdateGhostState(ghost__Ghost* ghost) {
+  return ghost->update != ghost__pen && ghost->update != ghost__penToStart && ghost->update != ghost__frightened;
+}
+
+static void transitionToState(void (*newState)(ghost__Ghost*, float, float)) {
+  g_state.update = newState;
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    if (shouldUpdateGhostState(&g_state.ghosts[i])) {
+      g_state.ghosts[i].update         = newState;
+      g_state.ghosts[i].isChangedState = true;
+    }
+  }
+}
+
+static inline void updateTimer(float frameTime) { g_state.stateTimer = fmaxf(g_state.stateTimer - frameTime, 0.0f); }
+
+static inline bool shouldTransitionState() { return g_state.stateTimer == 0.0f; }
+
+static inline bool isPermanentChaseState() { return g_state.stateNum == COUNT(STATE_TIMERS); }
+
+static void transitionToPermanentChase() {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    g_state.ghosts[i].update         = ghost__chase;
+    g_state.ghosts[i].isChangedState = true;
+  }
+  g_state.stateNum++;
+}
+
+static void toggleGhostState() {
+  void (*newState)(
+      ghost__Ghost*, float, float
+  ) = (g_state.update == nullptr || g_state.update == ghost__chase) ? ghost__scatter : ghost__chase;
+  transitionToState(newState);
+  g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
+  LOG_INFO(game__log, "Changing to state: %s", ghost_getStateString(FIRST_GHOST_OUT));
+}
+
 // Update the global state and change ghost states
 static void updateState(float frameTime) {
-  g_state.stateTimer -= frameTime;
-  if (g_state.stateTimer < 0) g_state.stateTimer = 0.0f;
+  updateTimer(frameTime);
 
-  if (g_state.stateTimer == 0.0f) {
-    if (g_state.stateNum == COUNT(STATE_TIMERS)) {
-      // Permament chase
-      for (int i = 0; i < CREATURE_COUNT; i++) {
-        g_state.ghosts[i].update         = ghost__chase;
-        g_state.ghosts[i].isChangedState = true;
-      }
-      g_state.stateNum++;
-    } else if (g_state.stateNum < COUNT(STATE_TIMERS)) {
-      // Toggle between scatter and chase
-      if (g_state.update == nullptr || g_state.update == ghost__chase) {
-        g_state.update = ghost__scatter;
-      } else {
-        g_state.update = ghost__chase;
-      }
-
-      for (int i = 0; i < CREATURE_COUNT; i++) {
-        if (g_state.ghosts[i].update != ghost__pen && g_state.ghosts[i].update != ghost__penToStart &&
-            g_state.ghosts[i].update != ghost__frightened) {
-          g_state.ghosts[i].update         = g_state.update;
-          g_state.ghosts[i].isChangedState = true;
-        }
-      }
-
-      g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
-      LOG_INFO(game__log, "Changing to state: %s", ghost_getStateString(1));
+  if (shouldTransitionState()) {
+    if (isPermanentChaseState()) {
+      transitionToPermanentChase();
+    } else {
+      toggleGhostState();
     }
   }
 }

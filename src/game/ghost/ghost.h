@@ -44,6 +44,7 @@ static const float SPEED_MIN_MULT = 0.75f;
 static const float SPEED_MAX_MULT = 0.95f;
 static const float DECISION_COOLDOWN = 0.5f;
 
+static const int FIRST_GHOST_OUT = 1;
 static const Vector2 GHOST_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},
                                            {17 * TILE_SIZE, 7 * TILE_SIZE}};
 static const game__Dir GHOST_START_DIR = DIR_LEFT;
