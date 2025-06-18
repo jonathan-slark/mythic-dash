@@ -79,8 +79,16 @@ game__Tile player_tileAhead(int tileNum) {
       tile.row -= tileNum;
       if (tile.row < 0) tile.row = 0;
       break;
-    case DIR_RIGHT: tile.col += tileNum; break;
-    case DIR_DOWN: tile.row += tileNum; break;
+    case DIR_RIGHT:
+      tile.col += tileNum;
+      int cols  = maze_getCols();
+      if (tile.col >= cols) tile.col = cols - 1;
+      break;
+    case DIR_DOWN:
+      tile.row += tileNum;
+      int rows  = maze_getRows();
+      if (tile.row >= rows) tile.row = rows - 1;
+      break;
     case DIR_LEFT:
       tile.col -= tileNum;
       if (tile.row < 0) tile.row = 0;

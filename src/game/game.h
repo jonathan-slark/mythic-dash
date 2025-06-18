@@ -131,6 +131,8 @@ game__Tile         maze_getTile(Vector2 pos);
 Vector2            maze_getPos(game__Tile tile);
 int                maze_manhattanDistance(game__Tile nextTile, game__Tile targetTile);
 game__Tile         maze_doubleVectorBetween(game__Tile from, game__Tile to);
+int                maze_getRows(void);
+int                maze_getCols(void);
 
 // --- Debug functions (debug.c) ---
 
