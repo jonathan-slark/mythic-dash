@@ -91,7 +91,7 @@ game__Tile player_tileAhead(int tileNum) {
       break;
     case DIR_LEFT:
       tile.col -= tileNum;
-      if (tile.row < 0) tile.row = 0;
+      if (tile.col < 0) tile.col = 0;
       break;
     default: assert(false);
   }

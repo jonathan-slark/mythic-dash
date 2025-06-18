@@ -100,6 +100,7 @@ int maze_manhattanDistance(game__Tile nextTile, game__Tile targetTile) {
   return distX + distY;
 }
 
+// Used by Inky to
 game__Tile maze_doubleVectorBetween(game__Tile from, game__Tile to) {
   game__Tile diff   = { to.col - from.col, to.row - from.row };
   game__Tile target = { to.col + diff.col, to.row + diff.row };
