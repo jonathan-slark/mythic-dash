@@ -9,7 +9,7 @@
 // --- Constants ---
 
 #define OVERLAY_COLOUR_MAZE_WALL (Color){ 0, 0, 128, 128 }
-const Vector2 MAZE_ORIGIN = { 8.0f, 16.0f };  // Screen offset to the actual maze
+const Vector2 MAZE_ORIGIN = { 8.0f, 8.0f };  // Screen offset to the actual maze
 
 // --- Global state ---
 

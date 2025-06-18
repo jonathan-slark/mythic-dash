@@ -95,20 +95,21 @@ static inline game__Dir selectDirGreedy(ghost__Ghost* ghost, game__Dir* dirs, in
   return greedyDirSelect(ghost, dirs, count, ghost->targetTile);
 }
 
+// Ghost personalities
 static game__Tile getTargetTile(ghost__Ghost* ghost) {
   game__Tile targetTile;
   game__Tile playerTile = maze_getTile(player_getPos());
   switch (ghost->id) {
-    // Blinky: directly target player's current tile
+    // Directly target player's current tile
     case 1: targetTile = playerTile; break;
-    // Pinky: target four tiles ahead of player, based on his current direction
+    // Target four tiles ahead of player, based on his current direction
     case 2: targetTile = player_tileAhead(4); break;
-    // Inky: uses a vector based on both Blinky’s position and four tiles ahead of player
+    // Uses a vector based on both Ghost1's position and four tiles ahead of player
     case 0:
       game__Tile ghost1Tile = maze_getTile(actor_getPos(ghost_getActor(1)));
       targetTile            = maze_doubleVectorBetween(ghost1Tile, player_tileAhead(2));
       break;
-    // Clyde: chases player until close, then retreats to corner
+    // Chases player until close, then retreats to corner
     case 3:
       if (maze_manhattanDistance(maze_getTile(actor_getPos(ghost->actor)), playerTile) < 8) {
         targetTile = ghost->cornerTile;

@@ -23,12 +23,15 @@ typedef struct ActorData {
 
 // --- Constants ---
 
+// TODO: these shouldn't be static const
 static const char FILE_BACKGROUND[] = ASSET_DIR "gfx/background.png";
 static const char FILE_CREATURES[] = ASSET_DIR "gfx/creatures.png";
 static const char FILE_PLAYER[] = ASSET_DIR "gfx/player.png";
 static const char FILE_FONT[] = ASSET_DIR "gfx/font.png";
 
-static const float FRAME_TIME = (1.0f / 12.0f);
+static const float FRAME_TIME = 0.1f;
+
+static const Vector2 PLAYER_LIVES_OFFSET = {8.0f, 248.0f};
 
 // clang-format off
 static const ActorData PLAYER_DATA = {

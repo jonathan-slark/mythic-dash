@@ -70,30 +70,42 @@ static void updateState(float frameTime) {
   }
 }
 
+void ghostDefaults(void) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    g_state.ghosts[i].update           = CREATURE_DATA[i].update;
+    g_state.ghosts[i].timer            = CREATURE_DATA[i].startTimer;
+    g_state.ghosts[i].mazeStart        = CREATURE_DATA[i].mazeStart;
+    g_state.ghosts[i].targetTile       = (game__Tile) { -1, -1 };
+    g_state.ghosts[i].cornerTile       = CREATURE_DATA[i].cornerTile;
+    g_state.ghosts[i].decisionCooldown = 0.0f;
+  }
+}
+
 // --- Ghost functions ---
 
 bool ghost_init(void) {
+  ghostDefaults();
   for (int i = 0; i < CREATURE_COUNT; i++) {
     assert(g_state.ghosts[i].actor == nullptr);
-    g_state.ghosts[i].update     = CREATURE_DATA[i].update;
-    g_state.ghosts[i].timer      = CREATURE_DATA[i].startTimer;
-    g_state.ghosts[i].mazeStart  = CREATURE_DATA[i].mazeStart;
-    g_state.ghosts[i].targetTile = (game__Tile) { -1, -1 };
-    g_state.ghosts[i].cornerTile = CREATURE_DATA[i].cornerTile;
-    LOG_INFO(game__log, "Corner tile %d, %d", g_state.ghosts[i].cornerTile.col, g_state.ghosts[i].cornerTile.row);
-    g_state.ghosts[i].decisionCooldown = 0.0f;
-    g_state.ghosts[i].actor            = actor_create(
+    g_state.ghosts[i].actor = actor_create(
         CREATURE_DATA[i].startPos,
         (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
         CREATURE_DATA[i].startDir,
         CREATURE_DATA[i].startSpeed
     );
     if (g_state.ghosts[i].actor == nullptr) return false;
-#ifndef NDEBUG
     g_state.ghosts[i].id = i;
-#endif
   }
   return true;
+}
+
+void ghost_reset(void) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    ghostDefaults();
+    actor_setPos(g_state.ghosts[i].actor, CREATURE_DATA[i].startPos);
+    actor_setDir(g_state.ghosts[i].actor, CREATURE_DATA[i].startDir);
+    actor_setSpeed(g_state.ghosts[i].actor, CREATURE_DATA[i].startSpeed);
+  }
 }
 
 void ghost_shutdown(void) {
@@ -108,11 +120,18 @@ void ghost_update(float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
+  bool       playerDead = false;
+  game__AABB playerAABB = actor_getAABB(player_getActor());
+
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    assert(g_state.ghosts[i].actor != nullptr);
     g_state.ghosts[i].update(&g_state.ghosts[i], frameTime, slop);
+
+    game__AABB ghostAABB = actor_getAABB(g_state.ghosts[i].actor);
+    if (aabb_isColliding(playerAABB, ghostAABB)) playerDead = true;
   }
   updateState(frameTime);
+
+  if (playerDead) player_dead();
 }
 
 Vector2 ghost_getPos(int id) {

@@ -38,6 +38,7 @@ typedef struct game__Actor game__Actor;
 constexpr int ACTOR_SIZE     = 16;
 constexpr int TILE_SIZE      = 16;
 constexpr int CREATURE_COUNT = 4;
+constexpr int PLAYER_LIVES   = 3;
 
 extern const Vector2 MAZE_ORIGIN;
 
@@ -105,6 +106,9 @@ bool         player_isMoving(void);
 game__Actor* player_getActor(void);
 game__Tile   player_tileAhead(int tileNum);
 float        player_getSpeed(void);
+void         player_dead(void);
+void         player_reset(void);
+int          player_getLives(void);
 
 // --- Ghost functions (ghost.c) ---
 
@@ -119,6 +123,7 @@ const char*  ghost_getStateString(int id);
 game__Tile   ghost_getTarget(int id);
 float        ghost_getGlobalTimer(void);
 int          ghost_getGlobaStateNum(void);
+void         ghost_reset(void);
 
 // --- Maze functions (maze.c) ---
 
@@ -147,4 +152,5 @@ void debug_toggleGhostOverlay(void);
 
 // --- Internal game functions (game.c) ---
 
-int game_getLevel(void);
+int  game_getLevel(void);
+void game_over(void);
