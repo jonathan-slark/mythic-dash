@@ -1,5 +1,5 @@
 /*
- * ghost.h: Internal to maze units, don't include in other units.
+ * ghost.h: Internal to ghost units, don't include in other units.
  */
 
 #pragma once
@@ -26,6 +26,13 @@ typedef struct ghost__Ghost {
   game__Actor *actor;
   unsigned id;
 } ghost__Ghost;
+
+typedef struct ghost__State {
+  ghost__Ghost ghosts[CREATURE_COUNT];
+  void (*update)(ghost__Ghost *, float, float);
+  size_t stateNum;
+  float stateTimer;
+} ghost__State;
 
 // --- Ghost state function prototypes ---
 
@@ -85,4 +92,4 @@ static const struct {
 
 // --- Global state ---
 
-extern ghost__Ghost g_ghosts[];
+extern ghost__State g_state;

@@ -130,7 +130,6 @@ void ghost__penToStart(ghost__Ghost* ghost, float frameTime, float slop) {
       actor_setPos(actor, (Vector2) { startX, pos.y });
       actor_setDir(actor, GHOST_START_DIR);
       actor_setSpeed(actor, SPEEDS[SpeedNormal]);
-      ghost->timer  = GHOST_CHASETIMER;
       ghost->update = ghost__scatter;
     }
   }
@@ -168,13 +167,6 @@ void ghost__frightened(ghost__Ghost* ghost, float frameTime, float slop) {
         ghost->decisionCooldown = DECISION_COOLDOWN;
       }
     }
-  }
-
-  if (ghost->timer <= frameTime) {
-    ghost->timer  = GHOST_CHASETIMER;
-    ghost->update = ghost__chase;
-  } else {
-    ghost->timer -= frameTime;
   }
 }
 
@@ -250,13 +242,6 @@ void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
       }
     }
   }
-
-  if (ghost->timer <= frameTime) {
-    ghost->timer  = GHOST_CHASETIMER;
-    ghost->update = ghost__chase;
-  } else {
-    ghost->timer -= frameTime;
-  }
 }
 
 // --- Ghost functions ---
@@ -264,21 +249,21 @@ void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
 const char* ghost_getStateString(int id) {
   assert(id >= 0 && id < CREATURE_COUNT);
   assert(id >= 0 && id < CREATURE_COUNT);
-  assert(g_ghosts[id].actor != nullptr);
+  assert(g_state.ghosts[id].actor != nullptr);
 
-  if (g_ghosts[id].update == ghost__pen) {
+  if (g_state.ghosts[id].update == ghost__pen) {
     return STATE_PEN_STR;
   }
-  if (g_ghosts[id].update == ghost__penToStart) {
+  if (g_state.ghosts[id].update == ghost__penToStart) {
     return STATE_PETTOSTART_STR;
   }
-  if (g_ghosts[id].update == ghost__frightened) {
+  if (g_state.ghosts[id].update == ghost__frightened) {
     return STATE_FRIGHTENED_STR;
   }
-  if (g_ghosts[id].update == ghost__chase) {
+  if (g_state.ghosts[id].update == ghost__chase) {
     return STATE_CHASE_STR;
   }
-  if (g_ghosts[id].update == ghost__scatter) {
+  if (g_state.ghosts[id].update == ghost__scatter) {
     return STATE_SCATTER_STR;
   }
 

@@ -116,6 +116,7 @@ game__Actor* ghost_getActor(int id);
 float        ghost_getDecisionCooldown(int id);
 const char*  ghost_getStateString(int id);
 game__Tile   ghost_getTarget(int id);
+float        ghost_getGlobalTimer(void);
 
 // --- Maze functions (maze.c) ---
 

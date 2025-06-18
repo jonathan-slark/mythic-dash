@@ -62,7 +62,7 @@ void debug_drawOverlay(void) {
   }
 
   if (g_debug.isMazeOverlayEnabled) {
-    DrawText("maze__Maze overlay enabled", 0, yPos, 20, BLUE);
+    DrawText("Maze overlay enabled", 0, yPos, 20, BLUE);
     yPos += 20;
     maze_tilesOverlay();
   }
@@ -76,7 +76,7 @@ void debug_drawOverlay(void) {
   }
 
   if (g_debug.isGhostOverlayEnabled) {
-    DrawText("ghost__Ghost overlay enabled", 0, yPos, 20, OVERLAY_COLOUR_GHOST);
+    DrawText("Ghost overlay enabled", 0, yPos, 20, OVERLAY_COLOUR_GHOST);
     yPos += 20;
 
     for (int i = 0; i < CREATURE_COUNT; i++) {
@@ -95,6 +95,8 @@ void debug_drawOverlay(void) {
       engine_drawText(
           string, (Vector2) { pos.x, pos.y + ACTOR_SIZE - OVERLAY_TEXT_SIZE / scale }, OVERLAY_TEXT_SIZE, WHITE
       );
+
+      engine_drawFloat(ghost_getGlobalTimer(), (Vector2) { 460.0f, 0.0f }, 20, WHITE);
 
       Vector2 start         = POS_ADJUST(actor_getPos(actor));
       start                 = Vector2AddValue(start, TILE_SIZE / 2.0f);
