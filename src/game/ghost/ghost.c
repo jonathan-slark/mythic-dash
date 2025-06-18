@@ -1,6 +1,7 @@
 #include "ghost.h"
 #include <assert.h>
 #include "../game.h"
+#include "log/log.h"
 
 // --- Global state ---
 
@@ -11,10 +12,11 @@ ghost__Ghost g_ghosts[CREATURE_COUNT];
 bool ghost_init(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     assert(g_ghosts[i].actor == nullptr);
-    g_ghosts[i].update           = CREATURE_DATA[i].update;
-    g_ghosts[i].timer            = CREATURE_DATA[i].startTimer;
-    g_ghosts[i].mazeStart        = CREATURE_DATA[i].mazeStart;
-    g_ghosts[i].cornerTile       = CREATURE_DATA[i].cornerTile;
+    g_ghosts[i].update     = CREATURE_DATA[i].update;
+    g_ghosts[i].timer      = CREATURE_DATA[i].startTimer;
+    g_ghosts[i].mazeStart  = CREATURE_DATA[i].mazeStart;
+    g_ghosts[i].cornerTile = CREATURE_DATA[i].cornerTile;
+    LOG_INFO(game__log, "Corner tile %d, %d", g_ghosts[i].cornerTile.col, g_ghosts[i].cornerTile.row);
     g_ghosts[i].decisionCooldown = 0.0f;
     g_ghosts[i].actor            = actor_create(
         CREATURE_DATA[i].startPos,

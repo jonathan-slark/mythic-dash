@@ -203,6 +203,7 @@ void ghost__chase(ghost__Ghost* ghost, float frameTime, float slop) {
       // Check if we were at a junction
       if (count > 1 || currentDir != bestDir) {
         actor_setDir(actor, bestDir);
+        LOG_DEBUG(game__log, "Ghost %u target tile: %d, %d", ghost->id, ghost->targetTile.col, ghost->targetTile.row);
         LOG_DEBUG(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[bestDir]);
         ghost->decisionCooldown = DECISION_COOLDOWN;
       }
@@ -239,6 +240,7 @@ void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
       // Check if we were at a junction
       if (count > 1 || currentDir != bestDir) {
         actor_setDir(actor, bestDir);
+        LOG_DEBUG(game__log, "Ghost %u target tile: %d, %d", ghost->id, ghost->targetTile.col, ghost->targetTile.row);
         LOG_DEBUG(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[bestDir]);
         ghost->decisionCooldown = DECISION_COOLDOWN;
       }

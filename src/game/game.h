@@ -26,8 +26,8 @@ typedef struct game__AABB {
 } game__AABB;
 
 typedef struct game__Tile {
-  int row;
   int col;
+  int row;
 } game__Tile;
 
 typedef struct game__Actor game__Actor;
