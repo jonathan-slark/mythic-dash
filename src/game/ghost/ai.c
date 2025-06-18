@@ -1,5 +1,7 @@
 #include <assert.h>
 #include <limits.h>
+#include <math.h>
+#include "../game.h"
 #include "ghost.h"
 
 // --- Helper functions ---
@@ -74,6 +76,8 @@ static game__Tile getTargetTile(ghost__Ghost* ghost) {
   return targetTile;
 }
 
+static float getSpeed() { return fminf(SPEED_MIN_MULT + game_getLevel() * 0.02f, SPEED_MAX_MULT) * player_getSpeed(); }
+
 // --- Ghost state functions ---
 
 // Ghost moves back and forth in pen till released
@@ -122,7 +126,7 @@ void ghost__penToStart(ghost__Ghost* ghost, float frameTime, float slop) {
     if (fabsf(pos.x - startX) < slop) {
       actor_setPos(actor, (Vector2) { startX, pos.y });
       actor_setDir(actor, GHOST_START_DIR);
-      actor_setSpeed(actor, SPEEDS[SpeedNormal]);
+      actor_setSpeed(actor, getSpeed());
       ghost->update = ghost__scatter;
     }
   }

@@ -33,6 +33,8 @@ float ghost_speed = fminf(0.75f + level * 0.02f, 0.95f);
 | **Inky**   | Bashful  | Cyan   | Uses a vector based on **both** Blinky’s position **and** four tiles ahead of Pac-Man — very unpredictable. |
 | **Clyde**  | Pokey    | Orange | Chases Pac-Man until close, then retreats to a corner — kind of derpy on purpose.                           |
 
+### Ghost Personalities
+
 ```c
 // pseudocode
 vec2 ghost_target_tile(Ghost *ghost, Player *player) {
@@ -44,6 +46,8 @@ vec2 ghost_target_tile(Ghost *ghost, Player *player) {
     }
 }
 ```
+
+### Greedy Direction Selection
 
 ```c
 // Pseudocode
@@ -70,7 +74,7 @@ Direction choose_direction(Ghost *ghost, Maze *maze, Tile target_tile) {
 
 ## Asset Credits
 
-[Cursive2 font](https://opengameart.org/content/new-original-grafx2-font-collection) - CC0
-[Puny Characters](https://merchant-shade.itch.io/16x16-puny-characters) - CC0
-[Philippine Mythological Creature Sprites](https://merchant-shade.itch.io/ph-myth-creatures) - CC0
-[Puny Dungeon](https://merchant-shade.itch.io/16x16-puny-dungeon) - CC0
+* [Cursive2 font](https://opengameart.org/content/new-original-grafx2-font-collection) - CC0
+* [Puny Characters](https://merchant-shade.itch.io/16x16-puny-characters) - CC0
+* [Philippine Mythological Creature Sprites](https://merchant-shade.itch.io/ph-myth-creatures) - CC0
+* [Puny Dungeon](https://merchant-shade.itch.io/16x16-puny-dungeon) - CC0

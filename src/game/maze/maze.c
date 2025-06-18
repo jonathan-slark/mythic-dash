@@ -3,6 +3,7 @@
 #include <engine/engine.h>
 #include <log/log.h>
 #include <raylib.h>
+#include <stdlib.h>
 #include "../game.h"
 
 // --- Constants ---
@@ -90,14 +91,16 @@ game__Tile maze_getTile(Vector2 pos) { return (game__Tile) { pos.x / TILE_SIZE, 
 
 Vector2 maze_getPos(game__Tile tile) { return (Vector2) { tile.col * TILE_SIZE, tile.row * TILE_SIZE }; }
 
-int maze_manhattanDistance(game__Tile nextTile, game__Tile targetTile) {
-  int x1    = nextTile.col;
-  int y1    = nextTile.row;
-  int x2    = targetTile.col;
-  int y2    = targetTile.row;
-  int distX = x1 < x2 ? x2 - x1 : x1 - x2;
-  int distY = y1 < y2 ? y2 - y1 : y1 - y2;
-  return distX + distY;
+int maze_manhattanDistance(game__Tile a, game__Tile b) {
+  int dx = abs(a.col - b.col);
+  int dy = abs(a.row - b.row);
+
+  // Wrap-aware X distance for teleports
+  if (dx > g_maze.cols / 2) {
+    dx = g_maze.cols - dx;
+  }
+
+  return dx + dy;
 }
 
 // Used by Inky to

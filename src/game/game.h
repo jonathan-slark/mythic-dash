@@ -104,6 +104,7 @@ game__Dir    player_getDir(void);
 bool         player_isMoving(void);
 game__Actor* player_getActor(void);
 game__Tile   player_tileAhead(int tileNum);
+float        player_getSpeed(void);
 
 // --- Ghost functions (ghost.c) ---
 
@@ -143,3 +144,7 @@ void debug_toggleFPSOverlay(void);
 void debug_toggleMazeOverlay(void);
 void debug_togglePlayerOverlay(void);
 void debug_toggleGhostOverlay(void);
+
+// --- Internal game functions (game.c) ---
+
+int game_getLevel(void);

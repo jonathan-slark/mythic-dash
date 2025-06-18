@@ -97,3 +97,5 @@ game__Tile player_tileAhead(int tileNum) {
   }
   return tile;
 }
+
+float player_getSpeed(void) { return PLAYER_SPEED; }

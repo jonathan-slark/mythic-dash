@@ -10,12 +10,6 @@
 
 // --- Types ---
 
-typedef enum ghost__GhostSpeed {
-  SpeedSlow,
-  SpeedNormal,
-  SpeedFast
-} ghost__GhostSpeed;
-
 typedef struct ghost__Ghost {
   void (*update)(struct ghost__Ghost *, float, float);
   float timer;
@@ -45,7 +39,9 @@ void ghost__scatter(ghost__Ghost *ghost, float frameTime, float slop);
 
 // --- Constants ---
 
-static const float SPEEDS[] = {25.0f, 40.0f, 50.f, 100.0f};
+constexpr float SPEED_SLOW = 25.0f;
+static const float SPEED_MIN_MULT = 0.75f;
+static const float SPEED_MAX_MULT = 0.95f;
 static const float DECISION_COOLDOWN = 0.5f;
 
 static const Vector2 GHOST_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},
@@ -65,28 +61,28 @@ static const struct {
            GHOST_MAZE_START[0],
            {1, 1},
            DIR_RIGHT,
-           SPEEDS[SpeedSlow],
+           SPEED_SLOW,
            GHOST_CHASETIMER * 2.0f,
            ghost__pen},
     [1] = {{15 * TILE_SIZE, 7 * TILE_SIZE},
            GHOST_MAZE_START[1],
            {27, 1},
            DIR_LEFT,
-           SPEEDS[SpeedSlow],
+           SPEED_SLOW,
            GHOST_CHASETIMER * 0.0f,
            ghost__pen},
     [2] = {{13 * TILE_SIZE, 8 * TILE_SIZE},
            GHOST_MAZE_START[0],
            {1, 13},
            DIR_RIGHT,
-           SPEEDS[SpeedSlow],
+           SPEED_SLOW,
            GHOST_CHASETIMER * 1.0f,
            ghost__pen},
     [3] = {{15 * TILE_SIZE, 9 * TILE_SIZE},
            GHOST_MAZE_START[1],
            {27, 13},
            DIR_LEFT,
-           SPEEDS[SpeedSlow],
+           SPEED_SLOW,
            GHOST_CHASETIMER * 3.0f,
            ghost__pen},
 };

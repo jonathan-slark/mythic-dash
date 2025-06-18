@@ -45,6 +45,7 @@ const float OVERLAP_EPSILON = 1e-5f;
 
 log_Log*            game__log;
 static game__Assets g_assets;
+static int          g_level = 1;
 #ifndef NDEBUG
 static size_t g_fpsIndex = COUNT(FPS) - 1;
 #endif
@@ -211,3 +212,5 @@ void game_unload(void) {
   unloadAssets();
   log_destroy(&game__log);
 }
+
+int game_getLevel(void) { return g_level; }
