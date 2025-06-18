@@ -99,7 +99,7 @@ void debug_drawOverlay(void) {
       Vector2 start         = POS_ADJUST(actor_getPos(actor));
       start                 = Vector2AddValue(start, TILE_SIZE / 2.0f);
       game__Tile targetTile = ghost_getTarget(i);
-      if (targetTile.col > 0 && targetTile.row > 0) {
+      if (targetTile.col >= 0 && targetTile.row >= 0) {
         Vector2 end = POS_ADJUST(maze_getPos(targetTile));
         end         = Vector2AddValue(end, TILE_SIZE / 2.0f);
         engine_drawLine(start, end, BLACK);

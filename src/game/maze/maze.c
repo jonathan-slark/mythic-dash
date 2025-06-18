@@ -103,5 +103,13 @@ int maze_manhattanDistance(game__Tile nextTile, game__Tile targetTile) {
 game__Tile maze_doubleVectorBetween(game__Tile from, game__Tile to) {
   game__Tile diff   = { to.col - from.col, to.row - from.row };
   game__Tile target = { to.col + diff.col, to.row + diff.row };
+  if (target.col < 0) target.col = 0;
+  if (target.row < 0) target.row = 0;
+  if (target.col >= g_maze.cols) target.col = g_maze.cols - 1;
+  if (target.row >= g_maze.rows) target.row = g_maze.rows - 1;
   return target;
 }
+
+int maze_getRows(void) { return g_maze.rows; }
+
+int maze_getCols(void) { return g_maze.cols; }
