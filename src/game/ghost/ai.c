@@ -4,6 +4,37 @@
 #include "../game.h"
 #include "ghost.h"
 
+// --- Types ---
+
+typedef struct GhostStateHandler {
+  void       (*update)(ghost__Ghost*, float, float);
+  game__Tile (*getTarget)(ghost__Ghost*);
+  game__Dir  (*selectDir)(ghost__Ghost*, game__Dir*, int);
+} GhostStateHandler;
+
+// --- Function Prototypes ---
+
+static game__Dir  selectDirRandom(ghost__Ghost* ghost, game__Dir* dirs, int count);
+static game__Dir  selectDirGreedy(ghost__Ghost* ghost, game__Dir* dirs, int count);
+static game__Tile getCornerTile(ghost__Ghost* ghost);
+static game__Tile getTargetTile(ghost__Ghost* ghost);
+
+// --- Constants ---
+
+static const GhostStateHandler FrightenedHandler = { .update = ghost__frightened, .selectDir = selectDirRandom };
+
+static const GhostStateHandler ChaseHandler = {
+  .update    = ghost__chase,
+  .getTarget = getTargetTile,
+  .selectDir = selectDirGreedy
+};
+
+static const GhostStateHandler ScatterHandler = {
+  .update    = ghost__scatter,
+  .getTarget = getCornerTile,
+  .selectDir = selectDirGreedy
+};
+
 // --- Helper functions ---
 
 static inline game__Dir getOppositeDir(game__Dir dir) {
@@ -11,10 +42,11 @@ static inline game__Dir getOppositeDir(game__Dir dir) {
   return (dir + 2) % DIR_COUNT;
 }
 
-static inline game__Dir randomSelect(game__Dir dirs[], int count) {
-  assert(count > 0);
-  return dirs[GetRandomValue(0, count - 1)];
+static inline float getSpeed() {
+  return fminf(SPEED_MIN_MULT + game_getLevel() * 0.02f, SPEED_MAX_MULT) * player_getSpeed();
 }
+
+static inline game__Tile getCornerTile(ghost__Ghost* ghost) { return ghost->cornerTile; }
 
 static int
 getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* validDirs, bool isChangedState, float slop) {
@@ -34,6 +66,15 @@ getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* validDirs, boo
   return count;
 }
 
+static inline game__Dir randomSelect(game__Dir dirs[], int count) {
+  assert(count > 0);
+  return dirs[GetRandomValue(0, count - 1)];
+}
+
+static inline game__Dir selectDirRandom(ghost__Ghost* ghost [[maybe_unused]], game__Dir* dirs, int count) {
+  return randomSelect(dirs, count);
+}
+
 static game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int count, game__Tile targetTile) {
   assert(count > 0);
 
@@ -48,6 +89,10 @@ static game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int coun
     }
   }
   return bestDir;
+}
+
+static inline game__Dir selectDirGreedy(ghost__Ghost* ghost, game__Dir* dirs, int count) {
+  return greedyDirSelect(ghost, dirs, count, ghost->targetTile);
 }
 
 static game__Tile getTargetTile(ghost__Ghost* ghost) {
@@ -76,7 +121,38 @@ static game__Tile getTargetTile(ghost__Ghost* ghost) {
   return targetTile;
 }
 
-static float getSpeed() { return fminf(SPEED_MIN_MULT + game_getLevel() * 0.02f, SPEED_MAX_MULT) * player_getSpeed(); }
+static void ghostUpdateCommon(ghost__Ghost* ghost, float frameTime, float slop, const GhostStateHandler* handler) {
+  game__Actor* actor      = ghost->actor;
+  game__Dir    currentDir = actor_getDir(actor);
+
+  actor_move(actor, currentDir, frameTime);
+  ghost->decisionCooldown -= frameTime;
+
+  if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
+
+  if (ghost->isChangedState || !actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
+    game__Dir validDirs[DIR_COUNT - 1];
+    int       count       = getValidDirs(actor, currentDir, validDirs, ghost->isChangedState, slop);
+    ghost->isChangedState = false;
+
+    if (count == 0) {
+      Vector2 pos = actor_getPos(actor);
+      LOG_ERROR(game__log, "Ghost %u has no valid directions at (%.2f, %.2f)", ghost->id, pos.x, pos.y);
+      actor_setDir(actor, getOppositeDir(currentDir));
+      ghost->decisionCooldown = DECISION_COOLDOWN;
+    } else {
+      if (handler->getTarget) ghost->targetTile = handler->getTarget(ghost);
+
+      game__Dir newDir = handler->selectDir(ghost, validDirs, count);
+
+      if (count > 1 || currentDir != newDir) {
+        actor_setDir(actor, newDir);
+        LOG_DEBUG(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[newDir]);
+        ghost->decisionCooldown = DECISION_COOLDOWN;
+      }
+    }
+  }
+}
 
 // --- Ghost state functions ---
 
@@ -138,33 +214,7 @@ void ghost__frightened(ghost__Ghost* ghost, float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  game__Actor* actor      = ghost->actor;
-  game__Dir    currentDir = actor_getDir(actor);
-  actor_move(actor, currentDir, frameTime);
-
-  ghost->decisionCooldown -= frameTime;
-  if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
-
-  // Check if we hit a wall or can make a direction decision
-  if (!actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
-    game__Dir validDirs[DIR_COUNT - 1];
-    int       count = getValidDirs(actor, currentDir, validDirs, false, slop);
-    if (count == 0) {
-      // Should never happen - log error
-      Vector2 pos = actor_getPos(actor);
-      LOG_ERROR(game__log, "Ghost %u has no valid directions at (%.2f, %.2f)", ghost->id, pos.x, pos.y);
-      actor_setDir(actor, getOppositeDir(currentDir));
-      ghost->decisionCooldown = DECISION_COOLDOWN;
-    } else {
-      game__Dir newDir = randomSelect(validDirs, count);
-      // Check if we were at a junction
-      if (count > 1 || currentDir != newDir) {
-        actor_setDir(actor, newDir);
-        LOG_DEBUG(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[newDir]);
-        ghost->decisionCooldown = DECISION_COOLDOWN;
-      }
-    }
-  }
+  ghostUpdateCommon(ghost, frameTime, slop, &FrightenedHandler);
 }
 
 // Ghost chases player
@@ -173,36 +223,7 @@ void ghost__chase(ghost__Ghost* ghost, float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  game__Actor* actor      = ghost->actor;
-  game__Dir    currentDir = actor_getDir(actor);
-  actor_move(actor, currentDir, frameTime);
-
-  ghost->decisionCooldown -= frameTime;
-  if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
-
-  // Check if we hit a wall or can make a direction decision
-  if (ghost->isChangedState || !actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
-    game__Dir validDirs[DIR_COUNT - 1];
-    int       count       = getValidDirs(actor, currentDir, validDirs, ghost->isChangedState, slop);
-    ghost->isChangedState = false;
-    if (count == 0) {
-      // Should never happen - log error
-      Vector2 pos = actor_getPos(actor);
-      LOG_ERROR(game__log, "Ghost %u has no valid directions at (%.2f, %.2f)", ghost->id, pos.x, pos.y);
-      actor_setDir(actor, getOppositeDir(currentDir));
-      ghost->decisionCooldown = DECISION_COOLDOWN;
-    } else {
-      ghost->targetTile = getTargetTile(ghost);
-      game__Dir bestDir = greedyDirSelect(ghost, validDirs, count, ghost->targetTile);
-      // Check if we were at a junction
-      if (count > 1 || currentDir != bestDir) {
-        actor_setDir(actor, bestDir);
-        LOG_DEBUG(game__log, "Ghost %u target tile: %d, %d", ghost->id, ghost->targetTile.col, ghost->targetTile.row);
-        LOG_DEBUG(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[bestDir]);
-        ghost->decisionCooldown = DECISION_COOLDOWN;
-      }
-    }
-  }
+  ghostUpdateCommon(ghost, frameTime, slop, &ChaseHandler);
 }
 
 // Ghost heads to it's assigned corners
@@ -211,34 +232,5 @@ void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  game__Actor* actor      = ghost->actor;
-  game__Dir    currentDir = actor_getDir(actor);
-  actor_move(actor, currentDir, frameTime);
-
-  ghost->decisionCooldown -= frameTime;
-  if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
-
-  // Check if we hit a wall or can make a direction decision
-  if (ghost->isChangedState || !actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
-    game__Dir validDirs[DIR_COUNT - 1];
-    int       count       = getValidDirs(actor, currentDir, validDirs, ghost->isChangedState, slop);
-    ghost->isChangedState = false;
-    if (count == 0) {
-      // Should never happen - log error
-      Vector2 pos = actor_getPos(actor);
-      LOG_ERROR(game__log, "Ghost %u has no valid directions at (%.2f, %.2f)", ghost->id, pos.x, pos.y);
-      actor_setDir(actor, getOppositeDir(currentDir));
-      ghost->decisionCooldown = DECISION_COOLDOWN;
-    } else {
-      ghost->targetTile = ghost->cornerTile;
-      game__Dir bestDir = greedyDirSelect(ghost, validDirs, count, ghost->targetTile);
-      // Check if we were at a junction
-      if (count > 1 || currentDir != bestDir) {
-        actor_setDir(actor, bestDir);
-        LOG_DEBUG(game__log, "Ghost %u target tile: %d, %d", ghost->id, ghost->targetTile.col, ghost->targetTile.row);
-        LOG_DEBUG(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[bestDir]);
-        ghost->decisionCooldown = DECISION_COOLDOWN;
-      }
-    }
-  }
+  ghostUpdateCommon(ghost, frameTime, slop, &ScatterHandler);
 }
