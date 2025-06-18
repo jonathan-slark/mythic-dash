@@ -23,23 +23,33 @@ static void updateState(float frameTime) {
   g_state.stateTimer -= frameTime;
   if (g_state.stateTimer < 0) g_state.stateTimer = 0.0f;
 
-  if (g_state.stateTimer == 0.0f && g_state.stateNum < COUNT(STATE_TIMERS) - 1) {
-    if (g_state.update == nullptr || g_state.update == ghost__chase) {
-      g_state.update = ghost__scatter;
-    } else {
-      g_state.update = ghost__chase;
-    }
-
-    for (int i = 0; i < CREATURE_COUNT; i++) {
-      if (g_state.ghosts[i].update != ghost__pen && g_state.ghosts[i].update != ghost__penToStart &&
-          g_state.ghosts[i].update != ghost__frightened) {
-        g_state.ghosts[i].update         = g_state.update;
+  if (g_state.stateTimer == 0.0f) {
+    if (g_state.stateNum == COUNT(STATE_TIMERS)) {
+      // Permament chase
+      for (int i = 0; i < CREATURE_COUNT; i++) {
+        g_state.ghosts[i].update         = ghost__chase;
         g_state.ghosts[i].isChangedState = true;
       }
-    }
+      g_state.stateNum++;
+    } else if (g_state.stateNum < COUNT(STATE_TIMERS)) {
+      // Toggle between scatter and chase
+      if (g_state.update == nullptr || g_state.update == ghost__chase) {
+        g_state.update = ghost__scatter;
+      } else {
+        g_state.update = ghost__chase;
+      }
 
-    g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
-    LOG_INFO(game__log, "Changing to state: %s", ghost_getStateString(1));
+      for (int i = 0; i < CREATURE_COUNT; i++) {
+        if (g_state.ghosts[i].update != ghost__pen && g_state.ghosts[i].update != ghost__penToStart &&
+            g_state.ghosts[i].update != ghost__frightened) {
+          g_state.ghosts[i].update         = g_state.update;
+          g_state.ghosts[i].isChangedState = true;
+        }
+      }
+
+      g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
+      LOG_INFO(game__log, "Changing to state: %s", ghost_getStateString(1));
+    }
   }
 }
 
