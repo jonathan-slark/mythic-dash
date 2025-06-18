@@ -76,7 +76,7 @@ void debug_drawOverlay(void) {
   }
 
   if (g_debug.isGhostOverlayEnabled) {
-    DrawText("Ghost overlay enabled", 0, yPos, 20, OVERLAY_COLOUR_GHOST);
+    DrawText("Ghost overlay enabled", 0, yPos, 20, RED);
     yPos += 20;
 
     for (int i = 0; i < CREATURE_COUNT; i++) {
@@ -96,6 +96,8 @@ void debug_drawOverlay(void) {
           string, (Vector2) { pos.x, pos.y + ACTOR_SIZE - OVERLAY_TEXT_SIZE / scale }, OVERLAY_TEXT_SIZE, WHITE
       );
 
+      engine_drawInt(ghost_getGlobaStateNum() - 1, (Vector2) { 410.0f, 0.0f }, 20, WHITE);
+      engine_drawText(ghost_getStateString(1), (Vector2) { 420.0f, 0.0f }, 20, WHITE);
       engine_drawFloat(ghost_getGlobalTimer(), (Vector2) { 460.0f, 0.0f }, 20, WHITE);
 
       Vector2 start         = POS_ADJUST(actor_getPos(actor));

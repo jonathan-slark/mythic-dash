@@ -5,7 +5,12 @@
 
 // --- Constants ---
 
-static const float STATE_TIMERS[] = { 7.0f, 20.0f, 7.0f, 20.0f, 5.0f, 20.0f, 5.0f };
+static const float STATE_TIMERS[]       = { 7.0f, 20.0f, 7.0f, 20.0f, 5.0f, 20.0f, 5.0f };
+static const char* STATE_PEN_STR        = "PEN";
+static const char* STATE_PETTOSTART_STR = "PEN2STA";
+static const char* STATE_FRIGHTENED_STR = "FRIGHT";
+static const char* STATE_CHASE_STR      = "CHASE";
+static const char* STATE_SCATTER_STR    = "SCATTER";
 
 // --- Global state ---
 
@@ -13,11 +18,12 @@ ghost__State g_state = { .update = nullptr, .stateNum = 0, .stateTimer = 0.0f };
 
 // --- Helper functions ---
 
+// Update the global state and change ghost states
 static void updateState(float frameTime) {
   g_state.stateTimer -= frameTime;
   if (g_state.stateTimer < 0) g_state.stateTimer = 0.0f;
 
-  if (g_state.stateTimer == 0.0f) {
+  if (g_state.stateTimer == 0.0f && g_state.stateNum < COUNT(STATE_TIMERS) - 1) {
     if (g_state.update == nullptr || g_state.update == ghost__chase) {
       g_state.update = ghost__scatter;
     } else {
@@ -27,11 +33,12 @@ static void updateState(float frameTime) {
     for (int i = 0; i < CREATURE_COUNT; i++) {
       if (g_state.ghosts[i].update != ghost__pen && g_state.ghosts[i].update != ghost__penToStart &&
           g_state.ghosts[i].update != ghost__frightened) {
-        g_state.ghosts[i].update = g_state.update;
+        g_state.ghosts[i].update         = g_state.update;
+        g_state.ghosts[i].isChangedState = true;
       }
     }
 
-    if (g_state.stateNum < COUNT(STATE_TIMERS) - 1) g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
+    g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
     LOG_INFO(game__log, "Changing to state: %s", ghost_getStateString(1));
   }
 }
@@ -111,3 +118,28 @@ game__Tile ghost_getTarget(int id) {
 }
 
 float ghost_getGlobalTimer(void) { return g_state.stateTimer; }
+int   ghost_getGlobaStateNum(void) { return g_state.stateNum; }
+
+const char* ghost_getStateString(int id) {
+  assert(id >= 0 && id < CREATURE_COUNT);
+  assert(id >= 0 && id < CREATURE_COUNT);
+  assert(g_state.ghosts[id].actor != nullptr);
+
+  if (g_state.ghosts[id].update == ghost__pen) {
+    return STATE_PEN_STR;
+  }
+  if (g_state.ghosts[id].update == ghost__penToStart) {
+    return STATE_PETTOSTART_STR;
+  }
+  if (g_state.ghosts[id].update == ghost__frightened) {
+    return STATE_FRIGHTENED_STR;
+  }
+  if (g_state.ghosts[id].update == ghost__chase) {
+    return STATE_CHASE_STR;
+  }
+  if (g_state.ghosts[id].update == ghost__scatter) {
+    return STATE_SCATTER_STR;
+  }
+
+  assert(false);
+}

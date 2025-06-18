@@ -2,14 +2,6 @@
 #include <limits.h>
 #include "ghost.h"
 
-// --- Constants ---
-
-static const char* STATE_PEN_STR        = "PEN";
-static const char* STATE_PETTOSTART_STR = "PEN2STA";
-static const char* STATE_FRIGHTENED_STR = "FRIGHT";
-static const char* STATE_CHASE_STR      = "CHASE";
-static const char* STATE_SCATTER_STR    = "SCATTER";
-
 // --- Helper functions ---
 
 static inline game__Dir getOppositeDir(game__Dir dir) {
@@ -22,7 +14,8 @@ static inline game__Dir randomSelect(game__Dir dirs[], int count) {
   return dirs[GetRandomValue(0, count - 1)];
 }
 
-static int getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* validDirs, float slop) {
+static int
+getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* validDirs, bool isChangedState, float slop) {
   assert(actor != nullptr);
   assert(currentDir >= 0 && currentDir < DIR_COUNT);
   assert(validDirs != nullptr);
@@ -32,7 +25,7 @@ static int getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* val
   int       count    = 0;
 
   for (game__Dir dir = DIR_UP; dir < DIR_COUNT; dir++) {
-    if (dir != opposite && actor_canMove(actor, dir, slop)) {
+    if ((isChangedState || dir != opposite) && actor_canMove(actor, dir, slop)) {
       validDirs[count++] = dir;
     }
   }
@@ -151,7 +144,7 @@ void ghost__frightened(ghost__Ghost* ghost, float frameTime, float slop) {
   // Check if we hit a wall or can make a direction decision
   if (!actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
     game__Dir validDirs[DIR_COUNT - 1];
-    int       count = getValidDirs(actor, currentDir, validDirs, slop);
+    int       count = getValidDirs(actor, currentDir, validDirs, false, slop);
     if (count == 0) {
       // Should never happen - log error
       Vector2 pos = actor_getPos(actor);
@@ -184,9 +177,10 @@ void ghost__chase(ghost__Ghost* ghost, float frameTime, float slop) {
   if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
 
   // Check if we hit a wall or can make a direction decision
-  if (!actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
+  if (ghost->isChangedState || !actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
     game__Dir validDirs[DIR_COUNT - 1];
-    int       count = getValidDirs(actor, currentDir, validDirs, slop);
+    int       count       = getValidDirs(actor, currentDir, validDirs, ghost->isChangedState, slop);
+    ghost->isChangedState = false;
     if (count == 0) {
       // Should never happen - log error
       Vector2 pos = actor_getPos(actor);
@@ -221,9 +215,10 @@ void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
   if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
 
   // Check if we hit a wall or can make a direction decision
-  if (!actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
+  if (ghost->isChangedState || !actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
     game__Dir validDirs[DIR_COUNT - 1];
-    int       count = getValidDirs(actor, currentDir, validDirs, slop);
+    int       count       = getValidDirs(actor, currentDir, validDirs, ghost->isChangedState, slop);
+    ghost->isChangedState = false;
     if (count == 0) {
       // Should never happen - log error
       Vector2 pos = actor_getPos(actor);
@@ -242,30 +237,4 @@ void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
       }
     }
   }
-}
-
-// --- Ghost functions ---
-
-const char* ghost_getStateString(int id) {
-  assert(id >= 0 && id < CREATURE_COUNT);
-  assert(id >= 0 && id < CREATURE_COUNT);
-  assert(g_state.ghosts[id].actor != nullptr);
-
-  if (g_state.ghosts[id].update == ghost__pen) {
-    return STATE_PEN_STR;
-  }
-  if (g_state.ghosts[id].update == ghost__penToStart) {
-    return STATE_PETTOSTART_STR;
-  }
-  if (g_state.ghosts[id].update == ghost__frightened) {
-    return STATE_FRIGHTENED_STR;
-  }
-  if (g_state.ghosts[id].update == ghost__chase) {
-    return STATE_CHASE_STR;
-  }
-  if (g_state.ghosts[id].update == ghost__scatter) {
-    return STATE_SCATTER_STR;
-  }
-
-  assert(false);
 }

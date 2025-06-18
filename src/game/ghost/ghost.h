@@ -25,6 +25,7 @@ typedef struct ghost__Ghost {
   float decisionCooldown;
   game__Actor *actor;
   unsigned id;
+  bool isChangedState;
 } ghost__Ghost;
 
 typedef struct ghost__State {

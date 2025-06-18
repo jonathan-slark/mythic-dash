@@ -117,6 +117,7 @@ float        ghost_getDecisionCooldown(int id);
 const char*  ghost_getStateString(int id);
 game__Tile   ghost_getTarget(int id);
 float        ghost_getGlobalTimer(void);
+int          ghost_getGlobaStateNum(void);
 
 // --- Maze functions (maze.c) ---
 
