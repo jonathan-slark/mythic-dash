@@ -20,8 +20,11 @@ ghost__State g_state = { .update = nullptr, .stateNum = 0, .stateTimer = 0.0f };
 // --- Helper functions ---
 
 static inline void updateTimer(float frameTime) { g_state.stateTimer = fmaxf(g_state.stateTimer - frameTime, 0.0f); }
-static inline bool shouldTransitionState() { return g_state.stateTimer == 0.0f; }
 static inline bool isPermanentChaseState() { return g_state.stateNum == COUNT(STATE_TIMERS); }
+
+static inline bool shouldTransitionState() {
+  return g_state.stateTimer == 0.0f && g_state.stateNum <= COUNT(STATE_TIMERS);
+}
 
 static inline bool shouldUpdateGhostState(ghost__Ghost* ghost) {
   return ghost->update != ghost__pen && ghost->update != ghost__penToStart && ghost->update != ghost__frightened;
