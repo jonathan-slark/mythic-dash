@@ -23,7 +23,6 @@ typedef struct ActorData {
 
 // --- Constants ---
 
-// TODO: these shouldn't be static const
 static const char FILE_BACKGROUND[] = ASSET_DIR "gfx/background.png";
 static const char FILE_CREATURES[] = ASSET_DIR "gfx/creatures.png";
 static const char FILE_PLAYER[] = ASSET_DIR "gfx/player.png";
@@ -34,13 +33,24 @@ static const float FRAME_TIME = 0.1f;
 static const Vector2 PLAYER_LIVES_OFFSET = {8.0f, 248.0f};
 
 // clang-format off
-static const ActorData PLAYER_DATA = {
-  .inset    = { 8.0f, 8.0f },
-  .animData = {
-    [DIR_UP]    = { .row = 4, .startCol = 0, .frameCount = 5, FRAME_TIME},
-    [DIR_RIGHT] = { .row = 2, .startCol = 0, .frameCount = 5, FRAME_TIME},
-    [DIR_DOWN]  = { .row = 0, .startCol = 0, .frameCount = 5, FRAME_TIME},
-    [DIR_LEFT]  = { .row = 6, .startCol = 0, .frameCount = 5, FRAME_TIME}
+static const ActorData PLAYER_DATA[PLAYER_STATE_COUNT] = {
+  {
+    .inset    = { 8.0f, 8.0f },
+    .animData = {
+      [DIR_UP]    = { .row = 4, .startCol = 0, .frameCount = 5, FRAME_TIME},
+      [DIR_RIGHT] = { .row = 2, .startCol = 0, .frameCount = 5, FRAME_TIME},
+      [DIR_DOWN]  = { .row = 0, .startCol = 0, .frameCount = 5, FRAME_TIME},
+      [DIR_LEFT]  = { .row = 6, .startCol = 0, .frameCount = 5, FRAME_TIME}
+    }
+  },
+  {
+    .inset    = { 8.0f, 8.0f },
+    .animData = {
+      [DIR_UP]    = { .row = 4, .startCol = 5, .frameCount = 4, FRAME_TIME},
+      [DIR_RIGHT] = { .row = 2, .startCol = 5, .frameCount = 4, FRAME_TIME},
+      [DIR_DOWN]  = { .row = 0, .startCol = 5, .frameCount = 4, FRAME_TIME},
+      [DIR_LEFT]  = { .row = 6, .startCol = 5, .frameCount = 4, FRAME_TIME}
+    }
   }
 };
 

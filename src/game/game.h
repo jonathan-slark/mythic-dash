@@ -20,6 +20,8 @@
 
 typedef enum game__Dir { DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT, DIR_COUNT, DIR_NONE } game__Dir;
 
+typedef enum game__PlayerState { PLAYER_NORMAL, PLAYER_SWORD, PLAYER_STATE_COUNT } game__PlayerState;
+
 typedef struct game__AABB {
   Vector2 min;
   Vector2 max;
@@ -97,19 +99,20 @@ game__Tile   actor_nextTile(game__Actor* actor, game__Dir dir);
 
 // --- Player functions (player.c) ---
 
-bool         player_init(void);
-void         player_shutdown(void);
-void         player_update(float frameTime, float slop);
-Vector2      player_getPos(void);
-game__Dir    player_getDir(void);
-bool         player_isMoving(void);
-game__Actor* player_getActor(void);
-game__Tile   player_tileAhead(int tileNum);
-float        player_getSpeed(void);
-void         player_dead(void);
-void         player_reset(void);
-int          player_getLives(void);
-int          player_getScore(void);
+bool              player_init(void);
+void              player_shutdown(void);
+void              player_update(float frameTime, float slop);
+Vector2           player_getPos(void);
+game__Dir         player_getDir(void);
+bool              player_isMoving(void);
+game__Actor*      player_getActor(void);
+game__Tile        player_tileAhead(int tileNum);
+float             player_getSpeed(void);
+void              player_dead(void);
+void              player_reset(void);
+int               player_getLives(void);
+int               player_getScore(void);
+game__PlayerState player_getState(void);
 
 // --- Ghost functions (ghost.c) ---
 

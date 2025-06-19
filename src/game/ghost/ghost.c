@@ -123,15 +123,23 @@ void ghost_update(float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  bool       playerDead = false;
-  game__AABB playerAABB = actor_getAABB(player_getActor());
+  bool              playerDead  = false;
+  game__PlayerState playerState = player_getState();
+  game__AABB        playerAABB  = actor_getAABB(player_getActor());
 
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.ghosts[i].update(&g_state.ghosts[i], frameTime, slop);
 
     game__AABB ghostAABB = actor_getAABB(g_state.ghosts[i].actor);
-    if (aabb_isColliding(playerAABB, ghostAABB)) playerDead = true;
+    if (aabb_isColliding(playerAABB, ghostAABB)) {
+      if (playerState == PLAYER_SWORD) {
+        // TODO: kill ghost
+      } else {
+        playerDead = true;
+      }
+    }
   }
+
   updateState(frameTime);
 
   if (playerDead) player_dead();

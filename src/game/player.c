@@ -7,10 +7,12 @@
 // --- Types ---
 
 typedef struct Player {
-  game__Actor* actor;
-  int          lives;
-  int          score;
-  int          coinsCollected;
+  game__Actor*      actor;
+  game__PlayerState state;
+  int               lives;
+  int               score;
+  int               coinsCollected;
+  float             swordTimer;
 } Player;
 
 // --- Constants ---
@@ -20,17 +22,47 @@ static const float       PLAYER_SPEED     = 60.0f;
 static const game__Dir   PLAYER_START_DIR = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]    = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
 static const int         SCORE_COIN       = 10;
+static const int         SCORE_SWORD      = 50;
+static const float       SWORD_TIMER      = 5.0f;
 
 // --- Global state ---
 
-static Player g_player = { .actor = nullptr, .lives = PLAYER_LIVES, .score = 0, .coinsCollected = 0 };
+static Player g_player = {
+  .actor          = nullptr,
+  .state          = PLAYER_NORMAL,
+  .lives          = PLAYER_LIVES,
+  .score          = 0,
+  .coinsCollected = 0,
+  .swordTimer     = 0.0f
+};
 
 // --- Helper functions ---
 
-void playerRestart(void) {
+static void playerRestart(void) {
   assert(g_player.actor != nullptr);
   actor_setPos(g_player.actor, PLAYER_START_POS);
   actor_setDir(g_player.actor, PLAYER_START_DIR);
+}
+
+static void playerCoinPickup(void) {
+  g_player.score += SCORE_COIN;
+  g_player.coinsCollected++;
+}
+
+static void playerSwordPickup(void) {
+  g_player.state       = PLAYER_SWORD;
+  g_player.swordTimer  = SWORD_TIMER;
+  g_player.score      += SCORE_SWORD;
+}
+
+static void playerSwordUpdate(float frameTime) {
+  if (g_player.swordTimer == 0.0f) return;
+
+  g_player.swordTimer -= frameTime;
+  if (g_player.swordTimer < 0.0f) {
+    g_player.swordTimer = 0.0f;
+    g_player.state      = PLAYER_NORMAL;
+  }
 }
 
 // --- Player functions ---
@@ -43,9 +75,11 @@ bool player_init(void) {
 
 void player_reset() {
   playerRestart();
+  g_player.state          = PLAYER_NORMAL;
   g_player.lives          = PLAYER_LIVES;
   g_player.score          = 0;
   g_player.coinsCollected = 0;
+  g_player.swordTimer     = 0.0f;
 }
 
 void player_shutdown(void) {
@@ -56,6 +90,8 @@ void player_shutdown(void) {
 
 void player_update(float frameTime, float slop) {
   assert(g_player.actor != nullptr);
+
+  playerSwordUpdate(frameTime);
 
 #ifndef NDEBUG
   if (engine_isKeyPressed(KEY_F)) debug_toggleFPSOverlay();
@@ -76,20 +112,19 @@ void player_update(float frameTime, float slop) {
 
   actor_move(g_player.actor, dir, frameTime);
 
+  // Check centre of tile, feels right.
   Vector2 pos = actor_getPos(g_player.actor);
   pos         = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
-
   if (maze_isCoin(pos)) {
     maze_pickupCoin(pos);
-    g_player.score += SCORE_COIN;
-    g_player.coinsCollected++;
+    playerCoinPickup();
     if (maze_getCoinCount() == g_player.coinsCollected) {
       game_nextLevel();
     }
   }
-
   if (maze_isSword(pos)) {
     maze_pickupSword(pos);
+    playerSwordPickup();
   }
 }
 
@@ -107,6 +142,8 @@ int player_getScore(void) {
   assert(g_player.actor != nullptr);
   return g_player.score;
 }
+
+game__PlayerState player_getState(void) { return g_player.state; }
 
 bool player_isMoving(void) {
   assert(g_player.actor != nullptr);

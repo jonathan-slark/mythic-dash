@@ -14,9 +14,9 @@
 typedef struct game__Assets {
   engine_Texture* creatureSpriteSheet;
   engine_Texture* playerSpriteSheet;
-  engine_Sprite*  playerSprite;
+  engine_Sprite*  playerSprites[PLAYER_STATE_COUNT];
   engine_Sprite*  playerLivesSprites[PLAYER_LIVES];
-  engine_Anim*    playerAnim[DIR_COUNT];
+  engine_Anim*    playerAnim[PLAYER_STATE_COUNT][DIR_COUNT];
   engine_Sprite*  creatureSprites[CREATURE_COUNT];
   engine_Anim*    creatureAnims[CREATURE_COUNT][DIR_COUNT];
   engine_Font*    font;
@@ -80,22 +80,25 @@ static void unloadAssets(void) {
 
 static bool initPlayer(void) {
   GAME_TRY(player_init());
-  GAME_TRY(
-      g_assets.playerSprite = engine_createSprite(
-          POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, (Vector2) { 0.0f, 0.0f }
-      )
-  );
-  for (int i = 0; i < DIR_COUNT; i++) {
+
+  for (int i = 0; i < PLAYER_STATE_COUNT; i++) {
     GAME_TRY(
-        g_assets.playerAnim[i] = engine_createAnim(
-            g_assets.playerSprite,
-            PLAYER_DATA.animData[i].row,
-            PLAYER_DATA.animData[i].startCol,
-            PLAYER_DATA.animData[i].frameCount,
-            PLAYER_DATA.animData[i].frameTime,
-            PLAYER_DATA.inset
+        g_assets.playerSprites[i] = engine_createSprite(
+            POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, (Vector2) { 0.0f, 0.0f }
         )
     );
+    for (int j = 0; j < DIR_COUNT; j++) {
+      GAME_TRY(
+          g_assets.playerAnim[i][j] = engine_createAnim(
+              g_assets.playerSprites[i],
+              PLAYER_DATA[i].animData[j].row,
+              PLAYER_DATA[i].animData[j].startCol,
+              PLAYER_DATA[i].animData[j].frameCount,
+              PLAYER_DATA[i].animData[j].frameTime,
+              PLAYER_DATA[i].inset
+          )
+      );
+    }
   }
 
   Vector2 offset = PLAYER_LIVES_OFFSET;
@@ -104,9 +107,9 @@ static bool initPlayer(void) {
         g_assets.playerLivesSprites[i] = engine_createSpriteFromSheet(
             offset,
             (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
-            PLAYER_DATA.animData[DIR_LEFT].row,
-            PLAYER_DATA.animData[DIR_LEFT].startCol,
-            PLAYER_DATA.inset
+            PLAYER_DATA[PLAYER_NORMAL].animData[DIR_LEFT].row,
+            PLAYER_DATA[PLAYER_NORMAL].animData[DIR_LEFT].startCol,
+            PLAYER_DATA[PLAYER_NORMAL].inset
         )
     );
     offset.x += ACTOR_SIZE;
@@ -139,9 +142,12 @@ static bool initGhosts(void) {
 
 static void updatePlayer(float frameTime, float slop) {
   player_update(frameTime, slop);
-  engine_spriteSetPos(g_assets.playerSprite, POS_ADJUST(player_getPos()));
-  if (player_isMoving()) {
-    engine_updateAnim(g_assets.playerAnim[player_getDir()], frameTime);
+  game__PlayerState playerState = player_getState();
+  engine_spriteSetPos(g_assets.playerSprites[playerState], POS_ADJUST(player_getPos()));
+  if (player_isMoving() || playerState == PLAYER_SWORD) {
+    for (int i = 0; i < PLAYER_STATE_COUNT; i++) {
+      engine_updateAnim(g_assets.playerAnim[i][player_getDir()], frameTime);
+    }
   }
 }
 
@@ -159,9 +165,11 @@ static void unloadPlayer(void) {
   for (int i = 0; i < PLAYER_LIVES; i++) {
     engine_destroySprite(&g_assets.playerLivesSprites[i]);
   }
-  engine_destroySprite(&g_assets.playerSprite);
-  for (int i = 0; i < DIR_COUNT; i++) {
-    engine_destroyAnim(&g_assets.playerAnim[i]);
+  for (int i = 0; i < PLAYER_STATE_COUNT; i++) {
+    engine_destroySprite(&g_assets.playerSprites[i]);
+    for (int j = 0; j < DIR_COUNT; j++) {
+      engine_destroyAnim(&g_assets.playerAnim[i][j]);
+    }
   }
 }
 
@@ -214,7 +222,7 @@ void game_update(float frameTime) {
 
 void game_draw(void) {
   maze_draw();
-  engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerSprite);
+  engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerSprites[player_getState()]);
   for (int i = 0; i < player_getLives() - 1; i++) {
     engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerLivesSprites[i]);
   }
