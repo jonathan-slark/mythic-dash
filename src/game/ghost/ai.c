@@ -42,10 +42,6 @@ static inline game__Dir getOppositeDir(game__Dir dir) {
   return (dir + 2) % DIR_COUNT;
 }
 
-static inline float getSpeed() {
-  return fminf(SPEED_MIN_MULT + game_getLevel() * 0.02f, SPEED_MAX_MULT) * player_getSpeed();
-}
-
 static inline game__Tile getCornerTile(ghost__Ghost* ghost) { return ghost->cornerTile; }
 
 static int
@@ -204,7 +200,7 @@ void ghost__penToStart(ghost__Ghost* ghost, float frameTime, float slop) {
     if (fabsf(pos.x - startX) < slop) {
       actor_setPos(actor, (Vector2) { startX, pos.y });
       actor_setDir(actor, GHOST_START_DIR);
-      actor_setSpeed(actor, getSpeed());
+      actor_setSpeed(actor, ghost__getSpeed());
       ghost->update = ghost__scatter;
     }
   }

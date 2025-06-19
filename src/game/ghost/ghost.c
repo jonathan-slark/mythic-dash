@@ -107,6 +107,12 @@ static void ghostDefaults(void) {
   ghostResetTargets();
 }
 
+static void ghostSetSpeeds(void) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    if (shouldUpdateGhostState(&g_state.ghosts[i])) actor_setSpeed(g_state.ghosts[i].actor, ghost__getSpeed());
+  }
+}
+
 // --- Ghost functions ---
 
 bool ghost_init(void) {
@@ -200,8 +206,9 @@ game__Tile ghost_getTarget(int id) {
   return g_state.ghosts[id].targetTile;
 }
 
-float ghost_getGlobalTimer(void) { return g_state.stateTimer; }
-int   ghost_getGlobaStateNum(void) { return g_state.stateNum; }
+float ghost_getGlobalTimer(void) { return player_hasSword() ? player_getSwordTimer() : g_state.stateTimer; }
+
+int ghost_getGlobaStateNum(void) { return g_state.stateNum; }
 
 const char* ghost_getGlobalStateString(void) { return getStateString(g_state.update); }
 
@@ -215,7 +222,11 @@ const char* ghost_getStateString(int id) {
 
 void ghost_swordPickup(void) {
   transitionToState(ghost__frightened);
+  ghostSetSpeeds();
   ghostResetTargets();
 }
 
-void ghost_swordDrop(void) { transitionToState(g_state.lastUpdate); }
+void ghost_swordDrop(void) {
+  transitionToState(g_state.lastUpdate);
+  ghostSetSpeeds();
+}

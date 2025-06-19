@@ -42,7 +42,8 @@ void ghost__scatter(ghost__Ghost *ghost, float frameTime, float slop);
 // --- Constants ---
 
 constexpr float SPEED_SLOW = 25.0f;
-static const float SPEED_MIN_MULT = 0.75f;
+static const float NORMAL_SPEED_MIN_MULT = 0.75f;
+static const float FRIGHT_SPEED_MIN_MULT = 0.50f;
 static const float SPEED_MAX_MULT = 0.95f;
 static const float DECISION_COOLDOWN = 0.5f;
 
@@ -94,3 +95,13 @@ static const struct {
 // --- Global state ---
 
 extern ghost__State g_state;
+
+// --- Helper functions ---
+
+static inline float ghost__getSpeed(void) {
+  return fminf((player_hasSword() ? FRIGHT_SPEED_MIN_MULT
+                                  : NORMAL_SPEED_MIN_MULT) +
+                   game_getLevel() * 0.02f,
+               SPEED_MAX_MULT) *
+         player_getSpeed();
+}

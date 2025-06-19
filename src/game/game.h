@@ -114,6 +114,7 @@ int               player_getLives(void);
 int               player_getScore(void);
 game__PlayerState player_getState(void);
 bool              player_hasSword(void);
+float             player_getSwordTimer(void);
 
 // --- Ghost functions (ghost.c) ---
 

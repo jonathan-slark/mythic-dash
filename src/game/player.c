@@ -198,3 +198,5 @@ void player_dead(void) {
 }
 
 bool player_hasSword(void) { return g_player.swordTimer > 0.0f; }
+
+float player_getSwordTimer(void) { return g_player.swordTimer; }
