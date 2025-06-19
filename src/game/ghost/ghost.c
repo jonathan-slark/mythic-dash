@@ -20,14 +20,14 @@ ghost__State g_state = { .update = nullptr, .stateNum = 0, .stateTimer = 0.0f };
 // --- Helper functions ---
 
 static inline void updateTimer(float frameTime) { g_state.stateTimer = fmaxf(g_state.stateTimer - frameTime, 0.0f); }
-static inline bool isPermanentChaseState() { return g_state.stateNum == COUNT(STATE_TIMERS); }
+static inline bool isPermanentChaseState(void) { return g_state.stateNum == COUNT(STATE_TIMERS); }
 
-static inline bool shouldTransitionState() {
+static inline bool shouldTransitionState(void) {
   return g_state.stateTimer == 0.0f && g_state.stateNum <= COUNT(STATE_TIMERS);
 }
 
 static inline bool shouldUpdateGhostState(ghost__Ghost* ghost) {
-  return ghost->update != ghost__pen && ghost->update != ghost__penToStart && ghost->update != ghost__frightened;
+  return ghost->update != ghost__pen && ghost->update != ghost__penToStart;
 }
 
 static void transitionToState(void (*newState)(ghost__Ghost*, float, float)) {
@@ -40,7 +40,7 @@ static void transitionToState(void (*newState)(ghost__Ghost*, float, float)) {
   }
 }
 
-static void transitionToPermanentChase() {
+static void transitionToPermanentChase(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.ghosts[i].update         = ghost__chase;
     g_state.ghosts[i].isChangedState = true;
@@ -70,15 +70,21 @@ static void updateState(float frameTime) {
   }
 }
 
-void ghostDefaults(void) {
+static void ghostResetTargets(void) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    g_state.ghosts[i].targetTile = DEFAULT_TARGET_TILE;
+  }
+}
+
+static void ghostDefaults(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.ghosts[i].update           = CREATURE_DATA[i].update;
     g_state.ghosts[i].timer            = CREATURE_DATA[i].startTimer;
     g_state.ghosts[i].mazeStart        = CREATURE_DATA[i].mazeStart;
-    g_state.ghosts[i].targetTile       = (game__Tile) { -1, -1 };
     g_state.ghosts[i].cornerTile       = CREATURE_DATA[i].cornerTile;
     g_state.ghosts[i].decisionCooldown = 0.0f;
   }
+  ghostResetTargets();
 }
 
 // --- Ghost functions ---
@@ -140,7 +146,7 @@ void ghost_update(float frameTime, float slop) {
     }
   }
 
-  updateState(frameTime);
+  if (!player_hasSword()) updateState(frameTime);
 
   if (playerDead) player_dead();
 }
@@ -200,3 +206,10 @@ const char* ghost_getStateString(int id) {
 
   assert(false);
 }
+
+void ghost_swordPickup(void) {
+  transitionToState(ghost__frightened);
+  ghostResetTargets();
+}
+
+void ghost_swordDrop(void) { transitionToState(ghost__chase); }

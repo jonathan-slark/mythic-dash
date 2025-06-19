@@ -62,6 +62,7 @@ static void playerSwordUpdate(float frameTime) {
   if (g_player.swordTimer < 0.0f) {
     g_player.swordTimer = 0.0f;
     g_player.state      = PLAYER_NORMAL;
+    ghost_swordDrop();
   }
 }
 
@@ -125,6 +126,7 @@ void player_update(float frameTime, float slop) {
   if (maze_isSword(pos)) {
     maze_pickupSword(pos);
     playerSwordPickup();
+    ghost_swordPickup();
   }
 }
 
@@ -194,3 +196,5 @@ void player_dead(void) {
     ghost_reset();
   }
 }
+
+bool player_hasSword(void) { return g_player.swordTimer > 0.0f; }

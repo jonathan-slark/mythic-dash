@@ -113,6 +113,7 @@ void              player_reset(void);
 int               player_getLives(void);
 int               player_getScore(void);
 game__PlayerState player_getState(void);
+bool              player_hasSword(void);
 
 // --- Ghost functions (ghost.c) ---
 
@@ -128,6 +129,8 @@ game__Tile   ghost_getTarget(int id);
 float        ghost_getGlobalTimer(void);
 int          ghost_getGlobaStateNum(void);
 void         ghost_reset(void);
+void         ghost_swordPickup(void);
+void         ghost_swordDrop(void);
 
 // --- Maze functions (maze.c) ---
 

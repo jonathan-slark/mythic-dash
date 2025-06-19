@@ -100,6 +100,7 @@ static game__Tile getTargetTile(ghost__Ghost* ghost) {
   game__Tile targetTile;
   game__Tile playerTile = maze_getTile(player_getPos());
   switch (ghost->id) {
+    // TODO: Change ghost id's to match this order
     // Directly target player's current tile
     case 1: targetTile = playerTile; break;
     // Target four tiles ahead of player, based on his current direction

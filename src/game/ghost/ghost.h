@@ -34,6 +34,7 @@ typedef struct ghost__State {
 void ghost__pen(ghost__Ghost *ghost, float frameTime, float slop);
 void ghost__penToStart(ghost__Ghost *ghost, float frameTime, float slop);
 void ghost__frightened(ghost__Ghost *ghost, float frameTime, float slop);
+void ghost__dead(ghost__Ghost *ghost, float frameTime, float slop);
 void ghost__chase(ghost__Ghost *ghost, float frameTime, float slop);
 void ghost__scatter(ghost__Ghost *ghost, float frameTime, float slop);
 
@@ -49,6 +50,7 @@ static const Vector2 GHOST_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},
                                            {17 * TILE_SIZE, 7 * TILE_SIZE}};
 static const game__Dir GHOST_START_DIR = DIR_LEFT;
 static const float GHOST_CHASETIMER = 10.0f;
+static const game__Tile DEFAULT_TARGET_TILE = {-1, -1};
 static const struct {
   Vector2 startPos;
   Vector2 mazeStart;
