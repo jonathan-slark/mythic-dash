@@ -23,7 +23,7 @@ static const game__Dir   PLAYER_START_DIR = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]    = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
 static const int         SCORE_COIN       = 10;
 static const int         SCORE_SWORD      = 50;
-static const float       SWORD_TIMER      = 5.0f;
+static const float       SWORD_TIMER      = 6.0f;  // Sword animation lasts 400ms
 
 // --- Global state ---
 
@@ -191,5 +191,6 @@ void player_dead(void) {
     game_over();
   } else {
     playerRestart();
+    ghost_reset();
   }
 }
