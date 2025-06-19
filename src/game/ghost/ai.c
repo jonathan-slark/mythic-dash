@@ -18,6 +18,7 @@ static game__Dir  selectDirRandom(ghost__Ghost* ghost, game__Dir* dirs, int coun
 static game__Dir  selectDirGreedy(ghost__Ghost* ghost, game__Dir* dirs, int count);
 static game__Tile getCornerTile(ghost__Ghost* ghost);
 static game__Tile getTargetTile(ghost__Ghost* ghost);
+static game__Tile getStartTile(ghost__Ghost* ghost);
 
 // --- Constants ---
 
@@ -35,6 +36,12 @@ static const GhostStateHandler ScatterHandler = {
   .selectDir = selectDirGreedy
 };
 
+static const GhostStateHandler DeadHandler = {
+  .update    = ghost__dead,
+  .getTarget = getStartTile,
+  .selectDir = selectDirGreedy
+};
+
 // --- Helper functions ---
 
 static inline game__Dir getOppositeDir(game__Dir dir) {
@@ -43,6 +50,8 @@ static inline game__Dir getOppositeDir(game__Dir dir) {
 }
 
 static inline game__Tile getCornerTile(ghost__Ghost* ghost) { return ghost->cornerTile; }
+
+static inline game__Tile getStartTile(ghost__Ghost* ghost) { return GHOST_START_TILE[ghost->id]; }
 
 static int
 getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* validDirs, bool isChangedState, float slop) {
@@ -224,11 +233,20 @@ void ghost__chase(ghost__Ghost* ghost, float frameTime, float slop) {
   ghostUpdateCommon(ghost, frameTime, slop, &ChaseHandler);
 }
 
-// Ghost heads to it's assigned corners
+// Ghost heads to it's assigned corner
 void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
   assert(ghost != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
   ghostUpdateCommon(ghost, frameTime, slop, &ScatterHandler);
+}
+
+// Ghost heads back to the pen
+void ghost__dead(ghost__Ghost* ghost, float frameTime, float slop) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
+  ghostUpdateCommon(ghost, frameTime, slop, &DeadHandler);
 }

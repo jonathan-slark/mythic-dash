@@ -10,6 +10,7 @@ static const float STATE_TIMERS[]       = { 7.0f, 20.0f, 7.0f, 20.0f, 5.0f, 20.0
 static const char* STATE_PEN_STR        = "PEN";
 static const char* STATE_PETTOSTART_STR = "PEN2STA";
 static const char* STATE_FRIGHTENED_STR = "FRIGHT";
+static const char* STATE_DEAD_STR       = "DEAD";
 static const char* STATE_CHASE_STR      = "CHASE";
 static const char* STATE_SCATTER_STR    = "SCATTER";
 
@@ -27,25 +28,16 @@ static inline bool shouldTransitionState(void) {
 }
 
 static inline bool shouldUpdateGhostState(ghost__Ghost* ghost) {
-  return ghost->update != ghost__pen && ghost->update != ghost__penToStart;
+  return ghost->update != ghost__pen && ghost->update != ghost__penToStart && ghost->update != ghost__dead;
 }
 
 static const char* getStateString(void (*update)(struct ghost__Ghost*, float, float)) {
-  if (update == ghost__pen) {
-    return STATE_PEN_STR;
-  }
-  if (update == ghost__penToStart) {
-    return STATE_PETTOSTART_STR;
-  }
-  if (update == ghost__frightened) {
-    return STATE_FRIGHTENED_STR;
-  }
-  if (update == ghost__chase) {
-    return STATE_CHASE_STR;
-  }
-  if (update == ghost__scatter) {
-    return STATE_SCATTER_STR;
-  }
+  if (update == ghost__pen) return STATE_PEN_STR;
+  if (update == ghost__penToStart) return STATE_PETTOSTART_STR;
+  if (update == ghost__frightened) return STATE_FRIGHTENED_STR;
+  if (update == ghost__dead) return STATE_DEAD_STR;
+  if (update == ghost__chase) return STATE_CHASE_STR;
+  if (update == ghost__scatter) return STATE_SCATTER_STR;
   return "";
 }
 
@@ -165,8 +157,8 @@ void ghost_update(float frameTime, float slop) {
     game__AABB ghostAABB = actor_getAABB(g_state.ghosts[i].actor);
     if (aabb_isColliding(playerAABB, ghostAABB)) {
       if (playerState == PLAYER_SWORD) {
-        // TODO: kill ghost
-      } else {
+        g_state.ghosts[i].update = ghost__dead;
+      } else if (g_state.ghosts[i].update != ghost__dead) {
         playerDead = true;
       }
     }
