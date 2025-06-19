@@ -20,7 +20,7 @@ typedef struct MapTile {
 static const char* FILE_MAZE      = ASSET_DIR "map/maze01.tmj";
 constexpr size_t   BUFFER_SIZE    = 1024;
 static const float FRAME_TIME     = 0.1f;
-static const int   PROPERTY_TYPES = 3;
+static const int   PROPERTY_TYPES = 4;
 
 // --- Helper functions ---
 
@@ -69,6 +69,9 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
         } else if (strcmp(tile->properties[j].name.ptr, "isWall") == 0 && tile->properties[j].data.boolean) {
           (*tileData)[i].type = TILE_WALL;
           LOG_TRACE(game__log, "Tile %d isWall", i);
+        } else if (strcmp(tile->properties[j].name.ptr, "isSword") == 0 && tile->properties[j].data.boolean) {
+          (*tileData)[i].type = TILE_SWORD;
+          LOG_TRACE(game__log, "Tile %d isSword", i);
         }
       }
     }

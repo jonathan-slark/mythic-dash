@@ -47,6 +47,16 @@ void maze_pickupCoin(Vector2 pos) {
 
 int maze_getCoinCount(void) { return g_maze.coinCount; }
 
+bool maze_isSword(Vector2 pos) {
+  maze__Tile* tile = getTileAt(pos, 1);
+  return tile->type == TILE_SWORD && !tile->isSwordCollected;
+}
+
+void maze_pickupSword(Vector2 pos) {
+  maze__Tile* tile       = getTileAt(pos, 1);
+  tile->isSwordCollected = true;
+}
+
 bool maze_isTeleport(Vector2 pos, Vector2* dest) {
   // TODO: why is this layer 0?
   maze__Tile* tile   = getTileAt(pos, 0);
@@ -75,7 +85,9 @@ void maze_draw(void) {
     for (int i = 0; i < g_maze.count; i++) {
       int idx = i + layerNum * g_maze.count;
       if (g_maze.tiles[idx].type != TILE_NONE) {
-        if (g_maze.tiles[idx].type != TILE_COIN || !g_maze.tiles[idx].isCoinCollected) {
+        if ((g_maze.tiles[idx].type == TILE_COIN && !g_maze.tiles[idx].isCoinCollected) ||
+            (g_maze.tiles[idx].type == TILE_SWORD && !g_maze.tiles[idx].isSwordCollected) ||
+            (g_maze.tiles[idx].type != TILE_COIN && g_maze.tiles[idx].type != TILE_SWORD)) {
           engine_Sprite* sprite = g_maze.tiles[idx].sprite;
           assert(sprite != nullptr);
           engine_drawSprite(g_maze.tileset, sprite);
@@ -135,8 +147,9 @@ int maze_getCols(void) { return g_maze.cols; }
 void maze_reset(void) {
   for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
     for (int i = 0; i < g_maze.count; i++) {
-      int idx                           = i + layerNum * g_maze.count;
-      g_maze.tiles[idx].isCoinCollected = false;
+      int idx                            = i + layerNum * g_maze.count;
+      g_maze.tiles[idx].isCoinCollected  = false;
+      g_maze.tiles[idx].isSwordCollected = false;
     }
   }
 }

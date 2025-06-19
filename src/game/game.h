@@ -146,6 +146,8 @@ bool               maze_isCoin(Vector2 pos);
 void               maze_pickupCoin(Vector2 pos);
 void               maze_reset(void);
 int                maze_getCoinCount(void);
+bool               maze_isSword(Vector2 pos);
+void               maze_pickupSword(Vector2 pos);
 
 // --- Debug functions (debug.c) ---
 

@@ -15,13 +15,15 @@ typedef enum maze__TileType {
   TILE_FLOOR,
   TILE_WALL,
   TILE_TELEPORT,
-  TILE_COIN
+  TILE_COIN,
+  TILE_SWORD
 } maze__TileType;
 
 typedef struct maze__Tile {
   maze__TileType type;
   int linkedTeleportTile;
   bool isCoinCollected;
+  bool isSwordCollected;
   engine_Sprite *sprite;
   engine_Anim *anim;
   game__AABB aabb;

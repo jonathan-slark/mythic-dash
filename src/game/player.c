@@ -75,8 +75,10 @@ void player_update(float frameTime, float slop) {
   if (dir == DIR_NONE) dir = actor_getDir(g_player.actor);
 
   actor_move(g_player.actor, dir, frameTime);
+
   Vector2 pos = actor_getPos(g_player.actor);
   pos         = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
+
   if (maze_isCoin(pos)) {
     maze_pickupCoin(pos);
     g_player.score += SCORE_COIN;
@@ -84,6 +86,10 @@ void player_update(float frameTime, float slop) {
     if (maze_getCoinCount() == g_player.coinsCollected) {
       game_nextLevel();
     }
+  }
+
+  if (maze_isSword(pos)) {
+    maze_pickupSword(pos);
   }
 }
 
