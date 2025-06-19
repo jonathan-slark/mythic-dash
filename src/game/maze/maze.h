@@ -21,6 +21,7 @@ typedef enum maze__TileType {
 typedef struct maze__Tile {
   maze__TileType type;
   int linkedTeleportTile;
+  bool isCoinCollected;
   engine_Sprite *sprite;
   engine_Anim *anim;
   game__AABB aabb;

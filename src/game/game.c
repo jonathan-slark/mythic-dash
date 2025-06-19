@@ -221,6 +221,7 @@ void game_draw(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     engine_drawSprite(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i]);
   }
+  engine_fontPrintf(g_assets.font, 0, 0, "SCORE: %d", player_getScore());
 #ifndef NDEBUG
   debug_drawOverlay();
 #endif
@@ -239,4 +240,5 @@ int game_getLevel(void) { return g_level; }
 void game_over(void) {
   player_reset();
   ghost_reset();
+  maze_reset();
 }

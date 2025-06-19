@@ -9,6 +9,7 @@
 typedef struct Player {
   game__Actor* actor;
   int          lives;
+  int          score;
 } Player;
 
 // --- Constants ---
@@ -17,10 +18,11 @@ static const Vector2     PLAYER_START_POS = { 14 * TILE_SIZE, 13 * TILE_SIZE };
 static const float       PLAYER_SPEED     = 60.0f;
 static const game__Dir   PLAYER_START_DIR = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]    = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
+static const int         SCORE_COIN       = 10;
 
 // --- Global state ---
 
-static Player g_player = { .actor = nullptr, .lives = PLAYER_LIVES };
+static Player g_player = { .actor = nullptr, .lives = PLAYER_LIVES, .score = 0 };
 
 // --- Helper functions ---
 
@@ -41,6 +43,7 @@ bool player_init(void) {
 void player_reset() {
   playerRestart();
   g_player.lives = PLAYER_LIVES;
+  g_player.score = 0;
 }
 
 void player_shutdown(void) {
@@ -70,6 +73,12 @@ void player_update(float frameTime, float slop) {
   if (dir == DIR_NONE) dir = actor_getDir(g_player.actor);
 
   actor_move(g_player.actor, dir, frameTime);
+  Vector2 pos = actor_getPos(g_player.actor);
+  pos         = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
+  if (maze_isCoin(pos)) {
+    maze_pickupCoin(pos);
+    g_player.score += SCORE_COIN;
+  }
 }
 
 Vector2 player_getPos(void) {
@@ -80,6 +89,11 @@ Vector2 player_getPos(void) {
 game__Dir player_getDir(void) {
   assert(g_player.actor != nullptr);
   return actor_getDir(g_player.actor);
+}
+
+int player_getScore(void) {
+  assert(g_player.actor != nullptr);
+  return g_player.score;
 }
 
 bool player_isMoving(void) {

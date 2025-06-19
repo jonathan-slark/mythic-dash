@@ -15,28 +15,39 @@ const Vector2 MAZE_ORIGIN = { 8.0f, 8.0f };  // Screen offset to the actual maze
 
 maze__Maze g_maze;
 
-static maze__Tile* getTileAt(Vector2 pos) {
+static maze__Tile* getTileAt(Vector2 pos, int layer) {
   int row = (int) (pos.y / g_maze.tileHeight);
   int col = (int) (pos.x / g_maze.tileWidth);
   assert(row >= 0 && row < g_maze.rows);
   assert(col >= 0 && col < g_maze.cols);
-  return &g_maze.tiles[row * g_maze.cols + col];
+  return &g_maze.tiles[row * g_maze.cols + col + layer * g_maze.count];
 }
 
 // --- maze__Maze functions ---
 
 game__AABB maze_getAABB(Vector2 pos) {
-  maze__Tile* tile = getTileAt(pos);
+  maze__Tile* tile = getTileAt(pos, 0);
   return tile->aabb;
 }
 
 bool maze_isWall(Vector2 pos) {
-  maze__Tile* tile = getTileAt(pos);
+  maze__Tile* tile = getTileAt(pos, 0);
   return tile->type == TILE_WALL;
 }
 
+bool maze_isCoin(Vector2 pos) {
+  maze__Tile* tile = getTileAt(pos, 1);
+  return tile->type == TILE_COIN && !tile->isCoinCollected;
+}
+
+void maze_pickupCoin(Vector2 pos) {
+  maze__Tile* tile      = getTileAt(pos, 1);
+  tile->isCoinCollected = true;
+}
+
 bool maze_isTeleport(Vector2 pos, Vector2* dest) {
-  maze__Tile* tile   = getTileAt(pos);
+  // TODO: why is this layer 0?
+  maze__Tile* tile   = getTileAt(pos, 0);
   int         linked = tile->linkedTeleportTile;
   if (linked >= 0) {
     *dest = g_maze.tiles[linked].aabb.min;
@@ -62,9 +73,11 @@ void maze_draw(void) {
     for (int i = 0; i < g_maze.count; i++) {
       int idx = i + layerNum * g_maze.count;
       if (g_maze.tiles[idx].type != TILE_NONE) {
-        engine_Sprite* sprite = g_maze.tiles[idx].sprite;
-        assert(sprite != nullptr);
-        engine_drawSprite(g_maze.tileset, sprite);
+        if (g_maze.tiles[idx].type != TILE_COIN || !g_maze.tiles[idx].isCoinCollected) {
+          engine_Sprite* sprite = g_maze.tiles[idx].sprite;
+          assert(sprite != nullptr);
+          engine_drawSprite(g_maze.tileset, sprite);
+        }
       }
     }
   }
@@ -103,7 +116,6 @@ int maze_manhattanDistance(game__Tile a, game__Tile b) {
   return dx + dy;
 }
 
-// Used by Inky to
 game__Tile maze_doubleVectorBetween(game__Tile from, game__Tile to) {
   game__Tile diff   = { to.col - from.col, to.row - from.row };
   game__Tile target = { to.col + diff.col, to.row + diff.row };
@@ -117,3 +129,12 @@ game__Tile maze_doubleVectorBetween(game__Tile from, game__Tile to) {
 int maze_getRows(void) { return g_maze.rows; }
 
 int maze_getCols(void) { return g_maze.cols; }
+
+void maze_reset(void) {
+  for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
+    for (int i = 0; i < g_maze.count; i++) {
+      int idx                           = i + layerNum * g_maze.count;
+      g_maze.tiles[idx].isCoinCollected = false;
+    }
+  }
+}

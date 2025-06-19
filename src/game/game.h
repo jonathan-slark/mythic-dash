@@ -109,6 +109,7 @@ float        player_getSpeed(void);
 void         player_dead(void);
 void         player_reset(void);
 int          player_getLives(void);
+int          player_getScore(void);
 
 // --- Ghost functions (ghost.c) ---
 
@@ -141,6 +142,9 @@ int                maze_manhattanDistance(game__Tile nextTile, game__Tile target
 game__Tile         maze_doubleVectorBetween(game__Tile from, game__Tile to);
 int                maze_getRows(void);
 int                maze_getCols(void);
+bool               maze_isCoin(Vector2 pos);
+void               maze_pickupCoin(Vector2 pos);
+void               maze_reset(void);
 
 // --- Debug functions (debug.c) ---
 
