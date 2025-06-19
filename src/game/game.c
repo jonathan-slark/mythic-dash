@@ -142,12 +142,25 @@ static bool initGhosts(void) {
 
 static void updatePlayer(float frameTime, float slop) {
   player_update(frameTime, slop);
-  game__PlayerState playerState = player_getState();
-  engine_spriteSetPos(g_assets.playerSprites[playerState], POS_ADJUST(player_getPos()));
-  if (player_isMoving() || playerState == PLAYER_SWORD) {
-    for (int i = 0; i < PLAYER_STATE_COUNT; i++) {
-      engine_updateAnim(g_assets.playerAnim[i][player_getDir()], frameTime);
-    }
+
+  static game__PlayerState prevState = PLAYER_NORMAL;
+  game__PlayerState        state     = player_getState();
+  Vector2                  pos       = POS_ADJUST(player_getPos());
+  static game__Dir         prevDir   = DIR_NONE;
+  game__Dir                dir       = player_getDir();
+
+  if (state != prevState || dir != prevDir) {
+    if (state != prevState) LOG_DEBUG(game__log, "Player state changed from %d to %d", prevState, state);
+    if (dir != prevDir) LOG_DEBUG(game__log, "Player direction changed from %d to %d", prevDir, dir);
+    engine_resetAnim(g_assets.playerAnim[state][dir]);
+    prevState = state;
+    prevDir   = dir;
+  }
+
+  engine_spriteSetPos(g_assets.playerSprites[state], pos);
+
+  if (player_isMoving() || state == PLAYER_SWORD) {
+    engine_updateAnim(g_assets.playerAnim[state][dir], frameTime);
   }
 }
 
