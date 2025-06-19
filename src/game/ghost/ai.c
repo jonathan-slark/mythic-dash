@@ -210,7 +210,37 @@ void ghost__penToStart(ghost__Ghost* ghost, float frameTime, float slop) {
       actor_setPos(actor, (Vector2) { startX, pos.y });
       actor_setDir(actor, GHOST_START_DIR);
       actor_setSpeed(actor, ghost__getSpeed());
-      ghost->update = ghost__scatter;
+      ghost->update = g_state.update;
+    }
+  }
+}
+
+// Ghost moves from maze start back to pen
+void ghost__startToPen(ghost__Ghost* ghost, float frameTime, float slop) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+  assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
+
+  game__Actor* actor = ghost->actor;
+  assert(actor != nullptr);
+  game__Dir dir = actor_getDir(actor);
+
+  float   startY = MAZE_CENTRE.y;
+  Vector2 pos    = actor_getPos(actor);
+  if (fabsf(pos.y - startY) > slop) {
+    LOG_TRACE(game__log, "Moving to line up wth exit");
+    dir = pos.y < startY ? DIR_DOWN : DIR_UP;
+    actor_setDir(actor, dir);
+    actor_moveNoCheck(actor, dir, frameTime);
+  } else {
+    LOG_TRACE(game__log, "Moving to centre tile");
+    float startX = MAZE_CENTRE.x;
+    dir          = pos.x < startX ? DIR_RIGHT : DIR_LEFT;
+    actor_setDir(actor, dir);
+    actor_moveNoCheck(actor, dir, frameTime);
+    if (fabsf(pos.x - startX) < slop) {
+      actor_setPos(actor, (Vector2) { startX, pos.y });
+      ghost->update = ghost__penToStart;
     }
   }
 }
@@ -249,4 +279,11 @@ void ghost__dead(ghost__Ghost* ghost, float frameTime, float slop) {
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
   ghostUpdateCommon(ghost, frameTime, slop, &DeadHandler);
+
+  Vector2    pos       = actor_getPos(ghost->actor);
+  game__Tile startTile = GHOST_START_TILE[ghost->id];
+  Vector2    dest      = { startTile.col * TILE_SIZE, startTile.row * TILE_SIZE };
+  if (fabsf(pos.x - dest.x) < slop && fabsf(pos.y - dest.y) < slop) {
+    ghost->update = ghost__startToPen;
+  }
 }
