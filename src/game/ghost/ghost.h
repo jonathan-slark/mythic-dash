@@ -25,6 +25,7 @@ typedef struct ghost__Ghost {
 typedef struct ghost__State {
   ghost__Ghost ghosts[CREATURE_COUNT];
   void (*update)(ghost__Ghost *, float, float);
+  void (*lastUpdate)(ghost__Ghost *, float, float);
   size_t stateNum;
   float stateTimer;
 } ghost__State;

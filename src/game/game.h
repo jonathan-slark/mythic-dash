@@ -124,6 +124,7 @@ Vector2      ghost_getPos(int id);
 game__Dir    ghost_getDir(int id);
 game__Actor* ghost_getActor(int id);
 float        ghost_getDecisionCooldown(int id);
+const char*  ghost_getGlobalStateString(void);
 const char*  ghost_getStateString(int id);
 game__Tile   ghost_getTarget(int id);
 float        ghost_getGlobalTimer(void);

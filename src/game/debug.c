@@ -54,30 +54,30 @@ static void drawActorArrow(game__Actor* actor) {
 // --- Debug functions ---
 
 void debug_drawOverlay(void) {
-  int yPos = 0;
+  // int yPos = 0;
 
   if (g_debug.isFPSOverlayEnabled) {
-    DrawFPS(0, yPos);
-    yPos += 20;
+    // DrawFPS(0, yPos);
+    // yPos += 20;
   }
 
   if (g_debug.isMazeOverlayEnabled) {
-    DrawText("Maze overlay enabled", 0, yPos, 20, BLUE);
-    yPos += 20;
+    // DrawText("Maze overlay enabled", 0, yPos, 20, BLUE);
+    // yPos += 20;
     maze_tilesOverlay();
   }
 
   if (g_debug.isPlayerOverlayEnabled) {
-    DrawText("Player overlay enabled", 0, yPos, 20, ORANGE);
-    yPos += 20;
+    // DrawText("Player overlay enabled", 0, yPos, 20, ORANGE);
+    // yPos += 20;
     actor_overlay(player_getActor(), OVERLAY_COLOUR_PLAYER);
     actor_canMoveOverlay(player_getActor());
     // actor_moveOverlay(player_getActor());
   }
 
   if (g_debug.isGhostOverlayEnabled) {
-    DrawText("Ghost overlay enabled", 0, yPos, 20, RED);
-    yPos += 20;
+    // DrawText("Ghost overlay enabled", 0, yPos, 20, RED);
+    // yPos += 20;
 
     for (int i = 0; i < CREATURE_COUNT; i++) {
       game__Actor* actor = ghost_getActor(i);
@@ -96,9 +96,9 @@ void debug_drawOverlay(void) {
           string, (Vector2) { pos.x, pos.y + ACTOR_SIZE - OVERLAY_TEXT_SIZE / scale }, OVERLAY_TEXT_SIZE, WHITE
       );
 
-      engine_drawInt(ghost_getGlobaStateNum() - 1, (Vector2) { 410.0f, 0.0f }, 20, WHITE);
-      engine_drawText(ghost_getStateString(1), (Vector2) { 420.0f, 0.0f }, 20, WHITE);
-      engine_drawFloat(ghost_getGlobalTimer(), (Vector2) { 460.0f, 0.0f }, 20, WHITE);
+      engine_drawInt(ghost_getGlobaStateNum() - 1, (Vector2) { 210.0f, 0.0f }, 20, WHITE);
+      engine_drawText(ghost_getGlobalStateString(), (Vector2) { 220.0f, 0.0f }, 20, WHITE);
+      engine_drawFloat(ghost_getGlobalTimer(), (Vector2) { 260.0f, 0.0f }, 20, WHITE);
 
       Vector2 start         = POS_ADJUST(actor_getPos(actor));
       start                 = Vector2AddValue(start, TILE_SIZE / 2.0f);

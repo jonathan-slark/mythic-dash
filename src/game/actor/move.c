@@ -71,7 +71,7 @@ static void checkMazeCollision(game__Actor* actor) {
   actor__Tile* tile = isMazeCollision(actor);
   if (tile != nullptr) {
     resolveActorCollision(actor, &tile->aabb);
-    LOG_DEBUG(game__log, "Collision detected, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
+    LOG_TRACE(game__log, "Collision detected, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
     actor->isMoving = false;
   }
 }
@@ -235,7 +235,7 @@ static void checkTeleport(game__Actor* actor, game__Dir dir) {
       (dir == DIR_DOWN && maze_isTeleport(actor->pos, &destPos)) ||
       (dir == DIR_LEFT && maze_isTeleport((Vector2) { actor->pos.x + actor->size.x - 1, actor->pos.y }, &destPos))) {
     if (!actor->hasTeleported) {
-      LOG_DEBUG(
+      LOG_TRACE(
           game__log, "Teleporting actor from %.2f, %.2f to %.2f, %.2f", actor->pos.x, actor->pos.y, destPos.x, destPos.y
       );
       actor->pos           = destPos;

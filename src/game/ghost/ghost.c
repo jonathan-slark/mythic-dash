@@ -15,7 +15,7 @@ static const char* STATE_SCATTER_STR    = "SCATTER";
 
 // --- Global state ---
 
-ghost__State g_state = { .update = nullptr, .stateNum = 0, .stateTimer = 0.0f };
+ghost__State g_state = { .update = nullptr, .lastUpdate = nullptr, .stateNum = 0, .stateTimer = 0.0f };
 
 // --- Helper functions ---
 
@@ -30,8 +30,28 @@ static inline bool shouldUpdateGhostState(ghost__Ghost* ghost) {
   return ghost->update != ghost__pen && ghost->update != ghost__penToStart;
 }
 
+static const char* getStateString(void (*update)(struct ghost__Ghost*, float, float)) {
+  if (update == ghost__pen) {
+    return STATE_PEN_STR;
+  }
+  if (update == ghost__penToStart) {
+    return STATE_PETTOSTART_STR;
+  }
+  if (update == ghost__frightened) {
+    return STATE_FRIGHTENED_STR;
+  }
+  if (update == ghost__chase) {
+    return STATE_CHASE_STR;
+  }
+  if (update == ghost__scatter) {
+    return STATE_SCATTER_STR;
+  }
+  return "";
+}
+
 static void transitionToState(void (*newState)(ghost__Ghost*, float, float)) {
-  g_state.update = newState;
+  g_state.lastUpdate = g_state.update;
+  g_state.update     = newState;
   for (int i = 0; i < CREATURE_COUNT; i++) {
     if (shouldUpdateGhostState(&g_state.ghosts[i])) {
       g_state.ghosts[i].update         = newState;
@@ -54,7 +74,7 @@ static void toggleGhostState() {
   ) = (g_state.update == nullptr || g_state.update == ghost__chase) ? ghost__scatter : ghost__chase;
   transitionToState(newState);
   g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
-  LOG_INFO(game__log, "Changing to state: %s", ghost_getStateString(FIRST_GHOST_OUT));
+  LOG_DEBUG(game__log, "Changing to state: %s", getStateString(newState));
 }
 
 // Update the global state and change ghost states
@@ -183,28 +203,14 @@ game__Tile ghost_getTarget(int id) {
 float ghost_getGlobalTimer(void) { return g_state.stateTimer; }
 int   ghost_getGlobaStateNum(void) { return g_state.stateNum; }
 
+const char* ghost_getGlobalStateString(void) { return getStateString(g_state.update); }
+
 const char* ghost_getStateString(int id) {
   assert(id >= 0 && id < CREATURE_COUNT);
   assert(id >= 0 && id < CREATURE_COUNT);
   assert(g_state.ghosts[id].actor != nullptr);
 
-  if (g_state.ghosts[id].update == ghost__pen) {
-    return STATE_PEN_STR;
-  }
-  if (g_state.ghosts[id].update == ghost__penToStart) {
-    return STATE_PETTOSTART_STR;
-  }
-  if (g_state.ghosts[id].update == ghost__frightened) {
-    return STATE_FRIGHTENED_STR;
-  }
-  if (g_state.ghosts[id].update == ghost__chase) {
-    return STATE_CHASE_STR;
-  }
-  if (g_state.ghosts[id].update == ghost__scatter) {
-    return STATE_SCATTER_STR;
-  }
-
-  assert(false);
+  return getStateString(g_state.ghosts[id].update);
 }
 
 void ghost_swordPickup(void) {
@@ -212,4 +218,4 @@ void ghost_swordPickup(void) {
   ghostResetTargets();
 }
 
-void ghost_swordDrop(void) { transitionToState(ghost__chase); }
+void ghost_swordDrop(void) { transitionToState(g_state.lastUpdate); }

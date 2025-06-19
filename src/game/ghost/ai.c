@@ -149,7 +149,7 @@ static void ghostUpdateCommon(ghost__Ghost* ghost, float frameTime, float slop, 
 
       if (count > 1 || currentDir != newDir) {
         actor_setDir(actor, newDir);
-        LOG_DEBUG(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[newDir]);
+        LOG_TRACE(game__log, "Ghost %u chose new direction: %s", ghost->id, DIR_STRINGS[newDir]);
         ghost->decisionCooldown = DECISION_COOLDOWN;
       }
     }

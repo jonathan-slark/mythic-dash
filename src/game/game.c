@@ -42,6 +42,8 @@ const float MIN_SLOP        = 0.05f;
 const float MAX_SLOP        = 0.7f;
 const float OVERLAP_EPSILON = 1e-5f;
 
+const char* PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWORD" };
+
 // --- Global state ---
 
 log_Log*            game__log;
@@ -150,8 +152,12 @@ static void updatePlayer(float frameTime, float slop) {
   game__Dir                dir       = player_getDir();
 
   if (state != prevState || dir != prevDir) {
-    if (state != prevState) LOG_DEBUG(game__log, "Player state changed from %d to %d", prevState, state);
-    if (dir != prevDir) LOG_DEBUG(game__log, "Player direction changed from %d to %d", prevDir, dir);
+    if (state != prevState)
+      LOG_DEBUG(
+          game__log, "Player state changed from %s to %s", PLAYER_STATE_STRINGS[prevState], PLAYER_STATE_STRINGS[state]
+      );
+    if (dir != prevDir)
+      LOG_DEBUG(game__log, "Player direction changed from %s to %s", DIR_STRINGS[prevDir], DIR_STRINGS[dir]);
     engine_resetAnim(g_assets.playerAnim[state][dir]);
     prevState = state;
     prevDir   = dir;
