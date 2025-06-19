@@ -261,7 +261,19 @@ static bool loadMazetileset(cute_tiled_map_t* map) {
 
 static void unloadMazetileset(void) { engine_textureUnload(&g_maze.tileset); }
 
-// --- maze__Maze functions ---
+void countCoins(void) {
+  for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
+    for (int i = 0; i < g_maze.count; i++) {
+      int idx = i + layerNum * g_maze.count;
+      if (g_maze.tiles[idx].type == TILE_COIN) {
+        g_maze.coinCount++;
+      }
+    }
+  }
+  LOG_INFO(game__log, "Coint count: %d", g_maze.coinCount);
+}
+
+// --- Maze functions ---
 
 bool maze_init(void) {
   cute_tiled_map_t* map;
@@ -280,6 +292,7 @@ bool maze_init(void) {
     return false;
   }
   cute_tiled_free_map(map);
+  countCoins();
 
   return true;
 }

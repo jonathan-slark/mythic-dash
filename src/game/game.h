@@ -145,6 +145,7 @@ int                maze_getCols(void);
 bool               maze_isCoin(Vector2 pos);
 void               maze_pickupCoin(Vector2 pos);
 void               maze_reset(void);
+int                maze_getCoinCount(void);
 
 // --- Debug functions (debug.c) ---
 
@@ -158,3 +159,4 @@ void debug_toggleGhostOverlay(void);
 
 int  game_getLevel(void);
 void game_over(void);
+void game_nextLevel(void);

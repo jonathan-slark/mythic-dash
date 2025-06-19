@@ -45,6 +45,8 @@ void maze_pickupCoin(Vector2 pos) {
   tile->isCoinCollected = true;
 }
 
+int maze_getCoinCount(void) { return g_maze.coinCount; }
+
 bool maze_isTeleport(Vector2 pos, Vector2* dest) {
   // TODO: why is this layer 0?
   maze__Tile* tile   = getTileAt(pos, 0);

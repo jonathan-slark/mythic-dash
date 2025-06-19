@@ -106,6 +106,9 @@ void ghost_reset(void) {
     actor_setDir(g_state.ghosts[i].actor, CREATURE_DATA[i].startDir);
     actor_setSpeed(g_state.ghosts[i].actor, CREATURE_DATA[i].startSpeed);
   }
+  g_state.update     = nullptr;
+  g_state.stateNum   = 0;
+  g_state.stateTimer = 0.0f;
 }
 
 void ghost_shutdown(void) {

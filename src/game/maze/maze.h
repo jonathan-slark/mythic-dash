@@ -34,6 +34,7 @@ typedef struct maze__Maze {
   int tileWidth;
   int tileHeight;
   int layerCount;
+  int coinCount;
   engine_Texture *tileset;
   maze__Tile *tiles;
 } maze__Maze;

@@ -10,6 +10,7 @@ typedef struct Player {
   game__Actor* actor;
   int          lives;
   int          score;
+  int          coinsCollected;
 } Player;
 
 // --- Constants ---
@@ -22,7 +23,7 @@ static const int         SCORE_COIN       = 10;
 
 // --- Global state ---
 
-static Player g_player = { .actor = nullptr, .lives = PLAYER_LIVES, .score = 0 };
+static Player g_player = { .actor = nullptr, .lives = PLAYER_LIVES, .score = 0, .coinsCollected = 0 };
 
 // --- Helper functions ---
 
@@ -42,8 +43,9 @@ bool player_init(void) {
 
 void player_reset() {
   playerRestart();
-  g_player.lives = PLAYER_LIVES;
-  g_player.score = 0;
+  g_player.lives          = PLAYER_LIVES;
+  g_player.score          = 0;
+  g_player.coinsCollected = 0;
 }
 
 void player_shutdown(void) {
@@ -78,6 +80,10 @@ void player_update(float frameTime, float slop) {
   if (maze_isCoin(pos)) {
     maze_pickupCoin(pos);
     g_player.score += SCORE_COIN;
+    g_player.coinsCollected++;
+    if (maze_getCoinCount() == g_player.coinsCollected) {
+      game_nextLevel();
+    }
   }
 }
 
