@@ -110,6 +110,7 @@ game__Tile        player_tileAhead(int tileNum);
 float             player_getSpeed(void);
 void              player_dead(void);
 void              player_reset(void);
+void              player_totalReset(void);
 int               player_getLives(void);
 int               player_getScore(void);
 game__PlayerState player_getState(void);

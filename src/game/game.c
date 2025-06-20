@@ -279,7 +279,7 @@ void game_unload(void) {
 int game_getLevel(void) { return g_level; }
 
 void game_over(void) {
-  player_reset();
+  player_totalReset();
   ghost_reset();
   maze_reset();
 }

@@ -77,10 +77,14 @@ bool player_init(void) {
 void player_reset() {
   playerRestart();
   g_player.state          = PLAYER_NORMAL;
-  g_player.lives          = PLAYER_LIVES;
-  g_player.score          = 0;
   g_player.coinsCollected = 0;
   g_player.swordTimer     = 0.0f;
+}
+
+void player_totalReset() {
+  player_reset();
+  g_player.lives = PLAYER_LIVES;
+  g_player.score = 0;
 }
 
 void player_shutdown(void) {
