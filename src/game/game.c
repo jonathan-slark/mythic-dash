@@ -42,7 +42,7 @@ const float MIN_SLOP        = 0.05f;
 const float MAX_SLOP        = 0.7f;
 const float OVERLAP_EPSILON = 1e-5f;
 
-const char* PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWORD" };
+const char* PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWORD", "DEAD" };
 
 static const Color   GHOST_DEAD_COLOUR      = { 255, 255, 255, 100 };
 static const Vector2 PLAYER_COOLDOWN_OFFSET = { 7, -4 };
@@ -100,7 +100,8 @@ static bool initPlayer(void) {
               PLAYER_DATA[i].animData[j].startCol,
               PLAYER_DATA[i].animData[j].frameCount,
               PLAYER_DATA[i].animData[j].frameTime,
-              PLAYER_DATA[i].inset
+              PLAYER_DATA[i].inset,
+              PLAYER_DATA[i].loop
           )
       );
     }
@@ -137,7 +138,8 @@ static bool initGhosts(void) {
               CREATURE_DATA[i].animData[j].startCol,
               CREATURE_DATA[i].animData[j].frameCount,
               CREATURE_DATA[i].animData[j].frameTime,
-              CREATURE_DATA[i].inset
+              CREATURE_DATA[i].inset,
+              CREATURE_DATA[i].loop
           )
       );
     }
@@ -146,6 +148,7 @@ static bool initGhosts(void) {
 }
 
 static void updatePlayer(float frameTime, float slop) {
+  // TODO: on player death, one frame is being shown in the position of the previous death
   player_update(frameTime, slop);
 
   static game__PlayerState prevState = PLAYER_NORMAL;
@@ -156,7 +159,7 @@ static void updatePlayer(float frameTime, float slop) {
 
   if (state != prevState || dir != prevDir) {
     if (state != prevState)
-      LOG_TRACE(
+      LOG_DEBUG(
           game__log, "Player state changed from %s to %s", PLAYER_STATE_STRINGS[prevState], PLAYER_STATE_STRINGS[state]
       );
     if (prevDir != DIR_NONE && dir != prevDir)
@@ -168,7 +171,7 @@ static void updatePlayer(float frameTime, float slop) {
 
   engine_spriteSetPos(g_assets.playerSprites[state], pos);
 
-  if (player_isMoving() || state == PLAYER_SWORD) {
+  if (player_isMoving() || state == PLAYER_SWORD || state == PLAYER_DEAD) {
     engine_updateAnim(g_assets.playerAnim[state][dir], frameTime);
   }
 }
@@ -265,8 +268,8 @@ void game_update(float frameTime) {
 #endif
 
   LOG_TRACE(game__log, "Slop: %f", slop);
-  updatePlayer(frameTime, slop);
   updateGhosts(frameTime, slop);
+  updatePlayer(frameTime, slop);
   maze_update(frameTime);
 }
 
@@ -301,4 +304,9 @@ void game_nextLevel(void) {
   ghost_reset();
   maze_reset();
   g_level += 1;
+}
+
+void game_playerDead(void) {
+  player_restart();
+  ghost_reset();
 }

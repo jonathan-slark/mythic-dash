@@ -147,7 +147,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount)
 
         if (animCount > 0) {
           LOG_TRACE(game__log, "New animation: layer: %d, tile %d, %d, frame count: %d", layerNum, row, col, animCount);
-          anim = engine_createAnim(sprite, tilesetRow, tilesetCol, animCount, FRAME_TIME, inset);
+          anim = engine_createAnim(sprite, tilesetRow, tilesetCol, animCount, FRAME_TIME, inset, true);
         }
 
         if (teleportCount != -1 && tileData[tileId].teleportType == 1) {

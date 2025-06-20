@@ -1,3 +1,7 @@
+/*
+ * game.h: Game subsystem internal functions
+ */
+
 // clang-format Language: C
 #pragma once
 
@@ -20,7 +24,7 @@
 
 typedef enum game__Dir { DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT, DIR_COUNT, DIR_NONE } game__Dir;
 
-typedef enum game__PlayerState { PLAYER_NORMAL, PLAYER_SWORD, PLAYER_STATE_COUNT } game__PlayerState;
+typedef enum game__PlayerState { PLAYER_NORMAL, PLAYER_SWORD, PLAYER_DEAD, PLAYER_STATE_COUNT } game__PlayerState;
 
 typedef struct game__AABB {
   Vector2 min;
@@ -110,6 +114,7 @@ game__Tile        player_tileAhead(int tileNum);
 float             player_getSpeed(void);
 void              player_dead(void);
 void              player_reset(void);
+void              player_restart(void);
 void              player_totalReset(void);
 int               player_getLives(void);
 int               player_getScore(void);
@@ -173,3 +178,4 @@ void debug_toggleGhostOverlay(void);
 int  game_getLevel(void);
 void game_over(void);
 void game_nextLevel(void);
+void game_playerDead(void);

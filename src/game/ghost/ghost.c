@@ -169,7 +169,7 @@ void ghost_update(float frameTime, float slop) {
 
   if (!player_hasSword()) updateState(frameTime);
 
-  if (playerDead) player_dead();
+  if (playerDead && playerState != PLAYER_DEAD) player_dead();
 }
 
 Vector2 ghost_getPos(int id) {

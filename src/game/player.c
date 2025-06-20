@@ -13,17 +13,19 @@ typedef struct Player {
   int               score;
   int               coinsCollected;
   float             swordTimer;
+  float             deadTimer;
 } Player;
 
 // --- Constants ---
 
-static const Vector2     PLAYER_START_POS = { 14 * TILE_SIZE, 13 * TILE_SIZE };
-static const float       PLAYER_SPEED     = 60.0f;
-static const game__Dir   PLAYER_START_DIR = DIR_LEFT;
-static const KeyboardKey PLAYER_KEYS[]    = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
-static const int         SCORE_COIN       = 10;
-static const int         SCORE_SWORD      = 50;
-static const float       SWORD_TIMER      = 6.0f;  // Sword animation lasts 400ms
+static const Vector2     PLAYER_START_POS  = { 14 * TILE_SIZE, 13 * TILE_SIZE };
+static const float       PLAYER_SPEED      = 60.0f;
+static const game__Dir   PLAYER_START_DIR  = DIR_LEFT;
+static const KeyboardKey PLAYER_KEYS[]     = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
+static const int         SCORE_COIN        = 10;
+static const int         SCORE_SWORD       = 50;
+static const float       SWORD_TIMER       = 6.0f;  // Sword animation lasts 400ms
+static const float       PLAYER_DEAD_TIMER = 2.0f;
 
 // --- Global state ---
 
@@ -37,12 +39,6 @@ static Player g_player = {
 };
 
 // --- Helper functions ---
-
-static void playerRestart(void) {
-  assert(g_player.actor != nullptr);
-  actor_setPos(g_player.actor, PLAYER_START_POS);
-  actor_setDir(g_player.actor, PLAYER_START_DIR);
-}
 
 static void playerCoinPickup(void) {
   g_player.score += SCORE_COIN;
@@ -74,8 +70,15 @@ bool player_init(void) {
   return g_player.actor != nullptr;
 }
 
+void player_restart(void) {
+  assert(g_player.actor != nullptr);
+  g_player.state = PLAYER_NORMAL;
+  actor_setPos(g_player.actor, PLAYER_START_POS);
+  actor_setDir(g_player.actor, PLAYER_START_DIR);
+}
+
 void player_reset() {
-  playerRestart();
+  player_restart();
   g_player.state          = PLAYER_NORMAL;
   g_player.coinsCollected = 0;
   g_player.swordTimer     = 0.0f;
@@ -95,8 +98,8 @@ void player_shutdown(void) {
 
 void player_update(float frameTime, float slop) {
   assert(g_player.actor != nullptr);
-
-  playerSwordUpdate(frameTime);
+  assert(frameTime >= 0.0f);
+  assert(slop >= 0.0f);
 
 #ifndef NDEBUG
   if (engine_isKeyPressed(KEY_F)) debug_toggleFPSOverlay();
@@ -104,6 +107,20 @@ void player_update(float frameTime, float slop) {
   if (engine_isKeyPressed(KEY_P)) debug_togglePlayerOverlay();
   if (engine_isKeyPressed(KEY_G)) debug_toggleGhostOverlay();
 #endif
+
+  if (g_player.state == PLAYER_DEAD) {
+    g_player.deadTimer = fmaxf(g_player.deadTimer - frameTime, 0.0f);
+    if (g_player.deadTimer == 0.0f) {
+      if (g_player.lives == 0) {
+        game_over();
+      } else {
+        game_playerDead();
+      }
+    }
+    return;
+  }
+
+  playerSwordUpdate(frameTime);
 
   game__Dir dir = DIR_NONE;
   for (int i = 0; i < DIR_COUNT; i++) {
@@ -192,13 +209,9 @@ float player_getSpeed(void) { return PLAYER_SPEED; }
 int player_getLives(void) { return g_player.lives; }
 
 void player_dead(void) {
-  g_player.lives -= 1;
-  if (g_player.lives == 0) {
-    game_over();
-  } else {
-    playerRestart();
-    ghost_reset();
-  }
+  g_player.lives     -= 1;
+  g_player.state      = PLAYER_DEAD;
+  g_player.deadTimer  = PLAYER_DEAD_TIMER;
 }
 
 bool player_hasSword(void) { return g_player.swordTimer > 0.0f; }
