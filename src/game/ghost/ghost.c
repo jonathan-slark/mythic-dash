@@ -225,3 +225,15 @@ void ghost_swordDrop(void) {
   transitionToState(g_state.lastUpdate);
   ghostSetSpeeds();
 }
+
+bool ghost_isFrightened(int id) {
+  assert(id >= 0 && id < CREATURE_COUNT);
+  assert(g_state.ghosts[id].update != nullptr);
+  return g_state.ghosts[id].update == ghost__frightened;
+}
+
+bool ghost_isDead(int id) {
+  assert(id >= 0 && id < CREATURE_COUNT);
+  assert(g_state.ghosts[id].update != nullptr);
+  return g_state.ghosts[id].update == ghost__dead || g_state.ghosts[id].update == ghost__startToPen;
+}

@@ -133,6 +133,8 @@ int          ghost_getGlobaStateNum(void);
 void         ghost_reset(void);
 void         ghost_swordPickup(void);
 void         ghost_swordDrop(void);
+bool         ghost_isFrightened(int id);
+bool         ghost_isDead(int id);
 
 // --- Maze functions (maze.c) ---
 

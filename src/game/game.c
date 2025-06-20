@@ -44,6 +44,8 @@ const float OVERLAP_EPSILON = 1e-5f;
 
 const char* PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWORD" };
 
+static const Color GHOST_DEAD_COLOUR = { 255, 255, 255, 100 };
+
 // --- Global state ---
 
 log_Log*            game__log;
@@ -202,6 +204,19 @@ static void unloadGhosts(void) {
   }
 }
 
+static void drawGhosts(void) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    Color colour;
+    if (ghost_isFrightened(i))
+      colour = BLUE;
+    else if (ghost_isDead(i))
+      colour = GHOST_DEAD_COLOUR;
+    else
+      colour = WHITE;
+    engine_drawSpriteColoured(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i], colour);
+  }
+}
+
 // --- Game functions ---
 
 bool game_load(void) {
@@ -245,9 +260,7 @@ void game_draw(void) {
   for (int i = 0; i < player_getLives() - 1; i++) {
     engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerLivesSprites[i]);
   }
-  for (int i = 0; i < CREATURE_COUNT; i++) {
-    engine_drawSprite(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i]);
-  }
+  drawGhosts();
   engine_fontPrintf(g_assets.font, 8, 0, "SCORE: %d", player_getScore());
   engine_fontPrintf(g_assets.font, 372, 0, "LEVEL: %d / ?", g_level);
 #ifndef NDEBUG
