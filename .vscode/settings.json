@@ -1,9 +1,0 @@
-{
-  "debug.terminal.clearBeforeReusing": true,
-  "editor.rulers": [
-    120
-  ],
-  "files.associations": {
-    "*.h": "c"
-  }
-}

@@ -90,7 +90,7 @@ void maze_draw(void) {
             (g_maze.tiles[idx].type != TILE_COIN && g_maze.tiles[idx].type != TILE_SWORD)) {
           engine_Sprite* sprite = g_maze.tiles[idx].sprite;
           assert(sprite != nullptr);
-          engine_drawSprite(g_maze.tileset, sprite);
+          engine_drawSprite(g_maze.tileset, sprite, WHITE);
         }
       }
     }

@@ -69,7 +69,7 @@ static void toggleGhostState() {
   ) = (g_state.update == nullptr || g_state.update == ghost__chase) ? ghost__scatter : ghost__chase;
   transitionToState(newState);
   g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
-  LOG_DEBUG(game__log, "Changing to state: %s", getStateString(newState));
+  LOG_TRACE(game__log, "Changing to state: %s", getStateString(newState));
 }
 
 // Update the global state and change ghost states

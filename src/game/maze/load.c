@@ -273,7 +273,7 @@ void countCoins(void) {
       }
     }
   }
-  LOG_INFO(game__log, "Coint count: %d", g_maze.coinCount);
+  LOG_INFO(game__log, "Coin count: %d", g_maze.coinCount);
 }
 
 // --- Maze functions ---

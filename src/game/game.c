@@ -44,7 +44,8 @@ const float OVERLAP_EPSILON = 1e-5f;
 
 const char* PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWORD" };
 
-static const Color GHOST_DEAD_COLOUR = { 255, 255, 255, 100 };
+static const Color   GHOST_DEAD_COLOUR      = { 255, 255, 255, 100 };
+static const Vector2 PLAYER_COOLDOWN_OFFSET = { 7, -4 };
 
 // --- Global state ---
 
@@ -72,7 +73,7 @@ static void checkFPSKeys(void) {
 static bool loadAssets(void) {
   GAME_TRY(g_assets.creatureSpriteSheet = engine_textureLoad(FILE_CREATURES));
   GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
-  GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 8, 8, 33, 126, 1));
+  GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 6, 10, 32, 127, 0, 2));
   return true;
 }
 
@@ -155,11 +156,11 @@ static void updatePlayer(float frameTime, float slop) {
 
   if (state != prevState || dir != prevDir) {
     if (state != prevState)
-      LOG_DEBUG(
+      LOG_TRACE(
           game__log, "Player state changed from %s to %s", PLAYER_STATE_STRINGS[prevState], PLAYER_STATE_STRINGS[state]
       );
-    if (dir != prevDir)
-      LOG_DEBUG(game__log, "Player direction changed from %s to %s", DIR_STRINGS[prevDir], DIR_STRINGS[dir]);
+    if (prevDir != DIR_NONE && dir != prevDir)
+      LOG_TRACE(game__log, "Player direction changed from %s to %s", DIR_STRINGS[prevDir], DIR_STRINGS[dir]);
     engine_resetAnim(g_assets.playerAnim[state][dir]);
     prevState = state;
     prevDir   = dir;
@@ -206,15 +207,30 @@ static void unloadGhosts(void) {
 
 static void drawGhosts(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    Color colour;
-    if (ghost_isFrightened(i))
-      colour = BLUE;
-    else if (ghost_isDead(i))
-      colour = GHOST_DEAD_COLOUR;
-    else
-      colour = WHITE;
-    engine_drawSpriteColoured(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i], colour);
+    Color colour = ghost_isFrightened(i) ? BLUE : ghost_isDead(i) ? GHOST_DEAD_COLOUR : WHITE;
+    engine_drawSprite(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i], colour);
   }
+}
+
+static void drawPlayer(void) {
+  float swordTimer = player_getSwordTimer();
+
+  bool flash = false;
+  if (swordTimer > 0.0f && swordTimer < 1.0f) flash = ((int) (swordTimer * 10) % 2) == 0;
+  Color colour = flash ? BLACK : WHITE;
+  engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerSprites[player_getState()], colour);
+
+  for (int i = 0; i < player_getLives() - 1; i++) {
+    engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerLivesSprites[i], WHITE);
+  }
+
+  Vector2 pos = Vector2Add(POS_ADJUST(player_getPos()), PLAYER_COOLDOWN_OFFSET);
+  if (swordTimer > 0.0f) engine_drawInt((int) ceilf(swordTimer), pos, 12, WHITE);
+}
+
+static void drawInterface(void) {
+  engine_fontPrintf(g_assets.font, 8, 0, WHITE, "Score: %d", player_getScore());
+  engine_fontPrintf(g_assets.font, 394, 0, WHITE, "Level: %02d / ?", g_level);
 }
 
 // --- Game functions ---
@@ -256,13 +272,9 @@ void game_update(float frameTime) {
 
 void game_draw(void) {
   maze_draw();
-  engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerSprites[player_getState()]);
-  for (int i = 0; i < player_getLives() - 1; i++) {
-    engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerLivesSprites[i]);
-  }
+  drawPlayer();
   drawGhosts();
-  engine_fontPrintf(g_assets.font, 8, 0, "SCORE: %d", player_getScore());
-  engine_fontPrintf(g_assets.font, 372, 0, "LEVEL: %d / ?", g_level);
+  drawInterface();
 #ifndef NDEBUG
   debug_drawOverlay();
 #endif
