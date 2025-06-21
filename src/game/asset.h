@@ -22,6 +22,17 @@ typedef struct ActorData {
   AnimData animData[DIR_COUNT];
 } ActorData;
 
+typedef struct game__Assets {
+  engine_Texture *creatureSpriteSheet;
+  engine_Texture *playerSpriteSheet;
+  engine_Sprite *playerSprites[PLAYER_STATE_COUNT];
+  engine_Sprite *playerLivesSprites[PLAYER_LIVES];
+  engine_Anim *playerAnim[PLAYER_STATE_COUNT][DIR_COUNT];
+  engine_Sprite *creatureSprites[CREATURE_COUNT];
+  engine_Anim *creatureAnims[CREATURE_COUNT][DIR_COUNT];
+  engine_Font *font;
+} game__Assets;
+
 // --- Constants ---
 
 static const char FILE_BACKGROUND[] = ASSET_DIR "gfx/background.png";
@@ -118,3 +129,8 @@ static const ActorData CREATURE_DATA[CREATURE_COUNT] = {
   }
 };
 // clang-format on
+
+// --- Global state ---
+
+extern game__Assets g_assets;
+extern int g_level;

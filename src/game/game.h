@@ -102,6 +102,14 @@ void         actor_move(game__Actor* actor, game__Dir dir, float frameTime);
 void         actor_update(game__Actor* actor, float frameTime);
 game__Tile   actor_nextTile(game__Actor* actor, game__Dir dir);
 
+// --- Draw functions (draw.c) ---
+
+void draw_updatePlayer(float frameTime, float slop);
+void draw_updateGhosts(float frameTime, float slop);
+void draw_ghosts(void);
+void draw_player(void);
+void draw_interface(void);
+
 // --- Player functions (player.c) ---
 
 bool              player_init(void);
