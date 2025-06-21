@@ -141,3 +141,5 @@ game__Tile actor_nextTile(game__Actor* actor, game__Dir dir) {
   }
   return maze_getTile(pos);
 }
+
+void actor_startMoving(game__Actor* actor) { actor->isMoving = true; }

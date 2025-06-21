@@ -75,6 +75,7 @@ void player_restart(void) {
   g_player.state = PLAYER_NORMAL;
   actor_setPos(g_player.actor, PLAYER_START_POS);
   actor_setDir(g_player.actor, PLAYER_START_DIR);
+  actor_startMoving(g_player.actor);
 }
 
 void player_reset() {
