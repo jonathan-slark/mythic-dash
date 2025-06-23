@@ -130,6 +130,7 @@ int               player_getScore(void);
 game__PlayerState player_getState(void);
 bool              player_hasSword(void);
 float             player_getSwordTimer(void);
+void              player_killedGhost(int ghostID);
 
 // --- Ghost functions (ghost.c) ---
 
@@ -150,6 +151,8 @@ void         ghost_swordPickup(void);
 void         ghost_swordDrop(void);
 bool         ghost_isFrightened(int id);
 bool         ghost_isDead(int id);
+void         ghost_setScore(int id, int score);
+int          ghost_getScore(int id);
 
 // --- Maze functions (maze.c) ---
 

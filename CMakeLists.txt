@@ -26,7 +26,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE engine log)
 
 # Test game executable
 set(TEST_GAME test_game)
-add_executable(${TEST_GAME} ${TEST_DIR}/test_game.c)
+add_executable(${TEST_GAME} ${TEST_DIR}/game.c)
 target_include_directories(${TEST_GAME} PUBLIC ${MINUNIT_DIR})
 target_include_directories(${TEST_GAME} PRIVATE ${TEST_DIR})
 target_link_libraries(${TEST_GAME} PRIVATE engine log)

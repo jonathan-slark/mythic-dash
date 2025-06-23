@@ -14,28 +14,35 @@ typedef struct Player {
   int               coinsCollected;
   float             swordTimer;
   float             deadTimer;
+  int               scoreMultiplier;
+  float             scoreMultiplierTimer;
 } Player;
 
 // --- Constants ---
 
-static const Vector2     PLAYER_START_POS  = { 14 * TILE_SIZE, 13 * TILE_SIZE };
-static const float       PLAYER_SPEED      = 60.0f;
-static const game__Dir   PLAYER_START_DIR  = DIR_LEFT;
-static const KeyboardKey PLAYER_KEYS[]     = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
-static const int         SCORE_COIN        = 10;
-static const int         SCORE_SWORD       = 50;
-static const float       SWORD_TIMER       = 6.0f;  // Sword animation lasts 400ms
-static const float       PLAYER_DEAD_TIMER = 2.0f;
+static const Vector2     PLAYER_START_POS       = { 14 * TILE_SIZE, 13 * TILE_SIZE };
+static const float       PLAYER_SPEED           = 60.0f;
+static const game__Dir   PLAYER_START_DIR       = DIR_LEFT;
+static const KeyboardKey PLAYER_KEYS[]          = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
+static const int         SCORE_COIN             = 10;
+static const int         SCORE_SWORD            = 50;
+static const float       SWORD_TIMER            = 6.0f;  // Sword animation lasts 400ms
+static const float       PLAYER_DEAD_TIMER      = 2.0f;
+static const int         GHOST_BASE_SCORE       = 200;
+static const float       SCORE_MULTIPLIER_TIMER = 5.0f;
 
 // --- Global state ---
 
 static Player g_player = {
-  .actor          = nullptr,
-  .state          = PLAYER_NORMAL,
-  .lives          = PLAYER_LIVES,
-  .score          = 0,
-  .coinsCollected = 0,
-  .swordTimer     = 0.0f
+  .actor                = nullptr,
+  .state                = PLAYER_NORMAL,
+  .lives                = PLAYER_LIVES,
+  .score                = 0,
+  .coinsCollected       = 0,
+  .swordTimer           = 0.0f,
+  .deadTimer            = 0.0f,
+  .scoreMultiplier      = 1,
+  .scoreMultiplierTimer = 0.0f
 };
 
 // --- Helper functions ---
@@ -54,11 +61,19 @@ static void playerSwordPickup(void) {
 static void playerSwordUpdate(float frameTime) {
   if (g_player.swordTimer == 0.0f) return;
 
-  g_player.swordTimer -= frameTime;
-  if (g_player.swordTimer < 0.0f) {
-    g_player.swordTimer = 0.0f;
-    g_player.state      = PLAYER_NORMAL;
+  g_player.swordTimer = fmaxf(g_player.swordTimer -= frameTime, 0.0f);
+  if (g_player.swordTimer == 0.0f) {
+    g_player.state = PLAYER_NORMAL;
     ghost_swordDrop();
+  }
+}
+
+static void playerScoreMultiplierUpdate(float frameTime) {
+  if (g_player.scoreMultiplierTimer == 0.0f) return;
+
+  g_player.scoreMultiplierTimer = fmaxf(g_player.scoreMultiplierTimer -= frameTime, 0.0f);
+  if (g_player.scoreMultiplierTimer == 0.0f) {
+    g_player.scoreMultiplier = 1;
   }
 }
 
@@ -72,7 +87,10 @@ bool player_init(void) {
 
 void player_restart(void) {
   assert(g_player.actor != nullptr);
-  g_player.state = PLAYER_NORMAL;
+  g_player.state                = PLAYER_NORMAL;
+  g_player.swordTimer           = 0.0f;
+  g_player.scoreMultiplier      = 1;
+  g_player.scoreMultiplierTimer = 0.0f;
   actor_setPos(g_player.actor, PLAYER_START_POS);
   actor_setDir(g_player.actor, PLAYER_START_DIR);
   actor_startMoving(g_player.actor);
@@ -80,9 +98,7 @@ void player_restart(void) {
 
 void player_reset() {
   player_restart();
-  g_player.state          = PLAYER_NORMAL;
   g_player.coinsCollected = 0;
-  g_player.swordTimer     = 0.0f;
 }
 
 void player_totalReset() {
@@ -122,6 +138,7 @@ void player_update(float frameTime, float slop) {
   }
 
   playerSwordUpdate(frameTime);
+  playerScoreMultiplierUpdate(frameTime);
 
   game__Dir dir = DIR_NONE;
   for (int i = 0; i < DIR_COUNT; i++) {
@@ -218,3 +235,11 @@ void player_dead(void) {
 bool player_hasSword(void) { return g_player.swordTimer > 0.0f; }
 
 float player_getSwordTimer(void) { return g_player.swordTimer; }
+
+void player_killedGhost(int ghostID) {
+  int score                      = GHOST_BASE_SCORE * g_player.scoreMultiplier;
+  g_player.score                += score;
+  g_player.scoreMultiplier      *= 2;
+  g_player.scoreMultiplierTimer  = SCORE_MULTIPLIER_TIMER;
+  ghost_setScore(ghostID, score);
+}

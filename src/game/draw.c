@@ -6,6 +6,7 @@
 const char*          PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWORD", "DEAD" };
 static const Color   GHOST_DEAD_COLOUR                        = { 255, 255, 255, 100 };
 static const Vector2 PLAYER_COOLDOWN_OFFSET                   = { 7, -4 };
+static const Vector2 GHOST_SCORE_OFFSET                       = { 5, -4 };
 
 // --- Draw functions ---
 
@@ -50,6 +51,12 @@ void draw_ghosts(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     Color colour = ghost_isFrightened(i) ? BLUE : ghost_isDead(i) ? GHOST_DEAD_COLOUR : WHITE;
     engine_drawSprite(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i], colour);
+
+    int score = ghost_getScore(i);
+    if (score > 0.0f) {
+      Vector2 pos = Vector2Add(POS_ADJUST(ghost_getPos(i)), GHOST_SCORE_OFFSET);
+      engine_drawInt(score, pos, 16, WHITE);
+    }
   }
 }
 
@@ -65,8 +72,10 @@ void draw_player(void) {
     engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerLivesSprites[i], WHITE);
   }
 
-  Vector2 pos = Vector2Add(POS_ADJUST(player_getPos()), PLAYER_COOLDOWN_OFFSET);
-  if (swordTimer > 0.0f) engine_drawInt((int) ceilf(swordTimer), pos, 12, WHITE);
+  if (swordTimer > 0.0f) {
+    Vector2 pos = Vector2Add(POS_ADJUST(player_getPos()), PLAYER_COOLDOWN_OFFSET);
+    engine_drawInt((int) ceilf(swordTimer), pos, 12, WHITE);
+  }
 }
 
 void draw_interface(void) {

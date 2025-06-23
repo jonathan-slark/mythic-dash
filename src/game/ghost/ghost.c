@@ -14,6 +14,7 @@ static const char* STATE_FRIGHTENED_STR = "FRIGHT";
 static const char* STATE_DEAD_STR       = "DEAD";
 static const char* STATE_CHASE_STR      = "CHASE";
 static const char* STATE_SCATTER_STR    = "SCATTER";
+static const float SCORE_TIMER          = 5.0f;
 
 // --- Global state ---
 
@@ -94,10 +95,12 @@ static void ghostResetTargets(void) {
 static void ghostDefaults(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.ghosts[i].update           = CREATURE_DATA[i].update;
-    g_state.ghosts[i].timer            = CREATURE_DATA[i].startTimer;
+    g_state.ghosts[i].startTimer       = CREATURE_DATA[i].startTimer;
     g_state.ghosts[i].mazeStart        = CREATURE_DATA[i].mazeStart;
     g_state.ghosts[i].cornerTile       = CREATURE_DATA[i].cornerTile;
     g_state.ghosts[i].decisionCooldown = 0.0f;
+    g_state.ghosts[i].score            = 0;
+    g_state.ghosts[i].scoreTimer       = 0.0f;
   }
   ghostResetTargets();
 }
@@ -157,13 +160,21 @@ void ghost_update(float frameTime, float slop) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.ghosts[i].update(&g_state.ghosts[i], frameTime, slop);
 
-    game__AABB ghostAABB = actor_getAABB(g_state.ghosts[i].actor);
-    if (aabb_isColliding(playerAABB, ghostAABB)) {
-      if (playerState == PLAYER_SWORD) {
-        g_state.ghosts[i].update = ghost__dead;
-      } else if (g_state.ghosts[i].update != ghost__dead) {
-        playerDead = true;
+    if (g_state.ghosts[i].update != ghost__dead) {
+      game__AABB ghostAABB = actor_getAABB(g_state.ghosts[i].actor);
+      if (aabb_isColliding(playerAABB, ghostAABB)) {
+        if (playerState == PLAYER_SWORD) {
+          g_state.ghosts[i].update = ghost__dead;
+          player_killedGhost(i);
+        } else {
+          playerDead = true;
+        }
       }
+    }
+
+    if (g_state.ghosts[i].scoreTimer > 0.0f) {
+      g_state.ghosts[i].scoreTimer = fmaxf(g_state.ghosts[i].scoreTimer - frameTime, 0.0f);
+      if (g_state.ghosts[i].scoreTimer == 0.0f) g_state.ghosts[i].score = 0;
     }
   }
 
@@ -237,3 +248,11 @@ bool ghost_isDead(int id) {
   assert(g_state.ghosts[id].update != nullptr);
   return g_state.ghosts[id].update == ghost__dead || g_state.ghosts[id].update == ghost__startToPen;
 }
+
+void ghost_setScore(int id, int score) {
+  assert(id >= 0 && id < CREATURE_COUNT);
+  g_state.ghosts[id].score      = score;
+  g_state.ghosts[id].scoreTimer = SCORE_TIMER;
+}
+
+int ghost_getScore(int id) { return g_state.ghosts[id].score; }

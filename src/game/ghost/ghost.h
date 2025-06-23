@@ -12,7 +12,7 @@
 
 typedef struct ghost__Ghost {
   void (*update)(struct ghost__Ghost *, float, float);
-  float timer;
+  float startTimer;
   Vector2 mazeStart;
   game__Tile cornerTile;
   game__Tile targetTile;
@@ -20,6 +20,8 @@ typedef struct ghost__Ghost {
   game__Actor *actor;
   unsigned id;
   bool isChangedState;
+  int score;
+  float scoreTimer;
 } ghost__Ghost;
 
 typedef struct ghost__State {

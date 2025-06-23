@@ -175,11 +175,11 @@ void ghost__pen(ghost__Ghost* ghost, float frameTime, float slop) {
   if (!actor_canMove(actor, currentDir, slop)) actor_setDir(actor, getOppositeDir(currentDir));
 
   // Release the ho... er... ghosts!
-  if (ghost->timer <= frameTime) {
-    ghost->timer  = 0.0f;
-    ghost->update = ghost__penToStart;
+  if (ghost->startTimer <= frameTime) {
+    ghost->startTimer = 0.0f;
+    ghost->update     = ghost__penToStart;
   } else {
-    ghost->timer -= frameTime;
+    ghost->startTimer -= frameTime;
   }
 }
 
