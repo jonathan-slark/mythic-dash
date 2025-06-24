@@ -6,7 +6,7 @@
 const char*          PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWORD", "DEAD" };
 static const Color   GHOST_DEAD_COLOUR                        = { 255, 255, 255, 100 };
 static const Vector2 PLAYER_COOLDOWN_OFFSET                   = { 5, -8 };
-static const Vector2 GHOST_SCORE_OFFSET                       = { 5, -4 };
+static const Vector2 GHOST_SCORE_OFFSET                       = { 1, -8 };
 
 // --- Draw functions ---
 
@@ -55,7 +55,7 @@ void draw_ghosts(void) {
     int score = ghost_getScore(i);
     if (score > 0.0f) {
       Vector2 pos = Vector2Add(POS_ADJUST(ghost_getPos(i)), GHOST_SCORE_OFFSET);
-      engine_drawInt(score, pos, 16, WHITE);
+      engine_fontPrintf(g_assets.fontTiny, pos.x, pos.y, WHITE, "%d", score, pos);
     }
   }
 }
