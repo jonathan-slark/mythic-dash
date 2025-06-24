@@ -94,6 +94,7 @@ void         actor_startMoving(game__Actor* actor);
 game__AABB   actor_getAABB(const game__Actor* actor);
 bool         actor_canMove(game__Actor* actor, game__Dir dir, float slop);
 void         actor_setSpeed(game__Actor* actor, float speed);
+float        actor_getSpeed(game__Actor* actor);
 void         actor_overlay(const game__Actor* actor, Color colour);
 void         actor_moveOverlay(game__Actor* actor);
 void         actor_canMoveOverlay(game__Actor* actor);

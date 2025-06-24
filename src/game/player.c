@@ -16,6 +16,8 @@ typedef struct Player {
   float             deadTimer;
   int               scoreMultiplier;
   float             scoreMultiplierTimer;
+  float             coinSlowTimer;
+  float             swordSlowTimer;
 } Player;
 
 // --- Constants ---
@@ -30,6 +32,9 @@ static const float       SWORD_TIMER            = 6.0f;  // Sword animation last
 static const float       PLAYER_DEAD_TIMER      = 2.0f;
 static const int         GHOST_BASE_SCORE       = 200;
 static const float       SCORE_MULTIPLIER_TIMER = 5.0f;
+static const float       COIN_SLOW_TIMER        = 0.5f;
+static const float       SWORD_SLOW_TIMER       = 0.5f;
+static const float       PLAYER_SLOW_SPED       = 50.f;
 
 // --- Global state ---
 
@@ -48,14 +53,30 @@ static Player g_player = {
 // --- Helper functions ---
 
 static void playerCoinPickup(void) {
-  g_player.score += SCORE_COIN;
+  g_player.coinSlowTimer  = COIN_SLOW_TIMER;
+  g_player.score         += SCORE_COIN;
   g_player.coinsCollected++;
+  actor_setSpeed(g_player.actor, PLAYER_SLOW_SPED);
 }
 
 static void playerSwordPickup(void) {
-  g_player.state       = PLAYER_SWORD;
-  g_player.swordTimer  = SWORD_TIMER;
-  g_player.score      += SCORE_SWORD;
+  g_player.state           = PLAYER_SWORD;
+  g_player.swordTimer      = SWORD_TIMER;
+  g_player.swordSlowTimer  = SWORD_SLOW_TIMER;
+  g_player.score          += SCORE_SWORD;
+  actor_setSpeed(g_player.actor, PLAYER_SLOW_SPED);
+}
+
+static void playerCoinSlowUpdate(float frameTime) {
+  if (g_player.coinSlowTimer == 0.0f) return;
+  g_player.coinSlowTimer = fmaxf(g_player.coinSlowTimer -= frameTime, 0.0f);
+  if (g_player.coinSlowTimer == 0.0f && g_player.swordSlowTimer == 0.0f) actor_setSpeed(g_player.actor, PLAYER_SPEED);
+}
+
+static void playerSwordSlowUpdate(float frameTime) {
+  if (g_player.swordSlowTimer == 0.0f) return;
+  g_player.swordSlowTimer = fmaxf(g_player.swordSlowTimer -= frameTime, 0.0f);
+  if (g_player.swordSlowTimer == 0.0f && g_player.coinSlowTimer == 0.0f) actor_setSpeed(g_player.actor, PLAYER_SPEED);
 }
 
 static void playerSwordUpdate(float frameTime) {
@@ -74,6 +95,24 @@ static void playerScoreMultiplierUpdate(float frameTime) {
   g_player.scoreMultiplierTimer = fmaxf(g_player.scoreMultiplierTimer -= frameTime, 0.0f);
   if (g_player.scoreMultiplierTimer == 0.0f) {
     g_player.scoreMultiplier = 1;
+  }
+}
+
+static void playerCheckPickups(void) {
+  // Check centre of tile, feels right.
+  Vector2 pos = actor_getPos(g_player.actor);
+  pos         = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
+  if (maze_isCoin(pos)) {
+    maze_pickupCoin(pos);
+    playerCoinPickup();
+    if (maze_getCoinCount() == g_player.coinsCollected) {
+      game_nextLevel();
+    }
+  }
+  if (maze_isSword(pos)) {
+    maze_pickupSword(pos);
+    playerSwordPickup();
+    ghost_swordPickup();
   }
 }
 
@@ -137,7 +176,9 @@ void player_update(float frameTime, float slop) {
     return;
   }
 
+  playerCoinSlowUpdate(frameTime);
   playerSwordUpdate(frameTime);
+  playerSwordSlowUpdate(frameTime);
   playerScoreMultiplierUpdate(frameTime);
 
   game__Dir dir = DIR_NONE;
@@ -152,21 +193,7 @@ void player_update(float frameTime, float slop) {
 
   actor_move(g_player.actor, dir, frameTime);
 
-  // Check centre of tile, feels right.
-  Vector2 pos = actor_getPos(g_player.actor);
-  pos         = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
-  if (maze_isCoin(pos)) {
-    maze_pickupCoin(pos);
-    playerCoinPickup();
-    if (maze_getCoinCount() == g_player.coinsCollected) {
-      game_nextLevel();
-    }
-  }
-  if (maze_isSword(pos)) {
-    maze_pickupSword(pos);
-    playerSwordPickup();
-    ghost_swordPickup();
-  }
+  playerCheckPickups();
 }
 
 Vector2 player_getPos(void) {

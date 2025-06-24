@@ -103,6 +103,11 @@ void actor_setSpeed(game__Actor* actor, float speed) {
   actor->speed = speed;
 }
 
+float actor_getSpeed(game__Actor* actor) {
+  assert(actor != nullptr);
+  return actor->speed;
+}
+
 void actor_overlay(const game__Actor* actor, Color colour) {
   assert(actor != nullptr);
   aabb_drawOverlay(actor_getAABB(actor), colour);
