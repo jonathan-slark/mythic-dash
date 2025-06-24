@@ -22,6 +22,7 @@ typedef struct ghost__Ghost {
   bool isChangedState;
   int score;
   float scoreTimer;
+  float teleportTimer;
 } ghost__Ghost;
 
 typedef struct ghost__State {

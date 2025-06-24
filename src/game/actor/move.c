@@ -296,3 +296,5 @@ void actor_move(game__Actor* actor, game__Dir dir, float frameTime) {
   getTiles(actor, actor->tilesMove, dir);
   checkMazeCollision(actor);
 }
+
+bool actor_hasTeleported(game__Actor* actor) { return actor->hasTeleported; }

@@ -101,6 +101,7 @@ void         actor_moveNoCheck(game__Actor* actor, game__Dir dir, float frameTim
 void         actor_move(game__Actor* actor, game__Dir dir, float frameTime);
 void         actor_update(game__Actor* actor, float frameTime);
 game__Tile   actor_nextTile(game__Actor* actor, game__Dir dir);
+bool         actor_hasTeleported(game__Actor* actor);
 
 // --- Draw functions (draw.c) ---
 

@@ -15,6 +15,7 @@ static const char* STATE_DEAD_STR       = "DEAD";
 static const char* STATE_CHASE_STR      = "CHASE";
 static const char* STATE_SCATTER_STR    = "SCATTER";
 static const float SCORE_TIMER          = 5.0f;
+static const float TELEPORT_TIMER       = 1.0f;
 
 // --- Global state ---
 
@@ -92,6 +93,12 @@ static void ghostResetTargets(void) {
   }
 }
 
+static void ghostResetTeleportTimer(void) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    g_state.ghosts[i].teleportTimer = 0.0f;
+  }
+}
+
 static void ghostDefaults(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.ghosts[i].update           = CREATURE_DATA[i].update;
@@ -101,6 +108,7 @@ static void ghostDefaults(void) {
     g_state.ghosts[i].decisionCooldown = 0.0f;
     g_state.ghosts[i].score            = 0;
     g_state.ghosts[i].scoreTimer       = 0.0f;
+    g_state.ghosts[i].teleportTimer    = 0.0f;
   }
   ghostResetTargets();
 }
@@ -109,6 +117,27 @@ static void ghostSetSpeeds(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     if (shouldUpdateGhostState(&g_state.ghosts[i])) actor_setSpeed(g_state.ghosts[i].actor, ghost__getSpeed());
   }
+}
+
+static void ghostCheckScoreTimer(ghost__Ghost* ghost, float frameTime) {
+  if (ghost->scoreTimer == 0.0f) return;
+
+  ghost->scoreTimer = fmaxf(ghost->scoreTimer - frameTime, 0.0f);
+  if (ghost->scoreTimer == 0.0f) ghost->score = 0;
+}
+
+static void ghostCheckTeleport(ghost__Ghost* ghost) {
+  if (actor_hasTeleported(ghost->actor)) {
+    ghost->teleportTimer = TELEPORT_TIMER;
+    actor_setSpeed(ghost->actor, SPEED_SLOW);
+  }
+}
+
+static void ghostUpdateTeleportSlow(ghost__Ghost* ghost, float frameTime) {
+  if (ghost->teleportTimer == 0.0f) return;
+
+  ghost->teleportTimer = fmaxf(ghost->teleportTimer - frameTime, 0.0f);
+  if (ghost->teleportTimer == 0.0f) actor_setSpeed(ghost->actor, ghost__getSpeed());
 }
 
 // --- Ghost functions ---
@@ -172,9 +201,11 @@ void ghost_update(float frameTime, float slop) {
       }
     }
 
-    if (g_state.ghosts[i].scoreTimer > 0.0f) {
-      g_state.ghosts[i].scoreTimer = fmaxf(g_state.ghosts[i].scoreTimer - frameTime, 0.0f);
-      if (g_state.ghosts[i].scoreTimer == 0.0f) g_state.ghosts[i].score = 0;
+    ghostCheckScoreTimer(&g_state.ghosts[i], frameTime);
+
+    if (g_state.ghosts[i].update != ghost__frightened) {
+      ghostCheckTeleport(&g_state.ghosts[i]);
+      ghostUpdateTeleportSlow(&g_state.ghosts[i], frameTime);
     }
   }
 
@@ -230,6 +261,7 @@ void ghost_swordPickup(void) {
   transitionToState(ghost__frightened);
   ghostSetSpeeds();
   ghostResetTargets();
+  ghostResetTeleportTimer();
 }
 
 void ghost_swordDrop(void) {

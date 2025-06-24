@@ -133,9 +133,7 @@ static void ghostUpdateCommon(ghost__Ghost* ghost, float frameTime, float slop, 
   game__Dir    currentDir = actor_getDir(actor);
 
   actor_move(actor, currentDir, frameTime);
-  ghost->decisionCooldown -= frameTime;
-
-  if (ghost->decisionCooldown < 0.0f) ghost->decisionCooldown = 0.0f;
+  if (ghost->decisionCooldown > 0.0f) ghost->decisionCooldown = fmaxf(ghost->decisionCooldown - frameTime, 0.0f);
 
   if (ghost->isChangedState || !actor_canMove(actor, currentDir, slop) || ghost->decisionCooldown == 0.0f) {
     game__Dir validDirs[DIR_COUNT - 1];
