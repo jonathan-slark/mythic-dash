@@ -135,16 +135,15 @@ void actor_canMoveOverlay(game__Actor* actor) {
 }
 
 game__Tile actor_nextTile(game__Actor* actor, game__Dir dir) {
-  Vector2 pos  = actor->pos;
-  Vector2 size = actor->size;
+  Vector2 center = { actor->pos.x + actor->size.x / 2.0f, actor->pos.y + actor->size.y / 2.0f };
   switch (dir) {
-    case DIR_UP: pos = (Vector2) { pos.x + TILE_SIZE / 2.0f, pos.y - TILE_SIZE / 2.0f }; break;
-    case DIR_RIGHT: pos = (Vector2) { pos.x + size.x + TILE_SIZE / 2.0f, pos.y + TILE_SIZE / 2.0f }; break;
-    case DIR_DOWN: pos = (Vector2) { pos.x + TILE_SIZE / 2.0f, pos.y + size.y + TILE_SIZE / 2.0f }; break;
-    case DIR_LEFT: pos = (Vector2) { pos.x - TILE_SIZE / 2.0f, pos.y + TILE_SIZE / 2.0f }; break;
+    case DIR_UP: center.y -= TILE_SIZE; break;
+    case DIR_RIGHT: center.x += TILE_SIZE; break;
+    case DIR_DOWN: center.y += TILE_SIZE; break;
+    case DIR_LEFT: center.x -= TILE_SIZE; break;
     default: assert(false);
   }
-  return maze_getTile(pos);
+  return maze_getTile(center);
 }
 
 void actor_startMoving(game__Actor* actor) { actor->isMoving = true; }

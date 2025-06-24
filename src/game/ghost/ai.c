@@ -83,17 +83,29 @@ static inline game__Dir selectDirRandom(ghost__Ghost* ghost [[maybe_unused]], ga
 static game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int count, game__Tile targetTile) {
   assert(count > 0);
 
-  game__Dir bestDir = DIR_NONE;
-  int       minDist = INT_MAX;
+  game__Dir bestDirs[DIR_COUNT];
+  int       bestDirCount = 0;
+  int       minDist      = INT_MAX;
   for (int i = 0; i < count; i++) {
     game__Tile nextTile = actor_nextTile(ghost->actor, dirs[i]);
     int        dist     = maze_manhattanDistance(nextTile, targetTile);
-    if (dist < minDist) {
-      bestDir = dirs[i];
-      minDist = dist;
+    LOG_INFO(game__log, "Ghost %d: direction = %s, dist = %d", ghost->id, DIR_STRINGS[dirs[i]], dist);
+    if (dist == minDist) {
+      bestDirCount = 0;
+    }
+    if (dist <= minDist) {
+      bestDirs[bestDirCount++] = dirs[i];
+      minDist                  = dist;
     }
   }
-  return bestDir;
+  assert(bestDirCount > 0);
+  if (bestDirCount == 1) {
+    LOG_INFO(game__log, "Ghost %d has one best direction: %s", ghost->id, DIR_STRINGS[bestDirs[0]]);
+    return bestDirs[0];
+  } else {
+    LOG_INFO(game__log, "Ghost %d has best direction count: %d", ghost->id, bestDirCount);
+    return randomSelect(bestDirs, bestDirCount);
+  }
 }
 
 static inline game__Dir selectDirGreedy(ghost__Ghost* ghost, game__Dir* dirs, int count) {
@@ -103,7 +115,10 @@ static inline game__Dir selectDirGreedy(ghost__Ghost* ghost, game__Dir* dirs, in
 // Ghost personalities
 static game__Tile getTargetTile(ghost__Ghost* ghost) {
   game__Tile targetTile;
-  game__Tile playerTile = maze_getTile(player_getPos());
+  Vector2    pos        = player_getPos();
+  pos                   = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
+  game__Tile playerTile = maze_getTile(pos);
+  return playerTile;  // TODO: re-enable personalities
   switch (ghost->id) {
     // TODO: Change ghost id's to match this order
     // Directly target player's current tile
@@ -112,12 +127,16 @@ static game__Tile getTargetTile(ghost__Ghost* ghost) {
     case 2: targetTile = player_tileAhead(4); break;
     // Uses a vector based on both Ghost1's position and four tiles ahead of player
     case 0:
-      game__Tile ghost1Tile = maze_getTile(actor_getPos(ghost_getActor(1)));
+      pos                   = actor_getPos(ghost_getActor(1));
+      pos                   = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
+      game__Tile ghost1Tile = maze_getTile(pos);
       targetTile            = maze_doubleVectorBetween(ghost1Tile, player_tileAhead(2));
       break;
     // Chases player until close, then retreats to corner
     case 3:
-      if (maze_manhattanDistance(maze_getTile(actor_getPos(ghost->actor)), playerTile) < 8) {
+      pos = actor_getPos(ghost->actor);
+      pos = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
+      if (maze_manhattanDistance(maze_getTile(pos), playerTile) < 8) {
         targetTile = ghost->cornerTile;
       } else {
         targetTile = playerTile;
@@ -175,7 +194,7 @@ void ghost__pen(ghost__Ghost* ghost, float frameTime, float slop) {
   // Release the ho... er... ghosts!
   if (ghost->startTimer <= frameTime) {
     ghost->startTimer = 0.0f;
-    if (ghost->id == 1) ghost->update = ghost__penToStart;
+    ghost->update     = ghost__penToStart;
   } else {
     ghost->startTimer -= frameTime;
   }

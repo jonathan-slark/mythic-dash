@@ -236,7 +236,9 @@ game__Actor* player_getActor(void) {
 }
 
 game__Tile player_tileAhead(int tileNum) {
-  game__Tile tile = maze_getTile(player_getPos());
+  Vector2 pos = player_getPos();
+  Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
+  game__Tile tile = maze_getTile(pos);
   switch (player_getDir()) {
     case DIR_UP:
       tile.row -= tileNum;
