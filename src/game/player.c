@@ -23,7 +23,7 @@ typedef struct Player {
 // --- Constants ---
 
 static const Vector2     PLAYER_START_POS       = { 14 * TILE_SIZE, 13 * TILE_SIZE };
-static const float       PLAYER_SPEED           = 60.0f;
+static const float       PLAYER_MAX_SPEED       = 60.0f;
 static const game__Dir   PLAYER_START_DIR       = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]          = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
 static const int         SCORE_COIN             = 10;
@@ -70,13 +70,15 @@ static void playerSwordPickup(void) {
 static void playerCoinSlowUpdate(float frameTime) {
   if (g_player.coinSlowTimer == 0.0f) return;
   g_player.coinSlowTimer = fmaxf(g_player.coinSlowTimer -= frameTime, 0.0f);
-  if (g_player.coinSlowTimer == 0.0f && g_player.swordSlowTimer == 0.0f) actor_setSpeed(g_player.actor, PLAYER_SPEED);
+  if (g_player.coinSlowTimer == 0.0f && g_player.swordSlowTimer == 0.0f)
+    actor_setSpeed(g_player.actor, PLAYER_MAX_SPEED);
 }
 
 static void playerSwordSlowUpdate(float frameTime) {
   if (g_player.swordSlowTimer == 0.0f) return;
   g_player.swordSlowTimer = fmaxf(g_player.swordSlowTimer -= frameTime, 0.0f);
-  if (g_player.swordSlowTimer == 0.0f && g_player.coinSlowTimer == 0.0f) actor_setSpeed(g_player.actor, PLAYER_SPEED);
+  if (g_player.swordSlowTimer == 0.0f && g_player.coinSlowTimer == 0.0f)
+    actor_setSpeed(g_player.actor, PLAYER_MAX_SPEED);
 }
 
 static void playerSwordUpdate(float frameTime) {
@@ -120,7 +122,9 @@ static void playerCheckPickups(void) {
 
 bool player_init(void) {
   assert(g_player.actor == nullptr);
-  g_player.actor = actor_create(PLAYER_START_POS, (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_START_DIR, PLAYER_SPEED);
+  g_player.actor = actor_create(
+      PLAYER_START_POS, (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_START_DIR, PLAYER_MAX_SPEED
+  );
   return g_player.actor != nullptr;
 }
 
@@ -249,7 +253,7 @@ game__Tile player_tileAhead(int tileNum) {
   return tile;
 }
 
-float player_getSpeed(void) { return PLAYER_SPEED; }
+float player_getMaxSpeed(void) { return PLAYER_MAX_SPEED; }
 
 int player_getLives(void) { return g_player.lives; }
 

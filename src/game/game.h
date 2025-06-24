@@ -122,7 +122,7 @@ game__Dir         player_getDir(void);
 bool              player_isMoving(void);
 game__Actor*      player_getActor(void);
 game__Tile        player_tileAhead(int tileNum);
-float             player_getSpeed(void);
+float             player_getMaxSpeed(void);
 void              player_dead(void);
 void              player_reset(void);
 void              player_restart(void);

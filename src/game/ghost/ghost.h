@@ -47,8 +47,11 @@ void ghost__scatter(ghost__Ghost *ghost, float frameTime, float slop);
 
 constexpr float SPEED_SLOW = 25.0f;
 static const float NORMAL_SPEED_MIN_MULT = 0.75f;
+static const float NORMAL_SPEED_MAX_MULT = 0.95f;
+static const float NORMAL_LEVEL_MULT = 0.011f;
 static const float FRIGHT_SPEED_MIN_MULT = 0.50f;
-static const float SPEED_MAX_MULT = 0.95f;
+static const float FRIGHT_SPEED_MAX_MULT = 0.60f;
+static const float FRIGHT_LEVEL_MULT = 0.0055f;
 static const float DECISION_COOLDOWN = 0.5f;
 
 static const int FIRST_GHOST_OUT = 1;
@@ -105,10 +108,18 @@ extern ghost__State g_state;
 
 // --- Helper functions ---
 
+// Level 01: normal ghost speed = 75% of player, fright ghost speed = 50%
+// Level 20: normal ghost speed = 95% of player, fright ghost speed = 60%
 static inline float ghost__getSpeed(void) {
-  return fminf((player_hasSword() ? FRIGHT_SPEED_MIN_MULT
-                                  : NORMAL_SPEED_MIN_MULT) +
-                   game_getLevel() * 0.02f,
-               SPEED_MAX_MULT) *
-         player_getSpeed();
+  if (player_hasSword()) {
+    return fminf(FRIGHT_SPEED_MIN_MULT +
+                     (game_getLevel() - 1) * FRIGHT_LEVEL_MULT,
+                 FRIGHT_SPEED_MAX_MULT) *
+           player_getMaxSpeed();
+  } else {
+    return fminf(NORMAL_SPEED_MIN_MULT +
+                     (game_getLevel() - 1) * NORMAL_LEVEL_MULT,
+                 NORMAL_SPEED_MAX_MULT) *
+           player_getMaxSpeed();
+  }
 }

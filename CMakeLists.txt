@@ -30,3 +30,7 @@ add_executable(${TEST_GAME} ${TEST_DIR}/game.c)
 target_include_directories(${TEST_GAME} PUBLIC ${MINUNIT_DIR})
 target_include_directories(${TEST_GAME} PRIVATE ${TEST_DIR})
 target_link_libraries(${TEST_GAME} PRIVATE engine log)
+
+# Test level scaling
+set(TEST_SCALE test_scale)
+add_executable(${TEST_SCALE} ${TEST_DIR}/scale.c)
