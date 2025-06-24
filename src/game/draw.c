@@ -5,7 +5,7 @@
 
 const char*          PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWORD", "DEAD" };
 static const Color   GHOST_DEAD_COLOUR                        = { 255, 255, 255, 100 };
-static const Vector2 PLAYER_COOLDOWN_OFFSET                   = { 7, -4 };
+static const Vector2 PLAYER_COOLDOWN_OFFSET                   = { 5, -8 };
 static const Vector2 GHOST_SCORE_OFFSET                       = { 5, -4 };
 
 // --- Draw functions ---
@@ -21,7 +21,7 @@ void draw_updatePlayer(float frameTime, float slop) {
 
   if (state != prevState || dir != prevDir) {
     if (state != prevState)
-      LOG_DEBUG(
+      LOG_TRACE(
           game__log, "Player state changed from %s to %s", PLAYER_STATE_STRINGS[prevState], PLAYER_STATE_STRINGS[state]
       );
     if (prevDir != DIR_NONE && dir != prevDir)
@@ -74,7 +74,7 @@ void draw_player(void) {
 
   if (swordTimer > 0.0f) {
     Vector2 pos = Vector2Add(POS_ADJUST(player_getPos()), PLAYER_COOLDOWN_OFFSET);
-    engine_drawInt((int) ceilf(swordTimer), pos, 12, WHITE);
+    engine_fontPrintf(g_assets.fontTiny, pos.x, pos.y, WHITE, "%d", (int) ceilf(swordTimer), pos);
   }
 }
 

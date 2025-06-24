@@ -61,7 +61,7 @@ static const Vector2 GHOST_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},
 static const game__Tile GHOST_START_TILE[CREATURE_COUNT] = {
     {11, 7}, {17, 7}, {11, 7}, {17, 7}};
 static const game__Dir GHOST_START_DIR = DIR_LEFT;
-static const float GHOST_CHASETIMER = 10.0f;
+static const float GHOST_CHASETIMER = 5.0f;
 static const game__Tile DEFAULT_TARGET_TILE = {-1, -1};
 static const struct {
   Vector2 startPos;

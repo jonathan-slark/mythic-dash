@@ -28,13 +28,15 @@ static const game__Dir   PLAYER_START_DIR       = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]          = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
 static const int         SCORE_COIN             = 10;
 static const int         SCORE_SWORD            = 50;
-static const float       SWORD_TIMER            = 6.0f;  // Sword animation lasts 400ms
 static const float       PLAYER_DEAD_TIMER      = 2.0f;
 static const int         GHOST_BASE_SCORE       = 200;
 static const float       SCORE_MULTIPLIER_TIMER = 5.0f;
 static const float       COIN_SLOW_TIMER        = 0.5f;
 static const float       SWORD_SLOW_TIMER       = 0.5f;
-static const float       PLAYER_SLOW_SPED       = 50.f;
+static const float       PLAYER_SLOW_SPEED      = 50.f;
+static const int         MAX_LEVEL              = 20;
+static const float       SWORD_MAX_TIMER        = 6.0f;
+static const float       SWORD_MIN_TIMER        = 3.6f;  // 60%
 
 // --- Global state ---
 
@@ -56,15 +58,21 @@ static void playerCoinPickup(void) {
   g_player.coinSlowTimer  = COIN_SLOW_TIMER;
   g_player.score         += SCORE_COIN;
   g_player.coinsCollected++;
-  actor_setSpeed(g_player.actor, PLAYER_SLOW_SPED);
+  actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED);
+}
+
+static float getSwordTimer(void) {
+  float t = fminf(fmaxf((game_getLevel() - 1) / (MAX_LEVEL - 1.0f), 0.0f), 1.0f);
+  t       = 1.0f - powf(1.0f - t, 2.0f);  // ease-out curve
+  return SWORD_MAX_TIMER - t * (SWORD_MAX_TIMER - SWORD_MIN_TIMER);
 }
 
 static void playerSwordPickup(void) {
   g_player.state           = PLAYER_SWORD;
-  g_player.swordTimer      = SWORD_TIMER;
+  g_player.swordTimer      = getSwordTimer();
   g_player.swordSlowTimer  = SWORD_SLOW_TIMER;
   g_player.score          += SCORE_SWORD;
-  actor_setSpeed(g_player.actor, PLAYER_SLOW_SPED);
+  actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED);
 }
 
 static void playerCoinSlowUpdate(float frameTime) {

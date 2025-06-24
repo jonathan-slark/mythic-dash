@@ -12,7 +12,7 @@
 // --- Constants ---
 
 #define OVERLAY_COLOUR_TILE_WALL (Color){ 255, 100, 100, 128 }
-#define OVERLAY_COLOUR_TILE_FLOOR (Color){ 255, 100, 100, 32 }
+#define OVERLAY_COLOUR_TILE_FLOOR (Color){ 100, 255, 100, 64 }
 #define OVERLAY_COLOUR_COLLISION (Color){ 255, 255, 100, 128 }
 
 // --- Helper functions ---

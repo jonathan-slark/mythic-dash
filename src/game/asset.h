@@ -31,6 +31,7 @@ typedef struct game__Assets {
   engine_Sprite *creatureSprites[CREATURE_COUNT];
   engine_Anim *creatureAnims[CREATURE_COUNT][DIR_COUNT];
   engine_Font *font;
+  engine_Font *fontTiny;
 } game__Assets;
 
 // --- Constants ---
@@ -39,6 +40,7 @@ static const char FILE_BACKGROUND[] = ASSET_DIR "gfx/background.png";
 static const char FILE_CREATURES[] = ASSET_DIR "gfx/creatures.png";
 static const char FILE_PLAYER[] = ASSET_DIR "gfx/player.png";
 static const char FILE_FONT[] = ASSET_DIR "gfx/font.png";
+static const char FILE_FONT_TINY[] = ASSET_DIR "gfx/tiny-numbers.png";
 
 static const float FRAME_TIME = 0.1f;
 

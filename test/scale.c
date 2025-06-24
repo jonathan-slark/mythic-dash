@@ -32,6 +32,15 @@ static inline float ghost__getSpeed(void) {
   }
 }
 
+static float getSwordTimer(void) {
+  const float max   = 6.0f;
+  const float min   = 3.6f;
+  const int   level = game_getLevel();
+  float       t     = fminf(fmaxf((level - 1) / 19.0f, 0.0f), 1.0f);
+  t                 = 1.0f - powf(1.0f - t, 2.0f);  // ease-out curve
+  return max - t * (max - min);
+}
+
 // --- Helper functions ---
 
 static void printGhostSpeeds(void) {
@@ -39,6 +48,14 @@ static void printGhostSpeeds(void) {
   for (int i = 0; i < 20; i++) {
     float speed = ghost__getSpeed();
     fprintf(stdout, "Level: %02d, ghost speed %f\n", level++, speed);
+  }
+}
+
+static void printSwordTimers(void) {
+  int level = 1;
+  for (int i = 0; i < 20; i++) {
+    float timer = getSwordTimer();
+    fprintf(stdout, "Level: %02d, sword timer %f\n", level++, timer);
   }
 }
 
@@ -54,6 +71,10 @@ int main(void) {
   g_playerHasSword = true;
   g_level          = 1;
   printGhostSpeeds();
+
+  fprintf(stdout, "\nSword timer:\n");
+  g_level = 1;
+  printSwordTimers();
 
   return 0;
 }
