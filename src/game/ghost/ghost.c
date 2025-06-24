@@ -58,10 +58,7 @@ static void transitionToState(void (*newState)(ghost__Ghost*, float, float)) {
 }
 
 static void transitionToPermanentChase(void) {
-  for (int i = 0; i < CREATURE_COUNT; i++) {
-    g_state.ghosts[i].update         = ghost__chase;
-    g_state.ghosts[i].isChangedState = true;
-  }
+  transitionToState(ghost__chase);
   g_state.stateNum++;
 }
 

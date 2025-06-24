@@ -240,21 +240,21 @@ game__Tile player_tileAhead(int tileNum) {
   switch (player_getDir()) {
     case DIR_UP:
       tile.row -= tileNum;
-      if (tile.row < 0) tile.row = 0;
+      if (tile.row < 1) tile.row = 1;
       break;
     case DIR_RIGHT:
       tile.col += tileNum;
       int cols  = maze_getCols();
-      if (tile.col >= cols) tile.col = cols - 1;
+      if (tile.col >= cols - 1) tile.col = cols - 2;
       break;
     case DIR_DOWN:
       tile.row += tileNum;
       int rows  = maze_getRows();
-      if (tile.row >= rows) tile.row = rows - 1;
+      if (tile.row >= rows - 1) tile.row = rows - 2;
       break;
     case DIR_LEFT:
       tile.col -= tileNum;
-      if (tile.col < 0) tile.col = 0;
+      if (tile.col < 1) tile.col = 1;
       break;
     default: assert(false);
   }

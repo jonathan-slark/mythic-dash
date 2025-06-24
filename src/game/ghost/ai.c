@@ -175,7 +175,7 @@ void ghost__pen(ghost__Ghost* ghost, float frameTime, float slop) {
   // Release the ho... er... ghosts!
   if (ghost->startTimer <= frameTime) {
     ghost->startTimer = 0.0f;
-    ghost->update     = ghost__penToStart;
+    if (ghost->id == 1) ghost->update = ghost__penToStart;
   } else {
     ghost->startTimer -= frameTime;
   }

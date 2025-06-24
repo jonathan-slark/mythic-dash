@@ -123,9 +123,9 @@ int maze_manhattanDistance(game__Tile a, game__Tile b) {
   int dy = abs(a.row - b.row);
 
   // Wrap-aware X distance for teleports
-  if (dx > g_maze.cols / 2) {
-    dx = g_maze.cols - dx;
-  }
+  // if (dx > g_maze.cols / 2) {
+  //  dx = g_maze.cols - dx;
+  //}
 
   return dx + dy;
 }
@@ -133,10 +133,10 @@ int maze_manhattanDistance(game__Tile a, game__Tile b) {
 game__Tile maze_doubleVectorBetween(game__Tile from, game__Tile to) {
   game__Tile diff   = { to.col - from.col, to.row - from.row };
   game__Tile target = { to.col + diff.col, to.row + diff.row };
-  if (target.col < 0) target.col = 0;
-  if (target.row < 0) target.row = 0;
-  if (target.col >= g_maze.cols) target.col = g_maze.cols - 1;
-  if (target.row >= g_maze.rows) target.row = g_maze.rows - 1;
+  if (target.col < 1) target.col = 1;
+  if (target.row < 1) target.row = 1;
+  if (target.col >= g_maze.cols - 1) target.col = g_maze.cols - 2;
+  if (target.row >= g_maze.rows - 1) target.row = g_maze.rows - 2;
   return target;
 }
 
