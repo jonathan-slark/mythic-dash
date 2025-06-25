@@ -63,6 +63,10 @@ Vector2 actor_getPos(const game__Actor* actor) {
   return actor->pos;
 }
 
+Vector2 actor_getCentre(const game__Actor* actor) {
+  return (Vector2) { actor->pos.x + actor->size.x / 2.0f, actor->pos.y + actor->size.y / 2.0f };
+}
+
 void actor_setPos(game__Actor* actor, Vector2 pos) {
   assert(actor != nullptr);
   actor->pos = pos;

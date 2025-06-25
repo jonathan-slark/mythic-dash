@@ -118,10 +118,7 @@ static inline game__Dir selectDirGreedy(ghost__Ghost* ghost, game__Dir* dirs, in
 // Ghost personalities
 static game__Tile getTargetTile(ghost__Ghost* ghost) {
   game__Tile targetTile;
-  Vector2    pos        = player_getPos();
-  pos                   = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
-  game__Tile playerTile = maze_getTile(pos);
-  return playerTile;  // TODO: re-enable personalities
+  game__Tile playerTile = maze_getTile(actor_getCentre(player_getActor()));
   switch (ghost->id) {
     // TODO: Change ghost id's to match this order
     // Directly target player's current tile
@@ -130,16 +127,12 @@ static game__Tile getTargetTile(ghost__Ghost* ghost) {
     case 2: targetTile = player_tileAhead(4); break;
     // Uses a vector based on both Ghost1's position and four tiles ahead of player
     case 0:
-      pos                   = actor_getPos(ghost_getActor(1));
-      pos                   = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
-      game__Tile ghost1Tile = maze_getTile(pos);
+      game__Tile ghost1Tile = maze_getTile(actor_getCentre(ghost_getActor(1)));
       targetTile            = maze_doubleVectorBetween(ghost1Tile, player_tileAhead(2));
       break;
     // Chases player until close, then retreats to corner
     case 3:
-      pos = actor_getPos(ghost->actor);
-      pos = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
-      if (maze_manhattanDistance(maze_getTile(pos), playerTile) < 8) {
+      if (maze_manhattanDistance(maze_getTile(actor_getCentre(ghost->actor)), playerTile) < 8) {
         targetTile = ghost->cornerTile;
       } else {
         targetTile = playerTile;
@@ -197,7 +190,7 @@ void ghost__pen(ghost__Ghost* ghost, float frameTime, float slop) {
   // Release the ho... er... ghosts!
   if (ghost->startTimer <= frameTime) {
     ghost->startTimer = 0.0f;
-    if (ghost->id == 1) ghost->update = ghost__penToStart;
+    ghost->update     = ghost__penToStart;
   } else {
     ghost->startTimer -= frameTime;
   }
@@ -289,6 +282,8 @@ void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
+  // Hack as Ghost 1 starts outside
+  actor_setSpeed(ghost->actor, ghost__getSpeed());
   ghostUpdateCommon(ghost, frameTime, slop, &ScatterHandler);
 }
 

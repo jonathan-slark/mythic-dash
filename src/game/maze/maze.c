@@ -123,9 +123,9 @@ int maze_manhattanDistance(game__Tile a, game__Tile b) {
   int dy = abs(a.row - b.row);
 
   // Wrap-aware X distance for teleports
-  // if (dx > g_maze.cols / 2) {
-  //  dx = g_maze.cols - dx;
-  //}
+  if (dx > g_maze.cols / 2) {
+    dx = g_maze.cols - dx;
+  }
 
   return dx + dy;
 }

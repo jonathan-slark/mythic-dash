@@ -54,12 +54,11 @@ static const float FRIGHT_SPEED_MAX_MULT = 0.60f;
 static const float FRIGHT_LEVEL_MULT = 0.0055f;
 static const float DECISION_COOLDOWN = 0.5f;
 
-static const int FIRST_GHOST_OUT = 1;
 static const Vector2 MAZE_CENTRE = {14 * TILE_SIZE, 7 * TILE_SIZE};
 static const Vector2 GHOST_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},
                                            {17 * TILE_SIZE, 7 * TILE_SIZE}};
 static const game__Tile GHOST_START_TILE[CREATURE_COUNT] = {
-    {11, 7}, {17, 7}, {11, 7}, {17, 7}};
+    {17, 7}, {17, 7}, {11, 7}, {11, 7}};
 static const game__Dir GHOST_START_DIR = DIR_LEFT;
 static const float GHOST_CHASETIMER = 5.0f;
 static const game__Tile DEFAULT_TARGET_TILE = {-1, -1};
@@ -72,33 +71,33 @@ static const struct {
   float startTimer;
   void (*update)(ghost__Ghost *, float, float);
 } CREATURE_DATA[CREATURE_COUNT] = {
-    [0] = {{13 * TILE_SIZE, 6 * TILE_SIZE},
-           GHOST_MAZE_START[0],
-           {1, 1},
-           DIR_RIGHT,
-           SPEED_SLOW,
-           GHOST_CHASETIMER * 2.0f,
-           ghost__pen},
-    [1] = {{15 * TILE_SIZE, 7 * TILE_SIZE},
+    [0] = {{15 * TILE_SIZE, 8 * TILE_SIZE},
            GHOST_MAZE_START[1],
-           {27, 1},
-           DIR_LEFT,
-           SPEED_SLOW,
-           GHOST_CHASETIMER * 0.0f,
-           ghost__pen},
-    [2] = {{13 * TILE_SIZE, 8 * TILE_SIZE},
-           GHOST_MAZE_START[0],
-           {1, 13},
-           DIR_RIGHT,
+           {1, 1},
+           DIR_UP,
            SPEED_SLOW,
            GHOST_CHASETIMER * 1.0f,
            ghost__pen},
-    [3] = {{15 * TILE_SIZE, 9 * TILE_SIZE},
+    [1] = {{17 * TILE_SIZE, 7 * TILE_SIZE},
            GHOST_MAZE_START[1],
-           {27, 13},
-           DIR_LEFT,
+           {27, 1},
+           DIR_UP,
            SPEED_SLOW,
-           GHOST_CHASETIMER * 3.0f,
+           0.0f,
+           ghost__scatter},
+    [2] = {{13 * TILE_SIZE, 8 * TILE_SIZE},
+           GHOST_MAZE_START[0],
+           {1, 13},
+           DIR_UP,
+           SPEED_SLOW,
+           GHOST_CHASETIMER * 0.0f,
+           ghost__pen},
+    [3] = {{14 * TILE_SIZE, 7 * TILE_SIZE},
+           GHOST_MAZE_START[0],
+           {27, 13},
+           DIR_DOWN,
+           SPEED_SLOW,
+           GHOST_CHASETIMER * 2.0f,
            ghost__pen},
 };
 

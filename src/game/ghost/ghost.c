@@ -35,6 +35,11 @@ static inline bool shouldUpdateGhostState(ghost__Ghost* ghost) {
          ghost->update != ghost__startToPen;
 }
 
+static inline bool canInteractWithPlayer(ghost__Ghost* ghost) {
+  return ghost->update != ghost__pen && ghost->update != ghost__penToStart && ghost->update != ghost__dead &&
+         ghost->update != ghost__startToPen;
+}
+
 static const char* getStateString(void (*update)(struct ghost__Ghost*, float, float)) {
   if (update == ghost__pen) return STATE_PEN_STR;
   if (update == ghost__penToStart) return STATE_PETTOSTART_STR;
@@ -59,6 +64,7 @@ static void transitionToState(void (*newState)(ghost__Ghost*, float, float)) {
 
 static void transitionToPermanentChase(void) {
   transitionToState(ghost__chase);
+  g_state.lastUpdate = ghost__chase;
   g_state.stateNum++;
 }
 
@@ -186,7 +192,7 @@ void ghost_update(float frameTime, float slop) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.ghosts[i].update(&g_state.ghosts[i], frameTime, slop);
 
-    if (g_state.ghosts[i].update != ghost__dead) {
+    if (canInteractWithPlayer(&g_state.ghosts[i])) {
       game__AABB ghostAABB = actor_getAABB(g_state.ghosts[i].actor);
       if (aabb_isColliding(playerAABB, ghostAABB)) {
         if (playerState == PLAYER_SWORD) {

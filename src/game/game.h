@@ -85,6 +85,7 @@ static inline void aabb_drawOverlay(game__AABB aabb, Color colour) {
 game__Actor* actor_create(Vector2 pos, Vector2 size, game__Dir dir, float speed);
 void         actor_destroy(game__Actor** actor);
 Vector2      actor_getPos(const game__Actor* actor);
+Vector2      actor_getCentre(const game__Actor* actor);
 void         actor_setPos(game__Actor* actor, Vector2 pos);
 Vector2      actor_getSize(const game__Actor* actor);
 game__Dir    actor_getDir(const game__Actor* actor);

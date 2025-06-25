@@ -22,7 +22,7 @@ typedef struct Player {
 
 // --- Constants ---
 
-static const Vector2     PLAYER_START_POS       = { 14 * TILE_SIZE, 13 * TILE_SIZE };
+static const Vector2     PLAYER_START_POS       = { 14 * TILE_SIZE, 10 * TILE_SIZE };
 static const float       PLAYER_MAX_SPEED       = 60.0f;
 static const game__Dir   PLAYER_START_DIR       = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]          = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
@@ -242,21 +242,21 @@ game__Tile player_tileAhead(int tileNum) {
   switch (player_getDir()) {
     case DIR_UP:
       tile.row -= tileNum;
-      if (tile.row < 1) tile.row = 1;
+      if (tile.row < 0) tile.row = 0;
       break;
     case DIR_RIGHT:
       tile.col += tileNum;
       int cols  = maze_getCols();
-      if (tile.col >= cols - 1) tile.col = cols - 2;
+      if (tile.col >= cols) tile.col = cols - 1;
       break;
     case DIR_DOWN:
       tile.row += tileNum;
       int rows  = maze_getRows();
-      if (tile.row >= rows - 1) tile.row = rows - 2;
+      if (tile.row >= rows) tile.row = rows - 1;
       break;
     case DIR_LEFT:
       tile.col -= tileNum;
-      if (tile.col < 1) tile.col = 1;
+      if (tile.col < 0) tile.col = 0;
       break;
     default: assert(false);
   }
