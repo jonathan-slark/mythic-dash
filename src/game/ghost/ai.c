@@ -83,14 +83,16 @@ static inline game__Dir selectDirRandom(ghost__Ghost* ghost [[maybe_unused]], ga
 static game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int count, game__Tile targetTile) {
   assert(count > 0);
 
+  if (count == 1) return dirs[0];
+
   game__Dir bestDirs[DIR_COUNT];
   int       bestDirCount = 0;
   int       minDist      = INT_MAX;
   for (int i = 0; i < count; i++) {
     game__Tile nextTile = actor_nextTile(ghost->actor, dirs[i]);
     int        dist     = maze_manhattanDistance(nextTile, targetTile);
-    LOG_INFO(game__log, "Ghost %d: direction = %s, dist = %d", ghost->id, DIR_STRINGS[dirs[i]], dist);
-    if (dist == minDist) {
+    LOG_DEBUG(game__log, "Ghost %d: direction = %s, dist = %d", ghost->id, DIR_STRINGS[dirs[i]], dist);
+    if (dist < minDist) {
       bestDirCount = 0;
     }
     if (dist <= minDist) {
@@ -100,11 +102,12 @@ static game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int coun
   }
   assert(bestDirCount > 0);
   if (bestDirCount == 1) {
-    LOG_INFO(game__log, "Ghost %d has one best direction: %s", ghost->id, DIR_STRINGS[bestDirs[0]]);
+    LOG_DEBUG(game__log, "Ghost %d going: %s (best choice)", ghost->id, DIR_STRINGS[bestDirs[0]]);
     return bestDirs[0];
   } else {
-    LOG_INFO(game__log, "Ghost %d has best direction count: %d", ghost->id, bestDirCount);
-    return randomSelect(bestDirs, bestDirCount);
+    game__Dir dir = randomSelect(bestDirs, bestDirCount);
+    LOG_DEBUG(game__log, "Ghost %d going: %s (%d choices)", ghost->id, DIR_STRINGS[bestDirs[0]], bestDirCount);
+    return dir;
   }
 }
 
@@ -194,7 +197,7 @@ void ghost__pen(ghost__Ghost* ghost, float frameTime, float slop) {
   // Release the ho... er... ghosts!
   if (ghost->startTimer <= frameTime) {
     ghost->startTimer = 0.0f;
-    ghost->update     = ghost__penToStart;
+    if (ghost->id == 1) ghost->update = ghost__penToStart;
   } else {
     ghost->startTimer -= frameTime;
   }
