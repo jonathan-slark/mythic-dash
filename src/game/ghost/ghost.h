@@ -45,7 +45,7 @@ void ghost__scatter(ghost__Ghost *ghost, float frameTime, float slop);
 
 // --- Constants ---
 
-constexpr float SPEED_SLOW = 25.0f;
+constexpr float SPEED_SLOW = 40.0f; // 50% of player max speed
 static const float NORMAL_SPEED_MIN_MULT = 0.75f;
 static const float NORMAL_SPEED_MAX_MULT = 0.95f;
 static const float NORMAL_LEVEL_MULT = 0.011f;
@@ -57,8 +57,6 @@ static const float DECISION_COOLDOWN = 0.5f;
 static const Vector2 MAZE_CENTRE = {14 * TILE_SIZE, 7 * TILE_SIZE};
 static const Vector2 GHOST_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},
                                            {17 * TILE_SIZE, 7 * TILE_SIZE}};
-static const game__Tile GHOST_START_TILE[CREATURE_COUNT] = {
-    {17, 7}, {17, 7}, {11, 7}, {11, 7}};
 static const game__Dir GHOST_START_DIR = DIR_LEFT;
 static const float GHOST_CHASETIMER = 5.0f;
 static const game__Tile DEFAULT_TARGET_TILE = {-1, -1};

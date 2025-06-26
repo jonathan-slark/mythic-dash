@@ -1,5 +1,7 @@
 #include "ghost.h"
 #include <assert.h>
+#include <limits.h>
+#include <raylib.h>
 #include "../game.h"
 #include "ghost.h"
 #include "log/log.h"
@@ -14,8 +16,8 @@ static const char* STATE_FRIGHTENED_STR = "FRIGHT";
 static const char* STATE_DEAD_STR       = "DEAD";
 static const char* STATE_CHASE_STR      = "CHASE";
 static const char* STATE_SCATTER_STR    = "SCATTER";
-static const float SCORE_TIMER          = 5.0f;
-static const float TELEPORT_TIMER       = 1.0f;
+static const float SCORE_TIMER          = 2.0f;
+static const float TELEPORT_TIMER       = 0.5f;
 
 // --- Global state ---
 
@@ -113,6 +115,8 @@ static void ghostDefaults(void) {
     g_state.ghosts[i].scoreTimer       = 0.0f;
     g_state.ghosts[i].teleportTimer    = 0.0f;
   }
+  actor_setSpeed(g_state.ghosts[1].actor, ghost__getSpeed());
+
   ghostResetTargets();
 }
 
@@ -143,10 +147,48 @@ static void ghostUpdateTeleportSlow(ghost__Ghost* ghost, float frameTime) {
   if (ghost->teleportTimer == 0.0f) actor_setSpeed(ghost->actor, ghost__getSpeed());
 }
 
+static void ghostSetNearestStartTile(ghost__Ghost* ghost) {
+  game__Tile curTile    = maze_getTile(actor_getPos(ghost->actor));
+  size_t     startCount = COUNT(GHOST_MAZE_START);
+  size_t     bestTiles[startCount];
+  size_t     bestTileCount = 0;
+  int        minDist       = INT_MAX;
+
+  for (size_t i = 0; i < startCount; i++) {
+    game__Tile destTile = maze_getTile(GHOST_MAZE_START[i]);
+    int        dist     = maze_manhattanDistance(curTile, destTile);
+    if (dist < minDist) {
+      bestTileCount = 0;
+    }
+    if (dist <= minDist) {
+      bestTiles[bestTileCount++] = i;
+      minDist                    = dist;
+    }
+  }
+
+  assert(bestTileCount > 0 && bestTileCount < startCount);
+  assert(minDist > 0 && minDist < INT_MAX);
+
+  if (bestTileCount == 1) {
+    ghost->mazeStart = GHOST_MAZE_START[bestTiles[0]];
+    LOG_DEBUG(game__log, "Ghost %d best start tile %d (best choice)", ghost->id, bestTiles[0]);
+  } else {
+    size_t bestTile  = bestTiles[GetRandomValue(0, bestTileCount - 1)];
+    ghost->mazeStart = GHOST_MAZE_START[bestTile];
+    LOG_DEBUG(game__log, "Ghost %d best start tile %d (%d choices)", ghost->id, bestTile, bestTileCount);
+  }
+}
+
+static void ghostDied(ghost__Ghost* ghost) {
+  ghost->update = ghost__dead;
+  actor_setSpeed(ghost->actor, player_getMaxSpeed());
+  ghostSetNearestStartTile(ghost);
+  player_killedGhost(ghost->id);
+}
+
 // --- Ghost functions ---
 
 bool ghost_init(void) {
-  ghostDefaults();
   for (int i = 0; i < CREATURE_COUNT; i++) {
     assert(g_state.ghosts[i].actor == nullptr);
     g_state.ghosts[i].actor = actor_create(
@@ -158,16 +200,17 @@ bool ghost_init(void) {
     if (g_state.ghosts[i].actor == nullptr) return false;
     g_state.ghosts[i].id = i;
   }
+  ghostDefaults();
   return true;
 }
 
 void ghost_reset(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    ghostDefaults();
     actor_setPos(g_state.ghosts[i].actor, CREATURE_DATA[i].startPos);
     actor_setDir(g_state.ghosts[i].actor, CREATURE_DATA[i].startDir);
     actor_setSpeed(g_state.ghosts[i].actor, CREATURE_DATA[i].startSpeed);
   }
+  ghostDefaults();
   g_state.update     = nullptr;
   g_state.stateNum   = 0;
   g_state.stateTimer = 0.0f;
@@ -196,8 +239,7 @@ void ghost_update(float frameTime, float slop) {
       game__AABB ghostAABB = actor_getAABB(g_state.ghosts[i].actor);
       if (aabb_isColliding(playerAABB, ghostAABB)) {
         if (playerState == PLAYER_SWORD) {
-          g_state.ghosts[i].update = ghost__dead;
-          player_killedGhost(i);
+          ghostDied(&g_state.ghosts[i]);
         } else {
           playerDead = true;
         }

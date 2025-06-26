@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <math.h>
+#include <raylib.h>
 #include "../game.h"
 #include "ghost.h"
 
@@ -46,7 +47,7 @@ static const GhostStateHandler DeadHandler = {
 
 static inline game__Tile getCornerTile(ghost__Ghost* ghost) { return ghost->cornerTile; }
 
-static inline game__Tile getStartTile(ghost__Ghost* ghost) { return GHOST_START_TILE[ghost->id]; }
+static inline game__Tile getStartTile(ghost__Ghost* ghost) { return maze_getTile(ghost->mazeStart); }
 
 static int
 getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* validDirs, bool isChangedState, float slop) {
@@ -86,7 +87,7 @@ static game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int coun
   for (int i = 0; i < count; i++) {
     game__Tile nextTile = actor_nextTile(ghost->actor, dirs[i]);
     int        dist     = maze_manhattanDistance(nextTile, targetTile);
-    LOG_DEBUG(game__log, "Ghost %d: direction = %s, dist = %d", ghost->id, DIR_STRINGS[dirs[i]], dist);
+    LOG_TRACE(game__log, "Ghost %d: direction = %s, dist = %d", ghost->id, DIR_STRINGS[dirs[i]], dist);
     if (dist < minDist) {
       bestDirCount = 0;
     }
@@ -97,11 +98,11 @@ static game__Dir greedyDirSelect(ghost__Ghost* ghost, game__Dir dirs[], int coun
   }
   assert(bestDirCount > 0);
   if (bestDirCount == 1) {
-    LOG_DEBUG(game__log, "Ghost %d going: %s (best choice)", ghost->id, DIR_STRINGS[bestDirs[0]]);
+    LOG_TRACE(game__log, "Ghost %d going: %s (best choice)", ghost->id, DIR_STRINGS[bestDirs[0]]);
     return bestDirs[0];
   } else {
     game__Dir dir = randomSelect(bestDirs, bestDirCount);
-    LOG_DEBUG(game__log, "Ghost %d going: %s (%d choices)", ghost->id, DIR_STRINGS[bestDirs[0]], bestDirCount);
+    LOG_TRACE(game__log, "Ghost %d going: %s (%d choices)", ghost->id, DIR_STRINGS[bestDirs[0]], bestDirCount);
     return dir;
   }
 }
@@ -248,6 +249,7 @@ void ghost__startToPen(ghost__Ghost* ghost, float frameTime, float slop) {
     actor_moveNoCheck(actor, dir, frameTime);
     if (fabsf(pos.x - startX) < slop) {
       actor_setPos(actor, (Vector2) { startX, pos.y });
+      actor_setSpeed(ghost->actor, SPEED_SLOW);
       ghost->update = ghost__penToStart;
     }
   }
@@ -277,8 +279,6 @@ void ghost__scatter(ghost__Ghost* ghost, float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  // Hack as Ghost 1 starts outside
-  actor_setSpeed(ghost->actor, ghost__getSpeed());
   ghostUpdateCommon(ghost, frameTime, slop, &ScatterHandler);
 }
 
@@ -291,7 +291,7 @@ void ghost__dead(ghost__Ghost* ghost, float frameTime, float slop) {
   ghostUpdateCommon(ghost, frameTime, slop, &DeadHandler);
 
   Vector2    pos       = actor_getPos(ghost->actor);
-  game__Tile startTile = GHOST_START_TILE[ghost->id];
+  game__Tile startTile = maze_getTile(ghost->mazeStart);
   Vector2    dest      = { startTile.col * TILE_SIZE, startTile.row * TILE_SIZE };
   if (fabsf(pos.x - dest.x) < slop && fabsf(pos.y - dest.y) < slop) {
     ghost->update = ghost__startToPen;
