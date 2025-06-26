@@ -238,6 +238,7 @@ static void checkTeleport(game__Actor* actor, game__Dir dir) {
       LOG_TRACE(
           game__log, "Teleporting actor from %.2f, %.2f to %.2f, %.2f", actor->pos.x, actor->pos.y, destPos.x, destPos.y
       );
+      actor->dir           = game_getOppositeDir(actor->dir);
       actor->pos           = destPos;
       actor->hasTeleported = true;
     }

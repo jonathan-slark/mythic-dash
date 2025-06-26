@@ -80,6 +80,8 @@ static inline void aabb_drawOverlay(game__AABB aabb, Color colour) {
   engine_drawRectangleOutline((Rectangle) { min.x, min.y, max.x - min.x, max.y - min.y }, colour);
 }
 
+static inline game__Dir game_getOppositeDir(game__Dir dir) { return (dir + 2) % DIR_COUNT; }
+
 // --- Actor functions (actor.c) ---
 
 game__Actor* actor_create(Vector2 pos, Vector2 size, game__Dir dir, float speed);

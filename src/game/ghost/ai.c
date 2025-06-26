@@ -44,11 +44,6 @@ static const GhostStateHandler DeadHandler = {
 
 // --- Helper functions ---
 
-static inline game__Dir getOppositeDir(game__Dir dir) {
-  assert(dir >= 0 && dir < DIR_COUNT);
-  return (dir + 2) % DIR_COUNT;
-}
-
 static inline game__Tile getCornerTile(ghost__Ghost* ghost) { return ghost->cornerTile; }
 
 static inline game__Tile getStartTile(ghost__Ghost* ghost) { return GHOST_START_TILE[ghost->id]; }
@@ -60,7 +55,7 @@ getValidDirs(game__Actor* actor, game__Dir currentDir, game__Dir* validDirs, boo
   assert(validDirs != nullptr);
   assert(slop > 0.0f);
 
-  game__Dir opposite = getOppositeDir(currentDir);
+  game__Dir opposite = game_getOppositeDir(currentDir);
   int       count    = 0;
 
   for (game__Dir dir = DIR_UP; dir < DIR_COUNT; dir++) {
@@ -158,7 +153,7 @@ static void ghostUpdateCommon(ghost__Ghost* ghost, float frameTime, float slop, 
     if (count == 0) {
       Vector2 pos = actor_getPos(actor);
       LOG_ERROR(game__log, "Ghost %u has no valid directions at (%.2f, %.2f)", ghost->id, pos.x, pos.y);
-      actor_setDir(actor, getOppositeDir(currentDir));
+      actor_setDir(actor, game_getOppositeDir(currentDir));
       ghost->decisionCooldown = DECISION_COOLDOWN;
     } else {
       if (handler->getTarget) ghost->targetTile = handler->getTarget(ghost);
@@ -185,7 +180,7 @@ void ghost__pen(ghost__Ghost* ghost, float frameTime, float slop) {
   game__Actor* actor      = ghost->actor;
   game__Dir    currentDir = actor_getDir(actor);
   actor_move(actor, currentDir, frameTime);
-  if (!actor_canMove(actor, currentDir, slop)) actor_setDir(actor, getOppositeDir(currentDir));
+  if (!actor_canMove(actor, currentDir, slop)) actor_setDir(actor, game_getOppositeDir(currentDir));
 
   // Release the ho... er... ghosts!
   if (ghost->startTimer <= frameTime) {
