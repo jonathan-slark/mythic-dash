@@ -23,7 +23,7 @@ typedef struct Player {
 // --- Constants ---
 
 static const Vector2     PLAYER_START_POS       = { 14 * TILE_SIZE, 10 * TILE_SIZE };
-static const float       PLAYER_MAX_SPEED       = 60.0f;
+static const float       PLAYER_MAX_SPEED       = 80.0f;
 static const game__Dir   PLAYER_START_DIR       = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]          = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
 static const int         SCORE_COIN             = 10;
@@ -31,12 +31,12 @@ static const int         SCORE_SWORD            = 50;
 static const float       PLAYER_DEAD_TIMER      = 2.0f;
 static const int         GHOST_BASE_SCORE       = 200;
 static const float       SCORE_MULTIPLIER_TIMER = 5.0f;
-static const float       COIN_SLOW_TIMER        = 0.5f;
-static const float       SWORD_SLOW_TIMER       = 0.5f;
-static const float       PLAYER_SLOW_SPEED      = 50.f;
+static const float       COIN_SLOW_TIMER        = 0.2f;
+static const float       SWORD_SLOW_TIMER       = 0.2f;
+static const float       PLAYER_SLOW_SPEED      = 72.0f;  // 10% slow
 static const int         MAX_LEVEL              = 20;
 static const float       SWORD_MAX_TIMER        = 6.0f;
-static const float       SWORD_MIN_TIMER        = 3.6f;  // 60%
+static const float       SWORD_MIN_TIMER        = 3.6f;   // 60%
 
 // --- Global state ---
 
