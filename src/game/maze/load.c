@@ -68,12 +68,12 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
       } else if (tile->properties[j].type == CUTE_TILED_PROPERTY_BOOL) {
         if (strcmp(tile->properties[j].name.ptr, "isCoin") == 0 && tile->properties[j].data.boolean) {
           (*tileData)[i].type = TILE_COIN;
-          LOG_DEBUG(game__log, "Tile %d isCoin", i);
+          LOG_TRACE(game__log, "Tile %d isCoin", i);
         } else if (strcmp(tile->properties[j].name.ptr, "isWall") == 0 && tile->properties[j].data.boolean) {
           (*tileData)[i].type = TILE_WALL;
-          LOG_DEBUG(game__log, "Tile %d isWall", i);
+          LOG_TRACE(game__log, "Tile %d isWall", i);
         } else if (strcmp(tile->properties[j].name.ptr, "isSword") == 0 && tile->properties[j].data.boolean) {
-          LOG_DEBUG(game__log, "Tile %d isSword", i);
+          LOG_TRACE(game__log, "Tile %d isSword", i);
           (*tileData)[i].type = TILE_SWORD;
         }
       }
@@ -287,7 +287,7 @@ void countCoins(void) {
   for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
     for (int i = 0; i < g_maze.count; i++) {
       int idx = i + layerNum * g_maze.count;
-      if (g_maze.tiles[idx].type == TILE_COIN) {
+      if (g_maze.tiles[idx].type == TILE_COIN || g_maze.tiles[idx].type == TILE_SWORD) {
         g_maze.coinCount++;
       }
     }

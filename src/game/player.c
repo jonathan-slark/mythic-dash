@@ -72,6 +72,7 @@ static void playerSwordPickup(void) {
   g_player.swordTimer      = getSwordTimer();
   g_player.swordSlowTimer  = SWORD_SLOW_TIMER;
   g_player.score          += SCORE_SWORD;
+  g_player.coinsCollected++;  // Counts as a coin in terms on level being cleared
   actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED);
 }
 
