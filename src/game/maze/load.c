@@ -59,21 +59,22 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
     for (int j = 0; j < tile->property_count; j++) {
       if (tile->properties[j].type == CUTE_TILED_PROPERTY_INT) {
         if (strcmp(tile->properties[j].name.ptr, "teleportType") == 0) {
-          (*tileData)[i].type         = TILE_TELEPORT;
           (*tileData)[i].teleportType = tile->properties[j].data.integer;
-          if (tile->properties[j].data.integer > 0)
+          if (tile->properties[j].data.integer > 0) {
+            (*tileData)[i].type = TILE_TELEPORT;
             LOG_TRACE(game__log, "Tile %d is a teleport, type %d", i, (*tileData)[i].teleportType);
+          }
         }
       } else if (tile->properties[j].type == CUTE_TILED_PROPERTY_BOOL) {
-        if (strcmp(tile->properties[j].name.ptr, "isCoin") == 0) {
+        if (strcmp(tile->properties[j].name.ptr, "isCoin") == 0 && tile->properties[j].data.boolean) {
           (*tileData)[i].type = TILE_COIN;
-          if (tile->properties[j].data.boolean) LOG_TRACE(game__log, "Tile %d isCoin", i);
-        } else if (strcmp(tile->properties[j].name.ptr, "isWall") == 0) {
+          LOG_DEBUG(game__log, "Tile %d isCoin", i);
+        } else if (strcmp(tile->properties[j].name.ptr, "isWall") == 0 && tile->properties[j].data.boolean) {
           (*tileData)[i].type = TILE_WALL;
-          if (tile->properties[j].data.boolean) LOG_TRACE(game__log, "Tile %d isWall", i);
-        } else if (strcmp(tile->properties[j].name.ptr, "isSword") == 0) {
+          LOG_DEBUG(game__log, "Tile %d isWall", i);
+        } else if (strcmp(tile->properties[j].name.ptr, "isSword") == 0 && tile->properties[j].data.boolean) {
+          LOG_DEBUG(game__log, "Tile %d isSword", i);
           (*tileData)[i].type = TILE_SWORD;
-          if (tile->properties[j].data.boolean) LOG_TRACE(game__log, "Tile %d isSword", i);
         }
       }
     }
