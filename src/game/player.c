@@ -16,7 +16,6 @@ typedef struct Player {
   float             swordTimer;
   float             deadTimer;
   int               scoreMultiplier;
-  float             scoreMultiplierTimer;
   float             coinSlowTimer;
   float             swordSlowTimer;
   int               lastScoreBonusLife;
@@ -24,37 +23,35 @@ typedef struct Player {
 
 // --- Constants ---
 
-static const Vector2     PLAYER_START_POS       = { 14 * TILE_SIZE, 10 * TILE_SIZE };
-static const float       PLAYER_MAX_SPEED       = 80.0f;
-static const game__Dir   PLAYER_START_DIR       = DIR_LEFT;
-static const KeyboardKey PLAYER_KEYS[]          = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
-static const int         SCORE_COIN             = 10;
-static const int         SCORE_SWORD            = 50;
-static const float       PLAYER_DEAD_TIMER      = 2.0f;
-static const int         GHOST_BASE_SCORE       = 200;
-static const float       SCORE_MULTIPLIER_TIMER = 5.0f;
-static const float       COIN_SLOW_TIMER        = 0.2f;
-static const float       SWORD_SLOW_TIMER       = 0.2f;
-static const float       PLAYER_SLOW_SPEED      = 72.0f;  // 10% slow
-static const int         MAX_LEVEL              = 20;
-static const float       SWORD_MAX_TIMER        = 5.0f;
-static const float       SWORD_MIN_TIMER        = 3.0f;   // 60%
-static const int         SCORE_EXTRA_LIFE       = 10000;
-static const int         SCORE_CHEST            = 100;
+static const Vector2     PLAYER_START_POS  = { 14 * TILE_SIZE, 10 * TILE_SIZE };
+static const float       PLAYER_MAX_SPEED  = 80.0f;
+static const game__Dir   PLAYER_START_DIR  = DIR_LEFT;
+static const KeyboardKey PLAYER_KEYS[]     = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
+static const int         SCORE_COIN        = 10;
+static const int         SCORE_SWORD       = 50;
+static const float       PLAYER_DEAD_TIMER = 2.0f;
+static const int         GHOST_BASE_SCORE  = 200;
+static const float       COIN_SLOW_TIMER   = 0.2f;
+static const float       SWORD_SLOW_TIMER  = 0.2f;
+static const float       PLAYER_SLOW_SPEED = 72.0f;  // 10% slow
+static const int         MAX_LEVEL         = 20;
+static const float       SWORD_MAX_TIMER   = 5.0f;
+static const float       SWORD_MIN_TIMER   = 3.0f;   // 60%
+static const int         SCORE_EXTRA_LIFE  = 10000;
+static const int         SCORE_CHEST       = 100;
 
 // --- Global state ---
 
 static Player g_player = {
-  .actor                = nullptr,
-  .state                = PLAYER_NORMAL,
-  .lives                = PLAYER_LIVES,
-  .score                = 0,
-  .coinsCollected       = 0,
-  .swordTimer           = 0.0f,
-  .deadTimer            = 0.0f,
-  .scoreMultiplier      = 1,
-  .scoreMultiplierTimer = 0.0f,
-  .lastScoreBonusLife   = 0
+  .actor              = nullptr,
+  .state              = PLAYER_NORMAL,
+  .lives              = PLAYER_LIVES,
+  .score              = 0,
+  .coinsCollected     = 0,
+  .swordTimer         = 0.0f,
+  .deadTimer          = 0.0f,
+  .scoreMultiplier    = 1,
+  .lastScoreBonusLife = 0,
 };
 
 // --- Helper functions ---
@@ -86,8 +83,7 @@ static void playerSwordPickup(void) {
   g_player.swordSlowTimer  = SWORD_SLOW_TIMER;
   g_player.score          += SCORE_SWORD;
   g_player.coinsCollected++;  // Counts as a coin in terms on level being cleared
-  g_player.scoreMultiplier      = 1;
-  g_player.scoreMultiplierTimer = 0.0f;
+  g_player.scoreMultiplier = 1;
   actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED);
 }
 
@@ -112,15 +108,6 @@ static void playerSwordUpdate(float frameTime) {
   if (g_player.swordTimer == 0.0f) {
     g_player.state = PLAYER_NORMAL;
     ghost_swordDrop();
-  }
-}
-
-static void playerScoreMultiplierUpdate(float frameTime) {
-  if (g_player.scoreMultiplierTimer == 0.0f) return;
-
-  g_player.scoreMultiplierTimer = fmaxf(g_player.scoreMultiplierTimer -= frameTime, 0.0f);
-  if (g_player.scoreMultiplierTimer == 0.0f) {
-    g_player.scoreMultiplier = 1;
   }
 }
 
@@ -167,10 +154,9 @@ bool player_init(void) {
 
 void player_restart(void) {
   assert(g_player.actor != nullptr);
-  g_player.state                = PLAYER_NORMAL;
-  g_player.swordTimer           = 0.0f;
-  g_player.scoreMultiplier      = 1;
-  g_player.scoreMultiplierTimer = 0.0f;
+  g_player.state           = PLAYER_NORMAL;
+  g_player.swordTimer      = 0.0f;
+  g_player.scoreMultiplier = 1;
   actor_setPos(g_player.actor, PLAYER_START_POS);
   actor_setDir(g_player.actor, PLAYER_START_DIR);
   actor_startMoving(g_player.actor);
@@ -221,7 +207,6 @@ void player_update(float frameTime, float slop) {
   playerCoinSlowUpdate(frameTime);
   playerSwordUpdate(frameTime);
   playerSwordSlowUpdate(frameTime);
-  playerScoreMultiplierUpdate(frameTime);
 
   game__Dir dir = DIR_NONE;
   for (int i = 0; i < DIR_COUNT; i++) {
@@ -311,10 +296,9 @@ bool player_hasSword(void) { return g_player.swordTimer > 0.0f; }
 float player_getSwordTimer(void) { return g_player.swordTimer; }
 
 void player_killedGhost(int ghostID) {
-  int score                      = GHOST_BASE_SCORE * g_player.scoreMultiplier;
-  g_player.score                += score;
-  g_player.scoreMultiplier      *= 2;
-  g_player.scoreMultiplierTimer  = SCORE_MULTIPLIER_TIMER;
+  int score                 = GHOST_BASE_SCORE * g_player.scoreMultiplier;
+  g_player.score           += score;
+  g_player.scoreMultiplier *= 2;
   ghost_setScore(ghostID, score);
 }
 
