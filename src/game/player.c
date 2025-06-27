@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include "game.h"
+#include "log/log.h"
 
 // --- Types ---
 
@@ -35,8 +36,8 @@ static const float       COIN_SLOW_TIMER        = 0.2f;
 static const float       SWORD_SLOW_TIMER       = 0.2f;
 static const float       PLAYER_SLOW_SPEED      = 72.0f;  // 10% slow
 static const int         MAX_LEVEL              = 20;
-static const float       SWORD_MAX_TIMER        = 6.0f;
-static const float       SWORD_MIN_TIMER        = 3.6f;   // 60%
+static const float       SWORD_MAX_TIMER        = 5.0f;
+static const float       SWORD_MIN_TIMER        = 3.0f;   // 60%
 
 // --- Global state ---
 
@@ -205,6 +206,8 @@ void player_update(float frameTime, float slop) {
   if (dir == DIR_NONE) dir = actor_getDir(g_player.actor);
 
   actor_move(g_player.actor, dir, frameTime);
+  Vector2 pos = player_getPos();
+  LOG_DEBUG(game__log, "Player position: %f, %f; slop: %f", pos.x, pos.y, slop);
 
   playerCheckPickups();
 }

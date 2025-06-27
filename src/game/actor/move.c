@@ -2,6 +2,7 @@
 #include <math.h>  // fminf, fmaxf
 #include "../game.h"
 #include "actor.h"
+#include "log/log.h"
 
 // --- Constants ---
 
@@ -71,7 +72,7 @@ static void checkMazeCollision(game__Actor* actor) {
   actor__Tile* tile = isMazeCollision(actor);
   if (tile != nullptr) {
     resolveActorCollision(actor, &tile->aabb);
-    LOG_TRACE(game__log, "Collision detected, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
+    LOG_DEBUG(game__log, "Collision detected, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
     actor->isMoving = false;
   }
 }
@@ -125,7 +126,7 @@ static void alignToPassage(game__Actor* actor, game__Dir dir, float distance) {
 }
 
 static bool isPassagePattern(const actor__Tile tiles[]) {
-  return tiles[0].isWall && !tiles[1].isWall && tiles[2].isWall;
+  return !tiles[1].isWall && (tiles[0].isWall || tiles[2].isWall);
 }
 
 static void clearAllCollisionFlags(actor__Tile tiles[]) {
@@ -153,7 +154,7 @@ static bool tryAlignToTile(
     case DIR_DOWN:
       if (overlapX > OVERLAP_EPSILON && overlapX <= slop && fabsf(overlapY) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapX : -overlapX);
-        LOG_TRACE(
+        LOG_DEBUG(
             game__log, "Actor can move up/down, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y, slop
         );
         return true;
@@ -163,7 +164,7 @@ static bool tryAlignToTile(
     case DIR_RIGHT:
       if (overlapY > OVERLAP_EPSILON && overlapY <= slop && fabsf(overlapX) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapY : -overlapY);
-        LOG_TRACE(
+        LOG_DEBUG(
             game__log, "Actor can move left/right, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y, slop
         );
         return true;
