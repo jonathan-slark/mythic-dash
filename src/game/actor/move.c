@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <math.h>  // fminf, fmaxf
+#include <raylib.h>
 #include "../game.h"
 #include "actor.h"
 #include "log/log.h"
@@ -71,8 +72,16 @@ static void checkMazeCollision(game__Actor* actor) {
 
   actor__Tile* tile = isMazeCollision(actor);
   if (tile != nullptr) {
+    Vector2 oldPos = actor->pos;
     resolveActorCollision(actor, &tile->aabb);
-    LOG_TRACE(game__log, "Collision detected, actor moved to: %f, %f", actor->pos.x, actor->pos.y);
+    LOG_TRACE(
+        game__log,
+        "Collision detected, actor moved from: %f, %f to: %f, %f",
+        oldPos.x,
+        oldPos.y,
+        actor->pos.x,
+        actor->pos.y
+    );
     actor->isMoving = false;
   }
 }
@@ -259,7 +268,7 @@ bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
   getTiles(actor, actor->tilesCanMove[dir], dir);
   game__AABB actorAABB = actor_getAABB(actor);
 
-  // Try passage movement first (special case for narrow passages)
+  // Try passage movement first, we are never perfectly lined up
   bool canMove = checkPassageMovement(actor, dir, actorAABB, slop);
 
   // If not a passage case, use strict collision checking

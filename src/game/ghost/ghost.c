@@ -171,11 +171,11 @@ static void ghostSetNearestStartTile(ghost__Ghost* ghost) {
 
   if (bestTileCount == 1) {
     ghost->mazeStart = GHOST_MAZE_START[bestTiles[0]];
-    LOG_DEBUG(game__log, "Ghost %d best start tile %d (best choice)", ghost->id, bestTiles[0]);
+    LOG_TRACE(game__log, "Ghost %d best start tile %d (best choice)", ghost->id, bestTiles[0]);
   } else {
     size_t bestTile  = bestTiles[GetRandomValue(0, bestTileCount - 1)];
     ghost->mazeStart = GHOST_MAZE_START[bestTile];
-    LOG_DEBUG(game__log, "Ghost %d best start tile %d (%d choices)", ghost->id, bestTile, bestTileCount);
+    LOG_TRACE(game__log, "Ghost %d best start tile %d (%d choices)", ghost->id, bestTile, bestTileCount);
   }
 }
 
