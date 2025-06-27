@@ -91,7 +91,7 @@ static bool initPlayer(void) {
   }
 
   Vector2 offset = PLAYER_LIVES_OFFSET;
-  for (int i = 0; i < PLAYER_LIVES + 1; i++) {
+  for (int i = 0; i < PLAYER_MAX_LIVES; i++) {
     GAME_TRY(
         g_assets.playerLivesSprites[i] = engine_createSpriteFromSheet(
             offset,

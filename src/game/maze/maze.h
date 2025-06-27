@@ -8,6 +8,8 @@
 #include "../game.h"
 #include <engine/engine.h>
 
+constexpr int CHEST_SPAWN_COUNT = 2;
+
 // --- Types ---
 
 typedef enum maze__TileType {
@@ -16,7 +18,8 @@ typedef enum maze__TileType {
   TILE_WALL,
   TILE_TELEPORT,
   TILE_COIN,
-  TILE_SWORD
+  TILE_SWORD,
+  TILE_CHEST
 } maze__TileType;
 
 typedef struct maze__Tile {
@@ -24,6 +27,7 @@ typedef struct maze__Tile {
   int linkedTeleportTile;
   bool isCoinCollected;
   bool isSwordCollected;
+  bool isChestCollected;
   engine_Sprite *sprite;
   engine_Anim *anim;
   game__AABB aabb;
@@ -37,6 +41,8 @@ typedef struct maze__Maze {
   int tileHeight;
   int layerCount;
   int coinCount;
+  int chestID;
+  bool hasChestSpawned[CHEST_SPAWN_COUNT];
   engine_Texture *tileset;
   maze__Tile *tiles;
 } maze__Maze;

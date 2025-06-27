@@ -41,10 +41,11 @@ typedef struct game__Actor game__Actor;
 // --- Constants ---
 
 #define ASSET_DIR "../../asset/"
-constexpr int ACTOR_SIZE     = 16;
-constexpr int TILE_SIZE      = 16;
-constexpr int CREATURE_COUNT = 4;
-constexpr int PLAYER_LIVES   = 3;
+constexpr int ACTOR_SIZE       = 16;
+constexpr int TILE_SIZE        = 16;
+constexpr int CREATURE_COUNT   = 4;
+constexpr int PLAYER_LIVES     = 3;
+constexpr int PLAYER_MAX_LIVES = 10;
 
 extern const Vector2 MAZE_ORIGIN;
 
@@ -136,6 +137,7 @@ game__PlayerState player_getState(void);
 bool              player_hasSword(void);
 float             player_getSwordTimer(void);
 void              player_killedGhost(int ghostID);
+int               player_getCoinsCollected(void);
 
 // --- Ghost functions (ghost.c) ---
 
@@ -181,6 +183,8 @@ void               maze_reset(void);
 int                maze_getCoinCount(void);
 bool               maze_isSword(Vector2 pos);
 void               maze_pickupSword(Vector2 pos);
+bool               maze_isChest(Vector2 pos);
+void               maze_pickupChest(Vector2 pos);
 
 // --- Debug functions (debug.c) ---
 

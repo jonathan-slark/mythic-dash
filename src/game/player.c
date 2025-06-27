@@ -19,7 +19,7 @@ typedef struct Player {
   float             scoreMultiplierTimer;
   float             coinSlowTimer;
   float             swordSlowTimer;
-  bool              hasExtraLife;
+  int               lastScoreBonusLife;
 } Player;
 
 // --- Constants ---
@@ -40,6 +40,7 @@ static const int         MAX_LEVEL              = 20;
 static const float       SWORD_MAX_TIMER        = 5.0f;
 static const float       SWORD_MIN_TIMER        = 3.0f;   // 60%
 static const int         SCORE_EXTRA_LIFE       = 10000;
+static const int         SCORE_CHEST            = 100;
 
 // --- Global state ---
 
@@ -47,13 +48,13 @@ static Player g_player = {
   .actor                = nullptr,
   .state                = PLAYER_NORMAL,
   .lives                = PLAYER_LIVES,
-  .score                = 9900,
+  .score                = 0,
   .coinsCollected       = 0,
   .swordTimer           = 0.0f,
   .deadTimer            = 0.0f,
   .scoreMultiplier      = 1,
   .scoreMultiplierTimer = 0.0f,
-  .hasExtraLife         = false
+  .lastScoreBonusLife   = 0
 };
 
 // --- Helper functions ---
@@ -64,6 +65,8 @@ static void playerCoinPickup(void) {
   g_player.coinsCollected++;
   actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED);
 }
+
+static void playerChestPickup(void) { g_player.score += SCORE_CHEST; }
 
 static float getSwordTimer(void) {
   float t = fminf(fmaxf((game_getLevel() - 1) / (MAX_LEVEL - 1.0f), 0.0f), 1.0f);
@@ -77,6 +80,8 @@ static void playerSwordPickup(void) {
   g_player.swordSlowTimer  = SWORD_SLOW_TIMER;
   g_player.score          += SCORE_SWORD;
   g_player.coinsCollected++;  // Counts as a coin in terms on level being cleared
+  g_player.scoreMultiplier      = 1;
+  g_player.scoreMultiplierTimer = 0.0f;
   actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED);
 }
 
@@ -129,13 +134,18 @@ static void playerCheckPickups(void) {
     playerSwordPickup();
     ghost_swordPickup();
   }
+  if (maze_isChest(pos)) {
+    maze_pickupChest(pos);
+    playerChestPickup();
+  }
 }
 
 static void playerCheckScore() {
-  if (!g_player.hasExtraLife && g_player.score >= SCORE_EXTRA_LIFE) {
-    g_player.lives        += 1;
-    g_player.hasExtraLife  = true;
-    LOG_DEBUG(game__log, "Player gained bonus life");
+  if (g_player.lives < PLAYER_MAX_LIVES && g_player.score > g_player.lastScoreBonusLife &&
+      (g_player.score % SCORE_EXTRA_LIFE == 0)) {
+    g_player.lives              += 1;
+    g_player.lastScoreBonusLife  = g_player.score;
+    LOG_DEBUG(game__log, "Player gained bonus life at score:", g_player.score);
   }
 }
 
@@ -167,9 +177,9 @@ void player_reset() {
 
 void player_totalReset() {
   player_reset();
-  g_player.lives        = PLAYER_LIVES;
-  g_player.score        = 0;
-  g_player.hasExtraLife = false;
+  g_player.lives              = PLAYER_LIVES;
+  g_player.score              = 0;
+  g_player.lastScoreBonusLife = 0;
 }
 
 void player_shutdown(void) {
@@ -219,7 +229,7 @@ void player_update(float frameTime, float slop) {
 
   actor_move(g_player.actor, dir, frameTime);
   Vector2 pos = player_getPos();
-  LOG_DEBUG(game__log, "Player position: %f, %f; slop: %f", pos.x, pos.y, slop);
+  LOG_TRACE(game__log, "Player position: %f, %f; slop: %f", pos.x, pos.y, slop);
 
   playerCheckPickups();
   playerCheckScore();
@@ -301,3 +311,5 @@ void player_killedGhost(int ghostID) {
   g_player.scoreMultiplierTimer  = SCORE_MULTIPLIER_TIMER;
   ghost_setScore(ghostID, score);
 }
+
+int player_getCoinsCollected(void) { return g_player.coinsCollected; }

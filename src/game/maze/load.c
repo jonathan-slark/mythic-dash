@@ -20,7 +20,7 @@ typedef struct MapTile {
 static const char* FILE_MAZE      = ASSET_DIR "map/maze01.tmj";
 constexpr size_t   BUFFER_SIZE    = 1024;
 static const float FRAME_TIME     = 0.1f;
-static const int   PROPERTY_TYPES = 4;
+static const int   PROPERTY_TYPES = 5;
 static const int   TELEPORT_TYPES = 3;
 
 // --- Helper functions ---
@@ -75,6 +75,9 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
         } else if (strcmp(tile->properties[j].name.ptr, "isSword") == 0 && tile->properties[j].data.boolean) {
           LOG_TRACE(game__log, "Tile %d isSword", i);
           (*tileData)[i].type = TILE_SWORD;
+        } else if (strcmp(tile->properties[j].name.ptr, "isChest") == 0 && tile->properties[j].data.boolean) {
+          LOG_TRACE(game__log, "Tile %d isChest", i);
+          (*tileData)[i].type = TILE_CHEST;
         }
       }
     }
@@ -192,7 +195,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount)
     if (teleportCount[i] == 2) {
       tiles[teleports[i][0]].linkedTeleportTile = teleports[i][1];
       tiles[teleports[i][1]].linkedTeleportTile = teleports[i][0];
-      LOG_INFO(game__log, "Linked teleports %d and %d", teleports[i][0], teleports[i][1]);
+      LOG_INFO(game__log, "Linked teleports: %d and %d", teleports[i][0], teleports[i][1]);
     } else if (teleportCount[i] == 1) {
       LOG_WARN(game__log, "Found one teleport but not matching twin");
     }
@@ -295,6 +298,27 @@ void countCoins(void) {
   LOG_INFO(game__log, "Coin count: %d", g_maze.coinCount);
 }
 
+void findChest(void) {
+  int count = 0;
+  for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
+    for (int i = 0; i < g_maze.count; i++) {
+      int idx = i + layerNum * g_maze.count;
+      if (g_maze.tiles[idx].type == TILE_CHEST) {
+        count++;
+        g_maze.chestID = idx;
+      }
+    }
+  }
+
+  if (count == 0) {
+    LOG_WARN(game__log, "No chest found in the map");
+  } else if (count == 1) {
+    LOG_INFO(game__log, "Found chest: %d", g_maze.chestID);
+  } else {
+    LOG_WARN(game__log, "More than one chest found in the map");
+  }
+}
+
 // --- Maze functions ---
 
 bool maze_init(void) {
@@ -315,6 +339,8 @@ bool maze_init(void) {
   }
   cute_tiled_free_map(map);
   countCoins();
+  findChest();
+  maze_reset();
 
   return true;
 }

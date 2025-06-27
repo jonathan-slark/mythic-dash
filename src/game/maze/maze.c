@@ -23,7 +23,21 @@ static maze__Tile* getTileAt(Vector2 pos, int layer) {
   return &g_maze.tiles[row * g_maze.cols + col + layer * g_maze.count];
 }
 
-// --- maze__Maze functions ---
+// --- Helper functions ---
+
+void checkChestSpawn(void) {
+  for (int i = 0; i < CHEST_SPAWN_COUNT; i++) {
+    if (!g_maze.hasChestSpawned[i]) {
+      if (player_getCoinsCollected() >= ((i + 1) * g_maze.coinCount) / (CHEST_SPAWN_COUNT + 1)) {
+        g_maze.hasChestSpawned[i]                     = true;
+        g_maze.tiles[g_maze.chestID].isChestCollected = false;
+        LOG_INFO(game__log, "Chest spawned at %d coins", player_getCoinsCollected());
+      }
+    }
+  }
+}
+
+// --- Maze functions ---
 
 game__AABB maze_getAABB(Vector2 pos) {
   maze__Tile* tile = getTileAt(pos, 0);
@@ -38,6 +52,11 @@ bool maze_isWall(Vector2 pos) {
 bool maze_isCoin(Vector2 pos) {
   maze__Tile* tile = getTileAt(pos, 1);
   return tile->type == TILE_COIN && !tile->isCoinCollected;
+}
+
+bool maze_isChest(Vector2 pos) {
+  maze__Tile* tile = getTileAt(pos, 1);
+  return tile->type == TILE_CHEST && !tile->isChestCollected;
 }
 
 void maze_pickupCoin(Vector2 pos) {
@@ -55,6 +74,11 @@ bool maze_isSword(Vector2 pos) {
 void maze_pickupSword(Vector2 pos) {
   maze__Tile* tile       = getTileAt(pos, 1);
   tile->isSwordCollected = true;
+}
+
+void maze_pickupChest(Vector2 pos) {
+  maze__Tile* tile       = getTileAt(pos, 1);
+  tile->isChestCollected = true;
 }
 
 bool maze_isTeleport(Vector2 pos, Vector2* dest) {
@@ -87,7 +111,9 @@ void maze_draw(void) {
       if (g_maze.tiles[idx].type != TILE_NONE) {
         if ((g_maze.tiles[idx].type == TILE_COIN && !g_maze.tiles[idx].isCoinCollected) ||
             (g_maze.tiles[idx].type == TILE_SWORD && !g_maze.tiles[idx].isSwordCollected) ||
-            (g_maze.tiles[idx].type != TILE_COIN && g_maze.tiles[idx].type != TILE_SWORD)) {
+            (g_maze.tiles[idx].type == TILE_CHEST && !g_maze.tiles[idx].isChestCollected) ||
+            (g_maze.tiles[idx].type != TILE_COIN && g_maze.tiles[idx].type != TILE_SWORD &&
+             g_maze.tiles[idx].type != TILE_CHEST)) {
           engine_Sprite* sprite = g_maze.tiles[idx].sprite;
           assert(sprite != nullptr);
           engine_drawSprite(g_maze.tileset, sprite, WHITE);
@@ -112,6 +138,8 @@ void maze_update(float frameTime) {
       }
     }
   }
+
+  checkChestSpawn();
 }
 
 game__Tile maze_getTile(Vector2 pos) { return (game__Tile) { pos.x / TILE_SIZE, pos.y / TILE_SIZE }; }
@@ -121,14 +149,6 @@ Vector2 maze_getPos(game__Tile tile) { return (Vector2) { tile.col * TILE_SIZE, 
 int maze_manhattanDistance(game__Tile a, game__Tile b) {
   int dx = abs(a.col - b.col);
   int dy = abs(a.row - b.row);
-
-// Wrap-aware Y distance for teleports
-#if 0
-  if (dy > g_maze.rows / 2) {
-    dy = g_maze.rows - dy;
-  }
-#endif
-
   return dx + dy;
 }
 
@@ -147,11 +167,16 @@ int maze_getRows(void) { return g_maze.rows; }
 int maze_getCols(void) { return g_maze.cols; }
 
 void maze_reset(void) {
+  for (int i = 0; i < CHEST_SPAWN_COUNT; i++) {
+    g_maze.hasChestSpawned[i] = false;
+  }
+
   for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
     for (int i = 0; i < g_maze.count; i++) {
       int idx                            = i + layerNum * g_maze.count;
       g_maze.tiles[idx].isCoinCollected  = false;
       g_maze.tiles[idx].isSwordCollected = false;
+      g_maze.tiles[idx].isChestCollected = true;  // Spawned later
     }
   }
 }

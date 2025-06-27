@@ -152,8 +152,8 @@ static void ghostUpdateCommon(ghost__Ghost* ghost, float frameTime, float slop, 
     ghost->isChangedState = false;
 
     if (count == 0) {
-      Vector2 pos = actor_getPos(actor);
-      LOG_ERROR(game__log, "Ghost %u has no valid directions at (%.2f, %.2f)", ghost->id, pos.x, pos.y);
+      game__Tile tile = maze_getTile(actor_getPos(actor));
+      LOG_ERROR(game__log, "Ghost %u has no valid directions at (%d, %d)", ghost->id, tile.col, tile.row);
       actor_setDir(actor, game_getOppositeDir(currentDir));
       ghost->decisionCooldown = DECISION_COOLDOWN;
     } else {
