@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(maze_muncher LANGUAGES C)
+project(mythic-dash LANGUAGES C)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -34,3 +34,16 @@ target_link_libraries(${TEST_GAME} PRIVATE engine log)
 # Test level scaling
 set(TEST_SCALE test_scale)
 add_executable(${TEST_SCALE} ${TEST_DIR}/scale.c)
+
+# Package a build
+add_custom_target(package ALL
+  COMMENT "Packaging game for distribution"
+)
+add_custom_command(TARGET package POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/package
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/mythic-dash.exe ${CMAKE_BINARY_DIR}/package/mythic-dash.exe
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/bin/msys64/ucrt64/bin/libraylib.dll C:/bin/msys64/ucrt64/bin/glfw3.dll ${CMAKE_BINARY_DIR}/package/
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/asset ${CMAKE_BINARY_DIR}/package/asset
+  COMMAND ${CMAKE_COMMAND} -E tar cfv mythic-dash.zip --format=zip -- ${CMAKE_BINARY_DIR}/package
+  COMMENT "Created mythic-dash.zip in ${CMAKE_BINARY_DIR}"
+)

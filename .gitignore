@@ -1,3 +1,4 @@
 build/
 doc/html/
 src.zip
+*.dll
