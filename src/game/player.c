@@ -66,7 +66,13 @@ static void playerCoinPickup(void) {
   actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED);
 }
 
-static void playerChestPickup(void) { g_player.score += SCORE_CHEST; }
+static int getChestScoreMultiplier(void) {
+  int   level = game_getLevel();
+  float scale = (level - 1) / 19.0f;
+  return 1 + (int) (scale * 49.0f);
+}
+
+static void playerChestPickup(void) { g_player.score += getChestScoreMultiplier() * SCORE_CHEST; }
 
 static float getSwordTimer(void) {
   float t = fminf(fmaxf((game_getLevel() - 1) / (MAX_LEVEL - 1.0f), 0.0f), 1.0f);

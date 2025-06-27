@@ -1,6 +1,10 @@
 #include <math.h>
 #include <stdio.h>
 
+// --- Helper macros ---
+
+#define MIN(x, y) (x) < (y) ? (x) : (y)
+
 // --- Constants ---
 
 static const float NORMAL_SPEED_MIN_MULT = 0.75f;
@@ -41,6 +45,12 @@ static float getSwordTimer(void) {
   return max - t * (max - min);
 }
 
+static int getChestScoreMultiplier(void) {
+  int   level = game_getLevel();
+  float scale = (level - 1) / 19.0f;
+  return 1 + (int) (scale * 49.0f);
+}
+
 // --- Helper functions ---
 
 static void printGhostSpeeds(void) {
@@ -56,6 +66,14 @@ static void printSwordTimers(void) {
   for (int i = 0; i < 20; i++) {
     float timer = getSwordTimer();
     fprintf(stdout, "Level: %02d, sword timer %f\n", level++, timer);
+  }
+}
+
+static void printChestScoreMultipliers(void) {
+  int level = 1;
+  for (int i = 0; i < 20; i++) {
+    int mult = getChestScoreMultiplier();
+    fprintf(stdout, "Level: %02d, multiplier %d\n", level++, mult);
   }
 }
 
@@ -75,6 +93,10 @@ int main(void) {
   fprintf(stdout, "\nSword timer:\n");
   g_level = 1;
   printSwordTimers();
+
+  fprintf(stdout, "\nChest score multiplier:\n");
+  g_level = 1;
+  printChestScoreMultipliers();
 
   return 0;
 }
