@@ -12,6 +12,7 @@ typedef struct Debug {
   bool isMazeOverlayEnabled;
   bool isPlayerOverlayEnabled;
   bool isGhostOverlayEnabled;
+  bool isPlayerImmune;
 } Debug;
 
 // --- Constants ---
@@ -27,7 +28,8 @@ static Debug g_debug = {
   .isFPSOverlayEnabled    = false,
   .isMazeOverlayEnabled   = false,
   .isPlayerOverlayEnabled = false,
-  .isGhostOverlayEnabled  = false
+  .isGhostOverlayEnabled  = false,
+  .isPlayerImmune         = false
 };
 
 // --- Helper functions ---
@@ -54,6 +56,10 @@ static void drawActorArrow(game__Actor* actor) {
 // --- Debug functions ---
 
 void debug_drawOverlay(void) {
+  if (g_debug.isPlayerImmune) {
+    DrawText("Player immune", 400.0f, 0.0f, 20, RED);
+  }
+
   if (g_debug.isFPSOverlayEnabled) {
     DrawFPS(600.0f, 0.0f);
   }
@@ -112,3 +118,7 @@ void debug_toggleMazeOverlay(void) { g_debug.isMazeOverlayEnabled = !g_debug.isM
 void debug_togglePlayerOverlay(void) { g_debug.isPlayerOverlayEnabled = !g_debug.isPlayerOverlayEnabled; }
 
 void debug_toggleGhostOverlay(void) { g_debug.isGhostOverlayEnabled = !g_debug.isGhostOverlayEnabled; }
+
+void debug_togglePlayerImmune(void) { g_debug.isPlayerImmune = !g_debug.isPlayerImmune; }
+
+bool debug_isPlayerImmune(void) { return g_debug.isPlayerImmune; }

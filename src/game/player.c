@@ -190,6 +190,7 @@ void player_update(float frameTime, float slop) {
   if (engine_isKeyPressed(KEY_M)) debug_toggleMazeOverlay();
   if (engine_isKeyPressed(KEY_P)) debug_togglePlayerOverlay();
   if (engine_isKeyPressed(KEY_G)) debug_toggleGhostOverlay();
+  if (engine_isKeyPressed(KEY_I)) debug_togglePlayerImmune();
 #endif
 
   if (g_player.state == PLAYER_DEAD) {
@@ -219,8 +220,6 @@ void player_update(float frameTime, float slop) {
   if (dir == DIR_NONE) dir = actor_getDir(g_player.actor);
 
   actor_move(g_player.actor, dir, frameTime);
-  Vector2 pos = player_getPos();
-  LOG_TRACE(game__log, "Player position: %f, %f; slop: %f", pos.x, pos.y, slop);
 
   playerCheckPickups();
   playerCheckScore();
@@ -286,6 +285,8 @@ float player_getMaxSpeed(void) { return PLAYER_MAX_SPEED; }
 int player_getLives(void) { return g_player.lives; }
 
 void player_dead(void) {
+  if (debug_isPlayerImmune()) return;
+
   g_player.lives     -= 1;
   g_player.state      = PLAYER_DEAD;
   g_player.deadTimer  = PLAYER_DEAD_TIMER;
