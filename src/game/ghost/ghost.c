@@ -182,6 +182,7 @@ static void ghostSetNearestStartTile(ghost__Ghost* ghost) {
 static void ghostDied(ghost__Ghost* ghost) {
   ghost->update = ghost__dead;
   actor_setSpeed(ghost->actor, player_getMaxSpeed());
+  ghost->teleportTimer = 0.0f;
   ghostSetNearestStartTile(ghost);
   player_killedGhost(ghost->id);
 }
@@ -248,7 +249,7 @@ void ghost_update(float frameTime, float slop) {
 
     ghostCheckScoreTimer(&g_state.ghosts[i], frameTime);
 
-    if (g_state.ghosts[i].update != ghost__frightened) {
+    if (g_state.ghosts[i].update != ghost__frightened && g_state.ghosts[i].update != ghost__dead) {
       ghostCheckTeleport(&g_state.ghosts[i]);
       ghostUpdateTeleportSlow(&g_state.ghosts[i], frameTime);
     }
