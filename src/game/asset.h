@@ -26,7 +26,7 @@ typedef struct game__Assets {
   engine_Texture *creatureSpriteSheet;
   engine_Texture *playerSpriteSheet;
   engine_Sprite *playerSprites[PLAYER_STATE_COUNT];
-  engine_Sprite *playerLivesSprites[PLAYER_LIVES];
+  engine_Sprite *playerLivesSprites[PLAYER_LIVES + 1];
   engine_Anim *playerAnim[PLAYER_STATE_COUNT][DIR_COUNT];
   engine_Sprite *creatureSprites[CREATURE_COUNT];
   engine_Anim *creatureAnims[CREATURE_COUNT][DIR_COUNT];

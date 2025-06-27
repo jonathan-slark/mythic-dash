@@ -19,6 +19,7 @@ typedef struct Player {
   float             scoreMultiplierTimer;
   float             coinSlowTimer;
   float             swordSlowTimer;
+  bool              hasExtraLife;
 } Player;
 
 // --- Constants ---
@@ -38,6 +39,7 @@ static const float       PLAYER_SLOW_SPEED      = 72.0f;  // 10% slow
 static const int         MAX_LEVEL              = 20;
 static const float       SWORD_MAX_TIMER        = 5.0f;
 static const float       SWORD_MIN_TIMER        = 3.0f;   // 60%
+static const int         SCORE_EXTRA_LIFE       = 10000;
 
 // --- Global state ---
 
@@ -45,12 +47,13 @@ static Player g_player = {
   .actor                = nullptr,
   .state                = PLAYER_NORMAL,
   .lives                = PLAYER_LIVES,
-  .score                = 0,
+  .score                = 9900,
   .coinsCollected       = 0,
   .swordTimer           = 0.0f,
   .deadTimer            = 0.0f,
   .scoreMultiplier      = 1,
-  .scoreMultiplierTimer = 0.0f
+  .scoreMultiplierTimer = 0.0f,
+  .hasExtraLife         = false
 };
 
 // --- Helper functions ---
@@ -128,6 +131,14 @@ static void playerCheckPickups(void) {
   }
 }
 
+static void playerCheckScore() {
+  if (!g_player.hasExtraLife && g_player.score >= SCORE_EXTRA_LIFE) {
+    g_player.lives        += 1;
+    g_player.hasExtraLife  = true;
+    LOG_DEBUG(game__log, "Player gained bonus life");
+  }
+}
+
 // --- Player functions ---
 
 bool player_init(void) {
@@ -156,8 +167,9 @@ void player_reset() {
 
 void player_totalReset() {
   player_reset();
-  g_player.lives = PLAYER_LIVES;
-  g_player.score = 0;
+  g_player.lives        = PLAYER_LIVES;
+  g_player.score        = 0;
+  g_player.hasExtraLife = false;
 }
 
 void player_shutdown(void) {
@@ -210,6 +222,7 @@ void player_update(float frameTime, float slop) {
   LOG_DEBUG(game__log, "Player position: %f, %f; slop: %f", pos.x, pos.y, slop);
 
   playerCheckPickups();
+  playerCheckScore();
 }
 
 Vector2 player_getPos(void) {
