@@ -214,6 +214,7 @@ void game_over(void) {
   player_totalReset();
   ghost_reset();
   maze_reset();
+  g_level = 1;
 }
 
 void game_nextLevel(void) {

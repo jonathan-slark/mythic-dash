@@ -9,7 +9,8 @@
 // --- Constants ---
 
 #define OVERLAY_COLOUR_MAZE_WALL (Color){ 0, 0, 128, 128 }
-const Vector2 MAZE_ORIGIN = { 8.0f, 8.0f };  // Screen offset to the actual maze
+const Vector2 MAZE_ORIGIN         = { 8.0f, 8.0f };  // Screen offset to the actual maze
+const float   CHEST_DESPAWN_TIMER = 10.0f;
 
 // --- Global state ---
 
@@ -31,9 +32,24 @@ void checkChestSpawn(void) {
       if (player_getCoinsCollected() >= ((i + 1) * g_maze.coinCount) / (CHEST_SPAWN_COUNT + 1)) {
         g_maze.hasChestSpawned[i]                     = true;
         g_maze.tiles[g_maze.chestID].isChestCollected = false;
+        g_maze.chestDespawnTimer                      = CHEST_DESPAWN_TIMER;
         LOG_INFO(game__log, "Chest spawned at %d coins", player_getCoinsCollected());
       }
     }
+  }
+}
+
+void checkChestDespawnTimer(float frameTime) {
+  if (g_maze.chestDespawnTimer == 0.0f) return;
+
+  if (g_maze.tiles[g_maze.chestID].isChestCollected) {
+    g_maze.chestDespawnTimer = 0.0f;
+    return;
+  }
+
+  g_maze.chestDespawnTimer = fmaxf(g_maze.chestDespawnTimer - frameTime, 0.0f);
+  if (g_maze.chestDespawnTimer == 0.0f) {
+    g_maze.tiles[g_maze.chestID].isChestCollected = true;
   }
 }
 
@@ -140,6 +156,7 @@ void maze_update(float frameTime) {
   }
 
   checkChestSpawn();
+  checkChestDespawnTimer(frameTime);
 }
 
 game__Tile maze_getTile(Vector2 pos) { return (game__Tile) { pos.x / TILE_SIZE, pos.y / TILE_SIZE }; }
@@ -167,6 +184,7 @@ int maze_getRows(void) { return g_maze.rows; }
 int maze_getCols(void) { return g_maze.cols; }
 
 void maze_reset(void) {
+  g_maze.chestDespawnTimer = 0.0f;
   for (int i = 0; i < CHEST_SPAWN_COUNT; i++) {
     g_maze.hasChestSpawned[i] = false;
   }
