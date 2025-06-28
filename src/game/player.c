@@ -35,8 +35,8 @@ static const float       COIN_SLOW_TIMER   = 0.2f;
 static const float       SWORD_SLOW_TIMER  = 0.2f;
 static const float       PLAYER_SLOW_SPEED = 72.0f;  // 10% slow
 static const int         MAX_LEVEL         = 20;
-static const float       SWORD_MAX_TIMER   = 5.0f;
-static const float       SWORD_MIN_TIMER   = 3.0f;   // 60%
+static const float       SWORD_MAX_TIMER   = 4.0f;
+static const float       SWORD_MIN_TIMER   = 2.4f;   // 60%
 static const int         SCORE_EXTRA_LIFE  = 10000;
 static const int         SCORE_CHEST       = 100;
 
