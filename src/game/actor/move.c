@@ -227,6 +227,8 @@ static bool checkStrictMovement(game__Actor* actor, game__Dir dir, game__AABB ac
       default: assert(false);
     }
 
+    assert(dir >= 0 && dir < 4);
+    assert(i < 3);
     actor->tilesCanMove[dir][i].isCollision = hasCollision;
     if (hasCollision) canMove = false;
   }
