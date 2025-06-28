@@ -44,6 +44,6 @@ add_custom_command(TARGET package POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/mythic-dash.exe ${CMAKE_BINARY_DIR}/package/mythic-dash.exe
   COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/bin/msys64/ucrt64/bin/libraylib.dll C:/bin/msys64/ucrt64/bin/glfw3.dll ${CMAKE_BINARY_DIR}/package/
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/asset ${CMAKE_BINARY_DIR}/package/asset
-  COMMAND ${CMAKE_COMMAND} -E tar cfv mythic-dash.zip --format=zip -- ${CMAKE_BINARY_DIR}/package
+  COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/package ${CMAKE_COMMAND} -E tar cfv ../mythic-dash.zip --format=zip -- .
   COMMENT "Created mythic-dash.zip in ${CMAKE_BINARY_DIR}"
 )
