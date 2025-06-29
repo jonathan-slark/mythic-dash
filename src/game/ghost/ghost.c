@@ -166,7 +166,7 @@ static void ghostSetNearestStartTile(ghost__Ghost* ghost) {
     }
   }
 
-  assert(bestTileCount > 0 && bestTileCount < startCount);
+  assert(bestTileCount > 0 && bestTileCount <= startCount);
   assert(minDist >= 0 && minDist < INT_MAX);
 
   if (bestTileCount == 1) {
