@@ -4,6 +4,7 @@
 #include <log/log.h>
 #include <raylib.h>
 #include <stdlib.h>
+#include "../asset.h"
 #include "../game.h"
 
 // --- Constants ---
@@ -11,6 +12,8 @@
 #define OVERLAY_COLOUR_MAZE_WALL (Color){ 0, 0, 128, 128 }
 const Vector2 MAZE_ORIGIN         = { 8.0f, 8.0f };  // Screen offset to the actual maze
 const float   CHEST_DESPAWN_TIMER = 10.0f;
+const float   CHEST_SCORE_TIMER   = 2.0f;
+const Vector2 CHEST_SCORE_OFFSET  = { 1.0f, 4.0f };
 
 // --- Global state ---
 
@@ -26,7 +29,7 @@ static maze__Tile* getTileAt(Vector2 pos, int layer) {
 
 // --- Helper functions ---
 
-void checkChestSpawn(void) {
+static void checkChestSpawn(void) {
   for (int i = 0; i < CHEST_SPAWN_COUNT; i++) {
     if (!g_maze.hasChestSpawned[i]) {
       if (player_getCoinsCollected() >= ((i + 1) * g_maze.coinCount) / (CHEST_SPAWN_COUNT + 1)) {
@@ -39,7 +42,7 @@ void checkChestSpawn(void) {
   }
 }
 
-void checkChestDespawnTimer(float frameTime) {
+static void updateChestDespawnTimer(float frameTime) {
   if (g_maze.chestDespawnTimer == 0.0f) return;
 
   if (g_maze.tiles[g_maze.chestID].isChestCollected) {
@@ -51,6 +54,22 @@ void checkChestDespawnTimer(float frameTime) {
   if (g_maze.chestDespawnTimer == 0.0f) {
     g_maze.tiles[g_maze.chestID].isChestCollected = true;
   }
+}
+
+static void updateChestScoreTimer(float frameTime) {
+  if (g_maze.chestScoreTimer == 0.0f) return;
+
+  g_maze.chestScoreTimer = fmaxf(g_maze.chestScoreTimer - frameTime, 0.0f);
+}
+
+static Vector2 getChestPos(void) {
+  int idx = g_maze.chestID;
+  int row = idx % g_maze.count / g_maze.cols;
+  int col = idx % g_maze.count % g_maze.cols;
+  assert(idx >= 0 && idx < g_maze.count * g_maze.layerCount);
+  assert(row >= 0 && row < g_maze.rows);
+  assert(col >= 0 && col < g_maze.cols);
+  return (Vector2) { col * g_maze.tileWidth, row * g_maze.tileHeight };
 }
 
 // --- Maze functions ---
@@ -92,9 +111,11 @@ void maze_pickupSword(Vector2 pos) {
   tile->isSwordCollected = true;
 }
 
-void maze_pickupChest(Vector2 pos) {
+void maze_pickupChest(Vector2 pos, int score) {
   maze__Tile* tile       = getTileAt(pos, 1);
   tile->isChestCollected = true;
+  g_maze.chestScore      = score;
+  g_maze.chestScoreTimer = CHEST_SCORE_TIMER;
 }
 
 bool maze_isTeleport(Vector2 pos, Vector2* dest) {
@@ -137,6 +158,11 @@ void maze_draw(void) {
       }
     }
   }
+
+  if (g_maze.chestScoreTimer > 0.0f) {
+    Vector2 pos = Vector2Add(POS_ADJUST(getChestPos()), CHEST_SCORE_OFFSET);
+    engine_fontPrintf(g_assets.fontTiny, pos.x, pos.y, WHITE, "%d", g_maze.chestScore);
+  }
 }
 
 void maze_update(float frameTime) {
@@ -156,7 +182,8 @@ void maze_update(float frameTime) {
   }
 
   checkChestSpawn();
-  checkChestDespawnTimer(frameTime);
+  updateChestDespawnTimer(frameTime);
+  updateChestScoreTimer(frameTime);
 }
 
 game__Tile maze_getTile(Vector2 pos) { return (game__Tile) { pos.x / TILE_SIZE, pos.y / TILE_SIZE }; }
@@ -185,6 +212,7 @@ int maze_getCols(void) { return g_maze.cols; }
 
 void maze_reset(void) {
   g_maze.chestDespawnTimer = 0.0f;
+  g_maze.chestScoreTimer   = 0.0f;
   for (int i = 0; i < CHEST_SPAWN_COUNT; i++) {
     g_maze.hasChestSpawned[i] = false;
   }

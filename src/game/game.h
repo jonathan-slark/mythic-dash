@@ -184,7 +184,7 @@ int                maze_getCoinCount(void);
 bool               maze_isSword(Vector2 pos);
 void               maze_pickupSword(Vector2 pos);
 bool               maze_isChest(Vector2 pos);
-void               maze_pickupChest(Vector2 pos);
+void               maze_pickupChest(Vector2 pos, int score);
 
 // --- Debug functions (debug.c) ---
 

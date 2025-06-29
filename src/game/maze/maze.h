@@ -44,6 +44,8 @@ typedef struct maze__Maze {
   int chestID;
   bool hasChestSpawned[CHEST_SPAWN_COUNT];
   float chestDespawnTimer;
+  int chestScore;
+  float chestScoreTimer;
   engine_Texture *tileset;
   maze__Tile *tiles;
 } maze__Maze;

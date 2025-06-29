@@ -69,7 +69,9 @@ static int getChestScoreMultiplier(void) {
   return 1 + (int) (scale * 49.0f);
 }
 
-static void playerChestPickup(void) { g_player.score += getChestScoreMultiplier() * SCORE_CHEST; }
+static int getChestScore(void) { return getChestScoreMultiplier() * SCORE_CHEST; }
+
+static void playerChestPickup(void) { g_player.score += getChestScore(); }
 
 static float getSwordTimer(void) {
   float t = fminf(fmaxf((game_getLevel() - 1) / (MAX_LEVEL - 1.0f), 0.0f), 1.0f);
@@ -128,7 +130,7 @@ static void playerCheckPickups(void) {
     ghost_swordPickup();
   }
   if (maze_isChest(pos)) {
-    maze_pickupChest(pos);
+    maze_pickupChest(pos, getChestScore());
     playerChestPickup();
   }
 }

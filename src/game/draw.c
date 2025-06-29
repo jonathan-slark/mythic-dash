@@ -55,7 +55,7 @@ void draw_ghosts(void) {
     int score = ghost_getScore(i);
     if (score > 0.0f) {
       Vector2 pos = Vector2Add(POS_ADJUST(ghost_getPos(i)), GHOST_SCORE_OFFSET);
-      engine_fontPrintf(g_assets.fontTiny, pos.x, pos.y, WHITE, "%d", score, pos);
+      engine_fontPrintf(g_assets.fontTiny, pos.x, pos.y, WHITE, "%d", score);
     }
   }
 }

@@ -80,3 +80,7 @@ Direction choose_direction(Ghost *ghost, Maze *maze, Tile target_tile) {
 * [Assorted RPG Icons](https://merchant-shade.itch.io/16x16-mixed-rpg-icons) - CC0
 * Coin by Jonathan Slark - CC0
 * [Puny Dungeon](https://merchant-shade.itch.io/16x16-puny-dungeon) - CC0
+
+## Bugs
+
+Assertion failed: bestTileCount > 0 && bestTileCount < startCount, file C:/dev/mythic-dash/src/game/ghost/ghost.c, line 169
