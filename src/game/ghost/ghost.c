@@ -1,3 +1,4 @@
+#include "ghost.h"
 #include <assert.h>
 #include <limits.h>
 #include <raylib.h>

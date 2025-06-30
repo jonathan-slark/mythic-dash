@@ -4,6 +4,7 @@
 #include <raymath.h>
 #include "actor/actor.h"
 #include "actor/internal.h"
+#include "ghost/ghost.h"
 #include "internal.h"
 #include "player/player.h"
 

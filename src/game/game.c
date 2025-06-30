@@ -7,6 +7,7 @@
 #include <raymath.h>
 #include <stddef.h>
 #include "asset.h"
+#include "ghost/ghost.h"
 #include "internal.h"
 #include "player/player.h"
 

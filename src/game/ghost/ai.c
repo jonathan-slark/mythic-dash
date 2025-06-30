@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include "../actor/actor.h"
 #include "../internal.h"
+#include "ghost.h"
 #include "internal.h"
 
 // --- Types ---
