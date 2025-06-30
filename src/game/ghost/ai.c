@@ -2,8 +2,8 @@
 #include <limits.h>
 #include <math.h>
 #include <raylib.h>
-#include "../game.h"
-#include "ghost.h"
+#include "../internal.h"
+#include "internal.h"
 
 // --- Types ---
 

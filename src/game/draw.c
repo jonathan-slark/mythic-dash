@@ -1,5 +1,6 @@
 #include "asset.h"
-#include "game.h"
+#include "internal.h"
+#include "player/player.h"
 
 // --- Constants ---
 

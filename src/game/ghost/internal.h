@@ -5,7 +5,8 @@
 #pragma once
 // Clang format Language: C
 
-#include "../game.h"
+#include "../internal.h"
+#include "../player/player.h"
 #include <raylib.h>
 
 // --- Types ---

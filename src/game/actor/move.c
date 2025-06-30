@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <math.h>  // fminf, fmaxf
 #include <raylib.h>
-#include "../game.h"
-#include "actor.h"
+#include "../internal.h"
+#include "internal.h"
 #include "log/log.h"
 
 // --- Constants ---

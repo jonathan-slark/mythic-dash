@@ -2,7 +2,7 @@
  * anim.h: Animation data, only to be used by game.c
  */
 
-#include "game.h"
+#include "internal.h"
 #include <raylib.h>
 
 // --- Types ---

@@ -1,8 +1,8 @@
+#include "player.h"
 #include <assert.h>
 #include <engine/engine.h>
 #include <raylib.h>
 #include <raymath.h>
-#include "game.h"
 #include "log/log.h"
 
 // --- Types ---

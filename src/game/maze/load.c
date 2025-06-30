@@ -2,9 +2,9 @@
 #include <cute_headers/cute_tiled.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../game.h"
+#include "../internal.h"
+#include "internal.h"
 #include "log/log.h"
-#include "maze.h"
 
 // --- Types ---
 

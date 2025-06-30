@@ -5,7 +5,7 @@
 #pragma once
 // Clang format Language: C
 
-#include "../game.h"
+#include "../internal.h"
 #include <engine/engine.h>
 
 constexpr int CHEST_SPAWN_COUNT = 2;

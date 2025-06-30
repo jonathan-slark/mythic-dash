@@ -1,9 +1,8 @@
-#include "ghost.h"
 #include <assert.h>
 #include <limits.h>
 #include <raylib.h>
-#include "../game.h"
-#include "ghost.h"
+#include "../internal.h"
+#include "internal.h"
 #include "log/log.h"
 
 // --- Constants ---
