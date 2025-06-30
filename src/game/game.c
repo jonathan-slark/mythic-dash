@@ -16,6 +16,7 @@
 
 // --- Constants ---
 
+#ifndef NDEBUG
 static const log_Config LOG_CONFIG_GAME = {
   .minLevel      = LOG_LEVEL_DEBUG,
   .useColours    = true,
@@ -23,6 +24,15 @@ static const log_Config LOG_CONFIG_GAME = {
   .showFileLine  = true,
   .subsystem     = "GAME"
 };
+#else
+static const log_Config LOG_CONFIG_GAME = {
+  .minLevel      = LOG_LEVEL_INFO,
+  .useColours    = true,
+  .showTimestamp = true,
+  .showFileLine  = true,
+  .subsystem     = "GAME"
+};
+#endif
 
 #ifndef NDEBUG
 static const float FPS[] = { 15, 30, 60, 0 };
@@ -31,13 +41,13 @@ static const float FPS[] = { 15, 30, 60, 0 };
 const float BASE_SLOP       = 0.35f;
 const float BASE_DT         = (1.0f / 144.0f);
 const float MIN_SLOP        = 0.05f;
-const float MAX_SLOP        = 0.7f;
+const float MAX_SLOP        = 2.5f;
 const float OVERLAP_EPSILON = 2e-5f;
 
 // --- Global state ---
 
-log_Log* game_log;
-int      g_level = 1;
+log_Log*   game_log;
+static int g_level = 1;
 #ifndef NDEBUG
 static size_t g_fpsIndex = COUNT(FPS) - 1;
 #endif
