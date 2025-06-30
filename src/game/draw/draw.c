@@ -50,19 +50,6 @@ void draw_updateGhosts(float frameTime, float slop) {
   }
 }
 
-void draw_ghosts(void) {
-  for (int i = 0; i < CREATURE_COUNT; i++) {
-    Color colour = ghost_isFrightened(i) ? BLUE : ghost_isDead(i) ? GHOST_DEAD_COLOUR : WHITE;
-    engine_drawSprite(asset_getCreatureSpriteSheet(), asset_getCreateSprite(i), colour);
-
-    int score = ghost_getScore(i);
-    if (score > 0.0f) {
-      Vector2 pos = Vector2Add(POS_ADJUST(ghost_getPos(i)), GHOST_SCORE_OFFSET);
-      engine_fontPrintf(asset_getFontTiny(), pos.x, pos.y, WHITE, "%d", score);
-    }
-  }
-}
-
 void draw_player(void) {
   float swordTimer = player_getSwordTimer();
 
@@ -78,6 +65,19 @@ void draw_player(void) {
   if (swordTimer > 0.0f) {
     Vector2 pos = Vector2Add(POS_ADJUST(player_getPos()), PLAYER_COOLDOWN_OFFSET);
     engine_fontPrintf(asset_getFontTiny(), pos.x, pos.y, WHITE, "%d", (int) ceilf(swordTimer), pos);
+  }
+}
+
+void draw_ghosts(void) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    Color colour = ghost_isFrightened(i) ? BLUE : ghost_isDead(i) ? GHOST_DEAD_COLOUR : WHITE;
+    engine_drawSprite(asset_getCreatureSpriteSheet(), asset_getCreateSprite(i), colour);
+
+    int score = ghost_getScore(i);
+    if (score > 0.0f) {
+      Vector2 pos = Vector2Add(POS_ADJUST(ghost_getPos(i)), GHOST_SCORE_OFFSET);
+      engine_fontPrintf(asset_getFontTiny(), pos.x, pos.y, WHITE, "%d", score);
+    }
   }
 }
 

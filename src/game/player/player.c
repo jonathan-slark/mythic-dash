@@ -124,9 +124,6 @@ static void playerCheckPickups(void) {
   if (maze_isCoin(pos)) {
     maze_pickupCoin(pos);
     playerCoinPickup();
-    if (maze_getCoinCount() == g_player.coinsCollected) {
-      game_nextLevel();
-    }
   }
   if (maze_isSword(pos)) {
     maze_pickupSword(pos);
@@ -136,6 +133,9 @@ static void playerCheckPickups(void) {
   if (maze_isChest(pos)) {
     maze_pickupChest(pos, getChestScore());
     playerChestPickup();
+  }
+  if (maze_getCoinCount() == g_player.coinsCollected) {
+    game_nextLevel();
   }
 }
 
