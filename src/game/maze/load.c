@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../internal.h"
+#include "../maze/maze.h"
 #include "internal.h"
 #include "log/log.h"
 

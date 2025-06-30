@@ -7,6 +7,7 @@
 #include <raymath.h>
 #include <stdlib.h>  // malloc, free
 #include "../internal.h"
+#include "../maze/maze.h"
 #include "internal.h"
 
 // --- Constants ---

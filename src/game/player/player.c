@@ -5,6 +5,7 @@
 #include <raymath.h>
 #include "../actor/actor.h"
 #include "../ghost/ghost.h"
+#include "../maze/maze.h"
 #include "log/log.h"
 
 // --- Types ---

@@ -6,6 +6,7 @@
 #include "actor/internal.h"
 #include "ghost/ghost.h"
 #include "internal.h"
+#include "maze/maze.h"
 #include "player/player.h"
 
 // --- Types ---
