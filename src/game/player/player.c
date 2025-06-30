@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include "../actor/actor.h"
+#include "../debug/debug.h"
 #include "../ghost/ghost.h"
 #include "../maze/maze.h"
 #include "log/log.h"

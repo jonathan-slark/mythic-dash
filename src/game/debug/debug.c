@@ -1,13 +1,14 @@
+#include "debug.h"
 #include <assert.h>
 #include <engine/engine.h>
 #include <raylib.h>
 #include <raymath.h>
-#include "actor/actor.h"
-#include "actor/internal.h"
-#include "ghost/ghost.h"
-#include "internal.h"
-#include "maze/maze.h"
-#include "player/player.h"
+#include "../actor/actor.h"
+#include "../actor/internal.h"
+#include "../ghost/ghost.h"
+#include "../internal.h"
+#include "../maze/maze.h"
+#include "../player/player.h"
 
 // --- Types ---
 
