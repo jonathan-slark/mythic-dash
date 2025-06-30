@@ -25,7 +25,13 @@ typedef struct Debug {
 #define OVERLAY_COLOUR_PLAYER (Color){ 100, 200, 255, 128 }
 #define OVERLAY_COLOUR_GHOST (Color){ 255, 128, 200, 128 }
 #define OVERLAY_NUMBER_SIZE 20
+#define OVERLAY_LARGE_TEXT_SIZE 20
 #define OVERLAY_TEXT_SIZE 12
+static const Vector2 OVERLAY_FPS_POS      = { 600.0f, 0.0f };
+static const Vector2 OVERLAY_IMMUNE_POS   = { 400.0f, 0.0f };
+static const Vector2 OVERLAY_STATE_NUM    = { 210.0f, 0.0f };
+static const Vector2 OVERLAY_STATE_STRING = { 220.0f, 0.0f };
+static const Vector2 OVERLAY_STATE_TIMER  = { 260.0f, 0.0f };
 
 // --- Global state ---
 
@@ -62,11 +68,11 @@ static void drawActorArrow(game__Actor* actor) {
 
 void debug_drawOverlay(void) {
   if (g_debug.isPlayerImmune) {
-    DrawText("Player immune", 400.0f, 0.0f, 20, RED);
+    DrawText("Player immune", OVERLAY_IMMUNE_POS.x, OVERLAY_IMMUNE_POS.y, OVERLAY_LARGE_TEXT_SIZE, RED);
   }
 
   if (g_debug.isFPSOverlayEnabled) {
-    DrawFPS(600.0f, 0.0f);
+    DrawFPS(OVERLAY_FPS_POS.x, OVERLAY_FPS_POS.y);
   }
 
   if (g_debug.isMazeOverlayEnabled) {
@@ -76,7 +82,7 @@ void debug_drawOverlay(void) {
   if (g_debug.isPlayerOverlayEnabled) {
     actor_overlay(player_getActor(), OVERLAY_COLOUR_PLAYER);
     actor_canMoveOverlay(player_getActor());
-    engine_drawFloat(actor_getSpeed(player_getActor()), POS_ADJUST(player_getPos()), 20, WHITE);
+    engine_drawFloat(actor_getSpeed(player_getActor()), POS_ADJUST(player_getPos()), OVERLAY_NUMBER_SIZE, WHITE);
   }
 
   if (g_debug.isGhostOverlayEnabled) {
@@ -100,9 +106,9 @@ void debug_drawOverlay(void) {
       pos.y += 4;
       engine_drawFloat(actor_getSpeed(actor), pos, OVERLAY_NUMBER_SIZE, WHITE);
 
-      engine_drawInt(ghost_getGlobaStateNum() - 1, (Vector2) { 210.0f, 0.0f }, 20, WHITE);
-      engine_drawText(ghost_getGlobalStateString(), (Vector2) { 220.0f, 0.0f }, 20, WHITE);
-      engine_drawFloat(ghost_getGlobalTimer(), (Vector2) { 260.0f, 0.0f }, 20, WHITE);
+      engine_drawInt(ghost_getGlobaStateNum() - 1, OVERLAY_STATE_NUM, OVERLAY_NUMBER_SIZE, WHITE);
+      engine_drawText(ghost_getGlobalStateString(), OVERLAY_STATE_STRING, OVERLAY_LARGE_TEXT_SIZE, WHITE);
+      engine_drawFloat(ghost_getGlobalTimer(), OVERLAY_STATE_TIMER, OVERLAY_NUMBER_SIZE, WHITE);
 
       Vector2 start        = POS_ADJUST(actor_getPos(actor));
       start                = Vector2AddValue(start, TILE_SIZE / 2.0f);

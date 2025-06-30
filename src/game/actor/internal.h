@@ -1,7 +1,3 @@
-/*
- * actor.h: Internal to actor units, don't include in other units.
- */
-
 #pragma once
 // Clang format Language: C
 

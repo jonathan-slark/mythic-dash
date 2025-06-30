@@ -1,4 +1,5 @@
 #include "asset.h"
+#include <assert.h>
 #include <engine/engine.h>
 #include <raylib.h>
 #include "../ghost/ghost.h"
@@ -114,12 +115,41 @@ void asset_shutdownGhosts(void) {
 }
 
 engine_Texture* asset_getCreatureSpriteSheet(void) { return g_assets.creatureSpriteSheet; }
+
 engine_Texture* asset_getPlayerSpriteSheet(void) { return g_assets.playerSpriteSheet; }
-engine_Sprite*  asset_getPlayerSprite(game_PlayerState state) { return g_assets.playerSprites[state]; }
-engine_Sprite*  asset_getPlayerLivesSprite(int life) { return g_assets.playerLivesSprites[life]; }
-engine_Anim*    asset_getPlayerAnim(game_PlayerState state, game_Dir dir) { return g_assets.playerAnim[state][dir]; }
-engine_Sprite*  asset_getCreateSprite(int creatureID) { return g_assets.creatureSprites[creatureID]; }
-engine_Anim*    asset_getCreatureAnim(int creatureID, game_Dir dir) { return g_assets.creatureAnims[creatureID][dir]; }
-engine_Font*    asset_getFont(void) { return g_assets.font; }
-engine_Font*    asset_getFontTiny(void) { return g_assets.fontTiny; }
-Vector2         asset_getCreatureOffset(int creatureID) { return CREATURE_DATA[creatureID].offset; }
+
+engine_Sprite* asset_getPlayerSprite(game_PlayerState state) {
+  assert(state >= 0 && state < PLAYER_STATE_COUNT);
+  return g_assets.playerSprites[state];
+}
+
+engine_Sprite* asset_getPlayerLivesSprite(int life) {
+  assert(life >= 0 && life < PLAYER_MAX_LIVES);
+  return g_assets.playerLivesSprites[life];
+}
+
+engine_Anim* asset_getPlayerAnim(game_PlayerState state, game_Dir dir) {
+  assert(state >= 0 && state < PLAYER_STATE_COUNT);
+  assert(dir >= 0 && dir < DIR_COUNT);
+  return g_assets.playerAnim[state][dir];
+}
+
+engine_Sprite* asset_getCreateSprite(int creatureID) {
+  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
+  return g_assets.creatureSprites[creatureID];
+}
+
+engine_Anim* asset_getCreatureAnim(int creatureID, game_Dir dir) {
+  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
+  assert(dir >= 0 && dir < DIR_COUNT);
+  return g_assets.creatureAnims[creatureID][dir];
+}
+
+engine_Font* asset_getFont(void) { return g_assets.font; }
+
+engine_Font* asset_getFontTiny(void) { return g_assets.fontTiny; }
+
+Vector2 asset_getCreatureOffset(int creatureID) {
+  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
+  return CREATURE_DATA[creatureID].offset;
+}
