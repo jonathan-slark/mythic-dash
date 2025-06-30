@@ -82,14 +82,6 @@ static inline void aabb_drawOverlay(game__AABB aabb, Color colour) {
 
 static inline game__Dir game_getOppositeDir(game__Dir dir) { return (dir + 2) % DIR_COUNT; }
 
-// --- Draw functions (draw.c) ---
-
-void draw_updatePlayer(float frameTime, float slop);
-void draw_updateGhosts(float frameTime, float slop);
-void draw_ghosts(void);
-void draw_player(void);
-void draw_interface(void);
-
 // --- Debug functions (debug.c) ---
 
 void debug_drawOverlay(void);

@@ -7,6 +7,7 @@
 #include <raymath.h>
 #include <stddef.h>
 #include "asset.h"
+#include "draw/draw.h"
 #include "ghost/ghost.h"
 #include "internal.h"
 #include "maze/maze.h"
