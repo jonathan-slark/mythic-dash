@@ -2,6 +2,7 @@
 #include <engine/engine.h>
 #include <raylib.h>
 #include <raymath.h>
+#include "actor/actor.h"
 #include "actor/internal.h"
 #include "internal.h"
 #include "player/player.h"

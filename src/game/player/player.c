@@ -3,6 +3,7 @@
 #include <engine/engine.h>
 #include <raylib.h>
 #include <raymath.h>
+#include "../actor/actor.h"
 #include "log/log.h"
 
 // --- Types ---

@@ -2,6 +2,7 @@
 #include <limits.h>
 #include <math.h>
 #include <raylib.h>
+#include "../actor/actor.h"
 #include "../internal.h"
 #include "internal.h"
 

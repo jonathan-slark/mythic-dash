@@ -2,6 +2,7 @@
 #include <math.h>  // fminf, fmaxf
 #include <raylib.h>
 #include "../internal.h"
+#include "actor.h"
 #include "internal.h"
 #include "log/log.h"
 

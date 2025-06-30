@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <raylib.h>
+#include "../actor/actor.h"
 #include "../internal.h"
 #include "internal.h"
 #include "log/log.h"
