@@ -1,7 +1,3 @@
-/*
- * game.h: Game subsystem internal functions
- */
-
 // clang-format Language: C
 #pragma once
 

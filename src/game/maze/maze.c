@@ -3,7 +3,7 @@
 #include <log/log.h>
 #include <raylib.h>
 #include <stdlib.h>
-#include "../asset.h"
+#include "../asset/asset.h"
 #include "../internal.h"
 #include "../player/player.h"
 #include "internal.h"
@@ -162,7 +162,7 @@ void maze_draw(void) {
 
   if (g_maze.chestScoreTimer > 0.0f) {
     Vector2 pos = Vector2Add(POS_ADJUST(getChestPos()), CHEST_SCORE_OFFSET);
-    engine_fontPrintf(g_assets.fontTiny, pos.x, pos.y, WHITE, "%d", g_maze.chestScore);
+    engine_fontPrintf(asset_getFontTiny(), pos.x, pos.y, WHITE, "%d", g_maze.chestScore);
   }
 }
 

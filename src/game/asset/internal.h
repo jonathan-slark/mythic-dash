@@ -1,53 +1,52 @@
-/*
- * anim.h: Animation data, only to be used by game.c
- */
+// clang-format Language: C
+#pragma once
 
-#include "internal.h"
 #include <raylib.h>
+#include "../internal.h"
 
 // --- Types ---
 
-typedef struct AnimData {
-  int row;
-  int startCol;
-  int frameCount;
+typedef struct asset_AnimData {
+  int   row;
+  int   startCol;
+  int   frameCount;
   float frameTime;
-} AnimData;
+} asset_AnimData;
 
-typedef struct ActorData {
-  Vector2 size;
-  Vector2 offset;
-  Vector2 inset;
-  bool loop;
-  AnimData animData[DIR_COUNT];
-} ActorData;
+typedef struct asset_ActorData {
+  Vector2        size;
+  Vector2        offset;
+  Vector2        inset;
+  bool           loop;
+  asset_AnimData animData[DIR_COUNT];
+} asset_ActorData;
 
-typedef struct game__Assets {
-  engine_Texture *creatureSpriteSheet;
-  engine_Texture *playerSpriteSheet;
-  engine_Sprite *playerSprites[PLAYER_STATE_COUNT];
-  engine_Sprite *playerLivesSprites[PLAYER_MAX_LIVES];
-  engine_Anim *playerAnim[PLAYER_STATE_COUNT][DIR_COUNT];
-  engine_Sprite *creatureSprites[CREATURE_COUNT];
-  engine_Anim *creatureAnims[CREATURE_COUNT][DIR_COUNT];
-  engine_Font *font;
-  engine_Font *fontTiny;
-} game__Assets;
+typedef struct asset_Assets {
+  engine_Texture* creatureSpriteSheet;
+  engine_Texture* playerSpriteSheet;
+  engine_Sprite*  playerSprites[PLAYER_STATE_COUNT];
+  engine_Sprite*  playerLivesSprites[PLAYER_MAX_LIVES];
+  engine_Anim*    playerAnim[PLAYER_STATE_COUNT][DIR_COUNT];
+  engine_Sprite*  creatureSprites[CREATURE_COUNT];
+  engine_Anim*    creatureAnims[CREATURE_COUNT][DIR_COUNT];
+  engine_Font*    font;
+  engine_Font*    fontTiny;
+} asset_Assets;
 
 // --- Constants ---
 
 static const char FILE_BACKGROUND[] = ASSET_DIR "gfx/background.png";
-static const char FILE_CREATURES[] = ASSET_DIR "gfx/creatures.png";
-static const char FILE_PLAYER[] = ASSET_DIR "gfx/player.png";
-static const char FILE_FONT[] = ASSET_DIR "gfx/font.png";
-static const char FILE_FONT_TINY[] = ASSET_DIR "gfx/tiny-numbers.png";
+static const char FILE_CREATURES[]  = ASSET_DIR "gfx/creatures.png";
+static const char FILE_PLAYER[]     = ASSET_DIR "gfx/player.png";
+static const char FILE_FONT[]       = ASSET_DIR "gfx/font.png";
+static const char FILE_FONT_TINY[]  = ASSET_DIR "gfx/tiny-numbers.png";
 
 static const float FRAME_TIME = 0.1f;
 
-static const Vector2 PLAYER_LIVES_OFFSET = {8.0f, 248.0f};
+static const Vector2 PLAYER_LIVES_OFFSET = { 8.0f, 248.0f };
 
 // clang-format off
-static const ActorData PLAYER_DATA[PLAYER_STATE_COUNT] = {
+static const asset_ActorData PLAYER_DATA[PLAYER_STATE_COUNT] = {
   {
     .inset    = { 8.0f, 8.0f },
     .loop = true,
@@ -80,7 +79,7 @@ static const ActorData PLAYER_DATA[PLAYER_STATE_COUNT] = {
   }
 };
 
-static const ActorData CREATURE_DATA[CREATURE_COUNT] = {
+static const asset_ActorData CREATURE_DATA[CREATURE_COUNT] = {
   {
     .size     = { 24.0f, 24.0f },
     .offset   = { -4.0f, -8.0f },
@@ -131,8 +130,3 @@ static const ActorData CREATURE_DATA[CREATURE_COUNT] = {
   }
 };
 // clang-format on
-
-// --- Global state ---
-
-extern game__Assets g_assets;
-extern int g_level;

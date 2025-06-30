@@ -6,7 +6,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <stddef.h>
-#include "asset.h"
+#include "asset/asset.h"
 #include "debug/debug.h"
 #include "draw/draw.h"
 #include "ghost/ghost.h"
@@ -36,9 +36,8 @@ const float OVERLAP_EPSILON = 2e-5f;
 
 // --- Global state ---
 
-log_Log*     game_log;
-game__Assets g_assets;
-int          g_level = 1;
+log_Log* game_log;
+int      g_level = 1;
 #ifndef NDEBUG
 static size_t g_fpsIndex = COUNT(FPS) - 1;
 #endif
@@ -57,107 +56,6 @@ static void checkFPSKeys(void) {
 }
 #endif
 
-static bool loadAssets(void) {
-  GAME_TRY(g_assets.creatureSpriteSheet = engine_textureLoad(FILE_CREATURES));
-  GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
-  GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 6, 10, 32, 127, 0, 2));
-  GAME_TRY(g_assets.fontTiny = engine_fontLoad(FILE_FONT_TINY, 5, 7, 48, 57, 0, 0));
-  return true;
-}
-
-static void unloadAssets(void) {
-  engine_fontUnload(&g_assets.font);
-  engine_textureUnload(&g_assets.playerSpriteSheet);
-  engine_textureUnload(&g_assets.creatureSpriteSheet);
-}
-
-static bool initPlayer(void) {
-  GAME_TRY(player_init());
-
-  for (int i = 0; i < PLAYER_STATE_COUNT; i++) {
-    GAME_TRY(
-        g_assets.playerSprites[i] = engine_createSprite(
-            POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, (Vector2) { 0.0f, 0.0f }
-        )
-    );
-    for (int j = 0; j < DIR_COUNT; j++) {
-      GAME_TRY(
-          g_assets.playerAnim[i][j] = engine_createAnim(
-              g_assets.playerSprites[i],
-              PLAYER_DATA[i].animData[j].row,
-              PLAYER_DATA[i].animData[j].startCol,
-              PLAYER_DATA[i].animData[j].frameCount,
-              PLAYER_DATA[i].animData[j].frameTime,
-              PLAYER_DATA[i].inset,
-              PLAYER_DATA[i].loop
-          )
-      );
-    }
-  }
-
-  Vector2 offset = PLAYER_LIVES_OFFSET;
-  for (int i = 0; i < PLAYER_MAX_LIVES; i++) {
-    GAME_TRY(
-        g_assets.playerLivesSprites[i] = engine_createSpriteFromSheet(
-            offset,
-            (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
-            PLAYER_DATA[PLAYER_NORMAL].animData[DIR_LEFT].row,
-            PLAYER_DATA[PLAYER_NORMAL].animData[DIR_LEFT].startCol,
-            PLAYER_DATA[PLAYER_NORMAL].inset
-        )
-    );
-    offset.x += ACTOR_SIZE;
-  }
-  return true;
-}
-
-static bool initGhosts(void) {
-  GAME_TRY(ghost_init());
-  for (int i = 0; i < CREATURE_COUNT; i++) {
-    GAME_TRY(
-        g_assets.creatureSprites[i] =
-            engine_createSprite(POS_ADJUST(ghost_getPos(i)), CREATURE_DATA[i].size, (Vector2) { 0.0f, 0.0f })
-    );
-    for (int j = 0; j < DIR_COUNT; j++) {
-      GAME_TRY(
-          g_assets.creatureAnims[i][j] = engine_createAnim(
-              g_assets.creatureSprites[i],
-              CREATURE_DATA[i].animData[j].row,
-              CREATURE_DATA[i].animData[j].startCol,
-              CREATURE_DATA[i].animData[j].frameCount,
-              CREATURE_DATA[i].animData[j].frameTime,
-              CREATURE_DATA[i].inset,
-              CREATURE_DATA[i].loop
-          )
-      );
-    }
-  }
-  return true;
-}
-
-static void unloadPlayer(void) {
-  player_shutdown();
-  for (int i = 0; i < PLAYER_LIVES; i++) {
-    engine_destroySprite(&g_assets.playerLivesSprites[i]);
-  }
-  for (int i = 0; i < PLAYER_STATE_COUNT; i++) {
-    engine_destroySprite(&g_assets.playerSprites[i]);
-    for (int j = 0; j < DIR_COUNT; j++) {
-      engine_destroyAnim(&g_assets.playerAnim[i][j]);
-    }
-  }
-}
-
-static void unloadGhosts(void) {
-  ghost_shutdown();
-  for (int i = 0; i < CREATURE_COUNT; i++) {
-    engine_destroySprite(&g_assets.creatureSprites[i]);
-    for (int j = 0; j < DIR_COUNT; j++) {
-      engine_destroyAnim(&g_assets.creatureAnims[i][j]);
-    }
-  }
-}
-
 // --- Game functions ---
 
 bool game_load(void) {
@@ -172,10 +70,10 @@ bool game_load(void) {
   }
 
   double start = GetTime();
-  GAME_TRY(loadAssets());
+  GAME_TRY(asset_load());
   GAME_TRY(maze_init());
-  GAME_TRY(initPlayer());
-  GAME_TRY(initGhosts());
+  GAME_TRY(asset_initPlayer());
+  GAME_TRY(asset_initGhosts());
 
   LOG_INFO(game_log, "Game loading took %f seconds", GetTime() - start);
   return true;
@@ -206,10 +104,10 @@ void game_draw(void) {
 }
 
 void game_unload(void) {
-  unloadGhosts();
-  unloadPlayer();
+  asset_shutdownGhosts();
+  asset_shutdownPlayer();
   maze_shutdown();
-  unloadAssets();
+  asset_unload();
   log_destroy(&game_log);
 }
 

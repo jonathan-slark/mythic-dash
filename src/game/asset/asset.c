@@ -1,0 +1,125 @@
+#include "asset.h"
+#include <engine/engine.h>
+#include <raylib.h>
+#include "../ghost/ghost.h"
+#include "../internal.h"
+#include "../player/player.h"
+#include "internal.h"
+
+// --- Global state ---
+
+static asset_Assets g_assets;
+
+// --- Asset functions ---
+
+bool asset_load(void) {
+  GAME_TRY(g_assets.creatureSpriteSheet = engine_textureLoad(FILE_CREATURES));
+  GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
+  GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 6, 10, 32, 127, 0, 2));
+  GAME_TRY(g_assets.fontTiny = engine_fontLoad(FILE_FONT_TINY, 5, 7, 48, 57, 0, 0));
+  return true;
+}
+
+void asset_unload(void) {
+  engine_fontUnload(&g_assets.font);
+  engine_textureUnload(&g_assets.playerSpriteSheet);
+  engine_textureUnload(&g_assets.creatureSpriteSheet);
+}
+
+bool asset_initPlayer(void) {
+  GAME_TRY(player_init());
+
+  for (int i = 0; i < PLAYER_STATE_COUNT; i++) {
+    GAME_TRY(
+        g_assets.playerSprites[i] = engine_createSprite(
+            POS_ADJUST(player_getPos()), (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, (Vector2) { 0.0f, 0.0f }
+        )
+    );
+    for (int j = 0; j < DIR_COUNT; j++) {
+      GAME_TRY(
+          g_assets.playerAnim[i][j] = engine_createAnim(
+              g_assets.playerSprites[i],
+              PLAYER_DATA[i].animData[j].row,
+              PLAYER_DATA[i].animData[j].startCol,
+              PLAYER_DATA[i].animData[j].frameCount,
+              PLAYER_DATA[i].animData[j].frameTime,
+              PLAYER_DATA[i].inset,
+              PLAYER_DATA[i].loop
+          )
+      );
+    }
+  }
+
+  Vector2 offset = PLAYER_LIVES_OFFSET;
+  for (int i = 0; i < PLAYER_MAX_LIVES; i++) {
+    GAME_TRY(
+        g_assets.playerLivesSprites[i] = engine_createSpriteFromSheet(
+            offset,
+            (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
+            PLAYER_DATA[PLAYER_NORMAL].animData[DIR_LEFT].row,
+            PLAYER_DATA[PLAYER_NORMAL].animData[DIR_LEFT].startCol,
+            PLAYER_DATA[PLAYER_NORMAL].inset
+        )
+    );
+    offset.x += ACTOR_SIZE;
+  }
+  return true;
+}
+
+bool asset_initGhosts(void) {
+  GAME_TRY(ghost_init());
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    GAME_TRY(
+        g_assets.creatureSprites[i] =
+            engine_createSprite(POS_ADJUST(ghost_getPos(i)), CREATURE_DATA[i].size, (Vector2) { 0.0f, 0.0f })
+    );
+    for (int j = 0; j < DIR_COUNT; j++) {
+      GAME_TRY(
+          g_assets.creatureAnims[i][j] = engine_createAnim(
+              g_assets.creatureSprites[i],
+              CREATURE_DATA[i].animData[j].row,
+              CREATURE_DATA[i].animData[j].startCol,
+              CREATURE_DATA[i].animData[j].frameCount,
+              CREATURE_DATA[i].animData[j].frameTime,
+              CREATURE_DATA[i].inset,
+              CREATURE_DATA[i].loop
+          )
+      );
+    }
+  }
+  return true;
+}
+
+void asset_shutdownPlayer(void) {
+  player_shutdown();
+  for (int i = 0; i < PLAYER_LIVES; i++) {
+    engine_destroySprite(&g_assets.playerLivesSprites[i]);
+  }
+  for (int i = 0; i < PLAYER_STATE_COUNT; i++) {
+    engine_destroySprite(&g_assets.playerSprites[i]);
+    for (int j = 0; j < DIR_COUNT; j++) {
+      engine_destroyAnim(&g_assets.playerAnim[i][j]);
+    }
+  }
+}
+
+void asset_shutdownGhosts(void) {
+  ghost_shutdown();
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    engine_destroySprite(&g_assets.creatureSprites[i]);
+    for (int j = 0; j < DIR_COUNT; j++) {
+      engine_destroyAnim(&g_assets.creatureAnims[i][j]);
+    }
+  }
+}
+
+engine_Texture* asset_getCreatureSpriteSheet(void) { return g_assets.creatureSpriteSheet; }
+engine_Texture* asset_getPlayerSpriteSheet(void) { return g_assets.playerSpriteSheet; }
+engine_Sprite*  asset_getPlayerSprite(game_PlayerState state) { return g_assets.playerSprites[state]; }
+engine_Sprite*  asset_getPlayerLivesSprite(int life) { return g_assets.playerLivesSprites[life]; }
+engine_Anim*    asset_getPlayerAnim(game_PlayerState state, game_Dir dir) { return g_assets.playerAnim[state][dir]; }
+engine_Sprite*  asset_getCreateSprite(int creatureID) { return g_assets.creatureSprites[creatureID]; }
+engine_Anim*    asset_getCreatureAnim(int creatureID, game_Dir dir) { return g_assets.creatureAnims[creatureID][dir]; }
+engine_Font*    asset_getFont(void) { return g_assets.font; }
+engine_Font*    asset_getFontTiny(void) { return g_assets.fontTiny; }
+Vector2         asset_getCreatureOffset(int creatureID) { return CREATURE_DATA[creatureID].offset; }

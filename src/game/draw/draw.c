@@ -1,5 +1,5 @@
 #include "draw.h"
-#include "../asset.h"
+#include "../asset/asset.h"
 #include "../ghost/ghost.h"
 #include "../internal.h"
 #include "../player/player.h"
@@ -29,36 +29,36 @@ void draw_updatePlayer(float frameTime, float slop) {
       );
     if (prevDir != DIR_NONE && dir != prevDir)
       LOG_TRACE(game_log, "Player direction changed from %s to %s", DIR_STRINGS[prevDir], DIR_STRINGS[dir]);
-    engine_resetAnim(g_assets.playerAnim[state][dir]);
+    engine_resetAnim(asset_getPlayerAnim(state, dir));
     prevState = state;
     prevDir   = dir;
   }
 
-  engine_spriteSetPos(g_assets.playerSprites[state], pos);
+  engine_spriteSetPos(asset_getPlayerSprite(state), pos);
 
   if (player_isMoving() || state == PLAYER_SWORD || state == PLAYER_DEAD) {
-    engine_updateAnim(g_assets.playerAnim[state][dir], frameTime);
+    engine_updateAnim(asset_getPlayerAnim(state, dir), frameTime);
   }
 }
 
 void draw_updateGhosts(float frameTime, float slop) {
   ghost_update(frameTime, slop);
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    Vector2 pos = Vector2Add(POS_ADJUST(ghost_getPos(i)), CREATURE_DATA[i].offset);
-    engine_spriteSetPos(g_assets.creatureSprites[i], pos);
-    engine_updateAnim(g_assets.creatureAnims[i][ghost_getDir(i)], frameTime);
+    Vector2 pos = Vector2Add(POS_ADJUST(ghost_getPos(i)), asset_getCreatureOffset(i));
+    engine_spriteSetPos(asset_getCreateSprite(i), pos);
+    engine_updateAnim(asset_getCreatureAnim(i, ghost_getDir(i)), frameTime);
   }
 }
 
 void draw_ghosts(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     Color colour = ghost_isFrightened(i) ? BLUE : ghost_isDead(i) ? GHOST_DEAD_COLOUR : WHITE;
-    engine_drawSprite(g_assets.creatureSpriteSheet, g_assets.creatureSprites[i], colour);
+    engine_drawSprite(asset_getCreatureSpriteSheet(), asset_getCreateSprite(i), colour);
 
     int score = ghost_getScore(i);
     if (score > 0.0f) {
       Vector2 pos = Vector2Add(POS_ADJUST(ghost_getPos(i)), GHOST_SCORE_OFFSET);
-      engine_fontPrintf(g_assets.fontTiny, pos.x, pos.y, WHITE, "%d", score);
+      engine_fontPrintf(asset_getFontTiny(), pos.x, pos.y, WHITE, "%d", score);
     }
   }
 }
@@ -69,19 +69,19 @@ void draw_player(void) {
   bool flash = false;
   if (swordTimer > 0.0f && swordTimer < 1.0f) flash = ((int) (swordTimer * 10) % 2) == 0;
   Color colour = flash ? BLACK : WHITE;
-  engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerSprites[player_getState()], colour);
+  engine_drawSprite(asset_getPlayerSpriteSheet(), asset_getPlayerSprite(player_getState()), colour);
 
   for (int i = 0; i < player_getLives() - 1; i++) {
-    engine_drawSprite(g_assets.playerSpriteSheet, g_assets.playerLivesSprites[i], WHITE);
+    engine_drawSprite(asset_getPlayerSpriteSheet(), asset_getPlayerLivesSprite(i), WHITE);
   }
 
   if (swordTimer > 0.0f) {
     Vector2 pos = Vector2Add(POS_ADJUST(player_getPos()), PLAYER_COOLDOWN_OFFSET);
-    engine_fontPrintf(g_assets.fontTiny, pos.x, pos.y, WHITE, "%d", (int) ceilf(swordTimer), pos);
+    engine_fontPrintf(asset_getFontTiny(), pos.x, pos.y, WHITE, "%d", (int) ceilf(swordTimer), pos);
   }
 }
 
 void draw_interface(void) {
-  engine_fontPrintf(g_assets.font, 8, 0, WHITE, "Score: %d", player_getScore());
-  engine_fontPrintf(g_assets.font, 394, 0, WHITE, "Level: %02d / ?", g_level);
+  engine_fontPrintf(asset_getFont(), 8, 0, WHITE, "Score: %d", player_getScore());
+  engine_fontPrintf(asset_getFont(), 394, 0, WHITE, "Level: %02d / ?", game_getLevel());
 }
