@@ -15,7 +15,7 @@ constexpr size_t TILES_COUNT = 3;
 // --- Types ---
 
 typedef struct actor__Tile {
-  game__AABB aabb;
+  game_AABB aabb;
   bool isWall;
   bool isCollision;
 } actor__Tile;
@@ -23,7 +23,7 @@ typedef struct actor__Tile {
 typedef struct game__Actor {
   Vector2 pos;
   Vector2 size;
-  game__Dir dir;
+  game_Dir dir;
   float speed;
   bool isMoving;
   bool hasTeleported;

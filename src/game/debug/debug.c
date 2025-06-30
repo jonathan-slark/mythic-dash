@@ -104,9 +104,9 @@ void debug_drawOverlay(void) {
       engine_drawText(ghost_getGlobalStateString(), (Vector2) { 220.0f, 0.0f }, 20, WHITE);
       engine_drawFloat(ghost_getGlobalTimer(), (Vector2) { 260.0f, 0.0f }, 20, WHITE);
 
-      Vector2 start         = POS_ADJUST(actor_getPos(actor));
-      start                 = Vector2AddValue(start, TILE_SIZE / 2.0f);
-      game__Tile targetTile = ghost_getTarget(i);
+      Vector2 start        = POS_ADJUST(actor_getPos(actor));
+      start                = Vector2AddValue(start, TILE_SIZE / 2.0f);
+      game_Tile targetTile = ghost_getTarget(i);
       if (targetTile.col >= 0 && targetTile.row >= 0) {
         Vector2 end = POS_ADJUST(maze_getPos(targetTile));
         end         = Vector2AddValue(end, TILE_SIZE / 2.0f);

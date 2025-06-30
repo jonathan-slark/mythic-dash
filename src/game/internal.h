@@ -22,19 +22,19 @@
 
 // --- Types ---
 
-typedef enum game__Dir { DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT, DIR_COUNT, DIR_NONE } game__Dir;
+typedef enum game_Dir { DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT, DIR_COUNT, DIR_NONE } game_Dir;
 
-typedef enum game__PlayerState { PLAYER_NORMAL, PLAYER_SWORD, PLAYER_DEAD, PLAYER_STATE_COUNT } game__PlayerState;
+typedef enum game_PlayerState { PLAYER_NORMAL, PLAYER_SWORD, PLAYER_DEAD, PLAYER_STATE_COUNT } game_PlayerState;
 
-typedef struct game__AABB {
+typedef struct game_AABB {
   Vector2 min;
   Vector2 max;
-} game__AABB;
+} game_AABB;
 
-typedef struct game__Tile {
+typedef struct game_Tile {
   int col;
   int row;
-} game__Tile;
+} game_Tile;
 
 typedef struct game__Actor game__Actor;
 
@@ -58,29 +58,29 @@ extern const char* DIR_STRINGS[];
 
 // --- Global state ---
 
-extern log_Log* game__log;
+extern log_Log* game_log;
 
 // --- Helper functions ---
 
-static inline bool aabb_isColliding(game__AABB a, game__AABB b) {
+static inline bool game_isAABBColliding(game_AABB a, game_AABB b) {
   return a.min.x < b.max.x && a.max.x > b.min.x && a.min.y < b.max.y && a.max.y > b.min.y;
 }
 
-static inline float aabb_getOverlapX(game__AABB a, game__AABB b) {
+static inline float game_getAABBOverlapX(game_AABB a, game_AABB b) {
   return fmin(a.max.x, b.max.x) - fmax(a.min.x, b.min.x);
 }
 
-static inline float aabb_getOverlapY(game__AABB a, game__AABB b) {
+static inline float game_getAABBOverlapY(game_AABB a, game_AABB b) {
   return fmin(a.max.y, b.max.y) - fmax(a.min.y, b.min.y);
 }
 
-static inline void aabb_drawOverlay(game__AABB aabb, Color colour) {
+static inline void game_drawAABBOverlay(game_AABB aabb, Color colour) {
   Vector2 min = POS_ADJUST(aabb.min);
   Vector2 max = POS_ADJUST(aabb.max);
   engine_drawRectangleOutline((Rectangle) { min.x, min.y, max.x - min.x, max.y - min.y }, colour);
 }
 
-static inline game__Dir game_getOppositeDir(game__Dir dir) { return (dir + 2) % DIR_COUNT; }
+static inline game_Dir game_getOppositeDir(game_Dir dir) { return (dir + 2) % DIR_COUNT; }
 
 // --- Internal game functions (game.c) ---
 

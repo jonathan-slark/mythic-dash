@@ -36,7 +36,7 @@ const float OVERLAP_EPSILON = 2e-5f;
 
 // --- Global state ---
 
-log_Log*     game__log;
+log_Log*     game_log;
 game__Assets g_assets;
 int          g_level = 1;
 #ifndef NDEBUG
@@ -161,13 +161,13 @@ static void unloadGhosts(void) {
 // --- Game functions ---
 
 bool game_load(void) {
-  if (game__log != nullptr) {
-    LOG_ERROR(game__log, "Game already loaded");
+  if (game_log != nullptr) {
+    LOG_ERROR(game_log, "Game already loaded");
     return false;
   }
-  game__log = log_create(&LOG_CONFIG_GAME);
-  if (game__log == nullptr) {
-    LOG_ERROR(game__log, "Failed to create log");
+  game_log = log_create(&LOG_CONFIG_GAME);
+  if (game_log == nullptr) {
+    LOG_ERROR(game_log, "Failed to create log");
     return false;
   }
 
@@ -177,7 +177,7 @@ bool game_load(void) {
   GAME_TRY(initPlayer());
   GAME_TRY(initGhosts());
 
-  LOG_INFO(game__log, "Game loading took %f seconds", GetTime() - start);
+  LOG_INFO(game_log, "Game loading took %f seconds", GetTime() - start);
   return true;
 }
 
@@ -189,7 +189,7 @@ void game_update(float frameTime) {
   checkFPSKeys();
 #endif
 
-  LOG_TRACE(game__log, "Slop: %f", slop);
+  LOG_TRACE(game_log, "Slop: %f", slop);
   draw_updateGhosts(frameTime, slop);
   draw_updatePlayer(frameTime, slop);
   maze_update(frameTime);
@@ -210,7 +210,7 @@ void game_unload(void) {
   unloadPlayer();
   maze_shutdown();
   unloadAssets();
-  log_destroy(&game__log);
+  log_destroy(&game_log);
 }
 
 int game_getLevel(void) { return g_level; }

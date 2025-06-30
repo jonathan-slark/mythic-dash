@@ -25,12 +25,12 @@ static void drawTile(actor__Tile tile) {
   } else {
     colour = tile.isWall ? OVERLAY_COLOUR_TILE_WALL : OVERLAY_COLOUR_TILE_FLOOR;
   }
-  aabb_drawOverlay(tile.aabb, colour);
+  game_drawAABBOverlay(tile.aabb, colour);
 }
 
 // --- Actor functions ---
 
-game__Actor* actor_create(Vector2 pos, Vector2 size, game__Dir dir, float speed) {
+game__Actor* actor_create(Vector2 pos, Vector2 size, game_Dir dir, float speed) {
   assert(pos.x >= 0.0f);
   assert(pos.y >= 0.0f);
   assert(size.x > 0.0f);
@@ -40,7 +40,7 @@ game__Actor* actor_create(Vector2 pos, Vector2 size, game__Dir dir, float speed)
 
   game__Actor* actor = (game__Actor*) malloc(sizeof(game__Actor));
   if (actor == nullptr) {
-    LOG_ERROR(game__log, "Failed to create actor");
+    LOG_ERROR(game_log, "Failed to create actor");
     return nullptr;
   }
 
@@ -78,12 +78,12 @@ Vector2 actor_getSize(const game__Actor* actor) {
   return actor->size;
 }
 
-game__Dir actor_getDir(const game__Actor* actor) {
+game_Dir actor_getDir(const game__Actor* actor) {
   assert(actor != nullptr);
   return actor->dir;
 }
 
-void actor_setDir(game__Actor* actor, game__Dir dir) {
+void actor_setDir(game__Actor* actor, game_Dir dir) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   actor->dir = dir;
@@ -94,9 +94,9 @@ bool actor_isMoving(const game__Actor* actor) {
   return actor->isMoving;
 }
 
-game__AABB actor_getAABB(const game__Actor* actor) {
+game_AABB actor_getAABB(const game__Actor* actor) {
   assert(actor != nullptr);
-  return (game__AABB) {
+  return (game_AABB) {
     .min = (Vector2) {                 actor->pos.x,                 actor->pos.y },
     .max = (Vector2) { actor->pos.x + actor->size.x, actor->pos.y + actor->size.y }
   };
@@ -115,7 +115,7 @@ float actor_getSpeed(game__Actor* actor) {
 
 void actor_overlay(const game__Actor* actor, Color colour) {
   assert(actor != nullptr);
-  aabb_drawOverlay(actor_getAABB(actor), colour);
+  game_drawAABBOverlay(actor_getAABB(actor), colour);
 }
 
 void actor_moveOverlay(game__Actor* actor) {
@@ -129,7 +129,7 @@ void actor_moveOverlay(game__Actor* actor) {
 void actor_canMoveOverlay(game__Actor* actor) {
   assert(actor != nullptr);
 
-  for (game__Dir dir = 0; dir < DIR_COUNT; dir++) {
+  for (game_Dir dir = 0; dir < DIR_COUNT; dir++) {
     if (!actor->isCanMove[dir]) continue;
     for (size_t i = 0; i < TILES_COUNT; i++) {
       // TODO: mark an array when when tile is drawn
@@ -139,7 +139,7 @@ void actor_canMoveOverlay(game__Actor* actor) {
   }
 }
 
-game__Tile actor_nextTile(game__Actor* actor, game__Dir dir) {
+game_Tile actor_nextTile(game__Actor* actor, game_Dir dir) {
   Vector2 center = { actor->pos.x + actor->size.x / 2.0f, actor->pos.y + actor->size.y / 2.0f };
   switch (dir) {
     case DIR_UP: center.y -= TILE_SIZE; break;
@@ -159,7 +159,7 @@ bool actor_isColliding(const game__Actor* actor1, const game__Actor* actor2) {
   bool    isCollision  = Vector2Distance(centreActor1, centreActor2) < ACTOR_SIZE;
   if (isCollision)
     LOG_DEBUG(
-        game__log,
+        game_log,
         "Collision detected between actor1 (%f, %f) and actor2 (%f, %f)",
         actor1->pos.x,
         actor1->pos.y,

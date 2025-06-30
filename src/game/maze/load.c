@@ -34,13 +34,13 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
   cute_tiled_tileset_t* tileset = map->tilesets;
   *tileCount                    = tileset->tilecount;
   if (*tileCount <= 0) {
-    LOG_FATAL(game__log, "No tiles in tileset");
+    LOG_FATAL(game_log, "No tiles in tileset");
     return false;
   }
 
   *tileData = (MapTile*) malloc(*tileCount * sizeof(MapTile));
   if (*tileData == nullptr) {
-    LOG_FATAL(game__log, "Unable to allocate memory for tileset tileIsWalls");
+    LOG_FATAL(game_log, "Unable to allocate memory for tileset tileIsWalls");
     return false;
   }
 
@@ -48,11 +48,11 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
   cute_tiled_tile_descriptor_t* tile = tileset->tiles;
   while (tile != nullptr) {
     if (i < 0) {
-      LOG_FATAL(game__log, "Incomplete tile linked list");
+      LOG_FATAL(game_log, "Incomplete tile linked list");
       return false;
     }
     if (tile->property_count != PROPERTY_TYPES || tile->properties == nullptr) {
-      LOG_FATAL(game__log, "Invalid property count in tile linked list");
+      LOG_FATAL(game_log, "Invalid property count in tile linked list");
       return false;
     }
     (*tileData)[i].type      = TILE_FLOOR;
@@ -63,21 +63,21 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
           (*tileData)[i].teleportType = tile->properties[j].data.integer;
           if (tile->properties[j].data.integer > 0) {
             (*tileData)[i].type = TILE_TELEPORT;
-            LOG_TRACE(game__log, "Tile %d is a teleport, type %d", i, (*tileData)[i].teleportType);
+            LOG_TRACE(game_log, "Tile %d is a teleport, type %d", i, (*tileData)[i].teleportType);
           }
         }
       } else if (tile->properties[j].type == CUTE_TILED_PROPERTY_BOOL) {
         if (strcmp(tile->properties[j].name.ptr, "isCoin") == 0 && tile->properties[j].data.boolean) {
           (*tileData)[i].type = TILE_COIN;
-          LOG_TRACE(game__log, "Tile %d isCoin", i);
+          LOG_TRACE(game_log, "Tile %d isCoin", i);
         } else if (strcmp(tile->properties[j].name.ptr, "isWall") == 0 && tile->properties[j].data.boolean) {
           (*tileData)[i].type = TILE_WALL;
-          LOG_TRACE(game__log, "Tile %d isWall", i);
+          LOG_TRACE(game_log, "Tile %d isWall", i);
         } else if (strcmp(tile->properties[j].name.ptr, "isSword") == 0 && tile->properties[j].data.boolean) {
-          LOG_TRACE(game__log, "Tile %d isSword", i);
+          LOG_TRACE(game_log, "Tile %d isSword", i);
           (*tileData)[i].type = TILE_SWORD;
         } else if (strcmp(tile->properties[j].name.ptr, "isChest") == 0 && tile->properties[j].data.boolean) {
-          LOG_TRACE(game__log, "Tile %d isChest", i);
+          LOG_TRACE(game_log, "Tile %d isChest", i);
           (*tileData)[i].type = TILE_CHEST;
         }
       }
@@ -105,7 +105,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
 
   if (layer == nullptr || tileset == nullptr || count <= 0 || rows <= 0 || cols <= 0 || tileWidth <= 0 ||
       tileHeight <= 0 || tileCols <= 0) {
-    LOG_FATAL(game__log, "Invalid map file");
+    LOG_FATAL(game_log, "Invalid map file");
     return false;
   }
 
@@ -118,7 +118,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
 
   maze__Tile* tiles = (maze__Tile*) malloc(count * sizeof(maze__Tile) * layerCount);
   if (tiles == nullptr) {
-    LOG_FATAL(game__log, "Unable to allocate memory for maze tiles");
+    LOG_FATAL(game_log, "Unable to allocate memory for maze tiles");
     return false;
   }
 
@@ -135,7 +135,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
       maze__TileType type   = TILE_NONE;
       engine_Sprite* sprite = nullptr;
       engine_Anim*   anim   = nullptr;
-      game__AABB     aabb   = {};
+      game_AABB      aabb   = {};
 
       int     row   = i / cols;
       int     col   = i % cols;
@@ -155,24 +155,24 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
 
         type   = tileData[tileId].type;
         sprite = engine_createSpriteFromSheet(pos, size, tilesetRow, tilesetCol, inset);
-        aabb   = (game__AABB) { .min = min, .max = max };
+        aabb   = (game_AABB) { .min = min, .max = max };
 
         if (animCount > 0) {
-          LOG_TRACE(game__log, "New animation: layer: %d, tile %d, %d, frame count: %d", layerNum, row, col, animCount);
+          LOG_TRACE(game_log, "New animation: layer: %d, tile %d, %d, frame count: %d", layerNum, row, col, animCount);
           anim = engine_createAnim(sprite, tilesetRow, tilesetCol, animCount, FRAME_TIME, inset, true);
         }
 
         int teleportType = tileData[tileId].teleportType;
         if (teleportType > 0) {
           if (teleportType > TELEPORT_TYPES) {
-            LOG_WARN(game__log, "Invalid teleport type: %d", teleportType);
+            LOG_WARN(game_log, "Invalid teleport type: %d", teleportType);
           } else {
             teleportType -= 1;
             if (teleportCount[teleportType] != -1) {
               if (teleportCount[teleportType] < 2) {
                 teleports[teleportType][teleportCount[teleportType]++] = i;
               } else {
-                LOG_WARN(game__log, "Too many teleports of same type found in map");
+                LOG_WARN(game_log, "Too many teleports of same type found in map");
                 teleportCount[teleportType] = -1;
               }
             }
@@ -195,14 +195,14 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
     if (teleportCount[i] == 2) {
       tiles[teleports[i][0]].linkedTeleportTile = teleports[i][1];
       tiles[teleports[i][1]].linkedTeleportTile = teleports[i][0];
-      LOG_INFO(game__log, "Linked teleports: %d and %d", teleports[i][0], teleports[i][1]);
+      LOG_INFO(game_log, "Linked teleports: %d and %d", teleports[i][0], teleports[i][1]);
     } else if (teleportCount[i] == 1) {
-      LOG_WARN(game__log, "Found one teleport but not matching twin");
+      LOG_WARN(game_log, "Found one teleport but not matching twin");
     }
   }
 
   LOG_INFO(
-      game__log,
+      game_log,
       "Created maze: %d x %d tiles (%d total; size: %d x %d), %d layer%s",
       cols,
       rows,
@@ -257,7 +257,7 @@ static void destroyMaze(void) {
 static bool loadMazetileset(cute_tiled_map_t* map) {
   assert(map != nullptr);
   if (map->tilesets == nullptr || map->tilesets->image.ptr == nullptr) {
-    LOG_FATAL(game__log, "There is no tileset in the map file");
+    LOG_FATAL(game_log, "There is no tileset in the map file");
     return false;
   }
 
@@ -265,18 +265,18 @@ static bool loadMazetileset(cute_tiled_map_t* map) {
 
   size_t filenameLen = strnlen_s(map->tilesets->image.ptr, sizeof buffer);
   if (filenameLen == sizeof buffer) {
-    LOG_FATAL(game__log, "Tileset file name too long to fit buffer");
+    LOG_FATAL(game_log, "Tileset file name too long to fit buffer");
     return false;
   }
   size_t folderLen = strnlen_s(buffer, sizeof buffer);
   if (folderLen + filenameLen >= sizeof buffer - 1) {
-    LOG_FATAL(game__log, "Tileset file name too long to fit buffer");
+    LOG_FATAL(game_log, "Tileset file name too long to fit buffer");
     return false;
   }
 
   int result = strncat_s(buffer, sizeof buffer - strlen(buffer) - 1, map->tilesets->image.ptr, filenameLen);
   if (result != 0) {
-    LOG_FATAL(game__log, "strncat_s failed: %s", strerror(result));
+    LOG_FATAL(game_log, "strncat_s failed: %s", strerror(result));
     return false;
   }
   GAME_TRY(g_maze.tileset = engine_textureLoad(buffer));
@@ -295,7 +295,7 @@ void countCoins(void) {
       }
     }
   }
-  LOG_INFO(game__log, "Coin count: %d", g_maze.coinCount);
+  LOG_INFO(game_log, "Coin count: %d", g_maze.coinCount);
 }
 
 void findChest(void) {
@@ -311,11 +311,11 @@ void findChest(void) {
   }
 
   if (count == 0) {
-    LOG_WARN(game__log, "No chest found in the map");
+    LOG_WARN(game_log, "No chest found in the map");
   } else if (count == 1) {
-    LOG_INFO(game__log, "Found chest: %d", g_maze.chestID);
+    LOG_INFO(game_log, "Found chest: %d", g_maze.chestID);
   } else {
-    LOG_WARN(game__log, "More than one chest found in the map");
+    LOG_WARN(game_log, "More than one chest found in the map");
   }
 }
 
@@ -324,17 +324,17 @@ void findChest(void) {
 bool maze_init(void) {
   cute_tiled_map_t* map;
   GAME_TRY(map = cute_tiled_load_map_from_file(FILE_MAZE, nullptr));
-  LOG_INFO(game__log, "Map loaded: %s (%d x %d)", FILE_MAZE);
+  LOG_INFO(game_log, "Map loaded: %s (%d x %d)", FILE_MAZE);
   if (!convertMap(map)) {
     destroyMaze();
     cute_tiled_free_map(map);
-    LOG_INFO(game__log, "Failed to convert map");
+    LOG_INFO(game_log, "Failed to convert map");
     return false;
   }
   if (!loadMazetileset(map)) {
     destroyMaze();
     cute_tiled_free_map(map);
-    LOG_INFO(game__log, "Failed to load map tileset");
+    LOG_INFO(game_log, "Failed to load map tileset");
     return false;
   }
   cute_tiled_free_map(map);

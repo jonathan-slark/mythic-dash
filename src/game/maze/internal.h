@@ -30,7 +30,7 @@ typedef struct maze__Tile {
   bool isChestCollected;
   engine_Sprite *sprite;
   engine_Anim *anim;
-  game__AABB aabb;
+  game_AABB aabb;
 } maze__Tile;
 
 typedef struct maze__Maze {

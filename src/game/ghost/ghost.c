@@ -78,7 +78,7 @@ static void toggleGhostState() {
   ) = (g_state.update == nullptr || g_state.update == ghost__chase) ? ghost__scatter : ghost__chase;
   transitionToState(newState);
   g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
-  LOG_TRACE(game__log, "Changing to state: %s", getStateString(newState));
+  LOG_TRACE(game_log, "Changing to state: %s", getStateString(newState));
 }
 
 // Update the global state and change ghost states
@@ -150,15 +150,15 @@ static void ghostUpdateTeleportSlow(ghost__Ghost* ghost, float frameTime) {
 }
 
 static void ghostSetNearestStartTile(ghost__Ghost* ghost) {
-  game__Tile curTile    = maze_getTile(actor_getPos(ghost->actor));
-  size_t     startCount = COUNT(GHOST_MAZE_START);
-  size_t     bestTiles[startCount];
-  size_t     bestTileCount = 0;
-  int        minDist       = INT_MAX;
+  game_Tile curTile    = maze_getTile(actor_getPos(ghost->actor));
+  size_t    startCount = COUNT(GHOST_MAZE_START);
+  size_t    bestTiles[startCount];
+  size_t    bestTileCount = 0;
+  int       minDist       = INT_MAX;
 
   for (size_t i = 0; i < startCount; i++) {
-    game__Tile destTile = maze_getTile(GHOST_MAZE_START[i]);
-    int        dist     = maze_manhattanDistance(curTile, destTile);
+    game_Tile destTile = maze_getTile(GHOST_MAZE_START[i]);
+    int       dist     = maze_manhattanDistance(curTile, destTile);
     if (dist < minDist) {
       bestTileCount = 0;
     }
@@ -173,11 +173,11 @@ static void ghostSetNearestStartTile(ghost__Ghost* ghost) {
 
   if (bestTileCount == 1) {
     ghost->mazeStart = GHOST_MAZE_START[bestTiles[0]];
-    LOG_TRACE(game__log, "Ghost %d best start tile %d (best choice)", ghost->id, bestTiles[0]);
+    LOG_TRACE(game_log, "Ghost %d best start tile %d (best choice)", ghost->id, bestTiles[0]);
   } else {
     size_t bestTile  = bestTiles[GetRandomValue(0, bestTileCount - 1)];
     ghost->mazeStart = GHOST_MAZE_START[bestTile];
-    LOG_TRACE(game__log, "Ghost %d best start tile %d (%d choices)", ghost->id, bestTile, bestTileCount);
+    LOG_TRACE(game_log, "Ghost %d best start tile %d (%d choices)", ghost->id, bestTile, bestTileCount);
   }
 }
 
@@ -231,8 +231,8 @@ void ghost_update(float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  bool              playerDead  = false;
-  game__PlayerState playerState = player_getState();
+  bool             playerDead  = false;
+  game_PlayerState playerState = player_getState();
 
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.ghosts[i].update(&g_state.ghosts[i], frameTime, slop);
@@ -266,7 +266,7 @@ Vector2 ghost_getPos(int id) {
   return actor_getPos(g_state.ghosts[id].actor);
 }
 
-game__Dir ghost_getDir(int id) {
+game_Dir ghost_getDir(int id) {
   assert(id >= 0 && id < CREATURE_COUNT);
   assert(g_state.ghosts[id].actor != nullptr);
   return actor_getDir(g_state.ghosts[id].actor);
@@ -284,7 +284,7 @@ float ghost_getDecisionCooldown(int id) {
   return g_state.ghosts[id].decisionCooldown;
 }
 
-game__Tile ghost_getTarget(int id) {
+game_Tile ghost_getTarget(int id) {
   assert(id >= 0 && id < CREATURE_COUNT);
   return g_state.ghosts[id].targetTile;
 }

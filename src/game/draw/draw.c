@@ -16,19 +16,19 @@ static const Vector2 GHOST_SCORE_OFFSET                       = { 1, -8 };
 void draw_updatePlayer(float frameTime, float slop) {
   player_update(frameTime, slop);
 
-  static game__PlayerState prevState = PLAYER_NORMAL;
-  game__PlayerState        state     = player_getState();
-  Vector2                  pos       = POS_ADJUST(player_getPos());
-  static game__Dir         prevDir   = DIR_NONE;
-  game__Dir                dir       = player_getDir();
+  static game_PlayerState prevState = PLAYER_NORMAL;
+  game_PlayerState        state     = player_getState();
+  Vector2                 pos       = POS_ADJUST(player_getPos());
+  static game_Dir         prevDir   = DIR_NONE;
+  game_Dir                dir       = player_getDir();
 
   if (state != prevState || dir != prevDir) {
     if (state != prevState)
       LOG_TRACE(
-          game__log, "Player state changed from %s to %s", PLAYER_STATE_STRINGS[prevState], PLAYER_STATE_STRINGS[state]
+          game_log, "Player state changed from %s to %s", PLAYER_STATE_STRINGS[prevState], PLAYER_STATE_STRINGS[state]
       );
     if (prevDir != DIR_NONE && dir != prevDir)
-      LOG_TRACE(game__log, "Player direction changed from %s to %s", DIR_STRINGS[prevDir], DIR_STRINGS[dir]);
+      LOG_TRACE(game_log, "Player direction changed from %s to %s", DIR_STRINGS[prevDir], DIR_STRINGS[dir]);
     engine_resetAnim(g_assets.playerAnim[state][dir]);
     prevState = state;
     prevDir   = dir;

@@ -15,8 +15,8 @@ typedef struct ghost__Ghost {
   void (*update)(struct ghost__Ghost *, float, float);
   float startTimer;
   Vector2 mazeStart;
-  game__Tile cornerTile;
-  game__Tile targetTile;
+  game_Tile cornerTile;
+  game_Tile targetTile;
   float decisionCooldown;
   game__Actor *actor;
   unsigned id;
@@ -58,14 +58,14 @@ static const float DECISION_COOLDOWN = 0.5f;
 static const Vector2 MAZE_CENTRE = {14 * TILE_SIZE, 7 * TILE_SIZE};
 static const Vector2 GHOST_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},
                                            {17 * TILE_SIZE, 7 * TILE_SIZE}};
-static const game__Dir GHOST_START_DIR = DIR_LEFT;
+static const game_Dir GHOST_START_DIR = DIR_LEFT;
 static const float GHOST_CHASETIMER = 5.0f;
-static const game__Tile DEFAULT_TARGET_TILE = {-1, -1};
+static const game_Tile DEFAULT_TARGET_TILE = {-1, -1};
 static const struct {
   Vector2 startPos;
   Vector2 mazeStart;
-  game__Tile cornerTile;
-  game__Dir startDir;
+  game_Tile cornerTile;
+  game_Dir startDir;
   float startSpeed;
   float startTimer;
   void (*update)(ghost__Ghost *, float, float);

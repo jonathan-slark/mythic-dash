@@ -12,24 +12,24 @@
 // --- Types ---
 
 typedef struct Player {
-  game__Actor*      actor;
-  game__PlayerState state;
-  int               lives;
-  int               score;
-  int               coinsCollected;
-  float             swordTimer;
-  float             deadTimer;
-  int               scoreMultiplier;
-  float             coinSlowTimer;
-  float             swordSlowTimer;
-  int               lastScoreBonusLife;
+  game__Actor*     actor;
+  game_PlayerState state;
+  int              lives;
+  int              score;
+  int              coinsCollected;
+  float            swordTimer;
+  float            deadTimer;
+  int              scoreMultiplier;
+  float            coinSlowTimer;
+  float            swordSlowTimer;
+  int              lastScoreBonusLife;
 } Player;
 
 // --- Constants ---
 
 static const Vector2     PLAYER_START_POS  = { 14 * TILE_SIZE, 10 * TILE_SIZE };
 static const float       PLAYER_MAX_SPEED  = 80.0f;
-static const game__Dir   PLAYER_START_DIR  = DIR_LEFT;
+static const game_Dir    PLAYER_START_DIR  = DIR_LEFT;
 static const KeyboardKey PLAYER_KEYS[]     = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
 static const int         SCORE_COIN        = 10;
 static const int         SCORE_SWORD       = 50;
@@ -144,7 +144,7 @@ static void playerCheckScore() {
       (g_player.score % SCORE_EXTRA_LIFE == 0)) {
     g_player.lives              += 1;
     g_player.lastScoreBonusLife  = g_player.score;
-    LOG_DEBUG(game__log, "Player gained bonus life at score:", g_player.score);
+    LOG_DEBUG(game_log, "Player gained bonus life at score:", g_player.score);
   }
 }
 
@@ -215,10 +215,10 @@ void player_update(float frameTime, float slop) {
   playerSwordUpdate(frameTime);
   playerSwordSlowUpdate(frameTime);
 
-  game__Dir dir = DIR_NONE;
+  game_Dir dir = DIR_NONE;
   for (int i = 0; i < DIR_COUNT; i++) {
-    if (engine_isKeyDown(PLAYER_KEYS[i]) && actor_canMove(g_player.actor, (game__Dir) i, slop)) {
-      dir = (game__Dir) i;
+    if (engine_isKeyDown(PLAYER_KEYS[i]) && actor_canMove(g_player.actor, (game_Dir) i, slop)) {
+      dir = (game_Dir) i;
       break;
     }
   }
@@ -236,7 +236,7 @@ Vector2 player_getPos(void) {
   return actor_getPos(g_player.actor);
 }
 
-game__Dir player_getDir(void) {
+game_Dir player_getDir(void) {
   assert(g_player.actor != nullptr);
   return actor_getDir(g_player.actor);
 }
@@ -246,7 +246,7 @@ int player_getScore(void) {
   return g_player.score;
 }
 
-game__PlayerState player_getState(void) { return g_player.state; }
+game_PlayerState player_getState(void) { return g_player.state; }
 
 bool player_isMoving(void) {
   assert(g_player.actor != nullptr);
@@ -258,10 +258,10 @@ game__Actor* player_getActor(void) {
   return g_player.actor;
 }
 
-game__Tile player_tileAhead(int tileNum) {
+game_Tile player_tileAhead(int tileNum) {
   Vector2 pos = player_getPos();
   Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
-  game__Tile tile = maze_getTile(pos);
+  game_Tile tile = maze_getTile(pos);
   switch (player_getDir()) {
     case DIR_UP:
       tile.row -= tileNum;

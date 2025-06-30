@@ -37,7 +37,7 @@ static void checkChestSpawn(void) {
         g_maze.hasChestSpawned[i]                     = true;
         g_maze.tiles[g_maze.chestID].isChestCollected = false;
         g_maze.chestDespawnTimer                      = CHEST_DESPAWN_TIMER;
-        LOG_INFO(game__log, "Chest spawned at %d coins", player_getCoinsCollected());
+        LOG_INFO(game_log, "Chest spawned at %d coins", player_getCoinsCollected());
       }
     }
   }
@@ -75,7 +75,7 @@ static Vector2 getChestPos(void) {
 
 // --- Maze functions ---
 
-game__AABB maze_getAABB(Vector2 pos) {
+game_AABB maze_getAABB(Vector2 pos) {
   maze__Tile* tile = getTileAt(pos, 0);
   return tile->aabb;
 }
@@ -133,7 +133,7 @@ bool maze_isTeleport(Vector2 pos, Vector2* dest) {
 void maze_tilesOverlay(void) {
   for (int i = 0; i < g_maze.count; i++) {
     if (maze_isWall(g_maze.tiles[i].aabb.min)) {
-      aabb_drawOverlay(g_maze.tiles[i].aabb, OVERLAY_COLOUR_MAZE_WALL);
+      game_drawAABBOverlay(g_maze.tiles[i].aabb, OVERLAY_COLOUR_MAZE_WALL);
     }
   }
 }
@@ -187,19 +187,19 @@ void maze_update(float frameTime) {
   updateChestScoreTimer(frameTime);
 }
 
-game__Tile maze_getTile(Vector2 pos) { return (game__Tile) { pos.x / TILE_SIZE, pos.y / TILE_SIZE }; }
+game_Tile maze_getTile(Vector2 pos) { return (game_Tile) { pos.x / TILE_SIZE, pos.y / TILE_SIZE }; }
 
-Vector2 maze_getPos(game__Tile tile) { return (Vector2) { tile.col * TILE_SIZE, tile.row * TILE_SIZE }; }
+Vector2 maze_getPos(game_Tile tile) { return (Vector2) { tile.col * TILE_SIZE, tile.row * TILE_SIZE }; }
 
-int maze_manhattanDistance(game__Tile a, game__Tile b) {
+int maze_manhattanDistance(game_Tile a, game_Tile b) {
   int dx = abs(a.col - b.col);
   int dy = abs(a.row - b.row);
   return dx + dy;
 }
 
-game__Tile maze_doubleVectorBetween(game__Tile from, game__Tile to) {
-  game__Tile diff   = { to.col - from.col, to.row - from.row };
-  game__Tile target = { to.col + diff.col, to.row + diff.row };
+game_Tile maze_doubleVectorBetween(game_Tile from, game_Tile to) {
+  game_Tile diff   = { to.col - from.col, to.row - from.row };
+  game_Tile target = { to.col + diff.col, to.row + diff.row };
   if (target.col < 1) target.col = 1;
   if (target.row < 1) target.row = 1;
   if (target.col >= g_maze.cols - 1) target.col = g_maze.cols - 2;
