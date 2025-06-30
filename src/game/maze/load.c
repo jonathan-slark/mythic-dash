@@ -88,9 +88,8 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
   return true;
 }
 
-static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int tileCount) {
+static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
   assert(map != nullptr && map->layers != nullptr);
-  assert(tileCount > 0);
 
   cute_tiled_layer_t*   layer      = map->layers;
   cute_tiled_tileset_t* tileset    = map->tilesets;
@@ -234,7 +233,7 @@ static bool convertMap(cute_tiled_map_t* map) {
   GAME_TRY(getTileProperties(map, &tileData, &tileCount));
   assert(tileData != nullptr);
   assert(tileCount > 0);
-  if (!createMaze(map, tileData, tileCount)) {
+  if (!createMaze(map, tileData)) {
     free(tileData);
     return false;
   }

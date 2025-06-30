@@ -23,6 +23,15 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${ENGINE_DIR})
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDE_DIR} ${CUTE_DIR})
 target_link_libraries(${PROJECT_NAME} PUBLIC raylib winmm gdi32 opengl32)
 target_link_libraries(${PROJECT_NAME} PRIVATE engine log)
+target_compile_definitions(${PROJECT_NAME}
+  PRIVATE
+  $<$<CONFIG:Debug>:ASSET_DIR="../../asset/">
+  $<$<CONFIG:Release>:ASSET_DIR="./asset/">
+)
+# Disable console window
+target_link_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Release>:-mwindows>)
+# For cute_tiled.h
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Release>:-Wno-alloc-size-larger-than>)
 
 # Test game executable
 set(TEST_GAME test_game)

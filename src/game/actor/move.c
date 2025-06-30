@@ -221,6 +221,7 @@ static bool checkPassageMovement(game__Actor* actor, game__Dir dir, game__AABB a
 static bool checkStrictMovement(game__Actor* actor, game__Dir dir, game__AABB actorAABB) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
+  if (dir < 0 || dir >= DIR_COUNT) return false;
 
   bool canMove = true;
 

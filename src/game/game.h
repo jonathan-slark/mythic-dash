@@ -40,7 +40,6 @@ typedef struct game__Actor game__Actor;
 
 // --- Constants ---
 
-#define ASSET_DIR "../../asset/"
 constexpr int ACTOR_SIZE       = 16;
 constexpr int TILE_SIZE        = 16;
 constexpr int CREATURE_COUNT   = 4;
