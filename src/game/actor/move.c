@@ -156,15 +156,23 @@ static bool tryAlignToTile(
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
-  float overlapX = aabb_getOverlapX(actorAABB, tileAABB);
-  float overlapY = aabb_getOverlapY(actorAABB, tileAABB);
+  Vector2 oldPos   = actor->pos;
+  float   overlapX = aabb_getOverlapX(actorAABB, tileAABB);
+  float   overlapY = aabb_getOverlapY(actorAABB, tileAABB);
   switch (dir) {
     case DIR_UP:
     case DIR_DOWN:
       if (overlapX > OVERLAP_EPSILON && overlapX <= slop && fabsf(overlapY) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapX : -overlapX);
         LOG_TRACE(
-            game__log, "Actor can move up/down, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y, slop
+            game__log,
+            "Actor can move %s, moved from %f, %f, to: %f, %f, slop: %f",
+            DIR_STRINGS[dir],
+            oldPos.x,
+            oldPos.y,
+            actor->pos.x,
+            actor->pos.y,
+            slop
         );
         return true;
       }
@@ -174,7 +182,14 @@ static bool tryAlignToTile(
       if (overlapY > OVERLAP_EPSILON && overlapY <= slop && fabsf(overlapX) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, isPositive ? overlapY : -overlapY);
         LOG_TRACE(
-            game__log, "Actor can move left/right, actor moved to: %f, %f, slop: %f", actor->pos.x, actor->pos.y, slop
+            game__log,
+            "Actor can move %s, moved to: %f, %f, slop: %f",
+            DIR_STRINGS[dir],
+            oldPos.x,
+            oldPos.y,
+            actor->pos.x,
+            actor->pos.y,
+            slop
         );
         return true;
       }
@@ -280,7 +295,7 @@ bool actor_canMove(game__Actor* actor, game__Dir dir, float slop) {
   if (!actor->isMoving && canMove) actor->isMoving = true;
 
   if (canMove) {
-    LOG_TRACE(game__log, "Actor can move in direction: %s, pos: %f, %f", DIR_STRINGS[dir], actor->pos.x, actor->pos.y);
+    LOG_TRACE(game__log, "Actor can move: %s, pos: %f, %f", DIR_STRINGS[dir], actor->pos.x, actor->pos.y);
   }
 
   return canMove;

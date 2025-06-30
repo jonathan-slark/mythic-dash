@@ -27,7 +27,7 @@ const float BASE_SLOP       = 0.35f;
 const float BASE_DT         = (1.0f / 144.0f);
 const float MIN_SLOP        = 0.05f;
 const float MAX_SLOP        = 0.7f;
-const float OVERLAP_EPSILON = 1e-5f;
+const float OVERLAP_EPSILON = 2e-5f;
 
 // --- Global state ---
 
