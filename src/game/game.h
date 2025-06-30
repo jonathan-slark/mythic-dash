@@ -106,6 +106,7 @@ void         actor_move(game__Actor* actor, game__Dir dir, float frameTime);
 void         actor_update(game__Actor* actor, float frameTime);
 game__Tile   actor_nextTile(game__Actor* actor, game__Dir dir);
 bool         actor_hasTeleported(game__Actor* actor);
+bool         actor_isColliding(const game__Actor* actor1, const game__Actor* actor2);
 
 // --- Draw functions (draw.c) ---
 

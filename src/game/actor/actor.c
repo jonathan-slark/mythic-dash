@@ -151,3 +151,19 @@ game__Tile actor_nextTile(game__Actor* actor, game__Dir dir) {
 }
 
 void actor_startMoving(game__Actor* actor) { actor->isMoving = true; }
+
+bool actor_isColliding(const game__Actor* actor1, const game__Actor* actor2) {
+  Vector2 centreActor1 = Vector2AddValue(actor1->pos, ACTOR_SIZE / 2.0f);
+  Vector2 centreActor2 = Vector2AddValue(actor2->pos, ACTOR_SIZE / 2.0f);
+  bool    isCollision  = Vector2Distance(centreActor1, centreActor2) < ACTOR_SIZE;
+  if (isCollision)
+    LOG_DEBUG(
+        game__log,
+        "Collision detected between actor1 (%f, %f) and actor2 (%f, %f)",
+        actor1->pos.x,
+        actor1->pos.y,
+        actor2->pos.x,
+        actor2->pos.y
+    );
+  return isCollision;
+}

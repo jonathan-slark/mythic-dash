@@ -231,14 +231,12 @@ void ghost_update(float frameTime, float slop) {
 
   bool              playerDead  = false;
   game__PlayerState playerState = player_getState();
-  game__AABB        playerAABB  = actor_getAABB(player_getActor());
 
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.ghosts[i].update(&g_state.ghosts[i], frameTime, slop);
 
     if (canInteractWithPlayer(&g_state.ghosts[i])) {
-      game__AABB ghostAABB = actor_getAABB(g_state.ghosts[i].actor);
-      if (aabb_isColliding(playerAABB, ghostAABB)) {
+      if (actor_isColliding(player_getActor(), g_state.ghosts[i].actor)) {
         if (playerState == PLAYER_SWORD) {
           ghostDied(&g_state.ghosts[i]);
         } else {
