@@ -335,3 +335,5 @@ int player_getCoinsCollected(void) {
   assert(g_player.coinsCollected >= 0);
   return g_player.coinsCollected;
 }
+
+int player_getNextExtraLifeScore(void) { return g_player.score / SCORE_EXTRA_LIFE + SCORE_EXTRA_LIFE; }

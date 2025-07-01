@@ -26,3 +26,4 @@ bool             player_hasSword(void);
 float            player_getSwordTimer(void);
 void             player_killedCreature(int creatureID);
 int              player_getCoinsCollected(void);
+int              player_getNextExtraLifeScore(void);

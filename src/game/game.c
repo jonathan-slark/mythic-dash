@@ -106,6 +106,7 @@ void game_update(float frameTime) {
 void game_draw(void) {
   maze_draw();
   draw_player();
+  draw_nextLife();
   draw_creatures();
   draw_interface();
 #ifndef NDEBUG

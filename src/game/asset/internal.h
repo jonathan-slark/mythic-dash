@@ -3,6 +3,7 @@
 
 #include <raylib.h>
 #include "../internal.h"
+#include "engine/engine.h"
 
 // --- Types ---
 
@@ -26,6 +27,7 @@ typedef struct asset_Assets {
   engine_Texture* playerSpriteSheet;
   engine_Sprite*  playerSprites[PLAYER_STATE_COUNT];
   engine_Sprite*  playerLivesSprites[PLAYER_MAX_LIVES];
+  engine_Sprite*  playerNextLifeSprite;
   engine_Anim*    playerAnim[PLAYER_STATE_COUNT][DIR_COUNT];
   engine_Sprite*  creatureSprites[CREATURE_COUNT];
   engine_Anim*    creatureAnims[CREATURE_COUNT][DIR_COUNT];
@@ -43,7 +45,8 @@ static const char FILE_FONT_TINY[]  = ASSET_DIR "gfx/tiny-numbers.png";
 
 static const float FRAME_TIME = 0.1f;
 
-static const Vector2 PLAYER_LIVES_OFFSET = { 8.0f, 248.0f };
+static const Vector2 PLAYER_LIVES_OFFSET     = { 8.0f, 248.0f };
+static const Vector2 PLAYER_NEXT_LIFE_OFFSET = { 412.0f, 248.0f };
 
 // clang-format off
 static const asset_ActorData PLAYER_DATA[PLAYER_STATE_COUNT] = {

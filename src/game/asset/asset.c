@@ -64,6 +64,17 @@ bool asset_initPlayer(void) {
     );
     offset.x += ACTOR_SIZE;
   }
+
+  GAME_TRY(
+      g_assets.playerNextLifeSprite = engine_createSpriteFromSheet(
+          PLAYER_NEXT_LIFE_OFFSET,
+          (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
+          PLAYER_DATA[PLAYER_NORMAL].animData[DIR_LEFT].row,
+          PLAYER_DATA[PLAYER_NORMAL].animData[DIR_LEFT].startCol,
+          PLAYER_DATA[PLAYER_NORMAL].inset
+      )
+  );
+
   return true;
 }
 
@@ -132,6 +143,11 @@ engine_Sprite* asset_getPlayerSprite(game_PlayerState state) {
 engine_Sprite* asset_getPlayerLivesSprite(int life) {
   assert(life >= 0 && life < PLAYER_MAX_LIVES);
   return g_assets.playerLivesSprites[life];
+}
+
+engine_Sprite* asset_getPlayerNextLifeSprite(void) {
+  assert(g_assets.playerNextLifeSprite != nullptr);
+  return g_assets.playerNextLifeSprite;
 }
 
 engine_Anim* asset_getPlayerAnim(game_PlayerState state, game_Dir dir) {

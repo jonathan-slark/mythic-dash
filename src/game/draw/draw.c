@@ -1,5 +1,6 @@
 #include "draw.h"
 #include <assert.h>
+#include <raylib.h>
 #include "../asset/asset.h"
 #include "../creature/creature.h"
 #include "../internal.h"
@@ -91,4 +92,9 @@ void draw_creatures(void) {
 void draw_interface(void) {
   engine_fontPrintf(asset_getFont(), 8, 0, WHITE, "Score: %d", player_getScore());
   engine_fontPrintf(asset_getFont(), 394, 0, WHITE, "Level: %02d / ?", game_getLevel());
+}
+
+void draw_nextLife(void) {
+  engine_drawSprite(asset_getPlayerSpriteSheet(), asset_getPlayerNextLifeSprite(), WHITE);
+  engine_fontPrintf(asset_getFont(), 428, 252, WHITE, "@ %d", player_getNextExtraLifeScore());
 }
