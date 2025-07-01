@@ -24,7 +24,7 @@ const char* DIR_STRINGS[] = { "UP", "RIGHT", "DOWN", "LEFT" };
  * Resolves a collision between an actor and a static wall game_AABB.
  * Pushes the actor out along the axis of least penetration.
  */
-static void resolveActorCollision(game__Actor* actor, const game_AABB* wall) {
+static void resolveActorCollision(game_Actor* actor, const game_AABB* wall) {
   assert(actor != nullptr);
   assert(wall != nullptr);
 
@@ -54,7 +54,7 @@ static void resolveActorCollision(game__Actor* actor, const game_AABB* wall) {
   }
 }
 
-static actor__Tile* isMazeCollision(game__Actor* actor) {
+static actor__Tile* isMazeCollision(game_Actor* actor) {
   assert(actor != nullptr);
 
   actor__Tile* tile = nullptr;
@@ -69,7 +69,7 @@ static actor__Tile* isMazeCollision(game__Actor* actor) {
   return tile;
 }
 
-static void checkMazeCollision(game__Actor* actor) {
+static void checkMazeCollision(game_Actor* actor) {
   assert(actor != nullptr);
 
   actor__Tile* tile = isMazeCollision(actor);
@@ -88,7 +88,7 @@ static void checkMazeCollision(game__Actor* actor) {
   }
 }
 
-static void getTiles(game__Actor* actor, actor__Tile tiles[], game_Dir dir) {
+static void getTiles(game_Actor* actor, actor__Tile tiles[], game_Dir dir) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
 
@@ -122,7 +122,7 @@ static void getTiles(game__Actor* actor, actor__Tile tiles[], game_Dir dir) {
   }
 }
 
-static void alignToPassage(game__Actor* actor, game_Dir dir, float distance) {
+static void alignToPassage(game_Actor* actor, game_Dir dir, float distance) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(distance != 0.0f && distance < MAX_SLOP);
@@ -147,7 +147,7 @@ static void clearAllCollisionFlags(actor__Tile tiles[]) {
 }
 
 static bool
-tryAlignToTile(game__Actor* actor, game_Dir dir, game_AABB actorAABB, game_AABB tileAABB, float slop, bool isPositive) {
+tryAlignToTile(game_Actor* actor, game_Dir dir, game_AABB actorAABB, game_AABB tileAABB, float slop, bool isPositive) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -195,7 +195,7 @@ tryAlignToTile(game__Actor* actor, game_Dir dir, game_AABB actorAABB, game_AABB 
   return false;
 }
 
-static bool checkPassageMovement(game__Actor* actor, game_Dir dir, game_AABB actorAABB, float slop) {
+static bool checkPassageMovement(game_Actor* actor, game_Dir dir, game_AABB actorAABB, float slop) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -214,7 +214,7 @@ static bool checkPassageMovement(game__Actor* actor, game_Dir dir, game_AABB act
   return false;
 }
 
-static bool checkStrictMovement(game__Actor* actor, game_Dir dir, game_AABB actorAABB) {
+static bool checkStrictMovement(game_Actor* actor, game_Dir dir, game_AABB actorAABB) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   if (dir < 0 || dir >= DIR_COUNT) return false;
@@ -248,7 +248,7 @@ static bool checkStrictMovement(game__Actor* actor, game_Dir dir, game_AABB acto
   return canMove;
 }
 
-static void checkTeleport(game__Actor* actor, game_Dir dir) {
+static void checkTeleport(game_Actor* actor, game_Dir dir) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
 
@@ -273,7 +273,7 @@ static void checkTeleport(game__Actor* actor, game_Dir dir) {
 
 // --- Actor movement functions ---
 
-bool actor_canMove(game__Actor* actor, game_Dir dir, float slop) {
+bool actor_canMove(game_Actor* actor, game_Dir dir, float slop) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -298,7 +298,7 @@ bool actor_canMove(game__Actor* actor, game_Dir dir, float slop) {
   return canMove;
 }
 
-void actor_moveNoCheck(game__Actor* actor, game_Dir dir, float frameTime) {
+void actor_moveNoCheck(game_Actor* actor, game_Dir dir, float frameTime) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(frameTime >= 0.0f);
@@ -307,7 +307,7 @@ void actor_moveNoCheck(game__Actor* actor, game_Dir dir, float frameTime) {
   actor->dir = dir;
 }
 
-void actor_move(game__Actor* actor, game_Dir dir, float frameTime) {
+void actor_move(game_Actor* actor, game_Dir dir, float frameTime) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(frameTime >= 0.0f);
@@ -322,7 +322,7 @@ void actor_move(game__Actor* actor, game_Dir dir, float frameTime) {
   checkMazeCollision(actor);
 }
 
-bool actor_hasTeleported(game__Actor* actor) {
+bool actor_hasTeleported(game_Actor* actor) {
   assert(actor != nullptr);
   return actor->hasTeleported;
 }

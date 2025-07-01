@@ -11,7 +11,7 @@
 Each subsystem or source directory gets a short prefix:
 
 * game_ → Public game API
-* player_, ghost_, maze_, actor_, debug_, etc. → Internal subsystem functions and types
+* player_, creature_, maze_, actor_, debug_, etc. → Internal subsystem functions and types
 
 ## Function Naming
 

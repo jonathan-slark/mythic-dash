@@ -4,15 +4,15 @@
 #include <raylib.h>
 #include <raymath.h>
 #include "../actor/actor.h"
+#include "../creature/creature.h"
 #include "../debug/debug.h"
-#include "../ghost/ghost.h"
 #include "../maze/maze.h"
 #include "log/log.h"
 
 // --- Types ---
 
 typedef struct Player {
-  game__Actor*     actor;
+  game_Actor*      actor;
   game_PlayerState state;
   int              lives;
   int              score;
@@ -27,22 +27,22 @@ typedef struct Player {
 
 // --- Constants ---
 
-static const Vector2     PLAYER_START_POS  = { 14 * TILE_SIZE, 10 * TILE_SIZE };
-static const float       PLAYER_MAX_SPEED  = 80.0f;
-static const game_Dir    PLAYER_START_DIR  = DIR_LEFT;
-static const KeyboardKey PLAYER_KEYS[]     = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
-static const int         SCORE_COIN        = 10;
-static const int         SCORE_SWORD       = 50;
-static const float       PLAYER_DEAD_TIMER = 2.0f;
-static const int         GHOST_BASE_SCORE  = 200;
-static const float       COIN_SLOW_TIMER   = 0.2f;
-static const float       SWORD_SLOW_TIMER  = 0.2f;
-static const float       PLAYER_SLOW_SPEED = 72.0f;  // 10% slow
-static const int         MAX_LEVEL         = 20;
-static const float       SWORD_MAX_TIMER   = 4.0f;
-static const float       SWORD_MIN_TIMER   = 2.4f;   // 60%
-static const int         SCORE_EXTRA_LIFE  = 10000;
-static const int         SCORE_CHEST       = 100;
+static const Vector2     PLAYER_START_POS    = { 14 * TILE_SIZE, 10 * TILE_SIZE };
+static const float       PLAYER_MAX_SPEED    = 80.0f;
+static const game_Dir    PLAYER_START_DIR    = DIR_LEFT;
+static const KeyboardKey PLAYER_KEYS[]       = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
+static const int         SCORE_COIN          = 10;
+static const int         SCORE_SWORD         = 50;
+static const float       PLAYER_DEAD_TIMER   = 2.0f;
+static const int         creature_BASE_SCORE = 200;
+static const float       COIN_SLOW_TIMER     = 0.2f;
+static const float       SWORD_SLOW_TIMER    = 0.2f;
+static const float       PLAYER_SLOW_SPEED   = 72.0f;  // 10% slow
+static const int         MAX_LEVEL           = 20;
+static const float       SWORD_MAX_TIMER     = 4.0f;
+static const float       SWORD_MIN_TIMER     = 2.4f;   // 60%
+static const int         SCORE_EXTRA_LIFE    = 10000;
+static const int         SCORE_CHEST         = 100;
 
 // --- Global state ---
 
@@ -119,7 +119,7 @@ static void playerSwordUpdate(float frameTime) {
   g_player.swordTimer = fmaxf(g_player.swordTimer -= frameTime, 0.0f);
   if (g_player.swordTimer == 0.0f) {
     g_player.state = PLAYER_NORMAL;
-    ghost_swordDrop();
+    creature_swordDrop();
   }
 }
 
@@ -134,7 +134,7 @@ static void playerCheckPickups(void) {
   if (maze_isSword(pos)) {
     maze_pickupSword(pos);
     playerSwordPickup();
-    ghost_swordPickup();
+    creature_swordPickup();
   }
   if (maze_isChest(pos)) {
     maze_pickupChest(pos, getChestScore());
@@ -201,7 +201,7 @@ void player_update(float frameTime, float slop) {
   if (engine_isKeyPressed(KEY_F)) debug_toggleFPSOverlay();
   if (engine_isKeyPressed(KEY_M)) debug_toggleMazeOverlay();
   if (engine_isKeyPressed(KEY_P)) debug_togglePlayerOverlay();
-  if (engine_isKeyPressed(KEY_G)) debug_toggleGhostOverlay();
+  if (engine_isKeyPressed(KEY_G)) debug_toggleCreatureOverlay();
   if (engine_isKeyPressed(KEY_I)) debug_togglePlayerImmune();
 #endif
 
@@ -262,7 +262,7 @@ bool player_isMoving(void) {
   return actor_isMoving(g_player.actor);
 }
 
-game__Actor* player_getActor(void) {
+game_Actor* player_getActor(void) {
   assert(g_player.actor != nullptr);
   return g_player.actor;
 }
@@ -322,13 +322,13 @@ float player_getSwordTimer(void) {
   return g_player.swordTimer;
 }
 
-void player_killedGhost(int ghostID) {
-  assert(ghostID >= 0 && ghostID < CREATURE_COUNT);
+void player_killedCreature(int creatureID) {
+  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
 
-  int score                 = GHOST_BASE_SCORE * g_player.scoreMultiplier;
+  int score                 = creature_BASE_SCORE * g_player.scoreMultiplier;
   g_player.score           += score;
   g_player.scoreMultiplier *= 2;
-  ghost_setScore(ghostID, score);
+  creature_setScore(creatureID, score);
 }
 
 int player_getCoinsCollected(void) {

@@ -28,7 +28,7 @@ static int player_getMaxSpeed(void) { return PLAYER_MAX_SPEED; }
 
 // --- Functions to test ---
 
-static inline float ghost__getSpeed(void) {
+static inline float creature__getSpeed(void) {
   if (player_hasSword()) {
     return fminf(FRIGHT_SPEED_MIN_MULT + (game_getLevel() - 1) * 0.0055f, FRIGHT_SPEED_MAX_MULT) * player_getMaxSpeed();
   } else {
@@ -53,11 +53,11 @@ static int getChestScoreMultiplier(void) {
 
 // --- Helper functions ---
 
-static void printGhostSpeeds(void) {
+static void printCreatureSpeeds(void) {
   int level = 1;
   for (int i = 0; i < 20; i++) {
-    float speed = ghost__getSpeed();
-    fprintf(stdout, "Level: %02d, ghost speed %f\n", level++, speed);
+    float speed = creature__getSpeed();
+    fprintf(stdout, "Level: %02d, creature speed %f\n", level++, speed);
   }
 }
 
@@ -80,15 +80,15 @@ static void printChestScoreMultipliers(void) {
 // --- Main ---
 
 int main(void) {
-  fprintf(stdout, "Normal ghost speeds:\n");
+  fprintf(stdout, "Normal creature speeds:\n");
   g_playerHasSword = false;
   g_level          = 1;
-  printGhostSpeeds();
+  printCreatureSpeeds();
 
-  fprintf(stdout, "\nFright ghost speeds:\n");
+  fprintf(stdout, "\nFright creature speeds:\n");
   g_playerHasSword = true;
   g_level          = 1;
-  printGhostSpeeds();
+  printCreatureSpeeds();
 
   fprintf(stdout, "\nSword timer:\n");
   g_level = 1;

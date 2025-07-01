@@ -7,9 +7,9 @@
 #include <raymath.h>
 #include <stddef.h>
 #include "asset/asset.h"
+#include "creature/creature.h"
 #include "debug/debug.h"
 #include "draw/draw.h"
-#include "ghost/ghost.h"
 #include "internal.h"
 #include "maze/maze.h"
 #include "player/player.h"
@@ -83,7 +83,7 @@ bool game_load(void) {
   GAME_TRY(asset_load());
   GAME_TRY(maze_init());
   GAME_TRY(asset_initPlayer());
-  GAME_TRY(asset_initGhosts());
+  GAME_TRY(asset_initCreatures());
 
   LOG_INFO(game_log, "Game loading took %f seconds", GetTime() - start);
   return true;
@@ -98,7 +98,7 @@ void game_update(float frameTime) {
 #endif
 
   LOG_TRACE(game_log, "Slop: %f", slop);
-  draw_updateGhosts(frameTime, slop);
+  draw_updateCreatures(frameTime, slop);
   draw_updatePlayer(frameTime, slop);
   maze_update(frameTime);
 }
@@ -106,7 +106,7 @@ void game_update(float frameTime) {
 void game_draw(void) {
   maze_draw();
   draw_player();
-  draw_ghosts();
+  draw_creatures();
   draw_interface();
 #ifndef NDEBUG
   debug_drawOverlay();
@@ -114,7 +114,7 @@ void game_draw(void) {
 }
 
 void game_unload(void) {
-  asset_shutdownGhosts();
+  asset_shutdownCreatures();
   asset_shutdownPlayer();
   maze_shutdown();
   asset_unload();
@@ -125,19 +125,19 @@ int game_getLevel(void) { return g_level; }
 
 void game_over(void) {
   player_totalReset();
-  ghost_reset();
+  creature_reset();
   maze_reset();
   g_level = 1;
 }
 
 void game_nextLevel(void) {
   player_reset();
-  ghost_reset();
+  creature_reset();
   maze_reset();
   g_level += 1;
 }
 
 void game_playerDead(void) {
   player_restart();
-  ghost_reset();
+  creature_reset();
 }

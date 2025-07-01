@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <engine/engine.h>
 #include <raylib.h>
-#include "../ghost/ghost.h"
+#include "../creature/creature.h"
 #include "../internal.h"
 #include "../player/player.h"
 #include "internal.h"
@@ -67,12 +67,12 @@ bool asset_initPlayer(void) {
   return true;
 }
 
-bool asset_initGhosts(void) {
-  GAME_TRY(ghost_init());
+bool asset_initCreatures(void) {
+  GAME_TRY(creature_init());
   for (int i = 0; i < CREATURE_COUNT; i++) {
     GAME_TRY(
         g_assets.creatureSprites[i] =
-            engine_createSprite(POS_ADJUST(ghost_getPos(i)), CREATURE_DATA[i].size, (Vector2) { 0.0f, 0.0f })
+            engine_createSprite(POS_ADJUST(creature_getPos(i)), CREATURE_DATA[i].size, (Vector2) { 0.0f, 0.0f })
     );
     for (int j = 0; j < DIR_COUNT; j++) {
       GAME_TRY(
@@ -104,8 +104,8 @@ void asset_shutdownPlayer(void) {
   }
 }
 
-void asset_shutdownGhosts(void) {
-  ghost_shutdown();
+void asset_shutdownCreatures(void) {
+  creature_shutdown();
   for (int i = 0; i < CREATURE_COUNT; i++) {
     engine_destroySprite(&g_assets.creatureSprites[i]);
     for (int j = 0; j < DIR_COUNT; j++) {

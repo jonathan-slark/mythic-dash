@@ -10,9 +10,9 @@
 bool asset_load(void);
 void asset_unload(void);
 bool asset_initPlayer(void);
-bool asset_initGhosts(void);
+bool asset_initCreatures(void);
 void asset_shutdownPlayer(void);
-void asset_shutdownGhosts(void);
+void asset_shutdownCreatures(void);
 
 engine_Texture* asset_getCreatureSpriteSheet(void);
 engine_Texture* asset_getPlayerSpriteSheet(void);

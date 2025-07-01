@@ -16,7 +16,7 @@ typedef struct actor__Tile {
   bool isCollision;
 } actor__Tile;
 
-typedef struct game__Actor {
+typedef struct game_Actor {
   Vector2 pos;
   Vector2 size;
   game_Dir dir;
@@ -26,4 +26,4 @@ typedef struct game__Actor {
   actor__Tile tilesMove[TILES_COUNT];
   actor__Tile tilesCanMove[DIR_COUNT][TILES_COUNT];
   bool isCanMove[DIR_COUNT];
-} game__Actor;
+} game_Actor;

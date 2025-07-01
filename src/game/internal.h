@@ -32,7 +32,7 @@ typedef struct game_Tile {
   int row;
 } game_Tile;
 
-typedef struct game__Actor game__Actor;
+typedef struct game_Actor game_Actor;
 
 // --- Constants ---
 
