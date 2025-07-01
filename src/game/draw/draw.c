@@ -1,4 +1,5 @@
 #include "draw.h"
+#include <assert.h>
 #include "../asset/asset.h"
 #include "../ghost/ghost.h"
 #include "../internal.h"
@@ -14,6 +15,9 @@ static const Vector2 GHOST_SCORE_OFFSET                       = { 1, -8 };
 // --- Draw functions ---
 
 void draw_updatePlayer(float frameTime, float slop) {
+  assert(frameTime >= 0.0f);
+  assert(slop >= 0.0f);
+
   player_update(frameTime, slop);
 
   static game_PlayerState prevState = PLAYER_NORMAL;
@@ -42,6 +46,9 @@ void draw_updatePlayer(float frameTime, float slop) {
 }
 
 void draw_updateGhosts(float frameTime, float slop) {
+  assert(frameTime >= 0.0f);
+  assert(slop >= 0.0f);
+
   ghost_update(frameTime, slop);
   for (int i = 0; i < CREATURE_COUNT; i++) {
     Vector2 pos = Vector2Add(POS_ADJUST(ghost_getPos(i)), asset_getCreatureOffset(i));

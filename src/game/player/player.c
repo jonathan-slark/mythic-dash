@@ -94,6 +94,8 @@ static void playerSwordPickup(void) {
 }
 
 static void playerCoinSlowUpdate(float frameTime) {
+  assert(frameTime >= 0.0f);
+
   if (g_player.coinSlowTimer == 0.0f) return;
   g_player.coinSlowTimer = fmaxf(g_player.coinSlowTimer -= frameTime, 0.0f);
   if (g_player.coinSlowTimer == 0.0f && g_player.swordSlowTimer == 0.0f)
@@ -101,6 +103,8 @@ static void playerCoinSlowUpdate(float frameTime) {
 }
 
 static void playerSwordSlowUpdate(float frameTime) {
+  assert(frameTime >= 0.0f);
+
   if (g_player.swordSlowTimer == 0.0f) return;
   g_player.swordSlowTimer = fmaxf(g_player.swordSlowTimer -= frameTime, 0.0f);
   if (g_player.swordSlowTimer == 0.0f && g_player.coinSlowTimer == 0.0f)
@@ -108,6 +112,8 @@ static void playerSwordSlowUpdate(float frameTime) {
 }
 
 static void playerSwordUpdate(float frameTime) {
+  assert(frameTime >= 0.0f);
+
   if (g_player.swordTimer == 0.0f) return;
 
   g_player.swordTimer = fmaxf(g_player.swordTimer -= frameTime, 0.0f);
@@ -246,7 +252,10 @@ int player_getScore(void) {
   return g_player.score;
 }
 
-game_PlayerState player_getState(void) { return g_player.state; }
+game_PlayerState player_getState(void) {
+  assert(g_player.state >= 0 && g_player.state < PLAYER_STATE_COUNT);
+  return g_player.state;
+}
 
 bool player_isMoving(void) {
   assert(g_player.actor != nullptr);
@@ -259,6 +268,8 @@ game__Actor* player_getActor(void) {
 }
 
 game_Tile player_tileAhead(int tileNum) {
+  assert(tileNum > 0);
+
   Vector2 pos = player_getPos();
   Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
   game_Tile tile = maze_getTile(pos);
@@ -288,7 +299,10 @@ game_Tile player_tileAhead(int tileNum) {
 
 float player_getMaxSpeed(void) { return PLAYER_MAX_SPEED; }
 
-int player_getLives(void) { return g_player.lives; }
+int player_getLives(void) {
+  assert(g_player.lives >= 0 && g_player.lives < PLAYER_MAX_LIVES);
+  return g_player.lives;
+}
 
 void player_dead(void) {
   if (debug_isPlayerImmune()) return;
@@ -298,15 +312,26 @@ void player_dead(void) {
   g_player.deadTimer  = PLAYER_DEAD_TIMER;
 }
 
-bool player_hasSword(void) { return g_player.swordTimer > 0.0f; }
+bool player_hasSword(void) {
+  assert(g_player.swordTimer >= 0.0f);
+  return g_player.swordTimer > 0.0f;
+}
 
-float player_getSwordTimer(void) { return g_player.swordTimer; }
+float player_getSwordTimer(void) {
+  assert(g_player.swordTimer >= 0.0f);
+  return g_player.swordTimer;
+}
 
 void player_killedGhost(int ghostID) {
+  assert(ghostID >= 0 && ghostID < CREATURE_COUNT);
+
   int score                 = GHOST_BASE_SCORE * g_player.scoreMultiplier;
   g_player.score           += score;
   g_player.scoreMultiplier *= 2;
   ghost_setScore(ghostID, score);
 }
 
-int player_getCoinsCollected(void) { return g_player.coinsCollected; }
+int player_getCoinsCollected(void) {
+  assert(g_player.coinsCollected >= 0);
+  return g_player.coinsCollected;
+}

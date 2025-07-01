@@ -158,7 +158,7 @@ bool actor_isColliding(const game__Actor* actor1, const game__Actor* actor2) {
   Vector2 centreActor2 = Vector2AddValue(actor2->pos, ACTOR_SIZE / 2.0f);
   bool    isCollision  = Vector2Distance(centreActor1, centreActor2) < ACTOR_SIZE;
   if (isCollision)
-    LOG_DEBUG(
+    LOG_TRACE(
         game_log,
         "Collision detected between actor1 (%f, %f) and actor2 (%f, %f)",
         actor1->pos.x,

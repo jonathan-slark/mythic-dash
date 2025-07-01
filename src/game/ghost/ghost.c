@@ -27,24 +27,24 @@ ghost__State g_state = { .update = nullptr, .lastUpdate = nullptr, .stateNum = 0
 
 // --- Helper functions ---
 
-static inline void updateTimer(float frameTime) { g_state.stateTimer = fmaxf(g_state.stateTimer - frameTime, 0.0f); }
+static inline void updateTimer(float frameTime) {
+  assert(frameTime >= 0.0f);
+  g_state.stateTimer = fmaxf(g_state.stateTimer - frameTime, 0.0f);
+}
 static inline bool isPermanentChaseState(void) { return g_state.stateNum == COUNT(STATE_TIMERS); }
 
 static inline bool shouldTransitionState(void) {
   return g_state.stateTimer == 0.0f && g_state.stateNum <= COUNT(STATE_TIMERS);
 }
 
-static inline bool shouldUpdateGhostState(ghost__Ghost* ghost) {
-  return ghost->update != ghost__pen && ghost->update != ghost__penToStart && ghost->update != ghost__dead &&
-         ghost->update != ghost__startToPen;
-}
-
-static inline bool canInteractWithPlayer(ghost__Ghost* ghost) {
-  return ghost->update != ghost__pen && ghost->update != ghost__penToStart && ghost->update != ghost__dead &&
-         ghost->update != ghost__startToPen;
+static inline bool isInActiveState(ghost__Ghost* ghost) {
+  assert(ghost != nullptr);
+  return ghost->update == ghost__chase || ghost->update == ghost__scatter || ghost->update == ghost__frightened;
 }
 
 static const char* getStateString(void (*update)(struct ghost__Ghost*, float, float)) {
+  assert(update != nullptr);
+
   if (update == ghost__pen) return STATE_PEN_STR;
   if (update == ghost__penToStart) return STATE_PETTOSTART_STR;
   if (update == ghost__startToPen) return STATE_STARTTOPEN_STR;
@@ -56,10 +56,12 @@ static const char* getStateString(void (*update)(struct ghost__Ghost*, float, fl
 }
 
 static void transitionToState(void (*newState)(ghost__Ghost*, float, float)) {
+  assert(newState != nullptr);
+
   g_state.lastUpdate = g_state.update;
   g_state.update     = newState;
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    if (shouldUpdateGhostState(&g_state.ghosts[i])) {
+    if (isInActiveState(&g_state.ghosts[i])) {
       g_state.ghosts[i].update         = newState;
       g_state.ghosts[i].isChangedState = true;
     }
@@ -70,6 +72,7 @@ static void transitionToPermanentChase(void) {
   transitionToState(ghost__chase);
   g_state.lastUpdate = ghost__chase;
   g_state.stateNum++;
+  assert(g_state.stateNum == COUNT(STATE_TIMERS));
 }
 
 static void toggleGhostState() {
@@ -78,11 +81,14 @@ static void toggleGhostState() {
   ) = (g_state.update == nullptr || g_state.update == ghost__chase) ? ghost__scatter : ghost__chase;
   transitionToState(newState);
   g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
+  assert(g_state.stateNum < COUNT(STATE_TIMERS));
   LOG_TRACE(game_log, "Changing to state: %s", getStateString(newState));
 }
 
 // Update the global state and change ghost states
 static void updateState(float frameTime) {
+  assert(frameTime >= 0.0f);
+
   updateTimer(frameTime);
 
   if (shouldTransitionState()) {
@@ -124,11 +130,14 @@ static void ghostDefaults(void) {
 
 static void ghostSetSpeeds(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    if (shouldUpdateGhostState(&g_state.ghosts[i])) actor_setSpeed(g_state.ghosts[i].actor, ghost__getSpeed());
+    if (isInActiveState(&g_state.ghosts[i])) actor_setSpeed(g_state.ghosts[i].actor, ghost__getSpeed());
   }
 }
 
 static void ghostCheckScoreTimer(ghost__Ghost* ghost, float frameTime) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+
   if (ghost->scoreTimer == 0.0f) return;
 
   ghost->scoreTimer = fmaxf(ghost->scoreTimer - frameTime, 0.0f);
@@ -136,6 +145,8 @@ static void ghostCheckScoreTimer(ghost__Ghost* ghost, float frameTime) {
 }
 
 static void ghostCheckTeleport(ghost__Ghost* ghost) {
+  assert(ghost != nullptr);
+
   if (actor_hasTeleported(ghost->actor)) {
     ghost->teleportTimer = TELEPORT_TIMER;
     actor_setSpeed(ghost->actor, SPEED_SLOW);
@@ -143,6 +154,9 @@ static void ghostCheckTeleport(ghost__Ghost* ghost) {
 }
 
 static void ghostUpdateTeleportSlow(ghost__Ghost* ghost, float frameTime) {
+  assert(ghost != nullptr);
+  assert(frameTime >= 0.0f);
+
   if (ghost->teleportTimer == 0.0f) return;
 
   ghost->teleportTimer = fmaxf(ghost->teleportTimer - frameTime, 0.0f);
@@ -150,6 +164,8 @@ static void ghostUpdateTeleportSlow(ghost__Ghost* ghost, float frameTime) {
 }
 
 static void ghostSetNearestStartTile(ghost__Ghost* ghost) {
+  assert(ghost != nullptr);
+
   game_Tile curTile    = maze_getTile(actor_getPos(ghost->actor));
   size_t    startCount = COUNT(GHOST_MAZE_START);
   size_t    bestTiles[startCount];
@@ -182,6 +198,8 @@ static void ghostSetNearestStartTile(ghost__Ghost* ghost) {
 }
 
 static void ghostDied(ghost__Ghost* ghost) {
+  assert(ghost != nullptr);
+
   ghost->update = ghost__dead;
   actor_setSpeed(ghost->actor, player_getMaxSpeed());
   ghost->teleportTimer = 0.0f;
@@ -203,6 +221,7 @@ bool ghost_init(void) {
     if (g_state.ghosts[i].actor == nullptr) return false;
     g_state.ghosts[i].id = i;
   }
+
   ghostDefaults();
   return true;
 }
@@ -213,6 +232,7 @@ void ghost_reset(void) {
     actor_setDir(g_state.ghosts[i].actor, CREATURE_DATA[i].startDir);
     actor_setSpeed(g_state.ghosts[i].actor, CREATURE_DATA[i].startSpeed);
   }
+
   ghostDefaults();
   g_state.update     = nullptr;
   g_state.stateNum   = 0;
@@ -237,7 +257,7 @@ void ghost_update(float frameTime, float slop) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.ghosts[i].update(&g_state.ghosts[i], frameTime, slop);
 
-    if (canInteractWithPlayer(&g_state.ghosts[i])) {
+    if (isInActiveState(&g_state.ghosts[i])) {
       if (actor_isColliding(player_getActor(), g_state.ghosts[i].actor)) {
         if (playerState == PLAYER_SWORD) {
           ghostDied(&g_state.ghosts[i]);
@@ -293,12 +313,15 @@ float ghost_getGlobalTimer(void) { return player_hasSword() ? player_getSwordTim
 
 int ghost_getGlobaStateNum(void) { return g_state.stateNum; }
 
-const char* ghost_getGlobalStateString(void) { return getStateString(g_state.update); }
+const char* ghost_getGlobalStateString(void) {
+  const char* string = getStateString(g_state.update);
+  assert(string != nullptr);
+  return string;
+}
 
 const char* ghost_getStateString(int id) {
   assert(id >= 0 && id < CREATURE_COUNT);
-  assert(id >= 0 && id < CREATURE_COUNT);
-  assert(g_state.ghosts[id].actor != nullptr);
+  assert(g_state.ghosts[id].update != nullptr);
 
   return getStateString(g_state.ghosts[id].update);
 }
@@ -311,6 +334,7 @@ void ghost_swordPickup(void) {
 }
 
 void ghost_swordDrop(void) {
+  assert(g_state.lastUpdate != nullptr);
   transitionToState(g_state.lastUpdate);
   ghostSetSpeeds();
 }

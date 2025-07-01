@@ -114,9 +114,15 @@ void asset_shutdownGhosts(void) {
   }
 }
 
-engine_Texture* asset_getCreatureSpriteSheet(void) { return g_assets.creatureSpriteSheet; }
+engine_Texture* asset_getCreatureSpriteSheet(void) {
+  assert(g_assets.creatureSpriteSheet != nullptr);
+  return g_assets.creatureSpriteSheet;
+}
 
-engine_Texture* asset_getPlayerSpriteSheet(void) { return g_assets.playerSpriteSheet; }
+engine_Texture* asset_getPlayerSpriteSheet(void) {
+  assert(g_assets.playerSpriteSheet != nullptr);
+  return g_assets.playerSpriteSheet;
+}
 
 engine_Sprite* asset_getPlayerSprite(game_PlayerState state) {
   assert(state >= 0 && state < PLAYER_STATE_COUNT);
@@ -145,9 +151,15 @@ engine_Anim* asset_getCreatureAnim(int creatureID, game_Dir dir) {
   return g_assets.creatureAnims[creatureID][dir];
 }
 
-engine_Font* asset_getFont(void) { return g_assets.font; }
+engine_Font* asset_getFont(void) {
+  assert(g_assets.font != nullptr);
+  return g_assets.font;
+}
 
-engine_Font* asset_getFontTiny(void) { return g_assets.fontTiny; }
+engine_Font* asset_getFontTiny(void) {
+  assert(g_assets.fontTiny != nullptr);
+  return g_assets.fontTiny;
+}
 
 Vector2 asset_getCreatureOffset(int creatureID) {
   assert(creatureID >= 0 && creatureID < CREATURE_COUNT);

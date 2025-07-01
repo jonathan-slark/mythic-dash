@@ -229,6 +229,8 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
 
 // Convert cute tiled map to our format
 static bool convertMap(cute_tiled_map_t* map) {
+  assert(map != nullptr);
+
   MapTile* tileData  = nullptr;
   int      tileCount = 0;
   GAME_TRY(getTileProperties(map, &tileData, &tileCount));
@@ -284,7 +286,10 @@ static bool loadMazetileset(cute_tiled_map_t* map) {
   return true;
 }
 
-static void unloadMazetileset(void) { engine_textureUnload(&g_maze.tileset); }
+static void unloadMazetileset(void) {
+  assert(g_maze.tileset != nullptr);
+  engine_textureUnload(&g_maze.tileset);
+}
 
 void countCoins(void) {
   for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
@@ -328,13 +333,13 @@ bool maze_init(void) {
   if (!convertMap(map)) {
     destroyMaze();
     cute_tiled_free_map(map);
-    LOG_INFO(game_log, "Failed to convert map");
+    LOG_ERROR(game_log, "Failed to convert map");
     return false;
   }
   if (!loadMazetileset(map)) {
     destroyMaze();
     cute_tiled_free_map(map);
-    LOG_INFO(game_log, "Failed to load map tileset");
+    LOG_ERROR(game_log, "Failed to load map tileset");
     return false;
   }
   cute_tiled_free_map(map);

@@ -44,6 +44,7 @@ static void checkChestSpawn(void) {
 }
 
 static void updateChestDespawnTimer(float frameTime) {
+  assert(frameTime >= 0.0f);
   if (g_maze.chestDespawnTimer == 0.0f) return;
 
   if (g_maze.tiles[g_maze.chestID].isChestCollected) {
@@ -58,6 +59,7 @@ static void updateChestDespawnTimer(float frameTime) {
 }
 
 static void updateChestScoreTimer(float frameTime) {
+  assert(frameTime >= 0.0f);
   if (g_maze.chestScoreTimer == 0.0f) return;
 
   g_maze.chestScoreTimer = fmaxf(g_maze.chestScoreTimer - frameTime, 0.0f);
@@ -207,9 +209,15 @@ game_Tile maze_doubleVectorBetween(game_Tile from, game_Tile to) {
   return target;
 }
 
-int maze_getRows(void) { return g_maze.rows; }
+int maze_getRows(void) {
+  assert(g_maze.rows > 0);
+  return g_maze.rows;
+}
 
-int maze_getCols(void) { return g_maze.cols; }
+int maze_getCols(void) {
+  assert(g_maze.cols > 0);
+  return g_maze.cols;
+}
 
 void maze_reset(void) {
   g_maze.chestDespawnTimer = 0.0f;
