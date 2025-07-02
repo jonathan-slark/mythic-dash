@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <raylib.h>
 #include "../actor/actor.h"
+#include "../audio/audio.h"
 #include "../internal.h"
 #include "../maze/maze.h"
 #include "internal.h"
@@ -110,6 +111,12 @@ static void creatureResetTargets(void) {
 static void creatureResetTeleportTimer(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.creatures[i].teleportTimer = 0.0f;
+  }
+}
+
+static void creatureWail(void) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    if (isInActiveState(&g_state.creatures[i])) audio_playWail(actor_getPos(g_state.creatures[i].actor));
   }
 }
 
@@ -332,6 +339,7 @@ void creature_swordPickup(void) {
   creatureSetSpeeds();
   creatureResetTargets();
   creatureResetTeleportTimer();
+  creatureWail();
 }
 
 void creature_swordDrop(void) {

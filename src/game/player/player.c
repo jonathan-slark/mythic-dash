@@ -66,7 +66,7 @@ static void playerCoinPickup(void) {
   g_player.score         += SCORE_COIN;
   g_player.coinsCollected++;
   actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED);
-  audo_playChime();
+  audo_playChime(player_getPos());
 }
 
 static int getChestScoreMultiplier(void) {
@@ -315,7 +315,7 @@ void player_dead(void) {
   g_player.state      = PLAYER_DEAD;
   g_player.deadTimer  = PLAYER_DEAD_TIMER;
   audio_resetChimePitch();
-  audio_playDeath();
+  audio_playDeath(player_getPos());
 }
 
 bool player_hasSword(void) {

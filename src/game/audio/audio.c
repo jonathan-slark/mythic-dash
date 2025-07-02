@@ -2,6 +2,8 @@
 #include <raylib.h>
 #include "../asset/asset.h"
 #include "../internal.h"
+#include "../maze/maze.h"
+#include "engine/engine.h"
 
 // --- Constants ---
 
@@ -33,7 +35,13 @@ static audio_State g_state = {
   .audioEnabled = true
 };
 
-void audo_playChime(void) {
+// --- Helper functions ---
+
+static inline float getPan(Vector2 pos) { return 1.0f - pos.x / (maze_getCols() * TILE_SIZE); }
+
+// --- Audio functions ----
+
+void audo_playChime(Vector2 pos) {
   if (!g_state.audioEnabled) return;
 
   if (++g_state.coinsCollected >= COIN_THRESHOLD) {
@@ -43,6 +51,7 @@ void audo_playChime(void) {
 
   engine_Sound* sound = asset_getChimeSound();
   engine_setSoundPitch(sound, g_state.coinPitches[g_state.coinPitchIndex]);
+  engine_setSoundPan(sound, getPan(pos));
   engine_playSound(sound);
 }
 
@@ -51,4 +60,14 @@ void audio_resetChimePitch(void) {
   g_state.coinsCollected = 0;
 }
 
-void audio_playDeath(void) { engine_playSound(asset_getDeathSound()); }
+void audio_playDeath(Vector2 pos) {
+  engine_Sound* sound = asset_getDeathSound();
+  engine_setSoundPan(sound, getPan(pos));
+  engine_playSound(sound);
+}
+
+void audio_playWail(Vector2 pos) {
+  engine_Sound* sound = asset_getWailSound(GetRandomValue(0, WAIL_SOUND_COUNT - 1));
+  engine_setSoundPan(sound, getPan(pos));
+  engine_playSound(sound);
+}

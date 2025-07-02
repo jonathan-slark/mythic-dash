@@ -25,5 +25,6 @@ engine_Anim*    asset_getCreatureAnim(int creatureID, game_Dir dir);
 Vector2         asset_getCreatureOffset(int creatureID);
 engine_Font*    asset_getFont(void);
 engine_Font*    asset_getFontTiny(void);
+engine_Sound*   asset_getWailSound(int id);
 engine_Sound*   asset_getChimeSound(void);
 engine_Sound*   asset_getDeathSound(void);

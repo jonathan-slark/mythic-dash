@@ -39,6 +39,7 @@ typedef struct asset_Assets {
   engine_Anim*    creatureAnims[CREATURE_COUNT][DIR_COUNT];
   engine_Font*    font;
   engine_Font*    fontTiny;
+  engine_Sound*   wailSounds[WAIL_SOUND_COUNT];
   engine_Sound*   chimeSound;
   engine_Sound*   deathSound;
 } asset_Assets;
@@ -51,6 +52,11 @@ static const char FILE_PLAYER[]     = ASSET_DIR "gfx/player.png";
 static const char FILE_FONT[]       = ASSET_DIR "gfx/font.png";
 static const char FILE_FONT_TINY[]  = ASSET_DIR "gfx/tiny-numbers.png";
 
+static const asset_Sound WAIL_SOUNDS[] = {
+  { .filepath = ASSET_DIR "sfx/wail1.ogg", .volume = 0.5f, .pitch = 1.0f },
+  { .filepath = ASSET_DIR "sfx/wail2.ogg", .volume = 0.5f, .pitch = 1.0f },
+  { .filepath = ASSET_DIR "sfx/wail3.ogg", .volume = 0.5f, .pitch = 1.0f }
+};
 static const asset_Sound CHIME_SOUND = { .filepath = ASSET_DIR "sfx/chime.wav", .volume = 0.5f, .pitch = 1.0f };
 static const asset_Sound DEATH_SOUND = { .filepath = ASSET_DIR "sfx/death.wav", .volume = 1.0f, .pitch = 1.0f };
 

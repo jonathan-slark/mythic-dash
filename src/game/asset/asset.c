@@ -31,8 +31,11 @@ bool asset_load(void) {
   GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
   GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 6, 10, 32, 127, 0, 2));
   GAME_TRY(g_assets.fontTiny = engine_fontLoad(FILE_FONT_TINY, 5, 7, 48, 57, 0, 0));
-  loadSound(CHIME_SOUND, &g_assets.chimeSound);
-  loadSound(DEATH_SOUND, &g_assets.deathSound);
+  for (int i = 0; i < WAIL_SOUND_COUNT; i++) {
+    GAME_TRY(loadSound(WAIL_SOUNDS[i], &g_assets.wailSounds[i]));
+  }
+  GAME_TRY(loadSound(CHIME_SOUND, &g_assets.chimeSound));
+  GAME_TRY(loadSound(DEATH_SOUND, &g_assets.deathSound));
   return true;
 }
 
@@ -196,6 +199,12 @@ engine_Font* asset_getFont(void) {
 engine_Font* asset_getFontTiny(void) {
   assert(g_assets.fontTiny != nullptr);
   return g_assets.fontTiny;
+}
+
+engine_Sound* asset_getWailSound(int id) {
+  assert(id >= 0 && id < WAIL_SOUND_COUNT);
+  assert(g_assets.wailSounds[id] != nullptr);
+  return g_assets.wailSounds[id];
 }
 
 engine_Sound* asset_getChimeSound(void) {
