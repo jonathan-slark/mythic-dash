@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include "../actor/actor.h"
+#include "../audio/audio.h"
 #include "../creature/creature.h"
 #include "../debug/debug.h"
 #include "../maze/maze.h"
@@ -65,6 +66,7 @@ static void playerCoinPickup(void) {
   g_player.score         += SCORE_COIN;
   g_player.coinsCollected++;
   actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED);
+  audo_playChime();
 }
 
 static int getChestScoreMultiplier(void) {
@@ -91,6 +93,7 @@ static void playerSwordPickup(void) {
   g_player.coinsCollected++;  // Counts as a coin in terms on level being cleared
   g_player.scoreMultiplier = 1;
   actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED);
+  audio_resetChimePitch();
 }
 
 static void playerCoinSlowUpdate(float frameTime) {
@@ -172,6 +175,7 @@ void player_restart(void) {
   actor_setPos(g_player.actor, PLAYER_START_POS);
   actor_setDir(g_player.actor, PLAYER_START_DIR);
   actor_startMoving(g_player.actor);
+  audio_resetChimePitch();
 }
 
 void player_reset() {
@@ -310,6 +314,8 @@ void player_dead(void) {
   g_player.lives     -= 1;
   g_player.state      = PLAYER_DEAD;
   g_player.deadTimer  = PLAYER_DEAD_TIMER;
+  audio_resetChimePitch();
+  audio_playDeath();
 }
 
 bool player_hasSword(void) {
@@ -336,4 +342,4 @@ int player_getCoinsCollected(void) {
   return g_player.coinsCollected;
 }
 
-int player_getNextExtraLifeScore(void) { return g_player.score / SCORE_EXTRA_LIFE + SCORE_EXTRA_LIFE; }
+int player_getNextExtraLifeScore(void) { return (g_player.score / SCORE_EXTRA_LIFE + 1) * SCORE_EXTRA_LIFE; }

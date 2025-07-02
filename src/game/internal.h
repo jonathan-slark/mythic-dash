@@ -14,6 +14,9 @@
   }
 
 #define COUNT(array) (sizeof(array) / sizeof(array[0]))
+#define MIN(x, y) (x) < (y) ? (x) : (y)
+#define MAX(x, y) (x) > (y) ? (x) : (y)
+#define CLAMP(x, min, max) MIN(MAX((x), (min)), (max))
 #define POS_ADJUST(pos) Vector2Add((pos), MAZE_ORIGIN)
 
 // --- Types ---

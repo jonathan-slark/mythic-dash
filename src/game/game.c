@@ -44,6 +44,8 @@ const float MIN_SLOP        = 0.05f;
 const float MAX_SLOP        = 2.5f;
 const float OVERLAP_EPSILON = 2e-5f;
 
+static const float MASTER_VOLUME = 1.0f;
+
 // --- Global state ---
 
 log_Log*   game_log;
@@ -80,6 +82,7 @@ bool game_load(void) {
   }
 
   double start = GetTime();
+  engine_initAudio(MASTER_VOLUME);
   GAME_TRY(asset_load());
   GAME_TRY(maze_init());
   GAME_TRY(asset_initPlayer());
@@ -115,6 +118,7 @@ void game_draw(void) {
 }
 
 void game_unload(void) {
+  engine_shutdownAudio();
   asset_shutdownCreatures();
   asset_shutdownPlayer();
   maze_shutdown();

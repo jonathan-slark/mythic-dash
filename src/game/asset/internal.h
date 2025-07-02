@@ -22,6 +22,12 @@ typedef struct asset_ActorData {
   asset_AnimData animData[DIR_COUNT];
 } asset_ActorData;
 
+typedef struct asset_Sound {
+  const char* filepath;
+  float       volume;
+  float       pitch;
+} asset_Sound;
+
 typedef struct asset_Assets {
   engine_Texture* creatureSpriteSheet;
   engine_Texture* playerSpriteSheet;
@@ -33,6 +39,8 @@ typedef struct asset_Assets {
   engine_Anim*    creatureAnims[CREATURE_COUNT][DIR_COUNT];
   engine_Font*    font;
   engine_Font*    fontTiny;
+  engine_Sound*   chimeSound;
+  engine_Sound*   deathSound;
 } asset_Assets;
 
 // --- Constants ---
@@ -42,6 +50,9 @@ static const char FILE_CREATURES[]  = ASSET_DIR "gfx/creatures.png";
 static const char FILE_PLAYER[]     = ASSET_DIR "gfx/player.png";
 static const char FILE_FONT[]       = ASSET_DIR "gfx/font.png";
 static const char FILE_FONT_TINY[]  = ASSET_DIR "gfx/tiny-numbers.png";
+
+static const asset_Sound CHIME_SOUND = { .filepath = ASSET_DIR "sfx/chime.wav", .volume = 0.5f, .pitch = 1.0f };
+static const asset_Sound DEATH_SOUND = { .filepath = ASSET_DIR "sfx/death.wav", .volume = 1.0f, .pitch = 1.0f };
 
 static const float FRAME_TIME = 0.1f;
 
@@ -74,10 +85,10 @@ static const asset_ActorData PLAYER_DATA[PLAYER_STATE_COUNT] = {
     .inset    = { 8.0f, 8.0f },
     .loop = false,
     .animData = {
-      [DIR_UP]    = { .row = 4, .startCol = 21, .frameCount = 3, FRAME_TIME},
-      [DIR_RIGHT] = { .row = 2, .startCol = 21, .frameCount = 3, FRAME_TIME},
-      [DIR_DOWN]  = { .row = 0, .startCol = 21, .frameCount = 3, FRAME_TIME},
-      [DIR_LEFT]  = { .row = 6, .startCol = 21, .frameCount = 3, FRAME_TIME}
+      [DIR_UP]    = { .row = 4, .startCol = 21, .frameCount = 3, FRAME_TIME * 2.0f},
+      [DIR_RIGHT] = { .row = 2, .startCol = 21, .frameCount = 3, FRAME_TIME * 2.0f},
+      [DIR_DOWN]  = { .row = 0, .startCol = 21, .frameCount = 3, FRAME_TIME * 2.0f},
+      [DIR_LEFT]  = { .row = 6, .startCol = 21, .frameCount = 3, FRAME_TIME * 2.0f}
     }
   }
 };

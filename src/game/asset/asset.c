@@ -7,9 +7,22 @@
 #include "../player/player.h"
 #include "internal.h"
 
+// --- Constants ---
+
+static const int MAX_SOUNDS = 10;
+
 // --- Global state ---
 
 static asset_Assets g_assets;
+
+// --- Helper functions
+
+bool loadSound(asset_Sound soundData, engine_Sound** sound) {
+  GAME_TRY(*sound = engine_loadSound(soundData.filepath, MAX_SOUNDS));
+  engine_setSoundVolume(*sound, soundData.volume);
+  engine_setSoundPitch(*sound, soundData.pitch);
+  return true;
+}
 
 // --- Asset functions ---
 
@@ -18,10 +31,13 @@ bool asset_load(void) {
   GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
   GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 6, 10, 32, 127, 0, 2));
   GAME_TRY(g_assets.fontTiny = engine_fontLoad(FILE_FONT_TINY, 5, 7, 48, 57, 0, 0));
+  loadSound(CHIME_SOUND, &g_assets.chimeSound);
+  loadSound(DEATH_SOUND, &g_assets.deathSound);
   return true;
 }
 
 void asset_unload(void) {
+  engine_unloadSound(g_assets.chimeSound);
   engine_fontUnload(&g_assets.font);
   engine_textureUnload(&g_assets.playerSpriteSheet);
   engine_textureUnload(&g_assets.creatureSpriteSheet);
@@ -167,6 +183,11 @@ engine_Anim* asset_getCreatureAnim(int creatureID, game_Dir dir) {
   return g_assets.creatureAnims[creatureID][dir];
 }
 
+Vector2 asset_getCreatureOffset(int creatureID) {
+  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
+  return CREATURE_DATA[creatureID].offset;
+}
+
 engine_Font* asset_getFont(void) {
   assert(g_assets.font != nullptr);
   return g_assets.font;
@@ -177,7 +198,12 @@ engine_Font* asset_getFontTiny(void) {
   return g_assets.fontTiny;
 }
 
-Vector2 asset_getCreatureOffset(int creatureID) {
-  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
-  return CREATURE_DATA[creatureID].offset;
+engine_Sound* asset_getChimeSound(void) {
+  assert(g_assets.chimeSound != nullptr);
+  return g_assets.chimeSound;
+}
+
+engine_Sound* asset_getDeathSound(void) {
+  assert(g_assets.deathSound != nullptr);
+  return g_assets.deathSound;
 }
