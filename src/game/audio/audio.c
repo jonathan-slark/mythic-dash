@@ -8,7 +8,7 @@
 // --- Constants ---
 
 constexpr int    COIN_PITCH_COUNT = 5;
-static const int COIN_THRESHOLD   = 40;
+static const int COIN_THRESHOLD   = 20;
 
 // --- Types ---
 
@@ -68,6 +68,12 @@ void audio_playDeath(Vector2 pos) {
 
 void audio_playWail(Vector2 pos) {
   engine_Sound* sound = asset_getWailSound(GetRandomValue(0, WAIL_SOUND_COUNT - 1));
+  engine_setSoundPan(sound, getPan(pos));
+  engine_playSound(sound);
+}
+
+void audio_playWhispers(Vector2 pos) {
+  engine_Sound* sound = asset_getWhispersSound();
   engine_setSoundPan(sound, getPan(pos));
   engine_playSound(sound);
 }

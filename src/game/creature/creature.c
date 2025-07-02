@@ -213,6 +213,7 @@ static void creatureDied(creature__Creature* creature) {
   creature->teleportTimer = 0.0f;
   creatureSetNearestStartTile(creature);
   player_killedCreature(creature->id);
+  audio_playWhispers(actor_getPos(creature->actor));
 }
 
 // --- Creature functions ---

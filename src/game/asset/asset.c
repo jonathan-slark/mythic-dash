@@ -36,11 +36,17 @@ bool asset_load(void) {
   }
   GAME_TRY(loadSound(CHIME_SOUND, &g_assets.chimeSound));
   GAME_TRY(loadSound(DEATH_SOUND, &g_assets.deathSound));
+  GAME_TRY(loadSound(WHISPERS_SOUND, &g_assets.whispersSound));
   return true;
 }
 
 void asset_unload(void) {
+  engine_unloadSound(g_assets.whispersSound);
+  engine_unloadSound(g_assets.deathSound);
   engine_unloadSound(g_assets.chimeSound);
+  for (int i = 0; i < WAIL_SOUND_COUNT; i++) {
+    engine_unloadSound(g_assets.wailSounds[i]);
+  }
   engine_fontUnload(&g_assets.font);
   engine_textureUnload(&g_assets.playerSpriteSheet);
   engine_textureUnload(&g_assets.creatureSpriteSheet);
@@ -215,4 +221,9 @@ engine_Sound* asset_getChimeSound(void) {
 engine_Sound* asset_getDeathSound(void) {
   assert(g_assets.deathSound != nullptr);
   return g_assets.deathSound;
+}
+
+engine_Sound* asset_getWhispersSound(void) {
+  assert(g_assets.whispersSound != nullptr);
+  return g_assets.whispersSound;
 }

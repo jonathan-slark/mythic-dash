@@ -42,6 +42,7 @@ typedef struct asset_Assets {
   engine_Sound*   wailSounds[WAIL_SOUND_COUNT];
   engine_Sound*   chimeSound;
   engine_Sound*   deathSound;
+  engine_Sound*   whispersSound;
 } asset_Assets;
 
 // --- Constants ---
@@ -53,12 +54,13 @@ static const char FILE_FONT[]       = ASSET_DIR "gfx/font.png";
 static const char FILE_FONT_TINY[]  = ASSET_DIR "gfx/tiny-numbers.png";
 
 static const asset_Sound WAIL_SOUNDS[] = {
-  { .filepath = ASSET_DIR "sfx/wail1.ogg", .volume = 0.5f, .pitch = 1.0f },
-  { .filepath = ASSET_DIR "sfx/wail2.ogg", .volume = 0.5f, .pitch = 1.0f },
-  { .filepath = ASSET_DIR "sfx/wail3.ogg", .volume = 0.5f, .pitch = 1.0f }
+  { .filepath = ASSET_DIR "sfx/wail1.ogg", .volume = 0.5f, .pitch = 0.9f },
+  { .filepath = ASSET_DIR "sfx/wail2.ogg", .volume = 0.5f, .pitch = 1.1f },
+  { .filepath = ASSET_DIR "sfx/wail3.ogg", .volume = 0.5f, .pitch = 1.1f }
 };
-static const asset_Sound CHIME_SOUND = { .filepath = ASSET_DIR "sfx/chime.wav", .volume = 0.5f, .pitch = 1.0f };
-static const asset_Sound DEATH_SOUND = { .filepath = ASSET_DIR "sfx/death.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound CHIME_SOUND    = { .filepath = ASSET_DIR "sfx/chime.ogg", .volume = 0.67f, .pitch = 1.0f };
+static const asset_Sound DEATH_SOUND    = { .filepath = ASSET_DIR "sfx/death.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound WHISPERS_SOUND = { .filepath = ASSET_DIR "sfx/whispers.ogg", .volume = 1.0f, .pitch = 1.0f };
 
 static const float FRAME_TIME = 0.1f;
 
