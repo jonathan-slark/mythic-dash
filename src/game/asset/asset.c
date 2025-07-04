@@ -33,10 +33,12 @@ bool asset_load(void) {
   GAME_TRY(loadSound(CHIME_SOUND, &g_assets.chimeSound));
   GAME_TRY(loadSound(DEATH_SOUND, &g_assets.deathSound));
   GAME_TRY(loadSound(WHISPERS_SOUND, &g_assets.whispersSound));
+  GAME_TRY(loadSound(PICKUP_SOUND, &g_assets.pickupSound));
   return true;
 }
 
 void asset_unload(void) {
+  engine_unloadSound(&g_assets.pickupSound);
   engine_unloadSound(&g_assets.whispersSound);
   engine_unloadSound(&g_assets.deathSound);
   engine_unloadSound(&g_assets.chimeSound);
@@ -222,4 +224,9 @@ engine_Sound* asset_getDeathSound(void) {
 engine_Sound* asset_getWhispersSound(void) {
   assert(g_assets.whispersSound != nullptr);
   return g_assets.whispersSound;
+}
+
+engine_Sound* asset_getPickupSound(void) {
+  assert(g_assets.pickupSound != nullptr);
+  return g_assets.pickupSound;
 }

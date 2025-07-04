@@ -27,7 +27,7 @@ int main(void) {
     return 1;
   }
 
-  if (!engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE, 0)) {
+  if (!engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE, 0, LOG_LEVEL_INFO)) {
     LOG_ERROR(log, "Failed to initialise engine");
     return 1;
   }

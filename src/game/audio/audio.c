@@ -62,32 +62,44 @@ void audio_resetChimePitch(void) {
 }
 
 void audio_playDeath(Vector2 pos) {
+  if (!g_state.audioEnabled) return;
   engine_Sound* sound = asset_getDeathSound();
   engine_setSoundPan(sound, getPan(pos));
   engine_playSound(sound);
 }
 
 void audio_playWail(Vector2 pos) {
+  if (!g_state.audioEnabled) return;
   engine_Sound* sound = asset_getWailSound(GetRandomValue(0, WAIL_SOUND_COUNT - 1));
   engine_setSoundPan(sound, getPan(pos));
   engine_playSound(sound);
 }
 
 int audio_playWhispers(Vector2 pos) {
+  if (!g_state.audioEnabled) return -1;
   engine_Sound* sound = asset_getWhispersSound();
   engine_setSoundPan(sound, getPan(pos));
   return engine_playSound(sound);
 }
 
 void audio_updateWhispers(int id) {
+  if (!g_state.audioEnabled) return;
   assert(id >= 0 && id < MAX_SOUNDS);
   engine_Sound* sound = asset_getWhispersSound();
   engine_updateSound(sound, id);
 }
 
 void audio_stopWhispers(int* id) {
+  if (!g_state.audioEnabled) return;
   assert(id != nullptr && *id >= 0 && *id < MAX_SOUNDS);
   engine_Sound* sound = asset_getWhispersSound();
   engine_stopSound(sound, *id);
   *id = -1;
+}
+
+void audio_playPickup(Vector2 pos) {
+  if (!g_state.audioEnabled) return;
+  engine_Sound* sound = asset_getPickupSound();
+  engine_setSoundPan(sound, getPan(pos));
+  engine_playSound(sound);
 }

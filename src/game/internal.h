@@ -55,7 +55,7 @@ extern const float OVERLAP_EPSILON;
 
 extern const char* DIR_STRINGS[];
 
-constexpr int WAIL_SOUND_COUNT = 3;
+constexpr int WAIL_SOUND_COUNT = 4;
 
 // --- Global state ---
 

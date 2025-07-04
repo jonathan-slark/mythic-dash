@@ -77,7 +77,10 @@ static int getChestScoreMultiplier(void) {
 
 static int getChestScore(void) { return getChestScoreMultiplier() * SCORE_CHEST; }
 
-static void playerChestPickup(void) { g_player.score += getChestScore(); }
+static void playerChestPickup(void) {
+  g_player.score += getChestScore();
+  audio_playPickup(player_getPos());
+}
 
 static float getSwordTimer(void) {
   float t = fminf(fmaxf((game_getLevel() - 1) / (MAX_LEVEL - 1.0f), 0.0f), 1.0f);

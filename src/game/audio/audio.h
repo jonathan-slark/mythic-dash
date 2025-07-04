@@ -10,3 +10,4 @@ void audio_playWail(Vector2 pos);
 int  audio_playWhispers(Vector2 pos);
 void audio_updateWhispers(int id);
 void audio_stopWhispers(int* id);
+void audio_playPickup(Vector2 pos);
