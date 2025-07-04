@@ -87,8 +87,9 @@ bool game_load(void) {
   GAME_TRY(maze_init());
   GAME_TRY(asset_initPlayer());
   GAME_TRY(asset_initCreatures());
-
   LOG_INFO(game_log, "Game loading took %f seconds", GetTime() - start);
+
+  engine_playMusic(asset_getMusic());
   return true;
 }
 
@@ -104,6 +105,7 @@ void game_update(float frameTime) {
   draw_updateCreatures(frameTime, slop);
   draw_updatePlayer(frameTime, slop);
   maze_update(frameTime);
+  engine_updateMusic(asset_getMusic());
 }
 
 void game_draw(void) {

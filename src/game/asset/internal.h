@@ -28,6 +28,11 @@ typedef struct asset_Sound {
   float       pitch;
 } asset_Sound;
 
+typedef struct asset_Music {
+  const char* filepath;
+  float       volume;
+} asset_Music;
+
 typedef struct asset_Assets {
   engine_Texture* creatureSpriteSheet;
   engine_Texture* playerSpriteSheet;
@@ -44,6 +49,7 @@ typedef struct asset_Assets {
   engine_Sound*   deathSound;
   engine_Sound*   whispersSound;
   engine_Sound*   pickupSound;
+  Music           music;
 } asset_Assets;
 
 // --- Constants ---
@@ -64,6 +70,7 @@ static const asset_Sound CHIME_SOUND    = { .filepath = ASSET_DIR "sfx/chime.wav
 static const asset_Sound DEATH_SOUND    = { .filepath = ASSET_DIR "sfx/death.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound WHISPERS_SOUND = { .filepath = ASSET_DIR "sfx/whispers.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound PICKUP_SOUND   = { .filepath = ASSET_DIR "sfx/pickup.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Music MUSIC          = { .filepath = ASSET_DIR "music/01.mp3", .volume = 0.5f };
 
 static const float FRAME_TIME = 0.1f;
 

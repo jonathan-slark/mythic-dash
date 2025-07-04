@@ -13,3 +13,18 @@
 * [whispers-supernatural.mp3 by gigaura](https://freesound.org/people/gjgaura/sounds/466658/) - CC0
 * [Game Pickup by IENBA](https://freesound.org/people/IENBA/sounds/698768/) - CC0
 * [Chime Sound by jgreer](https://freesound.org/people/jgreer/sounds/333629/) - CC0
+
+## Music Credits
+
+* [Improvisation 1](https://freemusicarchive.org/music/Electric_Kulintang/Live_at_WFMU_on_Rob_Weisbergs_Show_on_9272008/Improvisation_1/) by Electric Kulintang - [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/)
+* [Improvisation 2](https://freemusicarchive.org/music/Electric_Kulintang/Live_at_WFMU_on_Rob_Weisbergs_Show_on_9272008/Improvisation_2/) by Electric Kulintang - [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/)
+
+This music has been used in accordance with the license terms.  
+No commercial use is made, and this game is freely distributed.
+
+## In Game
+
+Music:
+"Track Title" by Artist Name
+Licensed under CC BY-NC-SA 3.0
+creativecommons.org/licenses/by-nc-sa/3.0/

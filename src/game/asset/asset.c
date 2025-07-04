@@ -20,6 +20,12 @@ bool loadSound(asset_Sound soundData, engine_Sound** sound) {
   return true;
 }
 
+bool loadMusic(asset_Music musicData, Music* music) {
+  GAME_TRY(engine_loadMusic(musicData.filepath, music));
+  engine_setMusicVolume(*music, musicData.volume);
+  return true;
+}
+
 // --- Asset functions ---
 
 bool asset_load(void) {
@@ -34,10 +40,13 @@ bool asset_load(void) {
   GAME_TRY(loadSound(DEATH_SOUND, &g_assets.deathSound));
   GAME_TRY(loadSound(WHISPERS_SOUND, &g_assets.whispersSound));
   GAME_TRY(loadSound(PICKUP_SOUND, &g_assets.pickupSound));
+  GAME_TRY(loadSound(PICKUP_SOUND, &g_assets.pickupSound));
+  GAME_TRY(loadMusic(MUSIC, &g_assets.music));
   return true;
 }
 
 void asset_unload(void) {
+  engine_unloadMusic(g_assets.music);
   engine_unloadSound(&g_assets.pickupSound);
   engine_unloadSound(&g_assets.whispersSound);
   engine_unloadSound(&g_assets.deathSound);
@@ -230,3 +239,5 @@ engine_Sound* asset_getPickupSound(void) {
   assert(g_assets.pickupSound != nullptr);
   return g_assets.pickupSound;
 }
+
+Music asset_getMusic(void) { return g_assets.music; }

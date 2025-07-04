@@ -73,7 +73,6 @@ static void transitionToState(void (*newState)(creature__Creature*, float, float
 static void transitionToPermanentChase(void) {
   transitionToState(creature__chase);
   g_state.lastUpdate = creature__chase;
-  g_state.stateNum++;
   assert(g_state.stateNum == COUNT(STATE_TIMERS));
 }
 
@@ -83,7 +82,7 @@ static void toggleCreatureState() {
   ) = (g_state.update == nullptr || g_state.update == creature__chase) ? creature__scatter : creature__chase;
   transitionToState(newState);
   g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
-  assert(g_state.stateNum < COUNT(STATE_TIMERS));
+  assert(g_state.stateNum <= COUNT(STATE_TIMERS));
   LOG_TRACE(game_log, "Changing to state: %s", getStateString(newState));
 }
 

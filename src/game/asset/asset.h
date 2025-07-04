@@ -7,7 +7,7 @@
 
 // --- Constants ---
 
-static const int MAX_SOUNDS = 12;
+static const int MAX_SOUNDS = 10;
 
 // --- Asset functions
 
@@ -34,3 +34,4 @@ engine_Sound*   asset_getChimeSound(void);
 engine_Sound*   asset_getDeathSound(void);
 engine_Sound*   asset_getWhispersSound(void);
 engine_Sound*   asset_getPickupSound(void);
+Music           asset_getMusic(void);
