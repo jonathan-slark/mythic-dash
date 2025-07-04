@@ -3,6 +3,7 @@
 #include <math.h>
 #include <raylib.h>
 #include "../actor/actor.h"
+#include "../audio/audio.h"
 #include "../internal.h"
 #include "../maze/maze.h"
 #include "creature.h"
@@ -299,5 +300,6 @@ void creature__dead(creature__Creature* creature, float frameTime, float slop) {
   Vector2   dest      = { startTile.col * TILE_SIZE, startTile.row * TILE_SIZE };
   if (fabsf(pos.x - dest.x) < slop && fabsf(pos.y - dest.y) < slop) {
     creature->update = creature__startToPen;
+    audio_stopWhispers(&creature->whisperId);
   }
 }

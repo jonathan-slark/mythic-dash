@@ -5,6 +5,10 @@
 #include <raylib.h>
 #include "../internal.h"
 
+// --- Constants ---
+
+static const int MAX_SOUNDS = 10;
+
 // --- Asset functions
 
 bool asset_load(void);

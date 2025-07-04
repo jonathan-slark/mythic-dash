@@ -24,6 +24,7 @@ typedef struct creature__Creature {
   int score;
   float scoreTimer;
   float teleportTimer;
+  int whisperId;
 } creature__Creature;
 
 typedef struct creature__State {

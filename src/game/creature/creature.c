@@ -130,6 +130,7 @@ static void creatureDefaults(void) {
     g_state.creatures[i].score            = 0;
     g_state.creatures[i].scoreTimer       = 0.0f;
     g_state.creatures[i].teleportTimer    = 0.0f;
+    g_state.creatures[i].whisperId        = -1;
   }
   actor_setSpeed(g_state.creatures[1].actor, creature__getSpeed());
 
@@ -213,7 +214,7 @@ static void creatureDied(creature__Creature* creature) {
   creature->teleportTimer = 0.0f;
   creatureSetNearestStartTile(creature);
   player_killedCreature(creature->id);
-  audio_playWhispers(actor_getPos(creature->actor));
+  creature->whisperId = audio_playWhispers(actor_getPos(creature->actor));
 }
 
 // --- Creature functions ---
@@ -281,6 +282,10 @@ void creature_update(float frameTime, float slop) {
     if (g_state.creatures[i].update != creature__frightened && g_state.creatures[i].update != creature__dead) {
       creatureCheckTeleport(&g_state.creatures[i]);
       creatureUpdateTeleportSlow(&g_state.creatures[i], frameTime);
+    }
+
+    if (g_state.creatures[i].whisperId != -1) {
+      audio_updateWhispers(g_state.creatures[i].whisperId);
     }
   }
 

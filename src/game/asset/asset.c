@@ -7,10 +7,6 @@
 #include "../player/player.h"
 #include "internal.h"
 
-// --- Constants ---
-
-static const int MAX_SOUNDS = 10;
-
 // --- Global state ---
 
 static asset_Assets g_assets;
@@ -41,11 +37,11 @@ bool asset_load(void) {
 }
 
 void asset_unload(void) {
-  engine_unloadSound(g_assets.whispersSound);
-  engine_unloadSound(g_assets.deathSound);
-  engine_unloadSound(g_assets.chimeSound);
+  engine_unloadSound(&g_assets.whispersSound);
+  engine_unloadSound(&g_assets.deathSound);
+  engine_unloadSound(&g_assets.chimeSound);
   for (int i = 0; i < WAIL_SOUND_COUNT; i++) {
-    engine_unloadSound(g_assets.wailSounds[i]);
+    engine_unloadSound(&g_assets.wailSounds[i]);
   }
   engine_fontUnload(&g_assets.font);
   engine_textureUnload(&g_assets.playerSpriteSheet);

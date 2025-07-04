@@ -1,4 +1,5 @@
 #include "audio.h"
+#include <assert.h>
 #include <raylib.h>
 #include "../asset/asset.h"
 #include "../internal.h"
@@ -72,8 +73,21 @@ void audio_playWail(Vector2 pos) {
   engine_playSound(sound);
 }
 
-void audio_playWhispers(Vector2 pos) {
+int audio_playWhispers(Vector2 pos) {
   engine_Sound* sound = asset_getWhispersSound();
   engine_setSoundPan(sound, getPan(pos));
-  engine_playSound(sound);
+  return engine_playSound(sound);
+}
+
+void audio_updateWhispers(int id) {
+  assert(id >= 0 && id < MAX_SOUNDS);
+  engine_Sound* sound = asset_getWhispersSound();
+  engine_updateSound(sound, id);
+}
+
+void audio_stopWhispers(int* id) {
+  assert(id != nullptr && *id >= 0 && *id < MAX_SOUNDS);
+  engine_Sound* sound = asset_getWhispersSound();
+  engine_stopSound(sound, *id);
+  *id = -1;
 }
