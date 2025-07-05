@@ -105,7 +105,7 @@ void game_update(float frameTime) {
   draw_updateCreatures(frameTime, slop);
   draw_updatePlayer(frameTime, slop);
   maze_update(frameTime);
-  engine_updateMusic(asset_getMusic());
+  engine_updateMusic(asset_getMusic(), frameTime);
 }
 
 void game_draw(void) {

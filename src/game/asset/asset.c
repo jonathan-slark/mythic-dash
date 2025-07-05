@@ -22,7 +22,7 @@ bool loadSound(asset_Sound soundData, engine_Sound** sound) {
 
 bool loadMusic(asset_Music musicData, Music* music) {
   GAME_TRY(engine_loadMusic(musicData.filepath, music));
-  engine_setMusicVolume(*music, musicData.volume);
+  engine_setMusicVolume(*music, musicData.volume, musicData.duckedVolume);
   return true;
 }
 
