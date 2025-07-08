@@ -1,25 +1,50 @@
 #include "draw.h"
 #include <assert.h>
 #include <raylib.h>
+#include <stdarg.h>
 #include "../asset/asset.h"
 #include "../creature/creature.h"
 #include "../internal.h"
 #include "../player/player.h"
+#include "engine/engine.h"
 
 // --- Constants ---
 
 const char*          PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWORD", "DEAD" };
-static const Color   creature_DEAD_COLOUR                     = { 255, 255, 255, 100 };
+static const Color   CREATURE_DEAD_COLOUR                     = { 255, 255, 255, 100 };
 static const Vector2 PLAYER_COOLDOWN_OFFSET                   = { 5, -8 };
-static const Vector2 creature_SCORE_OFFSET                    = { 1, -8 };
+static const Vector2 CREATURE_SCORE_OFFSET                    = { 1, -8 };
+
+constexpr Color  TEXT_COLOUR    = { 255, 255, 255, 255 };
+static draw_Text SWORD_TIMER    = { .format = "%d", .colour = TEXT_COLOUR, .fontSize = FONT_TINY };
+static draw_Text CREATURE_SCORE = { .format = "%d", .colour = TEXT_COLOUR, .fontSize = FONT_TINY };
+static const draw_Text
+    SCORE_TEXT = { .format = "Score: %d", .xPos = 8, .yPos = 0, .colour = TEXT_COLOUR, .fontSize = FONT_NORMAL };
+static const draw_Text LEVEL_TEXT = {
+  .format   = "Level: %02d / ?",
+  .xPos     = 394,
+  .yPos     = 0,
+  .colour   = TEXT_COLOUR,
+  .fontSize = FONT_NORMAL
+};
+static const draw_Text
+    EXTRA_LIFE_TEXT = { .format = "@ %d", .xPos = 428, .yPos = 252, .colour = TEXT_COLOUR, .fontSize = FONT_NORMAL };
+static const draw_Text
+    TITLE_TEXT = { .format = "Mythic Dash", .xPos = 200, .yPos = 50, .colour = TEXT_COLOUR, .fontSize = FONT_NORMAL };
 
 // --- Draw functions ---
+
+void draw_text(draw_Text text, ...) {
+  engine_Font* font = text.fontSize == FONT_TINY ? asset_getFontTiny() : asset_getFont();
+  va_list      args;
+  va_start(args, text);
+  engine_fontPrintfV(font, text.xPos, text.yPos, text.colour, text.format, args);
+  va_end(args);
+}
 
 void draw_updatePlayer(float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= 0.0f);
-
-  player_update(frameTime, slop);
 
   static game_PlayerState prevState = PLAYER_NORMAL;
   game_PlayerState        state     = player_getState();
@@ -50,7 +75,6 @@ void draw_updateCreatures(float frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= 0.0f);
 
-  creature_update(frameTime, slop);
   for (int i = 0; i < CREATURE_COUNT; i++) {
     Vector2 pos = Vector2Add(POS_ADJUST(creature_getPos(i)), asset_getCreatureOffset(i));
     engine_spriteSetPos(asset_getCreateSprite(i), pos);
@@ -71,30 +95,37 @@ void draw_player(void) {
   }
 
   if (swordTimer > 0.0f) {
-    Vector2 pos = Vector2Add(POS_ADJUST(player_getPos()), PLAYER_COOLDOWN_OFFSET);
-    engine_fontPrintf(asset_getFontTiny(), pos.x, pos.y, WHITE, "%d", (int) ceilf(swordTimer), pos);
+    Vector2 pos      = Vector2Add(POS_ADJUST(player_getPos()), PLAYER_COOLDOWN_OFFSET);
+    SWORD_TIMER.xPos = pos.x;
+    SWORD_TIMER.yPos = pos.y;
+    draw_text(SWORD_TIMER, (int) ceilf(swordTimer));
   }
 }
 
 void draw_creatures(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    Color colour = creature_isFrightened(i) ? BLUE : creature_isDead(i) ? creature_DEAD_COLOUR : WHITE;
+    Color colour = creature_isFrightened(i) ? BLUE : creature_isDead(i) ? CREATURE_DEAD_COLOUR : WHITE;
     engine_drawSprite(asset_getCreatureSpriteSheet(), asset_getCreateSprite(i), colour);
 
     int score = creature_getScore(i);
     if (score > 0.0f) {
-      Vector2 pos = Vector2Add(POS_ADJUST(creature_getPos(i)), creature_SCORE_OFFSET);
+      Vector2 pos = Vector2Add(POS_ADJUST(creature_getPos(i)), CREATURE_SCORE_OFFSET);
       engine_fontPrintf(asset_getFontTiny(), pos.x, pos.y, WHITE, "%d", score);
+      CREATURE_SCORE.xPos = pos.x;
+      CREATURE_SCORE.yPos = pos.y;
+      draw_text(CREATURE_SCORE, score);
     }
   }
 }
 
 void draw_interface(void) {
-  engine_fontPrintf(asset_getFont(), 8, 0, WHITE, "Score: %d", player_getScore());
-  engine_fontPrintf(asset_getFont(), 394, 0, WHITE, "Level: %02d / ?", game_getLevel());
+  draw_text(SCORE_TEXT, player_getScore());
+  draw_text(LEVEL_TEXT, game_getLevel());
 }
 
 void draw_nextLife(void) {
   engine_drawSprite(asset_getPlayerSpriteSheet(), asset_getPlayerNextLifeSprite(), WHITE);
-  engine_fontPrintf(asset_getFont(), 428, 252, WHITE, "@ %d", player_getNextExtraLifeScore());
+  draw_text(EXTRA_LIFE_TEXT, player_getNextExtraLifeScore());
 }
+
+void draw_title(void) { draw_text(TITLE_TEXT); }

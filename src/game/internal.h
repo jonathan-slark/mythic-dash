@@ -25,6 +25,8 @@ typedef enum game_Dir { DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT, DIR_COUNT, DIR_NO
 
 typedef enum game_PlayerState { PLAYER_NORMAL, PLAYER_SWORD, PLAYER_DEAD, PLAYER_STATE_COUNT } game_PlayerState;
 
+typedef enum game_GameState { GAME_BOOT, GAME_TITLE, GAME_MENU, GAME_RUN, GAME_OVER } game_GameState;
+
 typedef struct game_AABB {
   Vector2 min;
   Vector2 max;

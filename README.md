@@ -28,3 +28,21 @@ Music:
 "Track Title" by Artist Name
 Licensed under CC BY-NC-SA 3.0
 creativecommons.org/licenses/by-nc-sa/3.0/
+
+## Menu
+
+1. New Game
+2. Settings
+3. Credits
+4. Quit
+
+## Settings
+
+1. Volume
+   * Master
+   * Music
+   * SFX
+2. Display
+   * Fullscreen
+   * Scale
+3. Controls
