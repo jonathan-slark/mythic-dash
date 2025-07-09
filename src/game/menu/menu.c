@@ -32,19 +32,19 @@ static const menu_Button MAIN_BUTTONS[] = {
   {  { 200, 70, 100, 10 }, "Start Game",    MENU_GAME,             nullptr },
   {  { 200, 80, 100, 10 },    "Options", MENU_OPTIONS,             nullptr },
   {  { 200, 90, 100, 10 },    "Credits", MENU_CREDITS,             nullptr },
-  { { 200, 100, 100, 10 },  "Quit Game",    MENU_NONE, engine_requestClose }
+  { { 200, 110, 100, 10 },  "Quit Game",    MENU_NONE, engine_requestClose }
 };
 static const menu_Button GAME_BUTTONS[] = {
   {  { 200, 70, 100, 10 },   "Easy", MENU_NONE, game_new }, // TODO: add difficulty parameter
   {  { 200, 80, 100, 10 }, "Normal", MENU_NONE, game_new },
   {  { 200, 90, 100, 10 }, "Arcade", MENU_NONE, game_new },
-  { { 200, 100, 100, 10 },   "Back", MENU_MAIN,  nullptr }
+  { { 200, 110, 100, 10 },   "Back", MENU_MAIN,  nullptr }
 };
 static const menu_Button OPTIONS_BUTTONS[] = {
-  { { 200, 100, 100, 10 }, "Back", MENU_MAIN, nullptr }
+  { { 200, 110, 100, 10 }, "Back", MENU_MAIN, nullptr }
 };
 static const menu_Button CREDITS_BUTTONS[] = {
-  { { 200, 100, 100, 10 }, "Back", MENU_MAIN, nullptr }
+  { { 200, 110, 100, 10 }, "Back", MENU_MAIN, nullptr }
 };
 
 static const menu_Screen SCREENS[] = {
@@ -111,3 +111,5 @@ void menu_draw(void) {
   const menu_Screen* current = &SCREENS[g_currentScreen];
   drawMenuScreen(current);
 }
+
+void menu_reset(void) { g_currentScreen = MENU_MAIN; }

@@ -16,9 +16,9 @@
 
 // --- Types ---
 
-typedef enum game_GameState { GAME_BOOT, GAME_TITLE, GAME_MENU, GAME_RUN, GAME_OVER } game_GameState;
+typedef enum { GAME_BOOT, GAME_TITLE, GAME_MENU, GAME_READY, GAME_RUN, GAME_OVER } game_GameState;
 
-typedef struct Game {
+typedef struct {
   game_GameState state;
   int            level;
 #ifndef NDEBUG
@@ -77,6 +77,30 @@ static void checkFPSKeys(void) {
 }
 #endif
 
+void waitReady(void) {
+  if (engine_isKeyPressed(KEY_SPACE)) g_game.state = GAME_RUN;
+}
+
+void waitGameOver(void) {
+  if (engine_isKeyPressed(KEY_SPACE)) {
+    g_game.state = GAME_TITLE;
+    menu_reset();
+    engine_showCursor();
+  }
+}
+
+void drawGame(void) {
+  maze_draw();
+  draw_player();
+  draw_nextLife();
+  draw_creatures();
+  draw_interface();
+
+#ifndef NDEBUG
+  debug_drawOverlay();
+#endif
+}
+
 // --- Game functions ---
 
 bool game_load(void) {
@@ -116,6 +140,7 @@ void game_update(float frameTime) {
     case GAME_BOOT: assert(false); break;
     case GAME_TITLE: menu_update(); break;
     case GAME_MENU: menu_update(); break;
+    case GAME_READY: waitReady(); break;
     case GAME_RUN:
 #ifndef NDEBUG
       checkFPSKeys();
@@ -128,7 +153,7 @@ void game_update(float frameTime) {
       maze_update(frameTime);
       engine_updateMusic(asset_getMusic(), frameTime);
       break;
-    case GAME_OVER: break;
+    case GAME_OVER: waitGameOver(); break;
   }
 }
 
@@ -140,18 +165,15 @@ void game_draw(void) {
       menu_draw();
       break;
     case GAME_MENU: menu_draw(); break;
-    case GAME_RUN:
-      maze_draw();
-      draw_player();
-      draw_nextLife();
-      draw_creatures();
-      draw_interface();
-
-#ifndef NDEBUG
-      debug_drawOverlay();
+    case GAME_READY:
+      drawGame();
+      draw_ready();
       break;
-#endif
-    case GAME_OVER: break;
+    case GAME_RUN: drawGame(); break;
+    case GAME_OVER:
+      drawGame();
+      draw_gameOver();
+      break;
   }
 }
 
@@ -165,16 +187,17 @@ void game_unload(void) {
 }
 
 void game_new(void) {
-  game_over();
-  g_game.state = GAME_RUN;
-}
-
-void game_over(void) {
+  engine_hideCursor();
   player_totalReset();
   creature_reset();
   maze_reset();
+  draw_resetCreatures();
+  draw_resetPlayer();
   g_game.level = 1;
+  g_game.state = GAME_READY;
 }
+
+void game_over(void) { g_game.state = GAME_OVER; }
 
 int game_getLevel(void) { return g_game.level; }
 

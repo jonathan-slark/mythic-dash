@@ -15,22 +15,17 @@ static const Color   CREATURE_DEAD_COLOUR                     = { 255, 255, 255,
 static const Vector2 PLAYER_COOLDOWN_OFFSET                   = { 5, -8 };
 static const Vector2 CREATURE_SCORE_OFFSET                    = { 1, -8 };
 
-constexpr Color  TEXT_COLOUR    = { 255, 255, 255, 255 };
-static draw_Text SWORD_TIMER    = { .format = "%d", .colour = TEXT_COLOUR, .fontSize = FONT_TINY };
-static draw_Text CREATURE_SCORE = { .format = "%d", .colour = TEXT_COLOUR, .fontSize = FONT_TINY };
-static const draw_Text
-    SCORE_TEXT = { .format = "Score: %d", .xPos = 8, .yPos = 0, .colour = TEXT_COLOUR, .fontSize = FONT_NORMAL };
-static const draw_Text LEVEL_TEXT = {
-  .format   = "Level: %02d / ?",
-  .xPos     = 394,
-  .yPos     = 0,
-  .colour   = TEXT_COLOUR,
-  .fontSize = FONT_NORMAL
-};
-static const draw_Text
-    EXTRA_LIFE_TEXT = { .format = "@ %d", .xPos = 428, .yPos = 252, .colour = TEXT_COLOUR, .fontSize = FONT_NORMAL };
-static const draw_Text
-    TITLE_TEXT = { .format = "Mythic Dash", .xPos = 200, .yPos = 50, .colour = TEXT_COLOUR, .fontSize = FONT_NORMAL };
+constexpr Color        TEXT_COLOUR       = { 255, 255, 255, 255 };
+constexpr Color        SHADOW_COLOUR     = { 32, 32, 32, 255 };
+static draw_Text       SWORD_TIMER       = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
+static draw_Text       CREATURE_SCORE    = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
+static const draw_Text SCORE_TEXT        = { "Score: %d", 8, 0, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_TEXT        = { "Level: %02d / ?", 394, 0, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text EXTRA_LIFE_TEXT   = { "@ %d", 428, 252, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text TITLE_TEXT        = { "Mythic Dash", 200, 50, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text PLAYER_READY_TEXT = { "Get Ready!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text GAME_OVER_TEXT    = { "Game over!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text SPACE_TEXT        = { "Press space", 206, 188, TEXT_COLOUR, FONT_NORMAL };
 
 // --- Draw functions ---
 
@@ -40,6 +35,32 @@ void draw_text(draw_Text text, ...) {
   va_start(args, text);
   engine_fontPrintfV(font, text.xPos, text.yPos, text.colour, text.format, args);
   va_end(args);
+}
+
+void draw_shadowText(draw_Text text, ...) {
+  engine_Font* font = text.fontSize == FONT_TINY ? asset_getFontTiny() : asset_getFont();
+  va_list      args;
+  va_start(args, text);
+  engine_fontPrintfV(font, text.xPos + 1, text.yPos + 1, SHADOW_COLOUR, text.format, args);
+  engine_fontPrintfV(font, text.xPos, text.yPos, text.colour, text.format, args);
+  va_end(args);
+}
+
+void draw_resetPlayer(void) {
+  game_PlayerState state = player_getState();
+  Vector2          pos   = POS_ADJUST(player_getPos());
+  game_Dir         dir   = player_getDir();
+  engine_resetAnim(asset_getPlayerAnim(state, dir));
+  engine_spriteSetPos(asset_getPlayerSprite(state), pos);
+}
+
+void draw_resetCreatures(void) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    Vector2  pos = Vector2Add(POS_ADJUST(creature_getPos(i)), asset_getCreatureOffset(i));
+    game_Dir dir = creature_getDir(i);
+    engine_resetAnim(asset_getCreatureAnim(i, dir));
+    engine_spriteSetPos(asset_getCreateSprite(i), pos);
+  }
 }
 
 void draw_updatePlayer(float frameTime, float slop) {
@@ -129,3 +150,13 @@ void draw_nextLife(void) {
 }
 
 void draw_title(void) { draw_text(TITLE_TEXT); }
+
+void draw_ready(void) {
+  draw_shadowText(PLAYER_READY_TEXT);
+  draw_shadowText(SPACE_TEXT);
+}
+
+void draw_gameOver(void) {
+  draw_shadowText(GAME_OVER_TEXT);
+  draw_shadowText(SPACE_TEXT);
+}

@@ -5,3 +5,4 @@
 
 void menu_update(void);
 void menu_draw(void);
+void menu_reset(void);
