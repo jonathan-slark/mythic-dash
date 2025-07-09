@@ -16,7 +16,7 @@
 
 // --- Types ---
 
-typedef enum { GAME_BOOT, GAME_TITLE, GAME_MENU, GAME_READY, GAME_RUN, GAME_OVER } game_GameState;
+typedef enum { GAME_BOOT, GAME_TITLE, GAME_MENU, GAME_READY, GAME_RUN, GAME_PAUSE, GAME_OVER } game_GameState;
 
 typedef struct {
   game_GameState state;
@@ -77,6 +77,10 @@ static void checkFPSKeys(void) {
 }
 #endif
 
+void checkPaused(void) {
+  if (engine_isKeyPressed(KEY_SPACE)) g_game.state = GAME_PAUSE;
+}
+
 void waitReady(void) {
   if (engine_isKeyPressed(KEY_SPACE)) g_game.state = GAME_RUN;
 }
@@ -95,10 +99,26 @@ void drawGame(void) {
   draw_nextLife();
   draw_creatures();
   draw_interface();
-
 #ifndef NDEBUG
   debug_drawOverlay();
 #endif
+}
+
+void updateGame(float frameTime) {
+  float slop = BASE_SLOP * (frameTime / BASE_DT);
+  slop       = fminf(fmaxf(slop, MIN_SLOP), MAX_SLOP);
+  LOG_TRACE(game_log, "Slop: %f", slop);
+
+#ifndef NDEBUG
+  checkFPSKeys();
+#endif
+  checkPaused();
+  player_update(frameTime, slop);
+  creature_update(frameTime, slop);
+  draw_updateCreatures(frameTime, slop);
+  draw_updatePlayer(frameTime, slop);
+  maze_update(frameTime);
+  engine_updateMusic(asset_getMusic(), frameTime);
 }
 
 // --- Game functions ---
@@ -133,26 +153,13 @@ bool game_load(void) {
 }
 
 void game_update(float frameTime) {
-  float slop = BASE_SLOP * (frameTime / BASE_DT);
-  slop       = fminf(fmaxf(slop, MIN_SLOP), MAX_SLOP);
-
   switch (g_game.state) {
     case GAME_BOOT: assert(false); break;
     case GAME_TITLE: menu_update(); break;
     case GAME_MENU: menu_update(); break;
     case GAME_READY: waitReady(); break;
-    case GAME_RUN:
-#ifndef NDEBUG
-      checkFPSKeys();
-#endif
-      LOG_TRACE(game_log, "Slop: %f", slop);
-      player_update(frameTime, slop);
-      creature_update(frameTime, slop);
-      draw_updateCreatures(frameTime, slop);
-      draw_updatePlayer(frameTime, slop);
-      maze_update(frameTime);
-      engine_updateMusic(asset_getMusic(), frameTime);
-      break;
+    case GAME_RUN: updateGame(frameTime); break;
+    case GAME_PAUSE: waitReady(); break;
     case GAME_OVER: waitGameOver(); break;
   }
 }
@@ -170,6 +177,10 @@ void game_draw(void) {
       draw_ready();
       break;
     case GAME_RUN: drawGame(); break;
+    case GAME_PAUSE:
+      drawGame();
+      draw_paused();
+      break;
     case GAME_OVER:
       drawGame();
       draw_gameOver();
