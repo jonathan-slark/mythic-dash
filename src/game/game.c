@@ -222,4 +222,5 @@ void game_nextLevel(void) {
 void game_playerDead(void) {
   player_restart();
   creature_reset();
+  g_game.state = GAME_READY;
 }
