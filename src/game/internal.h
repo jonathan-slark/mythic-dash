@@ -25,8 +25,6 @@ typedef enum game_Dir { DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT, DIR_COUNT, DIR_NO
 
 typedef enum game_PlayerState { PLAYER_NORMAL, PLAYER_SWORD, PLAYER_DEAD, PLAYER_STATE_COUNT } game_PlayerState;
 
-typedef enum game_GameState { GAME_BOOT, GAME_TITLE, GAME_MENU, GAME_RUN, GAME_OVER } game_GameState;
-
 typedef struct game_AABB {
   Vector2 min;
   Vector2 max;
@@ -87,7 +85,8 @@ static inline game_Dir game_getOppositeDir(game_Dir dir) { return (dir + 2) % DI
 
 // --- Internal game functions (game.c) ---
 
-int  game_getLevel(void);
+void game_new(void);
 void game_over(void);
+int  game_getLevel(void);
 void game_nextLevel(void);
 void game_playerDead(void);

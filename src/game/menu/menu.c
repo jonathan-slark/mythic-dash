@@ -3,11 +3,22 @@
 #include <log/log.h>
 #include <raylib.h>
 #include "../draw/draw.h"
+#include "../internal.h"
 
 // --- Types ---
 
-typedef enum menu_Screen { MENU_MAIN, MENU_GAME, MENU_CREDITS, MENU_OPTIONS } menu_Screen;
-typedef enum menu_Buttons { BUTTON_START, BUTTON_OPTIONS, BUTTON_CREDITS, BUTTON_QUIT, BUTTON_COUNT } menu_Buttons;
+typedef enum menu_Screen { MENU_MAIN, MENU_GAME, MENU_OPTIONS, MENU_CREDITS } menu_Screen;
+typedef enum menu_Buttons {
+  BUTTON_GAME,
+  BUTTON_OPTIONS,
+  BUTTON_CREDITS,
+  BUTTON_QUIT,
+  BUTTON_EASY,
+  BUTTON_NORMAL,
+  BUTTON_ARCADE,
+  BUTTON_BACK,
+  BUTTON_COUNT
+} menu_Buttons;
 
 typedef struct {
   Rectangle   bounds;
@@ -44,18 +55,22 @@ menu_State g_menuState = {
   .buttons = { { .bounds = { 200, 70, 100, 10 }, .text = "Start Game", .isHovered = false },
               { .bounds = { 200, 80, 100, 10 }, .text = "Options", .isHovered = false },
               { .bounds = { 200, 90, 100, 10 }, .text = "Credits", .isHovered = false },
-              { .bounds = { 200, 100, 100, 10 }, .text = "Quit Game", .isHovered = false } }
+              { .bounds = { 200, 100, 100, 10 }, .text = "Quit Game", .isHovered = false },
+              { .bounds = { 200, 70, 100, 10 }, .text = "Easy", .isHovered = false },
+              { .bounds = { 200, 80, 100, 10 }, .text = "Normal", .isHovered = false },
+              { .bounds = { 200, 90, 100, 10 }, .text = "Arcade", .isHovered = false },
+              { .bounds = { 200, 100, 100, 10 }, .text = "Back", .isHovered = false } }
 };
 
 // --- Helper functions ---
 
 void updateMainMenu(void) {
-  g_menuState.buttons[BUTTON_START].isHovered   = engine_isMouseHover(g_menuState.buttons[BUTTON_START].bounds);
+  g_menuState.buttons[BUTTON_GAME].isHovered    = engine_isMouseHover(g_menuState.buttons[BUTTON_GAME].bounds);
   g_menuState.buttons[BUTTON_OPTIONS].isHovered = engine_isMouseHover(g_menuState.buttons[BUTTON_OPTIONS].bounds);
   g_menuState.buttons[BUTTON_CREDITS].isHovered = engine_isMouseHover(g_menuState.buttons[BUTTON_CREDITS].bounds);
   g_menuState.buttons[BUTTON_QUIT].isHovered    = engine_isMouseHover(g_menuState.buttons[BUTTON_QUIT].bounds);
 
-  if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, g_menuState.buttons[BUTTON_START].bounds)) {
+  if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, g_menuState.buttons[BUTTON_GAME].bounds)) {
     g_menuState.screen = MENU_GAME;
   } else if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, g_menuState.buttons[BUTTON_OPTIONS].bounds)) {
     g_menuState.screen = MENU_OPTIONS;
@@ -66,11 +81,36 @@ void updateMainMenu(void) {
   }
 }
 
-void updateGameMenu(void) {}
+void updateGameMenu(void) {
+  g_menuState.buttons[BUTTON_EASY].isHovered   = engine_isMouseHover(g_menuState.buttons[BUTTON_EASY].bounds);
+  g_menuState.buttons[BUTTON_NORMAL].isHovered = engine_isMouseHover(g_menuState.buttons[BUTTON_NORMAL].bounds);
+  g_menuState.buttons[BUTTON_ARCADE].isHovered = engine_isMouseHover(g_menuState.buttons[BUTTON_ARCADE].bounds);
+  g_menuState.buttons[BUTTON_BACK].isHovered   = engine_isMouseHover(g_menuState.buttons[BUTTON_BACK].bounds);
 
-void updateOptionsMenu(void) {}
+  if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, g_menuState.buttons[BUTTON_GAME].bounds)) {
+    game_new();  // TODO: Add difficulty
+  } else if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, g_menuState.buttons[BUTTON_NORMAL].bounds)) {
+    game_new();  // TODO: Add difficulty
+  } else if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, g_menuState.buttons[BUTTON_ARCADE].bounds)) {
+    game_new();  // TODO: Add difficulty
+  } else if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, g_menuState.buttons[BUTTON_BACK].bounds)) {
+    g_menuState.screen = MENU_MAIN;
+  }
+}
 
-void updateCreditsMenu(void) {}
+void updateOptionsMenu(void) {
+  g_menuState.buttons[BUTTON_BACK].isHovered = engine_isMouseHover(g_menuState.buttons[BUTTON_BACK].bounds);
+  if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, g_menuState.buttons[BUTTON_BACK].bounds)) {
+    g_menuState.screen = MENU_MAIN;
+  }
+}
+
+void updateCreditsMenu(void) {
+  g_menuState.buttons[BUTTON_BACK].isHovered = engine_isMouseHover(g_menuState.buttons[BUTTON_BACK].bounds);
+  if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, g_menuState.buttons[BUTTON_BACK].bounds)) {
+    g_menuState.screen = MENU_MAIN;
+  }
+}
 
 void drawButton(menu_Button button) {
   draw_Text text = {
@@ -84,17 +124,28 @@ void drawButton(menu_Button button) {
 }
 
 void drawMainMenu(void) {
-  drawButton(g_menuState.buttons[BUTTON_START]);
+  drawButton(g_menuState.buttons[BUTTON_GAME]);
   drawButton(g_menuState.buttons[BUTTON_OPTIONS]);
   drawButton(g_menuState.buttons[BUTTON_CREDITS]);
   drawButton(g_menuState.buttons[BUTTON_QUIT]);
 }
 
-void drawGameMenu(void) {}
+void drawGameMenu(void) {
+  drawButton(g_menuState.buttons[BUTTON_EASY]);
+  drawButton(g_menuState.buttons[BUTTON_NORMAL]);
+  drawButton(g_menuState.buttons[BUTTON_ARCADE]);
+  drawButton(g_menuState.buttons[BUTTON_BACK]);
+}
 
-void drawOptionsMenu(void) {}
+void drawOptionsMenu(void) {
+  // TODO: Add options
+  drawButton(g_menuState.buttons[BUTTON_BACK]);
+}
 
-void drawCreditsMenu(void) {}
+void drawCreditsMenu(void) {
+  // TODO: Add credits
+  drawButton(g_menuState.buttons[BUTTON_BACK]);
+}
 
 // --- Menu functions ---
 

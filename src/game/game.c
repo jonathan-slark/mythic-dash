@@ -16,6 +16,8 @@
 
 // --- Types ---
 
+typedef enum game_GameState { GAME_BOOT, GAME_TITLE, GAME_MENU, GAME_RUN, GAME_OVER } game_GameState;
+
 typedef struct Game {
   game_GameState state;
   int            level;
@@ -162,7 +164,10 @@ void game_unload(void) {
   log_destroy(&game_log);
 }
 
-int game_getLevel(void) { return g_game.level; }
+void game_new(void) {
+  game_over();
+  g_game.state = GAME_RUN;
+}
 
 void game_over(void) {
   player_totalReset();
@@ -170,6 +175,8 @@ void game_over(void) {
   maze_reset();
   g_game.level = 1;
 }
+
+int game_getLevel(void) { return g_game.level; }
 
 void game_nextLevel(void) {
   player_reset();
