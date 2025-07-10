@@ -18,6 +18,7 @@ typedef struct draw_Text {
 // --- Draw functions ---
 
 void draw_text(draw_Text text, ...);
+void draw_shadowText(draw_Text text, ...);
 void draw_resetPlayer(void);
 void draw_updatePlayer(float frameTime, float slop);
 void draw_resetCreatures(void);

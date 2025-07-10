@@ -29,31 +29,39 @@ typedef struct {
   menu_Context     context;
 } menu_State;
 
+// --- Function prototypes ---
+
+static void returnToTitle(void);
+
 // --- Constants ---
+
+static const Rectangle BACKGROUND_RECTANGLE = { 180, 60, 110, 90 };
+static const Color     BACKGROUND_COLOUR    = { 64, 64, 64, 200 };
+static const Color     BACKGROUND_BORDER    = { 255, 255, 255, 200 };
 
 static const Color TEXT_NORMAL = { 180, 180, 180, 255 };
 static const Color TEXT_ACTIVE = { 255, 255, 255, 255 };
 
 static const menu_Button MAIN_BUTTONS[] = {
-  {  { 210, 70, 100, 10 },      "Start Game",    MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH },
-  {  { 210, 80, 100, 10 },         "Options", MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH },
-  {  { 210, 90, 100, 10 },         "Credits", MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH },
-  { { 210, 110, 100, 10 },       "Quit Game",    MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE },
-  { { 210, 110, 100, 10 },     "Resume Game",    MENU_NONE,          menu_close, MENU_CONTEXT_INGAME },
-  { { 210, 120, 100, 10 }, "Return to Title",    MENU_NONE,             nullptr, MENU_CONTEXT_INGAME },
-  { { 210, 130, 100, 10 }, "Exit to Desktop",    MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME },
+  {  { 190, 70, 100, 10 },      "Start Game",    MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH },
+  {  { 190, 80, 100, 10 },         "Options", MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH },
+  {  { 190, 90, 100, 10 },         "Credits", MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH },
+  { { 190, 130, 100, 10 },       "Quit Game",    MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE },
+  { { 190, 110, 100, 10 },     "Resume Game",    MENU_NONE,          menu_close, MENU_CONTEXT_INGAME },
+  { { 190, 120, 100, 10 }, "Return to Title",    MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME },
+  { { 190, 130, 100, 10 }, "Exit to Desktop",    MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME },
 };
 static const menu_Button GAME_BUTTONS[] = {
-  {  { 210, 70, 100, 10 },   "Easy", MENU_NONE, game_new, MENU_CONTEXT_BOTH }, // TODO: add difficulty parameter
-  {  { 210, 80, 100, 10 }, "Normal", MENU_NONE, game_new, MENU_CONTEXT_BOTH },
-  {  { 210, 90, 100, 10 }, "Arcade", MENU_NONE, game_new, MENU_CONTEXT_BOTH },
-  { { 210, 110, 100, 10 },   "Back", MENU_MAIN,  nullptr, MENU_CONTEXT_BOTH }
+  {  { 190, 70, 100, 10 },   "Easy", MENU_NONE, game_new, MENU_CONTEXT_BOTH }, // TODO: add difficulty parameter
+  {  { 190, 80, 100, 10 }, "Normal", MENU_NONE, game_new, MENU_CONTEXT_BOTH },
+  {  { 190, 90, 100, 10 }, "Arcade", MENU_NONE, game_new, MENU_CONTEXT_BOTH },
+  { { 190, 130, 100, 10 },   "Back", MENU_MAIN,  nullptr, MENU_CONTEXT_BOTH }
 };
 static const menu_Button OPTIONS_BUTTONS[] = {
-  { { 210, 110, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
+  { { 190, 130, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
 };
 static const menu_Button CREDITS_BUTTONS[] = {
-  { { 210, 110, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
+  { { 190, 130, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
 };
 
 static const menu_Screen SCREENS[] = {
@@ -68,16 +76,21 @@ static const menu_Screen SCREENS[] = {
 static menu_State g_state = { MENU_MAIN, MENU_CONTEXT_TITLE };
 
 // --- Helper functions ---
+static void returnToTitle(void) { menu_open(MENU_CONTEXT_TITLE); }
 
-void updateMenuScreen(const menu_Screen* screen) {
+static bool isButtonActive(const menu_Button* button) {
+  return button->context == MENU_CONTEXT_BOTH ||
+         (button->context == MENU_CONTEXT_TITLE && g_state.context == MENU_CONTEXT_TITLE) ||
+         (button->context == MENU_CONTEXT_INGAME && g_state.context == MENU_CONTEXT_INGAME);
+}
+
+static void updateMenuScreen(const menu_Screen* screen) {
   assert(screen != nullptr);
 
   for (int i = 0; i < screen->buttonCount; i++) {
     const menu_Button* button = &screen->buttons[i];
     assert(button != nullptr);
-    if (button->context == MENU_CONTEXT_BOTH ||
-        (button->context == MENU_CONTEXT_TITLE && g_state.context == MENU_CONTEXT_TITLE) ||
-        (button->context == MENU_CONTEXT_INGAME && g_state.context == MENU_CONTEXT_INGAME)) {
+    if (isButtonActive(button)) {
       if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, button->bounds)) {
         if (button->action != nullptr) {
           button->action();
@@ -89,15 +102,15 @@ void updateMenuScreen(const menu_Screen* screen) {
   }
 }
 
-void drawMenuScreen(const menu_Screen* screen) {
+static void drawMenuScreen(const menu_Screen* screen) {
   assert(screen != nullptr);
+
+  engine_drawRectangle(BACKGROUND_RECTANGLE, BACKGROUND_COLOUR);
+  engine_drawRectangleOutline(BACKGROUND_RECTANGLE, BACKGROUND_BORDER);
 
   for (int i = 0; i < screen->buttonCount; i++) {
     const menu_Button* button = &screen->buttons[i];
-
-    if (button->context == MENU_CONTEXT_BOTH ||
-        (button->context == MENU_CONTEXT_TITLE && g_state.context == MENU_CONTEXT_TITLE) ||
-        (button->context == MENU_CONTEXT_INGAME && g_state.context == MENU_CONTEXT_INGAME)) {
+    if (isButtonActive(button)) {
       bool isHovered = engine_isMouseHover(button->bounds);
       assert(button != nullptr);
 
@@ -108,7 +121,7 @@ void drawMenuScreen(const menu_Screen* screen) {
         .colour   = isHovered ? TEXT_ACTIVE : TEXT_NORMAL,
         .fontSize = FONT_NORMAL
       };
-      draw_text(text);
+      draw_shadowText(text);
     }
   }
 
@@ -120,10 +133,20 @@ void drawMenuScreen(const menu_Screen* screen) {
 // --- Menu functions ---
 
 void menu_open(menu_Context context) {
-  if (context == MENU_CONTEXT_INGAME) {
-    g_game.lastState = g_game.state;
-    g_game.state     = GAME_MENU;
+  switch (context) {
+    case MENU_CONTEXT_TITLE:
+      g_game.lastState = GAME_BOOT;
+      g_game.state     = GAME_TITLE;
+      break;
+
+    case MENU_CONTEXT_INGAME:
+      g_game.lastState = g_game.state;
+      g_game.state     = GAME_MENU;
+      break;
+
+    default: assert(false); break;
   }
+
   g_state.currentScreen = MENU_MAIN;
   g_state.context       = context;
   engine_showCursor();
@@ -150,10 +173,18 @@ void menu_draw(void) {
 
 void menu_back(void) {
   switch (g_state.currentScreen) {
-    case MENU_MAIN: engine_requestClose(); break;
+    case MENU_MAIN:
+      if (g_state.context == MENU_CONTEXT_TITLE) {
+        engine_requestClose();
+      } else {
+        menu_close();
+      }
+      break;
+
     case MENU_GAME:
     case MENU_OPTIONS:
     case MENU_CREDITS: g_state.currentScreen = MENU_MAIN; break;
+
     case MENU_NONE: assert(false); break;
   }
 }

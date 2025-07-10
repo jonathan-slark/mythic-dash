@@ -49,23 +49,43 @@ Game     g_game = { .state = GAME_BOOT, .level = 1, .fpsIndex = COUNT(FPS) - 1 }
 
 // --- Helper functions ---
 
-void checkKeys(void) {
+void escapePressed(void) {
   switch (g_game.state) {
     case GAME_BOOT: assert(false); break;
+
     case GAME_TITLE:
-    case GAME_MENU:
-      if (engine_isKeyPressed(KEY_ESCAPE)) menu_back();
-      break;
-    case GAME_PAUSE:
+    case GAME_MENU: menu_back(); break;
+
     case GAME_READY:
     case GAME_RUN:
-#ifndef NDEBUG
-      if (engine_isKeyPressed(KEY_SPACE)) g_game.state = g_game.state == GAME_RUN ? GAME_PAUSE : GAME_RUN;
-#endif
-      if (engine_isKeyPressed(KEY_ESCAPE)) menu_open(MENU_CONTEXT_INGAME);
-      break;
-    case GAME_OVER: break;
+    case GAME_PAUSE:
+    case GAME_OVER: menu_open(MENU_CONTEXT_INGAME); break;
   }
+}
+
+void spacePressed(void) {
+  switch (g_game.state) {
+    case GAME_BOOT: assert(false); break;
+
+    case GAME_TITLE:
+    case GAME_MENU: break;
+
+    case GAME_PAUSE:
+    case GAME_RUN:
+#ifndef NDEBUG
+      g_game.state = g_game.state == GAME_PAUSE ? GAME_RUN : GAME_PAUSE;
+#endif
+      break;
+
+    case GAME_READY: g_game.state = GAME_RUN; break;
+
+    case GAME_OVER: menu_open(MENU_CONTEXT_TITLE); break;
+  }
+}
+
+void checkKeys(void) {
+  if (engine_isKeyPressed(KEY_SPACE)) spacePressed();
+  if (engine_isKeyPressed(KEY_ESCAPE)) escapePressed();
 }
 
 void drawGame(void) {
@@ -118,7 +138,6 @@ bool game_load(void) {
 
   engine_playMusic(asset_getMusic());
 
-  g_game.state = GAME_TITLE;
   menu_open(MENU_CONTEXT_TITLE);
   return true;
 }
