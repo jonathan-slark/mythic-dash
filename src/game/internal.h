@@ -35,6 +35,17 @@ typedef struct game_Tile {
   int row;
 } game_Tile;
 
+typedef enum { GAME_BOOT, GAME_TITLE, GAME_MENU, GAME_READY, GAME_RUN, GAME_PAUSE, GAME_OVER } game_GameState;
+
+typedef struct {
+  game_GameState state;
+  game_GameState lastState;
+  int            level;
+#ifndef NDEBUG
+  size_t fpsIndex;
+#endif
+} Game;
+
 typedef struct game_Actor game_Actor;
 
 // --- Constants ---
@@ -60,6 +71,7 @@ constexpr int WAIL_SOUND_COUNT = 4;
 // --- Global state ---
 
 extern log_Log* game_log;
+extern Game     g_game;
 
 // --- Helper functions ---
 

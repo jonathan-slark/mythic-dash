@@ -14,18 +14,6 @@
 #include "menu/menu.h"
 #include "player/player.h"
 
-// --- Types ---
-
-typedef enum { GAME_BOOT, GAME_TITLE, GAME_MENU, GAME_READY, GAME_RUN, GAME_PAUSE, GAME_OVER } game_GameState;
-
-typedef struct {
-  game_GameState state;
-  int            level;
-#ifndef NDEBUG
-  size_t fpsIndex;
-#endif
-} Game;
-
 // --- Constants ---
 
 #ifndef NDEBUG
@@ -46,10 +34,6 @@ static const log_Config LOG_CONFIG_GAME = {
 };
 #endif
 
-#ifndef NDEBUG
-static const float FPS[] = { 15, 30, 60, 0 };
-#endif
-
 const float BASE_SLOP       = 0.35f;
 const float BASE_DT         = (1.0f / 144.0f);
 const float MIN_SLOP        = 0.05f;
@@ -60,36 +44,27 @@ static const float MASTER_VOLUME = 1.0f;
 
 // --- Global state ---
 
-log_Log*    game_log;
-static Game g_game = { .state = GAME_BOOT, .level = 1, .fpsIndex = COUNT(FPS) - 1 };
+log_Log* game_log;
+Game     g_game = { .state = GAME_BOOT, .level = 1, .fpsIndex = COUNT(FPS) - 1 };
 
 // --- Helper functions ---
 
+void checkKeys(void) {
+  switch (g_game.state) {
+    case GAME_BOOT: assert(false); break;
+    case GAME_TITLE:
+    case GAME_MENU:
+      if (engine_isKeyPressed(KEY_ESCAPE)) menu_back();
+      break;
+    case GAME_PAUSE:
+    case GAME_READY:
+    case GAME_RUN:
 #ifndef NDEBUG
-static void checkFPSKeys(void) {
-  if (engine_isKeyPressed(KEY_MINUS)) {
-    g_game.fpsIndex = (g_game.fpsIndex == 0) ? COUNT(FPS) - 1 : g_game.fpsIndex - 1;
-  }
-  if (engine_isKeyPressed(KEY_EQUAL)) {
-    g_game.fpsIndex = (g_game.fpsIndex == COUNT(FPS) - 1) ? 0 : g_game.fpsIndex + 1;
-  }
-  SetTargetFPS(FPS[g_game.fpsIndex]);
-}
+      if (engine_isKeyPressed(KEY_SPACE)) g_game.state = g_game.state == GAME_RUN ? GAME_PAUSE : GAME_RUN;
 #endif
-
-void checkPaused(void) {
-  if (engine_isKeyPressed(KEY_SPACE)) g_game.state = GAME_PAUSE;
-}
-
-void waitReady(void) {
-  if (engine_isKeyPressed(KEY_SPACE)) g_game.state = GAME_RUN;
-}
-
-void waitGameOver(void) {
-  if (engine_isKeyPressed(KEY_SPACE)) {
-    g_game.state = GAME_TITLE;
-    menu_reset();
-    engine_showCursor();
+      if (engine_isKeyPressed(KEY_ESCAPE)) menu_open(MENU_CONTEXT_INGAME);
+      break;
+    case GAME_OVER: break;
   }
 }
 
@@ -109,10 +84,6 @@ void updateGame(float frameTime) {
   slop       = fminf(fmaxf(slop, MIN_SLOP), MAX_SLOP);
   LOG_TRACE(game_log, "Slop: %f", slop);
 
-#ifndef NDEBUG
-  checkFPSKeys();
-#endif
-  checkPaused();
   player_update(frameTime, slop);
   creature_update(frameTime, slop);
   draw_updateCreatures(frameTime, slop);
@@ -147,20 +118,27 @@ bool game_load(void) {
 
   engine_playMusic(asset_getMusic());
 
-  engine_showCursor();
   g_game.state = GAME_TITLE;
+  menu_open(MENU_CONTEXT_TITLE);
   return true;
 }
 
 void game_update(float frameTime) {
+  checkKeys();
   switch (g_game.state) {
     case GAME_BOOT: assert(false); break;
-    case GAME_TITLE: menu_update(); break;
+
+    case GAME_TITLE:
     case GAME_MENU: menu_update(); break;
-    case GAME_READY: waitReady(); break;
-    case GAME_RUN: updateGame(frameTime); break;
-    case GAME_PAUSE: waitReady(); break;
-    case GAME_OVER: waitGameOver(); break;
+
+    case GAME_READY:
+    case GAME_PAUSE:
+    case GAME_OVER: checkFPSKeys(); break;
+
+    case GAME_RUN:
+      checkFPSKeys();
+      updateGame(frameTime);
+      break;
   }
 }
 
@@ -171,16 +149,16 @@ void game_draw(void) {
       draw_title();
       menu_draw();
       break;
-    case GAME_MENU: menu_draw(); break;
+    case GAME_MENU:
+      drawGame();
+      menu_draw();
+      break;
     case GAME_READY:
       drawGame();
       draw_ready();
       break;
-    case GAME_RUN: drawGame(); break;
-    case GAME_PAUSE:
-      drawGame();
-      draw_paused();
-      break;
+    case GAME_RUN:
+    case GAME_PAUSE: drawGame(); break;
     case GAME_OVER:
       drawGame();
       draw_gameOver();

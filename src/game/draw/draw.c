@@ -22,10 +22,9 @@ static draw_Text       CREATURE_SCORE    = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY 
 static const draw_Text SCORE_TEXT        = { "Score: %d", 8, 0, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text LEVEL_TEXT        = { "Level: %02d / ?", 394, 0, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text EXTRA_LIFE_TEXT   = { "@ %d", 428, 252, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text TITLE_TEXT        = { "Mythic Dash", 200, 50, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text TITLE_TEXT        = { "Mythic Dash", 210, 50, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text PLAYER_READY_TEXT = { "Get Ready!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text GAME_OVER_TEXT    = { "Game over!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text PAUSED_TEXT       = { "Paused", 220, 100, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text SPACE_TEXT        = { "Press space", 206, 188, TEXT_COLOUR, FONT_NORMAL };
 
 // --- Draw functions ---
@@ -159,10 +158,5 @@ void draw_ready(void) {
 
 void draw_gameOver(void) {
   draw_shadowText(GAME_OVER_TEXT);
-  draw_shadowText(SPACE_TEXT);
-}
-
-void draw_paused(void) {
-  draw_shadowText(PAUSED_TEXT);
   draw_shadowText(SPACE_TEXT);
 }
