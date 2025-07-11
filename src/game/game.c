@@ -49,7 +49,7 @@ Game     g_game = { .state = GAME_BOOT, .level = 1, .fpsIndex = COUNT(FPS) - 1 }
 
 // --- Helper functions ---
 
-void escapePressed(void) {
+static void escapePressed(void) {
   switch (g_game.state) {
     case GAME_BOOT: assert(false); break;
 
@@ -63,7 +63,7 @@ void escapePressed(void) {
   }
 }
 
-void spacePressed(void) {
+static void spacePressed(void) {
   switch (g_game.state) {
     case GAME_BOOT: assert(false); break;
 
@@ -83,12 +83,12 @@ void spacePressed(void) {
   }
 }
 
-void checkKeys(void) {
+static void checkKeys(void) {
   if (engine_isKeyPressed(KEY_SPACE)) spacePressed();
   if (engine_isKeyPressed(KEY_ESCAPE)) escapePressed();
 }
 
-void drawGame(void) {
+static void drawGame(void) {
   maze_draw();
   draw_player();
   draw_nextLife();
@@ -99,7 +99,7 @@ void drawGame(void) {
 #endif
 }
 
-void updateGame(float frameTime) {
+static void updateGame(float frameTime) {
   float slop = BASE_SLOP * (frameTime / BASE_DT);
   slop       = fminf(fmaxf(slop, MIN_SLOP), MAX_SLOP);
   LOG_TRACE(game_log, "Slop: %f", slop);

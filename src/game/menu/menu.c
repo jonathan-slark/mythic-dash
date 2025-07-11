@@ -27,6 +27,8 @@ typedef struct {
 typedef struct {
   menu_ScreenState currentScreen;
   menu_Context     context;
+  int              selectedButton;
+  int              activatedButton;
 } menu_State;
 
 // --- Function prototypes ---
@@ -73,9 +75,15 @@ static const menu_Screen SCREENS[] = {
 
 // --- Global state ---
 
-static menu_State g_state = { MENU_MAIN, MENU_CONTEXT_TITLE };
+static menu_State g_state = { MENU_MAIN, MENU_CONTEXT_TITLE, 0, -1 };
 
 // --- Helper functions ---
+
+static void resetButtonState(void) {
+  g_state.selectedButton  = 0;
+  g_state.activatedButton = -1;
+}
+
 static void returnToTitle(void) { menu_open(MENU_CONTEXT_TITLE); }
 
 static bool isButtonActive(const menu_Button* button) {
@@ -91,11 +99,12 @@ static void updateMenuScreen(const menu_Screen* screen) {
     const menu_Button* button = &screen->buttons[i];
     assert(button != nullptr);
     if (isButtonActive(button)) {
-      if (engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, button->bounds)) {
+      if (g_state.activatedButton == i || engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, button->bounds)) {
         if (button->action != nullptr) {
           button->action();
         } else if (button->targetScreen != MENU_NONE) {
           g_state.currentScreen = button->targetScreen;
+          resetButtonState();
         }
       }
     }
@@ -110,9 +119,9 @@ static void drawMenuScreen(const menu_Screen* screen) {
 
   for (int i = 0; i < screen->buttonCount; i++) {
     const menu_Button* button = &screen->buttons[i];
+    assert(button != nullptr);
     if (isButtonActive(button)) {
-      bool isHovered = engine_isMouseHover(button->bounds);
-      assert(button != nullptr);
+      bool isHovered = g_state.selectedButton == i || engine_isMouseHover(button->bounds);
 
       draw_Text text = {
         .xPos     = button->bounds.x,
@@ -128,6 +137,40 @@ static void drawMenuScreen(const menu_Screen* screen) {
   if (screen->customDraw != nullptr) {
     screen->customDraw();
   }
+}
+
+static int findPreviousActiveButton(const menu_Screen* screen, int start) {
+  int index    = start;
+  int attempts = 0;
+  do {
+    index = (index - 1 + screen->buttonCount) % screen->buttonCount;
+    attempts++;
+  } while (!isButtonActive(&screen->buttons[index]) && attempts < screen->buttonCount);
+  return index;
+}
+
+static int findNextActiveButton(const menu_Screen* screen, int start) {
+  int index    = start;
+  int attempts = 0;
+  do {
+    index = (index + 1) % screen->buttonCount;
+    attempts++;
+  } while (!isButtonActive(&screen->buttons[index]) && attempts < screen->buttonCount);
+  return index;
+}
+
+// Then in your input code:
+
+static void checkKeys(const menu_Screen* screen) {
+  // Note: escape key is handled by game.c
+  if (engine_isKeyPressed(KEY_UP)) {
+    g_state.selectedButton = findPreviousActiveButton(screen, g_state.selectedButton);
+  }
+  if (engine_isKeyPressed(KEY_DOWN)) {
+    g_state.selectedButton = findNextActiveButton(screen, g_state.selectedButton);
+  }
+  if (engine_isKeyPressed(KEY_ENTER) || engine_isKeyPressed(KEY_KP_ENTER))
+    g_state.activatedButton = g_state.selectedButton;
 }
 
 // --- Menu functions ---
@@ -149,6 +192,7 @@ void menu_open(menu_Context context) {
 
   g_state.currentScreen = MENU_MAIN;
   g_state.context       = context;
+  resetButtonState();
   engine_showCursor();
 }
 
@@ -164,6 +208,7 @@ void menu_close(void) {
 void menu_update(void) {
   const menu_Screen* current = &SCREENS[g_state.currentScreen];
   updateMenuScreen(current);
+  checkKeys(current);
 }
 
 void menu_draw(void) {
