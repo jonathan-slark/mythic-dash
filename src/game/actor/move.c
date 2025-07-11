@@ -262,7 +262,10 @@ static void checkTeleport(game_Actor* actor, game_Dir dir) {
       LOG_TRACE(
           game_log, "Teleporting actor from %.2f, %.2f to %.2f, %.2f", actor->pos.x, actor->pos.y, destPos.x, destPos.y
       );
-      // actor->dir           = game_getOppositeDir(actor->dir);
+      if (maze_reverseAfterTeleport()) {
+        actor->dir = game_getOppositeDir(actor->dir);
+        LOG_TRACE(game_log, "Reversing actor's direction");
+      }
       actor->pos           = destPos;
       actor->hasTeleported = true;
     }

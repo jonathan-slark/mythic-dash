@@ -31,3 +31,4 @@ bool               maze_isChest(Vector2 pos);
 bool               maze_isTrap(Vector2 pos);
 void               maze_pickupChest(Vector2 pos, int score);
 engine_Texture*    maze_getTileSet(void);
+bool               maze_reverseAfterTeleport(void);

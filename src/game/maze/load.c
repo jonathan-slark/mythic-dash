@@ -19,11 +19,12 @@ typedef struct {
 
 // --- Constants ---
 
-static const char* FILE_MAZE      = ASSET_DIR "map/maze02.tmj";
-constexpr size_t   BUFFER_SIZE    = 1024;
-static const float FRAME_TIME     = 0.1f;
-static const int   PROPERTY_TYPES = 6;
-static const int   TELEPORT_TYPES = 3;
+static const char* FILE_MAZE           = ASSET_DIR "map/maze02.tmj";
+constexpr size_t   BUFFER_SIZE         = 1024;
+static const float FRAME_TIME          = 0.1f;
+static const int   TILE_PROPERTY_COUNT = 6;
+static const int   TELEPORT_TYPES      = 3;
+static const int   MAP_PROPERTY_COUNT  = 1;
 
 // --- Helper functions ---
 
@@ -52,7 +53,7 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
       LOG_FATAL(game_log, "Incomplete tile linked list");
       return false;
     }
-    if (tile->property_count != PROPERTY_TYPES || tile->properties == nullptr) {
+    if (tile->property_count != TILE_PROPERTY_COUNT || tile->properties == nullptr) {
       LOG_FATAL(game_log, "Invalid property count in tile linked list");
       return false;
     }
@@ -91,6 +92,24 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
     }
     tile = tile->next;
     i--;
+  }
+
+  return true;
+}
+
+static bool getMapProperties(cute_tiled_map_t* map) {
+  if (map->property_count != MAP_PROPERTY_COUNT || map->properties == nullptr) {
+    LOG_FATAL(game_log, "Invalid map property count");
+    return false;
+  }
+
+  for (int i = 0; i < map->property_count; i++) {
+    if (map->properties[i].type == CUTE_TILED_PROPERTY_BOOL) {
+      if (strcmp(map->properties[i].name.ptr, "reverseAfterTeleport") == 0) {
+        g_maze.reverseAfterTeleport = map->properties[i].data.boolean;
+        LOG_INFO(game_log, "reverseAfterTeleport: %s", g_maze.reverseAfterTeleport ? "true" : "false");
+      }
+    }
   }
 
   return true;
@@ -230,6 +249,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
     .tileset    = nullptr,
     .tiles      = tiles,
   };
+  GAME_TRY(getMapProperties(map));
 
   return true;
 }

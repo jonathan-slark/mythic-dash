@@ -1,3 +1,4 @@
+#include "maze.h"
 #include <assert.h>
 #include <engine/engine.h>
 #include <log/log.h>
@@ -242,3 +243,5 @@ void maze_reset(void) {
 }
 
 engine_Texture* maze_getTileSet(void) { return g_maze.tileset; }
+
+bool maze_reverseAfterTeleport(void) { return g_maze.reverseAfterTeleport; }
