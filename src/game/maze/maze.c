@@ -97,6 +97,11 @@ bool maze_isChest(Vector2 pos) {
   return tile->type == TILE_CHEST && !tile->isChestCollected;
 }
 
+bool maze_isTrap(Vector2 pos) {
+  maze__Tile* tile = getTileAt(pos, 0);
+  return tile->type == TILE_TRAP;
+}
+
 void maze_pickupCoin(Vector2 pos) {
   maze__Tile* tile      = getTileAt(pos, 1);
   tile->isCoinCollected = true;

@@ -17,6 +17,7 @@ typedef enum maze__TileType {
   TILE_FLOOR,
   TILE_WALL,
   TILE_TELEPORT,
+  TILE_TRAP,
   TILE_COIN,
   TILE_SWORD,
   TILE_CHEST

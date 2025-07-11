@@ -151,6 +151,16 @@ static void playerCheckPickups(void) {
   }
 }
 
+static bool playerCheckTraps(void) {
+  Vector2 pos = actor_getPos(g_player.actor);
+  pos         = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
+  if (maze_isTrap(pos)) {
+    player_dead();
+    return true;
+  }
+  return false;
+}
+
 static void playerCheckScore() {
   if (g_player.lives < PLAYER_MAX_LIVES && g_player.score > g_player.lastScoreBonusLife &&
       (g_player.score % SCORE_EXTRA_LIFE == 0)) {
@@ -240,6 +250,7 @@ void player_update(float frameTime, float slop) {
 
   actor_move(g_player.actor, dir, frameTime);
 
+  if (playerCheckTraps()) return;  // Dead!
   playerCheckPickups();
   playerCheckScore();
 }

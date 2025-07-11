@@ -10,18 +10,19 @@
 // --- Types ---
 
 // Temporary storage for tiles from map tileset during loading
-typedef struct MapTile {
+typedef struct {
   maze__TileType type;
   int            teleportType;
+  int            trapType;
   int            animCount;
 } MapTile;
 
 // --- Constants ---
 
-static const char* FILE_MAZE      = ASSET_DIR "map/maze01.tmj";
+static const char* FILE_MAZE      = ASSET_DIR "map/maze02.tmj";
 constexpr size_t   BUFFER_SIZE    = 1024;
 static const float FRAME_TIME     = 0.1f;
-static const int   PROPERTY_TYPES = 5;
+static const int   PROPERTY_TYPES = 6;
 static const int   TELEPORT_TYPES = 3;
 
 // --- Helper functions ---
@@ -64,6 +65,12 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
           if (tile->properties[j].data.integer > 0) {
             (*tileData)[i].type = TILE_TELEPORT;
             LOG_TRACE(game_log, "Tile %d is a teleport, type %d", i, (*tileData)[i].teleportType);
+          }
+        } else if (strcmp(tile->properties[j].name.ptr, "trapType") == 0) {
+          (*tileData)[i].trapType = tile->properties[j].data.integer;
+          if (tile->properties[j].data.integer > 0) {
+            (*tileData)[i].type = TILE_TRAP;
+            LOG_TRACE(game_log, "Tile %d is a trap, type %d", i, (*tileData)[i].trapType);
           }
         }
       } else if (tile->properties[j].type == CUTE_TILED_PROPERTY_BOOL) {
