@@ -235,3 +235,5 @@ void maze_reset(void) {
     }
   }
 }
+
+engine_Texture* maze_getTileSet(void) { return g_maze.tileset; }

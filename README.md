@@ -13,6 +13,7 @@
 * [whispers-supernatural.mp3 by gigaura](https://freesound.org/people/gjgaura/sounds/466658/) - CC0
 * [Game Pickup by IENBA](https://freesound.org/people/IENBA/sounds/698768/) - CC0
 * [Chime Sound by jgreer](https://freesound.org/people/jgreer/sounds/333629/) - CC0
+* [Tiny Cursors: 16x16 Icon Pack](https://shmorgus.itch.io/tiny-cursors) - CC0
 
 ## Music Credits
 

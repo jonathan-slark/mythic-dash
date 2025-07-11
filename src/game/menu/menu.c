@@ -194,7 +194,6 @@ void menu_open(menu_Context context) {
   g_state.context           = context;
   const menu_Screen* screen = &SCREENS[g_state.currentScreen];
   resetButtonState(screen);
-  engine_showCursor();
 }
 
 void menu_close(void) {
@@ -203,7 +202,6 @@ void menu_close(void) {
       g_game.lastState == GAME_OVER
   );
   if (g_state.context == MENU_CONTEXT_INGAME) g_game.state = g_game.lastState;
-  engine_hideCursor();
 }
 
 void menu_update(void) {
@@ -215,6 +213,7 @@ void menu_update(void) {
 void menu_draw(void) {
   const menu_Screen* screen = &SCREENS[g_state.currentScreen];
   drawMenuScreen(screen);
+  draw_cursor();
 }
 
 void menu_back(void) {

@@ -1,12 +1,13 @@
 #include "draw.h"
 #include <assert.h>
+#include <engine/engine.h>
 #include <raylib.h>
+#include <raymath.h>
 #include <stdarg.h>
 #include "../asset/asset.h"
 #include "../creature/creature.h"
 #include "../internal.h"
 #include "../player/player.h"
-#include "engine/engine.h"
 
 // --- Constants ---
 
@@ -137,6 +138,15 @@ void draw_creatures(void) {
       draw_text(CREATURE_SCORE, score);
     }
   }
+}
+
+void draw_cursor(void) {
+  engine_Sprite* sprite = asset_getCursorSprite();
+  // Hack as we want the sprite scaled but the position is also scaled
+  int     scale = engine_getScale();
+  Vector2 pos   = Vector2Scale(engine_getMousePosition(), 1.0f / scale);
+  engine_spriteSetPos(sprite, pos);
+  engine_drawSprite(asset_getCursorSpriteSheet(), sprite, WHITE);
 }
 
 void draw_interface(void) {

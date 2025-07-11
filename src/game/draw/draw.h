@@ -25,6 +25,7 @@ void draw_resetCreatures(void);
 void draw_updateCreatures(float frameTime, float slop);
 void draw_player(void);
 void draw_creatures(void);
+void draw_cursor(void);
 void draw_interface(void);
 void draw_nextLife(void);
 void draw_title(void);

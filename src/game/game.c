@@ -130,10 +130,11 @@ bool game_load(void) {
   }
 
   engine_initAudio(MASTER_VOLUME);
-  GAME_TRY(asset_load());
   GAME_TRY(maze_init());
+  GAME_TRY(asset_load());  // Requires maze_init() for the tileset
   GAME_TRY(asset_initPlayer());
   GAME_TRY(asset_initCreatures());
+  GAME_TRY(asset_initCursor());
   LOG_INFO(game_log, "Game loading took %f seconds", GetTime() - start);
 
   engine_playMusic(asset_getMusic());
@@ -187,6 +188,7 @@ void game_draw(void) {
 
 void game_unload(void) {
   engine_shutdownAudio();
+  asset_shutdownCursor();
   asset_shutdownCreatures();
   asset_shutdownPlayer();
   maze_shutdown();
@@ -195,7 +197,6 @@ void game_unload(void) {
 }
 
 void game_new(void) {
-  engine_hideCursor();
   player_totalReset();
   creature_reset();
   maze_reset();

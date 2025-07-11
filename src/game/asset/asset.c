@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include "../creature/creature.h"
 #include "../internal.h"
+#include "../maze/maze.h"
 #include "../player/player.h"
 #include "internal.h"
 
@@ -31,6 +32,7 @@ bool loadMusic(asset_Music musicData, Music* music) {
 bool asset_load(void) {
   GAME_TRY(g_assets.creatureSpriteSheet = engine_textureLoad(FILE_CREATURES));
   GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
+  g_assets.cursorSpriteSheet = maze_getTileSet();
   GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 6, 10, 32, 127, 0, 2));
   GAME_TRY(g_assets.fontTiny = engine_fontLoad(FILE_FONT_TINY, 5, 7, 48, 57, 0, 0));
   for (int i = 0; i < WAIL_SOUND_COUNT; i++) {
@@ -55,6 +57,7 @@ void asset_unload(void) {
     engine_unloadSound(&g_assets.wailSounds[i]);
   }
   engine_fontUnload(&g_assets.font);
+  engine_textureUnload(&g_assets.cursorSpriteSheet);
   engine_textureUnload(&g_assets.playerSpriteSheet);
   engine_textureUnload(&g_assets.creatureSpriteSheet);
 }
@@ -134,15 +137,27 @@ bool asset_initCreatures(void) {
   return true;
 }
 
+bool asset_initCursor(void) {
+  Vector2 null = (Vector2) { 0.0f, 0.0f };
+  GAME_TRY(g_assets.cursorSprite = engine_createSpriteFromSheet(null, CURSOR_SIZE, CURSOR_ROW, CURSOR_COL, null));
+  return true;
+}
+
 void asset_shutdownPlayer(void) {
   player_shutdown();
   for (int i = 0; i < PLAYER_LIVES; i++) {
+    assert(g_assets.playerLivesSprites[i] != nullptr);
     engine_destroySprite(&g_assets.playerLivesSprites[i]);
+    assert(g_assets.playerLivesSprites[i] == nullptr);
   }
   for (int i = 0; i < PLAYER_STATE_COUNT; i++) {
+    assert(g_assets.playerSprites[i] != nullptr);
     engine_destroySprite(&g_assets.playerSprites[i]);
+    assert(g_assets.playerSprites[i] == nullptr);
     for (int j = 0; j < DIR_COUNT; j++) {
+      assert(g_assets.playerAnim[i][j] != nullptr);
       engine_destroyAnim(&g_assets.playerAnim[i][j]);
+      assert(g_assets.playerAnim[i][j] == nullptr);
     }
   }
 }
@@ -150,11 +165,20 @@ void asset_shutdownPlayer(void) {
 void asset_shutdownCreatures(void) {
   creature_shutdown();
   for (int i = 0; i < CREATURE_COUNT; i++) {
+    assert(g_assets.creatureSprites[i] != nullptr);
     engine_destroySprite(&g_assets.creatureSprites[i]);
+    assert(g_assets.creatureSprites[i] == nullptr);
     for (int j = 0; j < DIR_COUNT; j++) {
+      assert(g_assets.creatureAnims[i][j] != nullptr);
       engine_destroyAnim(&g_assets.creatureAnims[i][j]);
+      assert(g_assets.creatureAnims[i][j] == nullptr);
     }
   }
+}
+
+void asset_shutdownCursor(void) {
+  assert(g_assets.cursorSprite != nullptr);
+  g_assets.cursorSprite = nullptr;
 }
 
 engine_Texture* asset_getCreatureSpriteSheet(void) {
@@ -202,6 +226,16 @@ engine_Anim* asset_getCreatureAnim(int creatureID, game_Dir dir) {
 Vector2 asset_getCreatureOffset(int creatureID) {
   assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
   return CREATURE_DATA[creatureID].offset;
+}
+
+engine_Texture* asset_getCursorSpriteSheet(void) {
+  assert(g_assets.cursorSpriteSheet != nullptr);
+  return g_assets.cursorSpriteSheet;
+}
+
+engine_Sprite* asset_getCursorSprite(void) {
+  assert(g_assets.cursorSprite != nullptr);
+  return g_assets.cursorSprite;
 }
 
 engine_Font* asset_getFont(void) {

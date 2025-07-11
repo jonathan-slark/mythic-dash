@@ -1,6 +1,7 @@
 // clang-format Language: C
 #pragma once
 
+#include <engine/engine.h>
 #include <raylib.h>
 #include "../internal.h"
 
@@ -28,3 +29,4 @@ bool               maze_isSword(Vector2 pos);
 void               maze_pickupSword(Vector2 pos);
 bool               maze_isChest(Vector2 pos);
 void               maze_pickupChest(Vector2 pos, int score);
+engine_Texture*    maze_getTileSet(void);

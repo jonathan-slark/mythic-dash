@@ -43,6 +43,8 @@ typedef struct asset_Assets {
   engine_Anim*    playerAnim[PLAYER_STATE_COUNT][DIR_COUNT];
   engine_Sprite*  creatureSprites[CREATURE_COUNT];
   engine_Anim*    creatureAnims[CREATURE_COUNT][DIR_COUNT];
+  engine_Texture* cursorSpriteSheet;
+  engine_Sprite*  cursorSprite;
   engine_Font*    font;
   engine_Font*    fontTiny;
   engine_Sound*   wailSounds[WAIL_SOUND_COUNT];
@@ -77,6 +79,10 @@ static const float FRAME_TIME = 0.1f;
 
 static const Vector2 PLAYER_LIVES_OFFSET     = { 8.0f, 248.0f };
 static const Vector2 PLAYER_NEXT_LIFE_OFFSET = { 412.0f, 248.0f };
+
+static const Vector2 CURSOR_SIZE = { 16.0f, 16.0f };
+static const int     CURSOR_ROW  = 18;
+static const int     CURSOR_COL  = 25;
 
 // clang-format off
 static const asset_ActorData PLAYER_DATA[PLAYER_STATE_COUNT] = {
