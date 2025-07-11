@@ -8,7 +8,7 @@
 
 // --- Types ---
 
-typedef enum { MENU_MAIN, MENU_GAME, MENU_OPTIONS, MENU_CREDITS, MENU_NONE } menu_ScreenState;
+typedef enum { MENU_MAIN, MENU_GAME, MENU_OPTIONS, MENU_CREDITS, MENU_COUNT, MENU_NONE } menu_ScreenState;
 
 typedef struct {
   Rectangle        bounds;
@@ -27,7 +27,7 @@ typedef struct {
 typedef struct {
   menu_ScreenState currentScreen;
   menu_Context     context;
-  int              selectedButton;
+  int              selectedButton[MENU_COUNT];
   int              activatedButton;
 } menu_State;
 
@@ -75,14 +75,9 @@ static const menu_Screen SCREENS[] = {
 
 // --- Global state ---
 
-static menu_State g_state = { MENU_MAIN, MENU_CONTEXT_TITLE, 0, -1 };
+static menu_State g_state = { MENU_MAIN, MENU_CONTEXT_TITLE, {}, -1 };
 
 // --- Helper functions ---
-
-static void resetButtonState(void) {
-  g_state.selectedButton  = 0;
-  g_state.activatedButton = -1;
-}
 
 static void returnToTitle(void) { menu_open(MENU_CONTEXT_TITLE); }
 
@@ -90,53 +85,6 @@ static bool isButtonActive(const menu_Button* button) {
   return button->context == MENU_CONTEXT_BOTH ||
          (button->context == MENU_CONTEXT_TITLE && g_state.context == MENU_CONTEXT_TITLE) ||
          (button->context == MENU_CONTEXT_INGAME && g_state.context == MENU_CONTEXT_INGAME);
-}
-
-static void updateMenuScreen(const menu_Screen* screen) {
-  assert(screen != nullptr);
-
-  for (int i = 0; i < screen->buttonCount; i++) {
-    const menu_Button* button = &screen->buttons[i];
-    assert(button != nullptr);
-    if (isButtonActive(button)) {
-      if (g_state.activatedButton == i || engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, button->bounds)) {
-        if (button->action != nullptr) {
-          button->action();
-        } else if (button->targetScreen != MENU_NONE) {
-          g_state.currentScreen = button->targetScreen;
-          resetButtonState();
-        }
-      }
-    }
-  }
-}
-
-static void drawMenuScreen(const menu_Screen* screen) {
-  assert(screen != nullptr);
-
-  engine_drawRectangle(BACKGROUND_RECTANGLE, BACKGROUND_COLOUR);
-  engine_drawRectangleOutline(BACKGROUND_RECTANGLE, BACKGROUND_BORDER);
-
-  for (int i = 0; i < screen->buttonCount; i++) {
-    const menu_Button* button = &screen->buttons[i];
-    assert(button != nullptr);
-    if (isButtonActive(button)) {
-      bool isHovered = g_state.selectedButton == i || engine_isMouseHover(button->bounds);
-
-      draw_Text text = {
-        .xPos     = button->bounds.x,
-        .yPos     = button->bounds.y,
-        .format   = button->text,
-        .colour   = isHovered ? TEXT_ACTIVE : TEXT_NORMAL,
-        .fontSize = FONT_NORMAL
-      };
-      draw_shadowText(text);
-    }
-  }
-
-  if (screen->customDraw != nullptr) {
-    screen->customDraw();
-  }
 }
 
 static int findPreviousActiveButton(const menu_Screen* screen, int start) {
@@ -159,18 +107,70 @@ static int findNextActiveButton(const menu_Screen* screen, int start) {
   return index;
 }
 
-// Then in your input code:
+static void resetButtonState(const menu_Screen* screen) {
+  int button = g_state.selectedButton[g_state.currentScreen];
+  if (!isButtonActive(&screen->buttons[button]))
+    g_state.selectedButton[g_state.currentScreen] = findPreviousActiveButton(screen, button);
+  g_state.activatedButton = -1;
+}
+
+static void updateMenuScreen(const menu_Screen* screen) {
+  assert(screen != nullptr);
+
+  for (int i = 0; i < screen->buttonCount; i++) {
+    const menu_Button* button = &screen->buttons[i];
+    assert(button != nullptr);
+    if (isButtonActive(button)) {
+      if (g_state.activatedButton == i || engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, button->bounds)) {
+        if (button->action != nullptr) {
+          button->action();
+        } else if (button->targetScreen != MENU_NONE) {
+          g_state.currentScreen = button->targetScreen;
+          screen                = &SCREENS[g_state.currentScreen];
+          resetButtonState(screen);
+          break;
+        }
+      }
+    }
+  }
+}
+
+static void drawMenuScreen(const menu_Screen* screen) {
+  assert(screen != nullptr);
+
+  engine_drawRectangle(BACKGROUND_RECTANGLE, BACKGROUND_COLOUR);
+  engine_drawRectangleOutline(BACKGROUND_RECTANGLE, BACKGROUND_BORDER);
+
+  for (int i = 0; i < screen->buttonCount; i++) {
+    const menu_Button* button = &screen->buttons[i];
+    assert(button != nullptr);
+    if (isButtonActive(button)) {
+      bool isHovered = g_state.selectedButton[g_state.currentScreen] == i || engine_isMouseHover(button->bounds);
+
+      draw_Text text = {
+        .xPos     = button->bounds.x,
+        .yPos     = button->bounds.y,
+        .format   = button->text,
+        .colour   = isHovered ? TEXT_ACTIVE : TEXT_NORMAL,
+        .fontSize = FONT_NORMAL
+      };
+      draw_shadowText(text);
+    }
+  }
+
+  if (screen->customDraw != nullptr) {
+    screen->customDraw();
+  }
+}
 
 static void checkKeys(const menu_Screen* screen) {
   // Note: escape key is handled by game.c
-  if (engine_isKeyPressed(KEY_UP)) {
-    g_state.selectedButton = findPreviousActiveButton(screen, g_state.selectedButton);
-  }
-  if (engine_isKeyPressed(KEY_DOWN)) {
-    g_state.selectedButton = findNextActiveButton(screen, g_state.selectedButton);
-  }
-  if (engine_isKeyPressed(KEY_ENTER) || engine_isKeyPressed(KEY_KP_ENTER))
-    g_state.activatedButton = g_state.selectedButton;
+  int button = g_state.selectedButton[g_state.currentScreen];
+  if (engine_isKeyPressed(KEY_UP))
+    g_state.selectedButton[g_state.currentScreen] = findPreviousActiveButton(screen, button);
+  if (engine_isKeyPressed(KEY_DOWN))
+    g_state.selectedButton[g_state.currentScreen] = findNextActiveButton(screen, button);
+  if (engine_isKeyPressed(KEY_ENTER) || engine_isKeyPressed(KEY_KP_ENTER)) g_state.activatedButton = button;
 }
 
 // --- Menu functions ---
@@ -190,9 +190,10 @@ void menu_open(menu_Context context) {
     default: assert(false); break;
   }
 
-  g_state.currentScreen = MENU_MAIN;
-  g_state.context       = context;
-  resetButtonState();
+  g_state.currentScreen     = MENU_MAIN;
+  g_state.context           = context;
+  const menu_Screen* screen = &SCREENS[g_state.currentScreen];
+  resetButtonState(screen);
   engine_showCursor();
 }
 
@@ -206,14 +207,14 @@ void menu_close(void) {
 }
 
 void menu_update(void) {
-  const menu_Screen* current = &SCREENS[g_state.currentScreen];
-  updateMenuScreen(current);
-  checkKeys(current);
+  const menu_Screen* screen = &SCREENS[g_state.currentScreen];
+  updateMenuScreen(screen);
+  checkKeys(screen);
 }
 
 void menu_draw(void) {
-  const menu_Screen* current = &SCREENS[g_state.currentScreen];
-  drawMenuScreen(current);
+  const menu_Screen* screen = &SCREENS[g_state.currentScreen];
+  drawMenuScreen(screen);
 }
 
 void menu_back(void) {
@@ -230,6 +231,7 @@ void menu_back(void) {
     case MENU_OPTIONS:
     case MENU_CREDITS: g_state.currentScreen = MENU_MAIN; break;
 
+    case MENU_COUNT:
     case MENU_NONE: assert(false); break;
   }
 }
