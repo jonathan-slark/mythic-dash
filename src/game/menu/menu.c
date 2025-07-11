@@ -41,8 +41,9 @@ static const Rectangle BACKGROUND_RECTANGLE = { 180, 60, 110, 90 };
 static const Color     BACKGROUND_COLOUR    = { 64, 64, 64, 200 };
 static const Color     BACKGROUND_BORDER    = { 255, 255, 255, 200 };
 
-static const Color TEXT_NORMAL = { 180, 180, 180, 255 };
-static const Color TEXT_ACTIVE = { 255, 255, 255, 255 };
+static const Color TEXT_NORMAL = { 255, 255, 255, 255 };
+static const Color TEXT_ACTIVE = { 151, 255, 49, 255 };
+static const Color TEXT_HOVER  = { 251, 240, 20, 255 };
 
 static const menu_Button MAIN_BUTTONS[] = {
   {  { 190, 70, 100, 10 },      "Start Game",    MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH },
@@ -145,13 +146,16 @@ static void drawMenuScreen(const menu_Screen* screen) {
     const menu_Button* button = &screen->buttons[i];
     assert(button != nullptr);
     if (isButtonActive(button)) {
-      bool isHovered = g_state.selectedButton[g_state.currentScreen] == i || engine_isMouseHover(button->bounds);
+      bool isSelected = g_state.selectedButton[g_state.currentScreen] == i;
+      bool isHovered  = engine_isMouseHover(button->bounds);
 
       draw_Text text = {
         .xPos     = button->bounds.x,
         .yPos     = button->bounds.y,
         .format   = button->text,
-        .colour   = isHovered ? TEXT_ACTIVE : TEXT_NORMAL,
+        .colour   = isHovered    ? TEXT_HOVER
+                    : isSelected ? TEXT_ACTIVE
+                                 : TEXT_NORMAL,
         .fontSize = FONT_NORMAL
       };
       draw_shadowText(text);
