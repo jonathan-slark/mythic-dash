@@ -73,7 +73,8 @@ static void transitionToState(void (*newState)(creature__Creature*, float, float
 static void transitionToPermanentChase(void) {
   transitionToState(creature__chase);
   g_state.lastUpdate = creature__chase;
-  assert(g_state.stateNum == COUNT(STATE_TIMERS));
+  g_state.stateNum++;
+  assert(g_state.stateNum == COUNT(STATE_TIMERS) + 1);
 }
 
 static void toggleCreatureState() {

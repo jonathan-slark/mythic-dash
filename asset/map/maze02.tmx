@@ -3,6 +3,9 @@
  <editorsettings>
   <export target="maze02.tmj" format="json"/>
  </editorsettings>
+ <properties>
+  <property name="reverseAfterTeleport" type="bool" value="false"/>
+ </properties>
  <tileset firstgid="1" name="tileset" tilewidth="16" tileheight="16" tilecount="520" columns="26">
   <image source="tileset.png" width="416" height="320"/>
   <tile id="0">
