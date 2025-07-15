@@ -58,7 +58,7 @@ static const float NORMAL_LEVEL_MULT = 0.011f;
 static const float FRIGHT_SPEED_MIN_MULT = 0.50f;
 static const float FRIGHT_SPEED_MAX_MULT = 0.60f;
 static const float FRIGHT_LEVEL_MULT = 0.0055f;
-static const float DECISION_COOLDOWN = 0.5f;
+static const float DECISION_COOLDOWN = 0.2f;
 
 static const Vector2 MAZE_CENTRE = {14 * TILE_SIZE, 7 * TILE_SIZE};
 static const Vector2 creature_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},

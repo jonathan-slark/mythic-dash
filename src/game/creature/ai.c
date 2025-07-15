@@ -105,7 +105,7 @@ static game_Dir greedyDirSelect(creature__Creature* creature, game_Dir dirs[], i
     return bestDirs[0];
   } else {
     game_Dir dir = randomSelect(bestDirs, bestDirCount);
-    LOG_TRACE(game_log, "Creature %d going: %s (%d choices)", creature->id, DIR_STRINGS[bestDirs[0]], bestDirCount);
+    LOG_DEBUG(game_log, "Creature %d going: %s (%d choices)", creature->id, DIR_STRINGS[bestDirs[0]], bestDirCount);
     return dir;
   }
 }
