@@ -130,22 +130,28 @@ static void alignToPassage(game_Actor* actor, game_Dir dir, const game_AABB* til
   switch (dir) {
     case DIR_UP:
     case DIR_DOWN:
-      // Set actor's x position directly to tile boundary
+      // Align the actor's x-position to the tile edge for vertical movement.
+      // If the actor is to the left of the tile, align its right edge to the tile's left edge.
+      // Otherwise, align its left edge to the tile's right edge.
       if (actor->pos.x < tileAABB->min.x) {
-        actor->pos.x = tileAABB->min.x - actor->size.x;  // Align actor's right edge to the tile to the right
+        actor->pos.x = tileAABB->min.x - actor->size.x;
       } else {
-        actor->pos.x = tileAABB->max.x;                  // Align actor's left edge to the tile to the left
+        actor->pos.x = tileAABB->max.x;
       }
       break;
+
     case DIR_LEFT:
     case DIR_RIGHT:
-      // Set actor's y position directly to tile boundary
+      // Align the actor's y-position to the tile edge for horizontal movement.
+      // If the actor is above the tile, align its bottom edge to the tile's top edge.
+      // Otherwise, align its top edge to the tile's bottom edge.
       if (actor->pos.y < tileAABB->min.y) {
-        actor->pos.y = tileAABB->min.y - actor->size.y;  // Align actor's top edge to the tile below
+        actor->pos.y = tileAABB->min.y - actor->size.y;
       } else {
-        actor->pos.y = tileAABB->max.y;                  // Align actor's bottom edge to the tile above
+        actor->pos.y = tileAABB->max.y;
       }
       break;
+
     default: assert(false);
   }
 }
