@@ -10,7 +10,7 @@
 [[nodiscard]] bool maze_init(void);
 void               maze_shutdown(void);
 game_AABB          maze_getAABB(Vector2 pos);
-bool               maze_isWall(Vector2 pos);
+bool               maze_isWall(Vector2 pos, bool isPlayer);
 bool               maze_isTeleport(Vector2 pos, Vector2* dest);
 void               maze_tilesOverlay(void);
 void               maze_draw(void);

@@ -26,4 +26,5 @@ typedef struct game_Actor {
   actor__Tile tilesMove[TILES_COUNT];
   actor__Tile tilesCanMove[DIR_COUNT][TILES_COUNT];
   bool isCanMove[DIR_COUNT];
+  bool isPlayer;
 } game_Actor;

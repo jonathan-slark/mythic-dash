@@ -118,7 +118,7 @@ static void getTiles(game_Actor* actor, actor__Tile tiles[], game_Dir dir) {
   for (size_t i = 0; i < TILES_COUNT; i++) {
     Vector2 position = Vector2Add(basePos, Vector2Scale(offset, i));
     tiles[i].aabb    = maze_getAABB(position);
-    tiles[i].isWall  = maze_isWall(position);
+    tiles[i].isWall  = maze_isWall(position, actor->isPlayer);
   }
 }
 

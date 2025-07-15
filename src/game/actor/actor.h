@@ -6,7 +6,7 @@
 
 // --- Actor functions ---
 
-game_Actor* actor_create(Vector2 pos, Vector2 size, game_Dir dir, float speed);
+game_Actor* actor_create(Vector2 pos, Vector2 size, game_Dir dir, float speed, bool isPlayer);
 void        actor_destroy(game_Actor** actor);
 Vector2     actor_getPos(const game_Actor* actor);
 Vector2     actor_getCentre(const game_Actor* actor);

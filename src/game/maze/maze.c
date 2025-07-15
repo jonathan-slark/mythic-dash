@@ -31,6 +31,7 @@ static maze__Tile* getTileAt(Vector2 pos, int layer) {
 
 // --- Helper functions ---
 
+// Chest appears at regular intervals of player collecting coins
 static void checkChestSpawn(void) {
   for (int i = 0; i < CHEST_SPAWN_COUNT; i++) {
     if (!g_maze.hasChestSpawned[i]) {
@@ -40,6 +41,17 @@ static void checkChestSpawn(void) {
         g_maze.chestDespawnTimer                      = CHEST_DESPAWN_TIMER;
         LOG_INFO(game_log, "Chest spawned at %d coins", player_getCoinsCollected());
       }
+    }
+  }
+}
+
+// Key appears once, mid way through coin collection
+static void checkKeySpawn(void) {
+  if (!g_maze.hasKeySpawned) {
+    if (player_getCoinsCollected() >= g_maze.coinCount / 2) {
+      g_maze.hasKeySpawned                      = true;
+      g_maze.tiles[g_maze.keyID].isKeyCollected = false;
+      LOG_INFO(game_log, "Key spawned at %d coins", player_getCoinsCollected());
     }
   }
 }
@@ -83,10 +95,11 @@ game_AABB maze_getAABB(Vector2 pos) {
   return tile->aabb;
 }
 
-bool maze_isWall(Vector2 pos) {
+bool maze_isWall(Vector2 pos, bool isPlayer) {
   maze__Tile* tile0 = getTileAt(pos, 0);
   maze__Tile* tile1 = getTileAt(pos, 1);
-  return tile0->type == TILE_WALL || (tile1->type == TILE_DOOR && !tile1->isDoorOpen);
+  return tile0->type == TILE_WALL || (isPlayer && tile1->type == TILE_DOOR && !tile1->isDoorOpen) ||
+         (tile1->type == TILE_DOOR);
 }
 
 bool maze_isCoin(Vector2 pos) {
@@ -154,7 +167,7 @@ bool maze_isTeleport(Vector2 pos, Vector2* dest) {
 
 void maze_tilesOverlay(void) {
   for (int i = 0; i < g_maze.count; i++) {
-    if (maze_isWall(g_maze.tiles[i].aabb.min)) {
+    if (maze_isWall(g_maze.tiles[i].aabb.min, false)) {
       game_drawAABBOverlay(g_maze.tiles[i].aabb, OVERLAY_COLOUR_MAZE_WALL);
     }
   }
@@ -208,6 +221,7 @@ void maze_update(float frameTime) {
   }
 
   checkChestSpawn();
+  checkKeySpawn();
   updateChestDespawnTimer(frameTime);
   updateChestScoreTimer(frameTime);
 }
@@ -255,7 +269,7 @@ void maze_reset(void) {
       g_maze.tiles[idx].isCoinCollected  = false;
       g_maze.tiles[idx].isSwordCollected = false;
       g_maze.tiles[idx].isChestCollected = true;  // Spawned later
-      g_maze.tiles[idx].isKeyCollected   = false;
+      g_maze.tiles[idx].isKeyCollected   = true;  // Spawned later
       g_maze.tiles[idx].isDoorOpen       = false;
     }
   }

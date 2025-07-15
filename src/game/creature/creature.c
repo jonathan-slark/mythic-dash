@@ -226,7 +226,8 @@ bool creature_init(void) {
         CREATURE_DATA[i].startPos,
         (Vector2) { ACTOR_SIZE, ACTOR_SIZE },
         CREATURE_DATA[i].startDir,
-        CREATURE_DATA[i].startSpeed
+        CREATURE_DATA[i].startSpeed,
+        false
     );
     if (g_state.creatures[i].actor == nullptr) return false;
     g_state.creatures[i].id = i;

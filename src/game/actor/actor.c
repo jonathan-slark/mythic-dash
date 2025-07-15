@@ -30,7 +30,7 @@ static void drawTile(actor__Tile tile) {
 
 // --- Actor functions ---
 
-game_Actor* actor_create(Vector2 pos, Vector2 size, game_Dir dir, float speed) {
+game_Actor* actor_create(Vector2 pos, Vector2 size, game_Dir dir, float speed, bool isPlayer) {
   assert(pos.x >= 0.0f);
   assert(pos.y >= 0.0f);
   assert(size.x > 0.0f);
@@ -49,6 +49,7 @@ game_Actor* actor_create(Vector2 pos, Vector2 size, game_Dir dir, float speed) {
   actor->dir      = dir;
   actor->speed    = speed;
   actor->isMoving = true;
+  actor->isPlayer = isPlayer;
 
   return actor;
 }

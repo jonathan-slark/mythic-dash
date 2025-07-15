@@ -179,7 +179,7 @@ static void playerCheckScore() {
 bool player_init(void) {
   assert(g_player.actor == nullptr);
   g_player.actor = actor_create(
-      PLAYER_START_POS, (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_START_DIR, PLAYER_MAX_SPEED
+      PLAYER_START_POS, (Vector2) { ACTOR_SIZE, ACTOR_SIZE }, PLAYER_START_DIR, PLAYER_MAX_SPEED, true
   );
   return g_player.actor != nullptr;
 }
