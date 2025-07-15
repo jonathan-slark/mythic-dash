@@ -98,8 +98,9 @@ game_AABB maze_getAABB(Vector2 pos) {
 bool maze_isWall(Vector2 pos, bool isPlayer) {
   maze__Tile* tile0 = getTileAt(pos, 0);
   maze__Tile* tile1 = getTileAt(pos, 1);
+  // Open door only lets player through
   return tile0->type == TILE_WALL || (isPlayer && tile1->type == TILE_DOOR && !tile1->isDoorOpen) ||
-         (tile1->type == TILE_DOOR);
+         (!isPlayer && tile1->type == TILE_DOOR);
 }
 
 bool maze_isCoin(Vector2 pos) {
