@@ -76,7 +76,7 @@ static void checkMazeCollision(game_Actor* actor) {
   if (tile != nullptr) {
     Vector2 oldPos = actor->pos;
     resolveActorCollision(actor, &tile->aabb);
-    LOG_TRACE(
+    LOG_DEBUG(
         game_log,
         "Collision detected, actor moved from: %f, %f to: %f, %f",
         oldPos.x,
@@ -122,16 +122,30 @@ static void getTiles(game_Actor* actor, actor__Tile tiles[], game_Dir dir) {
   }
 }
 
-static void alignToPassage(game_Actor* actor, game_Dir dir, float distance) {
+static void alignToPassage(game_Actor* actor, game_Dir dir, const game_AABB* tileAABB) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
-  assert(distance != 0.0f && distance < MAX_SLOP);
+  assert(tileAABB != nullptr);
 
   switch (dir) {
     case DIR_UP:
-    case DIR_DOWN: actor->pos.x += distance; break;
+    case DIR_DOWN:
+      // Set actor's x position directly to tile boundary
+      if (actor->pos.x < tileAABB->min.x) {
+        actor->pos.x = tileAABB->min.x - actor->size.x;  // Align actor's right edge to the tile to the right
+      } else {
+        actor->pos.x = tileAABB->max.x;                  // Align actor's left edge to the tile to the left
+      }
+      break;
     case DIR_LEFT:
-    case DIR_RIGHT: actor->pos.y += distance; break;
+    case DIR_RIGHT:
+      // Set actor's y position directly to tile boundary
+      if (actor->pos.y < tileAABB->min.y) {
+        actor->pos.y = tileAABB->min.y - actor->size.y;  // Align actor's top edge to the tile below
+      } else {
+        actor->pos.y = tileAABB->max.y;                  // Align actor's bottom edge to the tile above
+      }
+      break;
     default: assert(false);
   }
 }
@@ -146,8 +160,7 @@ static void clearAllCollisionFlags(actor__Tile tiles[]) {
   }
 }
 
-static bool
-tryAlignToTile(game_Actor* actor, game_Dir dir, game_AABB actorAABB, game_AABB tileAABB, float slop, bool isPositive) {
+static bool tryAlignToTile(game_Actor* actor, game_Dir dir, game_AABB actorAABB, game_AABB tileAABB, float slop) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -159,8 +172,8 @@ tryAlignToTile(game_Actor* actor, game_Dir dir, game_AABB actorAABB, game_AABB t
     case DIR_UP:
     case DIR_DOWN:
       if (overlapX > OVERLAP_EPSILON && overlapX <= slop && fabsf(overlapY) < OVERLAP_EPSILON) {
-        alignToPassage(actor, dir, isPositive ? overlapX : -overlapX);
-        LOG_TRACE(
+        alignToPassage(actor, dir, &tileAABB);
+        LOG_DEBUG(
             game_log,
             "Actor can move %s, moved from %f, %f, to: %f, %f, slop: %f",
             DIR_STRINGS[dir],
@@ -176,10 +189,10 @@ tryAlignToTile(game_Actor* actor, game_Dir dir, game_AABB actorAABB, game_AABB t
     case DIR_LEFT:
     case DIR_RIGHT:
       if (overlapY > OVERLAP_EPSILON && overlapY <= slop && fabsf(overlapX) < OVERLAP_EPSILON) {
-        alignToPassage(actor, dir, isPositive ? overlapY : -overlapY);
-        LOG_TRACE(
+        alignToPassage(actor, dir, &tileAABB);
+        LOG_DEBUG(
             game_log,
-            "Actor can move %s, moved to: %f, %f, slop: %f",
+            "Actor can move %s, moved from %f, %f, to: %f, %f, slop: %f",
             DIR_STRINGS[dir],
             oldPos.x,
             oldPos.y,
@@ -205,8 +218,8 @@ static bool checkPassageMovement(game_Actor* actor, game_Dir dir, game_AABB acto
   }
 
   // Try aligning to tile0 first, then tile2
-  if (tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][0].aabb, slop, true) ||
-      tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][2].aabb, slop, false)) {
+  if (tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][0].aabb, slop) ||
+      tryAlignToTile(actor, dir, actorAABB, actor->tilesCanMove[dir][2].aabb, slop)) {
     clearAllCollisionFlags(actor->tilesCanMove[dir]);
     return true;
   }
