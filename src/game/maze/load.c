@@ -19,7 +19,7 @@ typedef struct {
 
 // --- Constants ---
 
-static const char* FILE_MAZE           = ASSET_DIR "map/maze04.tmj";
+static const char* FILE_MAZE           = ASSET_DIR "map/maze05.tmj";
 constexpr size_t   BUFFER_SIZE         = 1024;
 static const float FRAME_TIME          = 0.1f;
 static const int   TILE_PROPERTY_COUNT = 8;
@@ -193,13 +193,23 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
 
         if (animCount > 0) {
           LOG_TRACE(game_log, "New animation: layer: %d, tile %d, %d, frame count: %d", layerNum, row, col, animCount);
-          anim = engine_createAnim(sprite, tilesetRow, tilesetCol, animCount, FRAME_TIME, inset, true);
+          anim = engine_createAnim(
+              sprite,
+              tilesetRow,
+              tilesetCol,
+              animCount,
+              FRAME_TIME,
+              inset,
+              type != TILE_TRAP || (type == TILE_TRAP && tileData[tileId].trapType != TRAP_SPIKE)
+          );
         }
 
         if (tileData[tileId].type == TILE_KEY) {
           keyID = tileIdx;
         } else if (tileData[tileId].type == TILE_DOOR) {
           doorID = tileIdx;
+        } else if (tileData[tileId].type == TILE_TRAP) {
+          tiles[tileIdx].trapType = tileData[tileId].trapType;
         } else {
           int teleportType = tileData[tileId].teleportType;
           if (teleportType > 0) {

@@ -34,3 +34,4 @@ void               maze_pickupChest(Vector2 pos, int score);
 void               maze_pickupKey(Vector2 pos);
 engine_Texture*    maze_getTileSet(void);
 bool               maze_reverseAfterTeleport(void);
+void               maze_trapTriggered(Vector2 pos);

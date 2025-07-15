@@ -159,6 +159,7 @@ static bool playerCheckTraps(void) {
   Vector2 pos = actor_getPos(g_player.actor);
   pos         = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
   if (maze_isTrap(pos)) {
+    maze_trapTriggered(pos);
     player_dead();
     return true;
   }

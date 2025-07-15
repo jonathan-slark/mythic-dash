@@ -34,6 +34,8 @@ typedef struct maze__Tile {
   bool isChestCollected;
   bool isKeyCollected;
   bool isDoorOpen;
+  bool hasTrapTriggered;
+  int trapType;
   engine_Sprite *sprite;
   engine_Anim *anim;
   game_AABB aabb;
@@ -58,6 +60,10 @@ typedef struct maze__Maze {
   engine_Texture *tileset;
   maze__Tile *tiles;
 } maze__Maze;
+
+// --- Constants ---
+
+static const int TRAP_SPIKE = 2;
 
 // --- Global state ---
 
