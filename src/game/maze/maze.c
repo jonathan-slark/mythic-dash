@@ -84,8 +84,9 @@ game_AABB maze_getAABB(Vector2 pos) {
 }
 
 bool maze_isWall(Vector2 pos) {
-  maze__Tile* tile = getTileAt(pos, 0);
-  return tile->type == TILE_WALL;
+  maze__Tile* tile0 = getTileAt(pos, 0);
+  maze__Tile* tile1 = getTileAt(pos, 1);
+  return tile0->type == TILE_WALL || (tile1->type == TILE_DOOR && !tile1->isDoorOpen);
 }
 
 bool maze_isCoin(Vector2 pos) {
@@ -101,6 +102,11 @@ bool maze_isChest(Vector2 pos) {
 bool maze_isTrap(Vector2 pos) {
   maze__Tile* tile = getTileAt(pos, 0);
   return tile->type == TILE_TRAP;
+}
+
+bool maze_isKey(Vector2 pos) {
+  maze__Tile* tile = getTileAt(pos, 1);
+  return tile->type == TILE_KEY && !tile->isKeyCollected;
 }
 
 void maze_pickupCoin(Vector2 pos) {
@@ -125,6 +131,14 @@ void maze_pickupChest(Vector2 pos, int score) {
   tile->isChestCollected = true;
   g_maze.chestScore      = score;
   g_maze.chestScoreTimer = CHEST_SCORE_TIMER;
+}
+
+void maze_pickupKey(Vector2 pos) {
+  maze__Tile* tile     = getTileAt(pos, 1);
+  tile->isKeyCollected = true;
+  LOG_INFO(game_log, "Key collected, door: %d", tile->linkedDoorTile);
+  assert(tile->linkedDoorTile >= 0);
+  g_maze.tiles[tile->linkedDoorTile].isDoorOpen = true;
 }
 
 bool maze_isTeleport(Vector2 pos, Vector2* dest) {
@@ -158,8 +172,11 @@ void maze_draw(void) {
         if ((g_maze.tiles[idx].type == TILE_COIN && !g_maze.tiles[idx].isCoinCollected) ||
             (g_maze.tiles[idx].type == TILE_SWORD && !g_maze.tiles[idx].isSwordCollected) ||
             (g_maze.tiles[idx].type == TILE_CHEST && !g_maze.tiles[idx].isChestCollected) ||
+            (g_maze.tiles[idx].type == TILE_KEY && !g_maze.tiles[idx].isKeyCollected) ||
+            (g_maze.tiles[idx].type == TILE_DOOR && !g_maze.tiles[idx].isDoorOpen) ||
             (g_maze.tiles[idx].type != TILE_COIN && g_maze.tiles[idx].type != TILE_SWORD &&
-             g_maze.tiles[idx].type != TILE_CHEST)) {
+             g_maze.tiles[idx].type != TILE_CHEST && g_maze.tiles[idx].type != TILE_KEY &&
+             g_maze.tiles[idx].type != TILE_DOOR)) {
           engine_Sprite* sprite = g_maze.tiles[idx].sprite;
           assert(sprite != nullptr);
           engine_drawSprite(g_maze.tileset, sprite, WHITE);
@@ -238,6 +255,8 @@ void maze_reset(void) {
       g_maze.tiles[idx].isCoinCollected  = false;
       g_maze.tiles[idx].isSwordCollected = false;
       g_maze.tiles[idx].isChestCollected = true;  // Spawned later
+      g_maze.tiles[idx].isKeyCollected   = false;
+      g_maze.tiles[idx].isDoorOpen       = false;
     }
   }
 }

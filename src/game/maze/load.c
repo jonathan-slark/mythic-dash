@@ -19,10 +19,10 @@ typedef struct {
 
 // --- Constants ---
 
-static const char* FILE_MAZE           = ASSET_DIR "map/maze03.tmj";
+static const char* FILE_MAZE           = ASSET_DIR "map/maze04.tmj";
 constexpr size_t   BUFFER_SIZE         = 1024;
 static const float FRAME_TIME          = 0.1f;
-static const int   TILE_PROPERTY_COUNT = 6;
+static const int   TILE_PROPERTY_COUNT = 8;
 static const int   TELEPORT_TYPES      = 3;
 static const int   MAP_PROPERTY_COUNT  = 1;
 
@@ -42,7 +42,7 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
 
   *tileData = (MapTile*) malloc(*tileCount * sizeof(MapTile));
   if (*tileData == nullptr) {
-    LOG_FATAL(game_log, "Unable to allocate memory for tileset tileIsWalls");
+    LOG_FATAL(game_log, "Unable to allocate memory for tileset");
     return false;
   }
 
@@ -87,6 +87,12 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
         } else if (strcmp(tile->properties[j].name.ptr, "isChest") == 0 && tile->properties[j].data.boolean) {
           LOG_TRACE(game_log, "Tile %d isChest", i);
           (*tileData)[i].type = TILE_CHEST;
+        } else if (strcmp(tile->properties[j].name.ptr, "isKey") == 0 && tile->properties[j].data.boolean) {
+          LOG_TRACE(game_log, "Tile %d isKey", i);
+          (*tileData)[i].type = TILE_KEY;
+        } else if (strcmp(tile->properties[j].name.ptr, "isDoor") == 0 && tile->properties[j].data.boolean) {
+          LOG_TRACE(game_log, "Tile %d isDoor", i);
+          (*tileData)[i].type = TILE_DOOR;
         }
       }
     }
@@ -127,7 +133,9 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
   int                   tileHeight = tileset->tileheight;
   int                   tileCols   = tileset->columns;
   int                   teleportCount[TELEPORT_TYPES];
-  int                   teleports[TELEPORT_TYPES][2];
+  int                   teleportIDs[TELEPORT_TYPES][2];
+  int                   keyID  = -1;
+  int                   doorID = -1;
 
   if (layer == nullptr || tileset == nullptr || count <= 0 || rows <= 0 || cols <= 0 || tileWidth <= 0 ||
       tileHeight <= 0 || tileCols <= 0) {
@@ -149,9 +157,9 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
   }
 
   for (int i = 0; i < TELEPORT_TYPES; i++) {
-    teleportCount[i] = 0;
-    teleports[i][0]  = 0;
-    teleports[i][1]  = 0;
+    teleportCount[i]  = 0;
+    teleportIDs[i][0] = -1;
+    teleportIDs[i][1] = -1;
   }
 
   layer        = map->layers;
@@ -188,18 +196,24 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
           anim = engine_createAnim(sprite, tilesetRow, tilesetCol, animCount, FRAME_TIME, inset, true);
         }
 
-        int teleportType = tileData[tileId].teleportType;
-        if (teleportType > 0) {
-          if (teleportType > TELEPORT_TYPES) {
-            LOG_WARN(game_log, "Invalid teleport type: %d", teleportType);
-          } else {
-            teleportType -= 1;
-            if (teleportCount[teleportType] != -1) {
-              if (teleportCount[teleportType] < 2) {
-                teleports[teleportType][teleportCount[teleportType]++] = i;
-              } else {
-                LOG_WARN(game_log, "Too many teleports of same type found in map");
-                teleportCount[teleportType] = -1;
+        if (tileData[tileId].type == TILE_KEY) {
+          keyID = tileIdx;
+        } else if (tileData[tileId].type == TILE_DOOR) {
+          doorID = tileIdx;
+        } else {
+          int teleportType = tileData[tileId].teleportType;
+          if (teleportType > 0) {
+            if (teleportType > TELEPORT_TYPES) {
+              LOG_WARN(game_log, "Invalid teleport type: %d", teleportType);
+            } else {
+              teleportType -= 1;
+              if (teleportCount[teleportType] != -1) {
+                if (teleportCount[teleportType] < 2) {
+                  teleportIDs[teleportType][teleportCount[teleportType]++] = i;  // TODO: should be = tileIdx
+                } else {
+                  LOG_WARN(game_log, "Too many teleports of same type found in map");
+                  teleportCount[teleportType] = -1;
+                }
               }
             }
           }
@@ -208,6 +222,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
 
       tiles[tileIdx].type               = type;
       tiles[tileIdx].linkedTeleportTile = -1;
+      tiles[tileIdx].linkedDoorTile     = -1;
       tiles[tileIdx].sprite             = sprite;
       tiles[tileIdx].anim               = anim;
       tiles[tileIdx].aabb               = aabb;
@@ -219,11 +234,20 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
 
   for (int i = 0; i < TELEPORT_TYPES; i++) {
     if (teleportCount[i] == 2) {
-      tiles[teleports[i][0]].linkedTeleportTile = teleports[i][1];
-      tiles[teleports[i][1]].linkedTeleportTile = teleports[i][0];
-      LOG_INFO(game_log, "Linked teleports: %d and %d", teleports[i][0], teleports[i][1]);
+      tiles[teleportIDs[i][0]].linkedTeleportTile = teleportIDs[i][1];
+      tiles[teleportIDs[i][1]].linkedTeleportTile = teleportIDs[i][0];
+      LOG_INFO(game_log, "Linked teleports: %d and %d", teleportIDs[i][0], teleportIDs[i][1]);
     } else if (teleportCount[i] == 1) {
       LOG_WARN(game_log, "Found one teleport but not matching twin");
+    }
+  }
+
+  if (keyID >= 0) {
+    if (doorID == -1) {
+      LOG_WARN(game_log, "Key found (%d) but no matching door", keyID);
+    } else {
+      tiles[keyID].linkedDoorTile = doorID;
+      LOG_INFO(game_log, "Key found (%d) with matching door (%d)", keyID, doorID);
     }
   }
 
@@ -356,7 +380,7 @@ void findChest(void) {
 bool maze_init(void) {
   cute_tiled_map_t* map;
   GAME_TRY(map = cute_tiled_load_map_from_file(FILE_MAZE, nullptr));
-  LOG_INFO(game_log, "Map loaded: %s (%d x %d)", FILE_MAZE);
+  LOG_INFO(game_log, "Map loaded: %s (%d x %d)", FILE_MAZE, map->width, map->height);
   if (!convertMap(map)) {
     destroyMaze();
     cute_tiled_free_map(map);

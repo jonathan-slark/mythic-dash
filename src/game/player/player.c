@@ -82,6 +82,8 @@ static void playerChestPickup(void) {
   audio_playPickup(player_getPos());
 }
 
+static void playerKeyPickup(void) { audio_playPickup(player_getPos()); }
+
 static float getSwordTimer(void) {
   float t = fminf(fmaxf((game_getLevel() - 1) / (MAX_LEVEL - 1.0f), 0.0f), 1.0f);
   t       = 1.0f - powf(1.0f - t, 2.0f);  // ease-out curve
@@ -136,16 +138,18 @@ static void playerCheckPickups(void) {
   if (maze_isCoin(pos)) {
     maze_pickupCoin(pos);
     playerCoinPickup();
-  }
-  if (maze_isSword(pos)) {
+  } else if (maze_isSword(pos)) {
     maze_pickupSword(pos);
     playerSwordPickup();
     creature_swordPickup();
-  }
-  if (maze_isChest(pos)) {
+  } else if (maze_isChest(pos)) {
     maze_pickupChest(pos, getChestScore());
     playerChestPickup();
+  } else if (maze_isKey(pos)) {
+    maze_pickupKey(pos);
+    playerKeyPickup();
   }
+
   if (maze_getCoinCount() == g_player.coinsCollected) {
     game_nextLevel();
   }
