@@ -294,6 +294,8 @@ void maze_reset(void) {
       g_maze.tiles[idx].isChestCollected = true;  // Spawned later
       g_maze.tiles[idx].isKeyCollected   = true;  // Spawned later
       g_maze.tiles[idx].isDoorOpen       = false;
+      g_maze.tiles[idx].hasTrapTriggered = false;
+      if (g_maze.tiles[idx].anim != nullptr) engine_resetAnim(g_maze.tiles[idx].anim);
     }
   }
 }
