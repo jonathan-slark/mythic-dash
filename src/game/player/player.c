@@ -170,8 +170,15 @@ static void fallToDeath(void) {
 }
 
 static bool playerCheckTraps(void) {
+  // Wait till player is right on top of the trap
   Vector2 pos = actor_getPos(g_player.actor);
-  pos         = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
+  switch (player_getDir()) {
+    case DIR_UP: pos.y += ACTOR_SIZE - 1; break;
+    case DIR_RIGHT: break;
+    case DIR_DOWN: break;
+    case DIR_LEFT: pos.x += ACTOR_SIZE - 1; break;
+    default: assert(false);
+  }
   if (maze_isTrapDoor(pos)) {
     maze_trapTriggered(pos);
     fallToDeath();
