@@ -155,10 +155,28 @@ static void playerCheckPickups(void) {
   }
 }
 
+static void deadCommon(void) {
+  g_player.lives     -= 1;
+  g_player.state      = PLAYER_DEAD;
+  g_player.deadTimer  = PLAYER_DEAD_TIMER;
+  audio_resetChimePitch();
+}
+
+static void fallToDeath(void) {
+  if (debug_isPlayerImmune()) return;
+
+  deadCommon();
+  audio_playFalling(player_getPos());
+}
+
 static bool playerCheckTraps(void) {
   Vector2 pos = actor_getPos(g_player.actor);
   pos         = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
-  if (maze_isTrap(pos)) {
+  if (maze_isTrapDoor(pos)) {
+    maze_trapTriggered(pos);
+    fallToDeath();
+    return true;
+  } else if (maze_isTrap(pos)) {
     maze_trapTriggered(pos);
     player_dead();
     return true;
@@ -330,10 +348,7 @@ int player_getLives(void) {
 void player_dead(void) {
   if (debug_isPlayerImmune()) return;
 
-  g_player.lives     -= 1;
-  g_player.state      = PLAYER_DEAD;
-  g_player.deadTimer  = PLAYER_DEAD_TIMER;
-  audio_resetChimePitch();
+  deadCommon();
   audio_playDeath(player_getPos());
 }
 

@@ -119,6 +119,13 @@ bool maze_isTrap(Vector2 pos) {
   return tile0->type == TILE_TRAP || tile1->type == TILE_TRAP;
 }
 
+bool maze_isTrapDoor(Vector2 pos) {
+  maze__Tile* tile0 = getTileAt(pos, 0);
+  maze__Tile* tile1 = getTileAt(pos, 1);
+  return (tile0->type == TILE_TRAP && tile0->trapType == TRAP_DOOR) ||
+         (tile1->type == TILE_TRAP && tile1->trapType == TRAP_DOOR);
+}
+
 bool maze_isKey(Vector2 pos) {
   maze__Tile* tile = getTileAt(pos, 1);
   return tile->type == TILE_KEY && !tile->isKeyCollected;
@@ -224,7 +231,8 @@ void maze_update(float frameTime) {
     for (int i = 0; i < g_maze.count; i++) {
       int idx = i + layerNum * g_maze.count;
       if (g_maze.tiles[idx].type != TILE_NONE) {
-        if (g_maze.tiles[idx].type == TILE_TRAP && g_maze.tiles[idx].trapType == TRAP_SPIKE &&
+        if (((g_maze.tiles[idx].type == TILE_TRAP && g_maze.tiles[idx].trapType == TRAP_SPIKE) ||
+             (g_maze.tiles[idx].type == TILE_TRAP && g_maze.tiles[idx].trapType == TRAP_DOOR)) &&
             !g_maze.tiles[idx].hasTrapTriggered)
           continue;
         engine_Anim* anim = g_maze.tiles[idx].anim;

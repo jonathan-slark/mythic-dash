@@ -200,7 +200,9 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
               animCount,
               FRAME_TIME,
               inset,
-              type != TILE_TRAP || (type == TILE_TRAP && tileData[tileId].trapType != TRAP_SPIKE)
+              type != TILE_TRAP ||
+                  (type == TILE_TRAP && tileData[tileId].trapType != TRAP_SPIKE &&
+                   tileData[tileId].trapType != TRAP_DOOR)
           );
         }
 

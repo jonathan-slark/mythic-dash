@@ -8,9 +8,13 @@
 #include "../internal.h"
 #include <engine/engine.h>
 
+// --- Constants ---
+
 constexpr int CHEST_SPAWN_COUNT = 2;
 
 // --- Types ---
+
+typedef enum { TRAP_ACID = 1, TRAP_SPIKE, TRAP_DOOR } maze_TrapType;
 
 typedef enum maze__TileType {
   TILE_NONE,
@@ -60,10 +64,6 @@ typedef struct maze__Maze {
   engine_Texture *tileset;
   maze__Tile *tiles;
 } maze__Maze;
-
-// --- Constants ---
-
-static const int TRAP_SPIKE = 2;
 
 // --- Global state ---
 

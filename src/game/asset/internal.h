@@ -50,6 +50,7 @@ typedef struct asset_Assets {
   engine_Sound*   wailSounds[WAIL_SOUND_COUNT];
   engine_Sound*   chimeSound;
   engine_Sound*   deathSound;
+  engine_Sound*   fallingSound;
   engine_Sound*   whispersSound;
   engine_Sound*   pickupSound;
   Music           music;
@@ -71,6 +72,7 @@ static const asset_Sound WAIL_SOUNDS[] = {
 };
 static const asset_Sound CHIME_SOUND    = { .filepath = ASSET_DIR "sfx/chime.wav", .volume = 0.5f, .pitch = 1.0f };
 static const asset_Sound DEATH_SOUND    = { .filepath = ASSET_DIR "sfx/death.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound FALLING_SOUND  = { .filepath = ASSET_DIR "sfx/falling.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound WHISPERS_SOUND = { .filepath = ASSET_DIR "sfx/whispers.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound PICKUP_SOUND   = { .filepath = ASSET_DIR "sfx/pickup.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Music MUSIC = { .filepath = ASSET_DIR "music/01.mp3", .volume = 0.5f, .duckedVolume = 0.2f };

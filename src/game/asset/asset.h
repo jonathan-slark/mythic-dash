@@ -36,6 +36,7 @@ engine_Font*    asset_getFontTiny(void);
 engine_Sound*   asset_getWailSound(int id);
 engine_Sound*   asset_getChimeSound(void);
 engine_Sound*   asset_getDeathSound(void);
+engine_Sound*   asset_getFallingSound(void);
 engine_Sound*   asset_getWhispersSound(void);
 engine_Sound*   asset_getPickupSound(void);
 Music           asset_getMusic(void);

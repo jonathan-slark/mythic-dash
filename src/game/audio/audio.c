@@ -68,6 +68,13 @@ void audio_playDeath(Vector2 pos) {
   engine_playSound(sound);
 }
 
+void audio_playFalling(Vector2 pos) {
+  if (!g_state.audioEnabled) return;
+  engine_Sound* sound = asset_getFallingSound();
+  engine_setSoundPan(sound, getPan(pos));
+  engine_playSound(sound);
+}
+
 void audio_playWail(Vector2 pos) {
   if (!g_state.audioEnabled) return;
   engine_Sound* sound = asset_getWailSound(GetRandomValue(0, WAIL_SOUND_COUNT - 1));
