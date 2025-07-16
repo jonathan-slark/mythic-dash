@@ -19,7 +19,7 @@ typedef struct {
 
 // --- Constants ---
 
-static const char* FILE_MAZE           = ASSET_DIR "map/maze05.tmj";
+static const char* FILE_MAZE           = ASSET_DIR "map/maze06.tmj";
 constexpr size_t   BUFFER_SIZE         = 1024;
 static const float FRAME_TIME          = 0.1f;
 static const int   TILE_PROPERTY_COUNT = 8;
