@@ -117,7 +117,17 @@ static const asset_ActorData PLAYER_DATA[PLAYER_STATE_COUNT] = {
       [DIR_DOWN]  = { .row = 0, .startCol = 21, .frameCount = 3, FRAME_TIME * 2.0f},
       [DIR_LEFT]  = { .row = 6, .startCol = 21, .frameCount = 3, FRAME_TIME * 2.0f}
     }
-  }
+  },
+  {
+    .inset    = { 8.0f, 8.0f },
+    .loop = false,
+    .animData = {
+      [DIR_UP]    = { .row = 10, .startCol = 0, .frameCount = 5, FRAME_TIME},
+      [DIR_RIGHT] = { .row = 9, .startCol = 0, .frameCount = 5, FRAME_TIME},
+      [DIR_DOWN]  = { .row = 8, .startCol = 0, .frameCount = 5, FRAME_TIME},
+      [DIR_LEFT]  = { .row = 11, .startCol = 0, .frameCount = 5, FRAME_TIME}
+    }
+  }  
 };
 
 static const asset_ActorData CREATURE_DATA[CREATURE_COUNT] = {

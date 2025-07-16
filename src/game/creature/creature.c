@@ -292,7 +292,7 @@ void creature_update(float frameTime, float slop) {
 
   if (!player_hasSword()) updateState(frameTime);
 
-  if (playerDead && playerState != PLAYER_DEAD) player_dead();
+  if (playerDead && playerState != PLAYER_DEAD && playerState != PLAYER_FALLING) player_dead();
 }
 
 Vector2 creature_getPos(int id) {

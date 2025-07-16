@@ -157,7 +157,6 @@ static void playerCheckPickups(void) {
 
 static void deadCommon(void) {
   g_player.lives     -= 1;
-  g_player.state      = PLAYER_DEAD;
   g_player.deadTimer  = PLAYER_DEAD_TIMER;
   audio_resetChimePitch();
 }
@@ -166,6 +165,7 @@ static void fallToDeath(void) {
   if (debug_isPlayerImmune()) return;
 
   deadCommon();
+  g_player.state = PLAYER_FALLING;
   audio_playFalling(player_getPos());
 }
 
@@ -245,7 +245,7 @@ void player_update(float frameTime, float slop) {
   if (engine_isKeyPressed(KEY_I)) debug_togglePlayerImmune();
 #endif
 
-  if (g_player.state == PLAYER_DEAD) {
+  if (g_player.state == PLAYER_DEAD || g_player.state == PLAYER_FALLING) {
     g_player.deadTimer = fmaxf(g_player.deadTimer - frameTime, 0.0f);
     if (g_player.deadTimer == 0.0f) {
       if (g_player.lives == 0) {
@@ -349,6 +349,7 @@ void player_dead(void) {
   if (debug_isPlayerImmune()) return;
 
   deadCommon();
+  g_player.state = PLAYER_DEAD;
   audio_playDeath(player_getPos());
 }
 

@@ -23,7 +23,13 @@
 
 typedef enum game_Dir { DIR_UP, DIR_RIGHT, DIR_DOWN, DIR_LEFT, DIR_COUNT, DIR_NONE } game_Dir;
 
-typedef enum game_PlayerState { PLAYER_NORMAL, PLAYER_SWORD, PLAYER_DEAD, PLAYER_STATE_COUNT } game_PlayerState;
+typedef enum game_PlayerState {
+  PLAYER_NORMAL,
+  PLAYER_SWORD,
+  PLAYER_DEAD,
+  PLAYER_FALLING,
+  PLAYER_STATE_COUNT
+} game_PlayerState;
 
 typedef struct game_AABB {
   Vector2 min;

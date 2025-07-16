@@ -88,7 +88,7 @@ void draw_updatePlayer(float frameTime, float slop) {
 
   engine_spriteSetPos(asset_getPlayerSprite(state), pos);
 
-  if (player_isMoving() || state == PLAYER_SWORD || state == PLAYER_DEAD) {
+  if (player_isMoving() || state == PLAYER_SWORD || state == PLAYER_DEAD || state == PLAYER_FALLING) {
     engine_updateAnim(asset_getPlayerAnim(state, dir), frameTime);
   }
 }
