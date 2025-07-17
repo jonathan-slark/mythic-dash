@@ -71,7 +71,7 @@ static void playerCoinPickup(void) {
 
 static int getChestScoreMultiplier(void) {
   int   level = game_getLevel();
-  float scale = (level - 1) / 19.0f;
+  float scale = level / 19.0f;
   return 1 + (int) (scale * 49.0f);
 }
 
