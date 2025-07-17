@@ -74,6 +74,8 @@ extern const char* DIR_STRINGS[];
 
 constexpr int WAIL_SOUND_COUNT = 4;
 
+constexpr int MAX_KEY_TYPES = 2;
+
 // --- Global state ---
 
 extern log_Log* game_log;

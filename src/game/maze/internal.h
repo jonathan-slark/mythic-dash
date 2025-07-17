@@ -59,8 +59,9 @@ typedef struct maze__Maze {
   int chestScore;
   float chestScoreTimer;
   bool reverseAfterTeleport;
-  int keyID;
-  bool hasKeySpawned;
+  int keyCount;
+  int keyIDs[MAX_KEY_TYPES];
+  bool hasKeySpawned[MAX_KEY_TYPES];
   engine_Texture *tileset;
   maze__Tile *tiles;
 } maze__Maze;

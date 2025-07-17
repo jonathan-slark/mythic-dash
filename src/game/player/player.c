@@ -196,7 +196,7 @@ static void playerCheckScore() {
       (g_player.score % SCORE_EXTRA_LIFE == 0)) {
     g_player.lives              += 1;
     g_player.lastScoreBonusLife  = g_player.score;
-    LOG_DEBUG(game_log, "Player gained bonus life at score:", g_player.score);
+    LOG_INFO(game_log, "Player gained bonus life at score:", g_player.score);
   }
 }
 

@@ -14,12 +14,14 @@ typedef struct {
   maze__TileType type;
   int            teleportType;
   int            trapType;
+  int            doorType;
+  int            keyType;
   int            animCount;
 } MapTile;
 
 // --- Constants ---
 
-static const char* FILE_MAZE           = ASSET_DIR "map/maze06.tmj";
+static const char* FILE_MAZE           = ASSET_DIR "map/maze07.tmj";
 constexpr size_t   BUFFER_SIZE         = 1024;
 static const float FRAME_TIME          = 0.1f;
 static const int   TILE_PROPERTY_COUNT = 8;
@@ -73,6 +75,18 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
             (*tileData)[i].type = TILE_TRAP;
             LOG_TRACE(game_log, "Tile %d is a trap, type %d", i, (*tileData)[i].trapType);
           }
+        } else if (strcmp(tile->properties[j].name.ptr, "doorType") == 0) {
+          (*tileData)[i].doorType = tile->properties[j].data.integer;
+          if (tile->properties[j].data.integer > 0) {
+            (*tileData)[i].type = TILE_DOOR;
+            LOG_TRACE(game_log, "Tile %d is a door, type %d", i, (*tileData)[i].doorType);
+          }
+        } else if (strcmp(tile->properties[j].name.ptr, "keyType") == 0) {
+          (*tileData)[i].keyType = tile->properties[j].data.integer;
+          if (tile->properties[j].data.integer > 0) {
+            (*tileData)[i].type = TILE_KEY;
+            LOG_TRACE(game_log, "Tile %d is a key, type %d", i, (*tileData)[i].keyType);
+          }
         }
       } else if (tile->properties[j].type == CUTE_TILED_PROPERTY_BOOL) {
         if (strcmp(tile->properties[j].name.ptr, "isCoin") == 0 && tile->properties[j].data.boolean) {
@@ -87,12 +101,6 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
         } else if (strcmp(tile->properties[j].name.ptr, "isChest") == 0 && tile->properties[j].data.boolean) {
           LOG_TRACE(game_log, "Tile %d isChest", i);
           (*tileData)[i].type = TILE_CHEST;
-        } else if (strcmp(tile->properties[j].name.ptr, "isKey") == 0 && tile->properties[j].data.boolean) {
-          LOG_TRACE(game_log, "Tile %d isKey", i);
-          (*tileData)[i].type = TILE_KEY;
-        } else if (strcmp(tile->properties[j].name.ptr, "isDoor") == 0 && tile->properties[j].data.boolean) {
-          LOG_TRACE(game_log, "Tile %d isDoor", i);
-          (*tileData)[i].type = TILE_DOOR;
         }
       }
     }
@@ -134,8 +142,10 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
   int                   tileCols   = tileset->columns;
   int                   teleportCount[TELEPORT_TYPES];
   int                   teleportIDs[TELEPORT_TYPES][2];
-  int                   keyID  = -1;
-  int                   doorID = -1;
+  int                   keyCount[MAX_KEY_TYPES];
+  int                   keyIDs[MAX_KEY_TYPES];
+  int                   doorCount[MAX_KEY_TYPES];
+  int                   doorIDs[MAX_KEY_TYPES];
 
   if (layer == nullptr || tileset == nullptr || count <= 0 || rows <= 0 || cols <= 0 || tileWidth <= 0 ||
       tileHeight <= 0 || tileCols <= 0) {
@@ -157,9 +167,9 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
   }
 
   for (int i = 0; i < TELEPORT_TYPES; i++) {
-    teleportCount[i]  = 0;
-    teleportIDs[i][0] = -1;
-    teleportIDs[i][1] = -1;
+    teleportCount[i] = 0;
+    keyCount[i]      = 0;
+    doorCount[i]     = 0;
   }
 
   layer        = map->layers;
@@ -207,9 +217,41 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
         }
 
         if (tileData[tileId].type == TILE_KEY) {
-          keyID = tileIdx;
+          int keyType = tileData[tileId].keyType;
+          if (keyType > 0) {
+            if (keyType > MAX_KEY_TYPES) {
+              LOG_WARN(game_log, "Invalid key type: %d", keyType);
+            } else {
+              keyType -= 1;
+              if (keyCount[keyType] != -1) {
+                if (keyCount[keyType] == 0) {
+                  keyIDs[keyType] = tileIdx;
+                  keyCount[keyType]++;
+                } else {
+                  LOG_WARN(game_log, "More than one key of the same type found in map");
+                  keyCount[keyType] = -1;
+                }
+              }
+            }
+          }
         } else if (tileData[tileId].type == TILE_DOOR) {
-          doorID = tileIdx;
+          int doorType = tileData[tileId].doorType;
+          if (doorType > 0) {
+            if (doorType > MAX_KEY_TYPES) {
+              LOG_WARN(game_log, "Invalid door type: %d", doorType);
+            } else {
+              doorType -= 1;
+              if (doorCount[doorType] != -1) {
+                if (doorCount[doorType] == 0) {
+                  doorIDs[doorType] = tileIdx;
+                  doorCount[doorType]++;
+                } else {
+                  LOG_WARN(game_log, "More than one door of the same type found in map");
+                  doorCount[doorType] = -1;
+                }
+              }
+            }
+          }
         } else if (tileData[tileId].type == TILE_TRAP) {
           tiles[tileIdx].trapType = tileData[tileId].trapType;
         } else {
@@ -254,12 +296,10 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
     }
   }
 
-  if (keyID >= 0) {
-    if (doorID == -1) {
-      LOG_WARN(game_log, "Key found (%d) but no matching door", keyID);
-    } else {
-      tiles[keyID].linkedDoorTile = doorID;
-      LOG_INFO(game_log, "Key found (%d) with matching door (%d)", keyID, doorID);
+  for (int i = 0; i < MAX_KEY_TYPES; i++) {
+    if (keyCount[i] == 1) {
+      tiles[keyIDs[i]].linkedDoorTile = doorIDs[i];
+      LOG_INFO(game_log, "Linked key and door: %d and %d", keyIDs[i], doorIDs[i]);
     }
   }
 
@@ -284,8 +324,18 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
     .layerCount = layerCount,
     .tileset    = nullptr,
     .tiles      = tiles,
-    .keyID      = keyID
   };
+
+  g_maze.keyCount = 0;
+  for (int i = 0; i < MAX_KEY_TYPES; i++) {
+    g_maze.keyCount += keyCount[i];
+    if (keyCount[i] == 1) {
+      g_maze.keyIDs[i] = keyIDs[i];
+    } else {
+      g_maze.keyIDs[i] = -1;
+    }
+  }
+
   GAME_TRY(getMapProperties(map));
 
   return true;
@@ -381,6 +431,7 @@ void findChest(void) {
 
   if (count == 0) {
     LOG_WARN(game_log, "No chest found in the map");
+    g_maze.chestID = -1;
   } else if (count == 1) {
     LOG_INFO(game_log, "Found chest: %d", g_maze.chestID);
   } else {

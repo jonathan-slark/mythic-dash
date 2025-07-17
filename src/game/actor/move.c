@@ -76,7 +76,7 @@ static void checkMazeCollision(game_Actor* actor) {
   if (tile != nullptr) {
     Vector2 oldPos = actor->pos;
     resolveActorCollision(actor, &tile->aabb);
-    LOG_DEBUG(
+    LOG_TRACE(
         game_log,
         "Collision detected, actor moved from: %f, %f to: %f, %f",
         oldPos.x,
@@ -179,7 +179,7 @@ static bool tryAlignToTile(game_Actor* actor, game_Dir dir, game_AABB actorAABB,
     case DIR_DOWN:
       if (overlapX > OVERLAP_EPSILON && overlapX <= slop && fabsf(overlapY) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, &tileAABB);
-        LOG_DEBUG(
+        LOG_TRACE(
             game_log,
             "Actor can move %s, moved from %f, %f, to: %f, %f, slop: %f",
             DIR_STRINGS[dir],
@@ -196,7 +196,7 @@ static bool tryAlignToTile(game_Actor* actor, game_Dir dir, game_AABB actorAABB,
     case DIR_RIGHT:
       if (overlapY > OVERLAP_EPSILON && overlapY <= slop && fabsf(overlapX) < OVERLAP_EPSILON) {
         alignToPassage(actor, dir, &tileAABB);
-        LOG_DEBUG(
+        LOG_TRACE(
             game_log,
             "Actor can move %s, moved from %f, %f, to: %f, %f, slop: %f",
             DIR_STRINGS[dir],

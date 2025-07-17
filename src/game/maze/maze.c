@@ -33,6 +33,8 @@ static maze__Tile* getTileAt(Vector2 pos, int layer) {
 
 // Chest appears at regular intervals of player collecting coins
 static void checkChestSpawn(void) {
+  if (g_maze.chestID == -1) return;
+
   for (int i = 0; i < CHEST_SPAWN_COUNT; i++) {
     if (!g_maze.hasChestSpawned[i]) {
       if (player_getCoinsCollected() >= ((i + 1) * g_maze.coinCount) / (CHEST_SPAWN_COUNT + 1)) {
@@ -45,13 +47,15 @@ static void checkChestSpawn(void) {
   }
 }
 
-// Key appears once, mid way through coin collection
+// Keys appear at regular intervals of player collecting coins
 static void checkKeySpawn(void) {
-  if (!g_maze.hasKeySpawned) {
-    if (player_getCoinsCollected() >= g_maze.coinCount / 2) {
-      g_maze.hasKeySpawned                      = true;
-      g_maze.tiles[g_maze.keyID].isKeyCollected = false;
-      LOG_INFO(game_log, "Key spawned at %d coins", player_getCoinsCollected());
+  for (int i = 0; i < MAX_KEY_TYPES; i++) {
+    if (g_maze.keyIDs[i] != -1 && !g_maze.hasKeySpawned[i]) {
+      if (player_getCoinsCollected() >= ((i + 1) * g_maze.coinCount) / (MAX_KEY_TYPES + 1)) {
+        g_maze.hasKeySpawned[i]                       = true;
+        g_maze.tiles[g_maze.keyIDs[i]].isKeyCollected = false;
+        LOG_INFO(game_log, "Key spawned at %d coins", player_getCoinsCollected());
+      }
     }
   }
 }
@@ -284,6 +288,9 @@ void maze_reset(void) {
   g_maze.chestScoreTimer   = 0.0f;
   for (int i = 0; i < CHEST_SPAWN_COUNT; i++) {
     g_maze.hasChestSpawned[i] = false;
+  }
+  for (int i = 0; i < MAX_KEY_TYPES; i++) {
+    g_maze.hasKeySpawned[i] = false;
   }
 
   for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
