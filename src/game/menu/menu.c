@@ -56,10 +56,10 @@ static const menu_Button MAIN_BUTTONS[] = {
   { { 190, 130, 100, 10 }, "Exit to Desktop",    MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME },
 };
 static const menu_Button GAME_BUTTONS[] = {
-  {  { 190, 70, 100, 10 },   "Easy", MENU_NONE, game_new, MENU_CONTEXT_BOTH }, // TODO: add difficulty parameter
-  {  { 190, 80, 100, 10 }, "Normal", MENU_NONE, game_new, MENU_CONTEXT_BOTH },
-  {  { 190, 90, 100, 10 }, "Arcade", MENU_NONE, game_new, MENU_CONTEXT_BOTH },
-  { { 190, 130, 100, 10 },   "Back", MENU_MAIN,  nullptr, MENU_CONTEXT_BOTH }
+  {  { 190, 70, 100, 10 },        "Easy", MENU_NONE, game_new, MENU_CONTEXT_BOTH }, // TODO: add difficulty parameter
+  {  { 190, 80, 100, 10 },      "Normal", MENU_NONE, game_new, MENU_CONTEXT_BOTH },
+  {  { 190, 90, 100, 10 }, "Arcade Mode", MENU_NONE, game_new, MENU_CONTEXT_BOTH },
+  { { 190, 130, 100, 10 },        "Back", MENU_MAIN,  nullptr, MENU_CONTEXT_BOTH }
 };
 static const menu_Button OPTIONS_BUTTONS[] = {
   { { 190, 130, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
