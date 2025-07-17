@@ -12,18 +12,18 @@
 // --- Types ---
 
 typedef struct CreatureStateHandler {
-  void      (*update)(creature__Creature*, float, float);
-  game_Tile (*getTarget)(creature__Creature*);
-  game_Dir  (*selectDir)(creature__Creature*, game_Dir*, int);
+  void      (*update)(creature_Creature*, float, float);
+  game_Tile (*getTarget)(creature_Creature*);
+  game_Dir  (*selectDir)(creature_Creature*, game_Dir*, int);
 } CreatureStateHandler;
 
 // --- Function Prototypes ---
 
-static game_Dir  selectDirRandom(creature__Creature* creature, game_Dir* dirs, int count);
-static game_Dir  selectDirGreedy(creature__Creature* creature, game_Dir* dirs, int count);
-static game_Tile getCornerTile(creature__Creature* creature);
-static game_Tile getTargetTile(creature__Creature* creature);
-static game_Tile getStartTile(creature__Creature* creature);
+static game_Dir  selectDirRandom(creature_Creature* creature, game_Dir* dirs, int count);
+static game_Dir  selectDirGreedy(creature_Creature* creature, game_Dir* dirs, int count);
+static game_Tile getCornerTile(creature_Creature* creature);
+static game_Tile getTargetTile(creature_Creature* creature);
+static game_Tile getStartTile(creature_Creature* creature);
 
 // --- Constants ---
 
@@ -49,9 +49,9 @@ static const CreatureStateHandler DeadHandler = {
 
 // --- Helper functions ---
 
-static inline game_Tile getCornerTile(creature__Creature* creature) { return creature->cornerTile; }
+static inline game_Tile getCornerTile(creature_Creature* creature) { return creature->cornerTile; }
 
-static inline game_Tile getStartTile(creature__Creature* creature) { return maze_getTile(creature->mazeStart); }
+static inline game_Tile getStartTile(creature_Creature* creature) { return maze_getTile(creature->mazeStart); }
 
 static int getValidDirs(game_Actor* actor, game_Dir currentDir, game_Dir* validDirs, bool isChangedState, float slop) {
   assert(actor != nullptr);
@@ -75,11 +75,11 @@ static inline game_Dir randomSelect(game_Dir dirs[], int count) {
   return dirs[GetRandomValue(0, count - 1)];
 }
 
-static inline game_Dir selectDirRandom(creature__Creature* creature [[maybe_unused]], game_Dir* dirs, int count) {
+static inline game_Dir selectDirRandom(creature_Creature* creature [[maybe_unused]], game_Dir* dirs, int count) {
   return randomSelect(dirs, count);
 }
 
-static game_Dir greedyDirSelect(creature__Creature* creature, game_Dir dirs[], int count, game_Tile targetTile) {
+static game_Dir greedyDirSelect(creature_Creature* creature, game_Dir dirs[], int count, game_Tile targetTile) {
   assert(count > 0);
 
   if (count == 1) return dirs[0];
@@ -110,12 +110,12 @@ static game_Dir greedyDirSelect(creature__Creature* creature, game_Dir dirs[], i
   }
 }
 
-static inline game_Dir selectDirGreedy(creature__Creature* creature, game_Dir* dirs, int count) {
+static inline game_Dir selectDirGreedy(creature_Creature* creature, game_Dir* dirs, int count) {
   return greedyDirSelect(creature, dirs, count, creature->targetTile);
 }
 
 // Creature personalities
-static game_Tile getTargetTile(creature__Creature* creature) {
+static game_Tile getTargetTile(creature_Creature* creature) {
   game_Tile targetTile;
   game_Tile playerTile = maze_getTile(actor_getCentre(player_getActor()));
   switch (creature->id) {
@@ -143,7 +143,7 @@ static game_Tile getTargetTile(creature__Creature* creature) {
 }
 
 static void
-creatureUpdateCommon(creature__Creature* creature, float frameTime, float slop, const CreatureStateHandler* handler) {
+creatureUpdateCommon(creature_Creature* creature, float frameTime, float slop, const CreatureStateHandler* handler) {
   game_Actor* actor      = creature->actor;
   game_Dir    currentDir = actor_getDir(actor);
 
@@ -178,7 +178,7 @@ creatureUpdateCommon(creature__Creature* creature, float frameTime, float slop, 
 // --- Creature state functions ---
 
 // Creature moves back and forth in pen till released
-void creature__pen(creature__Creature* creature, float frameTime, float slop) {
+void creature__pen(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -198,7 +198,7 @@ void creature__pen(creature__Creature* creature, float frameTime, float slop) {
 }
 
 // Creature moves from pen to start position
-void creature__penToStart(creature__Creature* creature, float frameTime, float slop) {
+void creature__penToStart(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -230,7 +230,7 @@ void creature__penToStart(creature__Creature* creature, float frameTime, float s
 }
 
 // Creature moves from maze start back to pen
-void creature__startToPen(creature__Creature* creature, float frameTime, float slop) {
+void creature__startToPen(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -261,7 +261,7 @@ void creature__startToPen(creature__Creature* creature, float frameTime, float s
 }
 
 // Creature wanders randomly
-void creature__frightened(creature__Creature* creature, float frameTime, float slop) {
+void creature__frightened(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -270,7 +270,7 @@ void creature__frightened(creature__Creature* creature, float frameTime, float s
 }
 
 // Creature chases player
-void creature__chase(creature__Creature* creature, float frameTime, float slop) {
+void creature__chase(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -279,7 +279,7 @@ void creature__chase(creature__Creature* creature, float frameTime, float slop) 
 }
 
 // Creature heads to it's assigned corner
-void creature__scatter(creature__Creature* creature, float frameTime, float slop) {
+void creature__scatter(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -288,7 +288,7 @@ void creature__scatter(creature__Creature* creature, float frameTime, float slop
 }
 
 // Creature heads back to the pen
-void creature__dead(creature__Creature* creature, float frameTime, float slop) {
+void creature__dead(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);

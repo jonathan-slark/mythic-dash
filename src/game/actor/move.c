@@ -54,10 +54,10 @@ static void resolveActorCollision(game_Actor* actor, const game_AABB* wall) {
   }
 }
 
-static actor__Tile* isMazeCollision(game_Actor* actor) {
+static actor_Tile* isMazeCollision(game_Actor* actor) {
   assert(actor != nullptr);
 
-  actor__Tile* tile = nullptr;
+  actor_Tile* tile = nullptr;
   for (size_t i = 0; i < TILES_COUNT; i++) {
     if (actor->tilesMove[i].isWall && game_isAABBColliding(actor_getAABB(actor), actor->tilesMove[i].aabb)) {
       actor->tilesMove[i].isCollision = true;
@@ -72,7 +72,7 @@ static actor__Tile* isMazeCollision(game_Actor* actor) {
 static void checkMazeCollision(game_Actor* actor) {
   assert(actor != nullptr);
 
-  actor__Tile* tile = isMazeCollision(actor);
+  actor_Tile* tile = isMazeCollision(actor);
   if (tile != nullptr) {
     Vector2 oldPos = actor->pos;
     resolveActorCollision(actor, &tile->aabb);
@@ -88,7 +88,7 @@ static void checkMazeCollision(game_Actor* actor) {
   }
 }
 
-static void getTiles(game_Actor* actor, actor__Tile tiles[], game_Dir dir) {
+static void getTiles(game_Actor* actor, actor_Tile tiles[], game_Dir dir) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
 
@@ -156,11 +156,11 @@ static void alignToPassage(game_Actor* actor, game_Dir dir, const game_AABB* til
   }
 }
 
-static bool isPassagePattern(const actor__Tile tiles[]) {
+static bool isPassagePattern(const actor_Tile tiles[]) {
   return !tiles[1].isWall && (tiles[0].isWall || tiles[2].isWall);
 }
 
-static void clearAllCollisionFlags(actor__Tile tiles[]) {
+static void clearAllCollisionFlags(actor_Tile tiles[]) {
   for (size_t i = 0; i < TILES_COUNT; i++) {
     tiles[i].isCollision = false;
   }

@@ -11,8 +11,8 @@
 
 // --- Types ---
 
-typedef struct creature__Creature {
-  void (*update)(struct creature__Creature *, float, float);
+typedef struct creature_Creature {
+  void (*update)(struct creature_Creature *, float, float);
   float startTimer;
   Vector2 mazeStart;
   game_Tile cornerTile;
@@ -25,28 +25,28 @@ typedef struct creature__Creature {
   float scoreTimer;
   float teleportTimer;
   int whisperId;
-} creature__Creature;
+} creature_Creature;
 
-typedef struct creature__State {
-  creature__Creature creatures[CREATURE_COUNT];
-  void (*update)(creature__Creature *, float, float);
-  void (*lastUpdate)(creature__Creature *, float, float);
+typedef struct creature_State {
+  creature_Creature creatures[CREATURE_COUNT];
+  void (*update)(creature_Creature *, float, float);
+  void (*lastUpdate)(creature_Creature *, float, float);
   size_t stateNum;
   float stateTimer;
-} creature__State;
+} creature_State;
 
 // --- Creature state function prototypes ---
 
-void creature__pen(creature__Creature *creature, float frameTime, float slop);
-void creature__penToStart(creature__Creature *creature, float frameTime,
+void creature__pen(creature_Creature *creature, float frameTime, float slop);
+void creature__penToStart(creature_Creature *creature, float frameTime,
                           float slop);
-void creature__startToPen(creature__Creature *creature, float frameTime,
+void creature__startToPen(creature_Creature *creature, float frameTime,
                           float slop);
-void creature__frightened(creature__Creature *creature, float frameTime,
+void creature__frightened(creature_Creature *creature, float frameTime,
                           float slop);
-void creature__dead(creature__Creature *creature, float frameTime, float slop);
-void creature__chase(creature__Creature *creature, float frameTime, float slop);
-void creature__scatter(creature__Creature *creature, float frameTime,
+void creature__dead(creature_Creature *creature, float frameTime, float slop);
+void creature__chase(creature_Creature *creature, float frameTime, float slop);
+void creature__scatter(creature_Creature *creature, float frameTime,
                        float slop);
 
 // --- Constants ---
@@ -73,7 +73,7 @@ static const struct {
   game_Dir startDir;
   float startSpeed;
   float startTimer;
-  void (*update)(creature__Creature *, float, float);
+  void (*update)(creature_Creature *, float, float);
 } CREATURE_DATA[CREATURE_COUNT] = {
     [0] = {{15 * TILE_SIZE, 8 * TILE_SIZE},
            creature_MAZE_START[1],
@@ -107,7 +107,7 @@ static const struct {
 
 // --- Global state ---
 
-extern creature__State g_state;
+extern creature_State g_state;
 
 // --- Helper functions ---
 

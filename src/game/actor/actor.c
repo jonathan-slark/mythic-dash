@@ -18,7 +18,7 @@
 
 // --- Helper functions ---
 
-static void drawTile(actor__Tile tile) {
+static void drawTile(actor_Tile tile) {
   Color colour;
   if (tile.isCollision) {
     colour = OVERLAY_COLOUR_COLLISION;

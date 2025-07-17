@@ -24,7 +24,7 @@ static const float TELEPORT_TIMER       = 0.5f;
 
 // --- Global state ---
 
-creature__State g_state = { .update = nullptr, .lastUpdate = nullptr, .stateNum = 0, .stateTimer = 0.0f };
+creature_State g_state = { .update = nullptr, .lastUpdate = nullptr, .stateNum = 0, .stateTimer = 0.0f };
 
 // --- Helper functions ---
 
@@ -38,13 +38,13 @@ static inline bool shouldTransitionState(void) {
   return g_state.stateTimer == 0.0f && g_state.stateNum <= COUNT(STATE_TIMERS);
 }
 
-static inline bool isInActiveState(creature__Creature* creature) {
+static inline bool isInActiveState(creature_Creature* creature) {
   assert(creature != nullptr);
   return creature->update == creature__chase || creature->update == creature__scatter ||
          creature->update == creature__frightened;
 }
 
-static const char* getStateString(void (*update)(struct creature__Creature*, float, float)) {
+static const char* getStateString(void (*update)(struct creature_Creature*, float, float)) {
   assert(update != nullptr);
 
   if (update == creature__pen) return STATE_PEN_STR;
@@ -57,7 +57,7 @@ static const char* getStateString(void (*update)(struct creature__Creature*, flo
   return "";
 }
 
-static void transitionToState(void (*newState)(creature__Creature*, float, float)) {
+static void transitionToState(void (*newState)(creature_Creature*, float, float)) {
   assert(newState != nullptr);
 
   g_state.lastUpdate = g_state.update;
@@ -79,7 +79,7 @@ static void transitionToPermanentChase(void) {
 
 static void toggleCreatureState() {
   void (*newState)(
-      creature__Creature*, float, float
+      creature_Creature*, float, float
   ) = (g_state.update == nullptr || g_state.update == creature__chase) ? creature__scatter : creature__chase;
   transitionToState(newState);
   g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
@@ -143,7 +143,7 @@ static void creatureSetSpeeds(void) {
   }
 }
 
-static void creatureCheckScoreTimer(creature__Creature* creature, float frameTime) {
+static void creatureCheckScoreTimer(creature_Creature* creature, float frameTime) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
 
@@ -153,7 +153,7 @@ static void creatureCheckScoreTimer(creature__Creature* creature, float frameTim
   if (creature->scoreTimer == 0.0f) creature->score = 0;
 }
 
-static void creatureCheckTeleport(creature__Creature* creature) {
+static void creatureCheckTeleport(creature_Creature* creature) {
   assert(creature != nullptr);
 
   if (actor_hasTeleported(creature->actor)) {
@@ -162,7 +162,7 @@ static void creatureCheckTeleport(creature__Creature* creature) {
   }
 }
 
-static void creatureUpdateTeleportSlow(creature__Creature* creature, float frameTime) {
+static void creatureUpdateTeleportSlow(creature_Creature* creature, float frameTime) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
 
@@ -172,7 +172,7 @@ static void creatureUpdateTeleportSlow(creature__Creature* creature, float frame
   if (creature->teleportTimer == 0.0f) actor_setSpeed(creature->actor, creature__getSpeed());
 }
 
-static void creatureSetNearestStartTile(creature__Creature* creature) {
+static void creatureSetNearestStartTile(creature_Creature* creature) {
   assert(creature != nullptr);
 
   game_Tile curTile    = maze_getTile(actor_getPos(creature->actor));
@@ -206,7 +206,7 @@ static void creatureSetNearestStartTile(creature__Creature* creature) {
   }
 }
 
-static void creatureDied(creature__Creature* creature) {
+static void creatureDied(creature_Creature* creature) {
   assert(creature != nullptr);
 
   creature->update = creature__dead;

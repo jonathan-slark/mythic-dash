@@ -16,7 +16,7 @@ constexpr int CHEST_SPAWN_COUNT = 2;
 
 typedef enum { TRAP_ACID = 1, TRAP_SPIKE, TRAP_DOOR } maze_TrapType;
 
-typedef enum maze__TileType {
+typedef enum maze_TileType {
   TILE_NONE,
   TILE_FLOOR,
   TILE_WALL,
@@ -27,10 +27,10 @@ typedef enum maze__TileType {
   TILE_CHEST,
   TILE_DOOR,
   TILE_KEY
-} maze__TileType;
+} maze_TileType;
 
-typedef struct maze__Tile {
-  maze__TileType type;
+typedef struct maze_Tile {
+  maze_TileType type;
   int linkedTeleportTile;
   int linkedDoorTile;
   bool isCoinCollected;
@@ -43,9 +43,9 @@ typedef struct maze__Tile {
   engine_Sprite *sprite;
   engine_Anim *anim;
   game_AABB aabb;
-} maze__Tile;
+} maze_Tile;
 
-typedef struct maze__Maze {
+typedef struct maze_Maze {
   int rows;
   int cols;
   int count;
@@ -63,9 +63,9 @@ typedef struct maze__Maze {
   int keyIDs[MAX_KEY_TYPES];
   bool hasKeySpawned[MAX_KEY_TYPES];
   engine_Texture *tileset;
-  maze__Tile *tiles;
-} maze__Maze;
+  maze_Tile *tiles;
+} maze_Maze;
 
 // --- Global state ---
 
-extern maze__Maze g_maze;
+extern maze_Maze g_maze;

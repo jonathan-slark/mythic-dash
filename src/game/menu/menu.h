@@ -3,7 +3,7 @@
 
 // --- Types ---
 
-typedef enum { MENU_CONTEXT_TITLE, MENU_CONTEXT_INGAME, MENU_CONTEXT_BOTH } menu_Context;
+typedef enum menu_Context { MENU_CONTEXT_TITLE, MENU_CONTEXT_INGAME, MENU_CONTEXT_BOTH } menu_Context;
 
 // --- Menu functions ---
 

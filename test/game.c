@@ -56,7 +56,7 @@ static inline float game_getAABBOverlapY(game_AABB a, game_AABB b) {
   return fmin(a.max.y, b.max.y) - fmax(a.min.y, b.min.y);
 }
 
-// --- maze__Maze simulation for testing ---
+// --- Maze simulation for testing ---
 
 #define MAZE_ROWS 32
 #define MAZE_COLS 29
@@ -166,7 +166,7 @@ MU_TEST(test_aabb_edge_cases) {
   mu_assert(game_getAABBOverlapX(a, b) == 0.0f, "No overlap for touching AABBs");
 }
 
-// --- maze__Maze Tests ---
+// --- Maze Tests ---
 
 MU_TEST(test_maze_wall_detection) {
   // Test corner positions that should be walls
@@ -283,7 +283,7 @@ int main(void) {
   printf("Running AABB Tests...\n");
   MU_RUN_SUITE(aabb_suite);
 
-  printf("\nRunning maze__Maze Tests...\n");
+  printf("\nRunning Maze Tests...\n");
   MU_RUN_SUITE(maze_suite);
 
   printf("\nRunning Constants Tests...\n");

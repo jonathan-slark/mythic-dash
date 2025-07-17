@@ -11,12 +11,12 @@
 
 // Temporary storage for tiles from map tileset during loading
 typedef struct {
-  maze__TileType type;
-  int            teleportType;
-  int            trapType;
-  int            doorType;
-  int            keyType;
-  int            animCount;
+  maze_TileType type;
+  int           teleportType;
+  int           trapType;
+  int           doorType;
+  int           keyType;
+  int           animCount;
 } MapTile;
 
 // --- Constants ---
@@ -160,7 +160,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
     layer = layer->next;
   }
 
-  maze__Tile* tiles = (maze__Tile*) malloc(count * sizeof(maze__Tile) * layerCount);
+  maze_Tile* tiles = (maze_Tile*) malloc(count * sizeof(maze_Tile) * layerCount);
   if (tiles == nullptr) {
     LOG_FATAL(game_log, "Unable to allocate memory for maze tiles");
     return false;
@@ -176,7 +176,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
   int layerNum = 0;
   while (layer != nullptr) {
     for (int i = 0; i < count; i++) {
-      maze__TileType type   = TILE_NONE;
+      maze_TileType  type   = TILE_NONE;
       engine_Sprite* sprite = nullptr;
       engine_Anim*   anim   = nullptr;
       game_AABB      aabb   = {};
@@ -315,7 +315,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
       layerCount == 1 ? "" : "s"
   );
 
-  g_maze = (maze__Maze) {
+  g_maze = (maze_Maze) {
     .rows       = rows,
     .cols       = cols,
     .count      = count,

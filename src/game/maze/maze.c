@@ -19,9 +19,9 @@ const Vector2 CHEST_SCORE_OFFSET  = { 1.0f, 4.0f };
 
 // --- Global state ---
 
-maze__Maze g_maze;
+maze_Maze g_maze;
 
-static maze__Tile* getTileAt(Vector2 pos, int layer) {
+static maze_Tile* getTileAt(Vector2 pos, int layer) {
   int row = (int) (pos.y / g_maze.tileHeight);
   int col = (int) (pos.x / g_maze.tileWidth);
   assert(row >= 0 && row < g_maze.rows);
@@ -95,72 +95,72 @@ static Vector2 getChestPos(void) {
 // --- Maze functions ---
 
 game_AABB maze_getAABB(Vector2 pos) {
-  maze__Tile* tile = getTileAt(pos, 0);
+  maze_Tile* tile = getTileAt(pos, 0);
   return tile->aabb;
 }
 
 bool maze_isWall(Vector2 pos, bool isPlayer) {
-  maze__Tile* tile0 = getTileAt(pos, 0);
-  maze__Tile* tile1 = getTileAt(pos, 1);
+  maze_Tile* tile0 = getTileAt(pos, 0);
+  maze_Tile* tile1 = getTileAt(pos, 1);
   // Open door only lets player through
   return tile0->type == TILE_WALL || (isPlayer && tile1->type == TILE_DOOR && !tile1->isDoorOpen) ||
          (!isPlayer && tile1->type == TILE_DOOR);
 }
 
 bool maze_isCoin(Vector2 pos) {
-  maze__Tile* tile = getTileAt(pos, 1);
+  maze_Tile* tile = getTileAt(pos, 1);
   return tile->type == TILE_COIN && !tile->isCoinCollected;
 }
 
 bool maze_isChest(Vector2 pos) {
-  maze__Tile* tile = getTileAt(pos, 1);
+  maze_Tile* tile = getTileAt(pos, 1);
   return tile->type == TILE_CHEST && !tile->isChestCollected;
 }
 
 bool maze_isTrap(Vector2 pos) {
-  maze__Tile* tile0 = getTileAt(pos, 0);
-  maze__Tile* tile1 = getTileAt(pos, 1);
+  maze_Tile* tile0 = getTileAt(pos, 0);
+  maze_Tile* tile1 = getTileAt(pos, 1);
   return tile0->type == TILE_TRAP || tile1->type == TILE_TRAP;
 }
 
 bool maze_isTrapDoor(Vector2 pos) {
-  maze__Tile* tile0 = getTileAt(pos, 0);
-  maze__Tile* tile1 = getTileAt(pos, 1);
+  maze_Tile* tile0 = getTileAt(pos, 0);
+  maze_Tile* tile1 = getTileAt(pos, 1);
   return (tile0->type == TILE_TRAP && tile0->trapType == TRAP_DOOR) ||
          (tile1->type == TILE_TRAP && tile1->trapType == TRAP_DOOR);
 }
 
 bool maze_isKey(Vector2 pos) {
-  maze__Tile* tile = getTileAt(pos, 1);
+  maze_Tile* tile = getTileAt(pos, 1);
   return tile->type == TILE_KEY && !tile->isKeyCollected;
 }
 
 void maze_pickupCoin(Vector2 pos) {
-  maze__Tile* tile      = getTileAt(pos, 1);
+  maze_Tile* tile       = getTileAt(pos, 1);
   tile->isCoinCollected = true;
 }
 
 int maze_getCoinCount(void) { return g_maze.coinCount; }
 
 bool maze_isSword(Vector2 pos) {
-  maze__Tile* tile = getTileAt(pos, 1);
+  maze_Tile* tile = getTileAt(pos, 1);
   return tile->type == TILE_SWORD && !tile->isSwordCollected;
 }
 
 void maze_pickupSword(Vector2 pos) {
-  maze__Tile* tile       = getTileAt(pos, 1);
+  maze_Tile* tile        = getTileAt(pos, 1);
   tile->isSwordCollected = true;
 }
 
 void maze_pickupChest(Vector2 pos, int score) {
-  maze__Tile* tile       = getTileAt(pos, 1);
+  maze_Tile* tile        = getTileAt(pos, 1);
   tile->isChestCollected = true;
   g_maze.chestScore      = score;
   g_maze.chestScoreTimer = CHEST_SCORE_TIMER;
 }
 
 void maze_pickupKey(Vector2 pos) {
-  maze__Tile* tile     = getTileAt(pos, 1);
+  maze_Tile* tile      = getTileAt(pos, 1);
   tile->isKeyCollected = true;
   LOG_INFO(game_log, "Key collected, door: %d", tile->linkedDoorTile);
   assert(tile->linkedDoorTile >= 0);
@@ -168,8 +168,8 @@ void maze_pickupKey(Vector2 pos) {
 }
 
 void maze_trapTriggered(Vector2 pos) {
-  maze__Tile* tile0 = getTileAt(pos, 0);
-  maze__Tile* tile1 = getTileAt(pos, 1);
+  maze_Tile* tile0 = getTileAt(pos, 0);
+  maze_Tile* tile1 = getTileAt(pos, 1);
   if (tile0->type == TILE_TRAP) {
     tile0->hasTrapTriggered = true;
   } else if (tile1->type == TILE_TRAP) {
@@ -179,8 +179,8 @@ void maze_trapTriggered(Vector2 pos) {
 
 bool maze_isTeleport(Vector2 pos, Vector2* dest) {
   // TODO: why is this layer 0?
-  maze__Tile* tile   = getTileAt(pos, 0);
-  int         linked = tile->linkedTeleportTile;
+  maze_Tile* tile   = getTileAt(pos, 0);
+  int        linked = tile->linkedTeleportTile;
   if (linked >= 0) {
     *dest = g_maze.tiles[linked].aabb.min;
     return true;
