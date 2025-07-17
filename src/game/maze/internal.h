@@ -68,4 +68,4 @@ typedef struct maze_Maze {
 
 // --- Global state ---
 
-extern maze_Maze g_maze;
+extern maze_Maze g_maze[LEVEL_COUNT];

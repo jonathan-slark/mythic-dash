@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <cute_headers/cute_tiled.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../internal.h"
@@ -21,7 +22,6 @@ typedef struct {
 
 // --- Constants ---
 
-static const char* FILE_MAZE           = ASSET_DIR "map/maze07.tmj";
 constexpr size_t   BUFFER_SIZE         = 1024;
 static const float FRAME_TIME          = 0.1f;
 static const int   TILE_PROPERTY_COUNT = 8;
@@ -111,7 +111,7 @@ static bool getTileProperties(cute_tiled_map_t* map, MapTile** tileData, int* ti
   return true;
 }
 
-static bool getMapProperties(cute_tiled_map_t* map) {
+static bool getMapProperties(cute_tiled_map_t* map, int level) {
   if (map->property_count != MAP_PROPERTY_COUNT || map->properties == nullptr) {
     LOG_FATAL(game_log, "Invalid map property count");
     return false;
@@ -120,8 +120,8 @@ static bool getMapProperties(cute_tiled_map_t* map) {
   for (int i = 0; i < map->property_count; i++) {
     if (map->properties[i].type == CUTE_TILED_PROPERTY_BOOL) {
       if (strcmp(map->properties[i].name.ptr, "reverseAfterTeleport") == 0) {
-        g_maze.reverseAfterTeleport = map->properties[i].data.boolean;
-        LOG_INFO(game_log, "reverseAfterTeleport: %s", g_maze.reverseAfterTeleport ? "true" : "false");
+        g_maze[level].reverseAfterTeleport = map->properties[i].data.boolean;
+        LOG_INFO(game_log, "reverseAfterTeleport: %s", g_maze[level].reverseAfterTeleport ? "true" : "false");
       }
     }
   }
@@ -129,7 +129,7 @@ static bool getMapProperties(cute_tiled_map_t* map) {
   return true;
 }
 
-static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
+static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int level) {
   assert(map != nullptr && map->layers != nullptr);
 
   cute_tiled_layer_t*   layer      = map->layers;
@@ -315,7 +315,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
       layerCount == 1 ? "" : "s"
   );
 
-  g_maze = (maze_Maze) {
+  g_maze[level] = (maze_Maze) {
     .rows       = rows,
     .cols       = cols,
     .count      = count,
@@ -326,23 +326,23 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[]) {
     .tiles      = tiles,
   };
 
-  g_maze.keyCount = 0;
+  g_maze[level].keyCount = 0;
   for (int i = 0; i < MAX_KEY_TYPES; i++) {
-    g_maze.keyCount += keyCount[i];
+    g_maze[level].keyCount += keyCount[i];
     if (keyCount[i] == 1) {
-      g_maze.keyIDs[i] = keyIDs[i];
+      g_maze[level].keyIDs[i] = keyIDs[i];
     } else {
-      g_maze.keyIDs[i] = -1;
+      g_maze[level].keyIDs[i] = -1;
     }
   }
 
-  GAME_TRY(getMapProperties(map));
+  GAME_TRY(getMapProperties(map, level));
 
   return true;
 }
 
 // Convert cute tiled map to our format
-static bool convertMap(cute_tiled_map_t* map) {
+static bool convertMap(cute_tiled_map_t* map, int level) {
   assert(map != nullptr);
 
   MapTile* tileData  = nullptr;
@@ -350,7 +350,7 @@ static bool convertMap(cute_tiled_map_t* map) {
   GAME_TRY(getTileProperties(map, &tileData, &tileCount));
   assert(tileData != nullptr);
   assert(tileCount > 0);
-  if (!createMaze(map, tileData)) {
+  if (!createMaze(map, tileData, level)) {
     free(tileData);
     return false;
   }
@@ -359,18 +359,18 @@ static bool convertMap(cute_tiled_map_t* map) {
   return true;
 }
 
-static void destroyMaze(void) {
-  if (g_maze.tiles != nullptr) {
-    for (int i = 0; i < g_maze.count; i++) {
-      if (g_maze.tiles[i].sprite != nullptr) engine_destroySprite(&g_maze.tiles[i].sprite);
+static void destroyMaze(int level) {
+  if (g_maze[level].tiles != nullptr) {
+    for (int i = 0; i < g_maze[level].count; i++) {
+      if (g_maze[level].tiles[i].sprite != nullptr) engine_destroySprite(&g_maze[level].tiles[i].sprite);
     }
 
-    free(g_maze.tiles);
-    g_maze.tiles = nullptr;
+    free(g_maze[level].tiles);
+    g_maze[level].tiles = nullptr;
   }
 }
 
-static bool loadMazetileset(cute_tiled_map_t* map) {
+static bool loadMazetileset(cute_tiled_map_t* map, int level) {
   assert(map != nullptr);
   if (map->tilesets == nullptr || map->tilesets->image.ptr == nullptr) {
     LOG_FATAL(game_log, "There is no tileset in the map file");
@@ -395,45 +395,45 @@ static bool loadMazetileset(cute_tiled_map_t* map) {
     LOG_FATAL(game_log, "strncat_s failed: %s", strerror(result));
     return false;
   }
-  GAME_TRY(g_maze.tileset = engine_textureLoad(buffer));
+  GAME_TRY(g_maze[level].tileset = engine_textureLoad(buffer));
 
   return true;
 }
 
-static void unloadMazetileset(void) {
-  assert(g_maze.tileset != nullptr);
-  engine_textureUnload(&g_maze.tileset);
+static void unloadMazetileset(int level) {
+  assert(g_maze[level].tileset != nullptr);
+  engine_textureUnload(&g_maze[level].tileset);
 }
 
-void countCoins(void) {
-  for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
-    for (int i = 0; i < g_maze.count; i++) {
-      int idx = i + layerNum * g_maze.count;
-      if (g_maze.tiles[idx].type == TILE_COIN || g_maze.tiles[idx].type == TILE_SWORD) {
-        g_maze.coinCount++;
+void countCoins(int level) {
+  for (int layerNum = 0; layerNum < g_maze[level].layerCount; layerNum++) {
+    for (int i = 0; i < g_maze[level].count; i++) {
+      int idx = i + layerNum * g_maze[level].count;
+      if (g_maze[level].tiles[idx].type == TILE_COIN || g_maze[level].tiles[idx].type == TILE_SWORD) {
+        g_maze[level].coinCount++;
       }
     }
   }
-  LOG_INFO(game_log, "Coin count: %d", g_maze.coinCount);
+  LOG_INFO(game_log, "Coin count: %d", g_maze[level].coinCount);
 }
 
-void findChest(void) {
+void findChest(int level) {
   int count = 0;
-  for (int layerNum = 0; layerNum < g_maze.layerCount; layerNum++) {
-    for (int i = 0; i < g_maze.count; i++) {
-      int idx = i + layerNum * g_maze.count;
-      if (g_maze.tiles[idx].type == TILE_CHEST) {
+  for (int layerNum = 0; layerNum < g_maze[level].layerCount; layerNum++) {
+    for (int i = 0; i < g_maze[level].count; i++) {
+      int idx = i + layerNum * g_maze[level].count;
+      if (g_maze[level].tiles[idx].type == TILE_CHEST) {
         count++;
-        g_maze.chestID = idx;
+        g_maze[level].chestID = idx;
       }
     }
   }
 
   if (count == 0) {
     LOG_WARN(game_log, "No chest found in the map");
-    g_maze.chestID = -1;
+    g_maze[level].chestID = -1;
   } else if (count == 1) {
-    LOG_INFO(game_log, "Found chest: %d", g_maze.chestID);
+    LOG_INFO(game_log, "Found chest: %d", g_maze[level].chestID);
   } else {
     LOG_WARN(game_log, "More than one chest found in the map");
   }
@@ -442,30 +442,54 @@ void findChest(void) {
 // --- Maze functions ---
 
 bool maze_init(void) {
-  cute_tiled_map_t* map;
-  GAME_TRY(map = cute_tiled_load_map_from_file(FILE_MAZE, nullptr));
-  LOG_INFO(game_log, "Map loaded: %s (%d x %d)", FILE_MAZE, map->width, map->height);
-  if (!convertMap(map)) {
-    destroyMaze();
+  bool success = false;
+  int  level   = -1;
+  // File names start at 1 but array starts at 0
+  for (int fileNum = 1; fileNum <= LEVEL_COUNT; fileNum++) {
+    level = fileNum - 1;
+    cute_tiled_map_t* map;
+
+    char format[] = ASSET_DIR "map/maze%02d.tmj";
+    int  size     = snprintf(nullptr, 0, format, fileNum);
+    char file[size + 1];
+    snprintf(file, sizeof file, format, fileNum);
+
+    GAME_TRY(map = cute_tiled_load_map_from_file(file, nullptr));
+    LOG_INFO(game_log, "Map loaded: %s (%d x %d)", file, map->width, map->height);
+
+    success = convertMap(map, level);
+    if (!success) {
+      LOG_FATAL(game_log, "Failed to convert map");
+      cute_tiled_free_map(map);
+      break;
+    }
+
+    success = loadMazetileset(map, level);
+    if (!success) {
+      LOG_FATAL(game_log, "Failed to load map tileset");
+      cute_tiled_free_map(map);
+      break;
+    }
+
     cute_tiled_free_map(map);
-    LOG_ERROR(game_log, "Failed to convert map");
+    countCoins(level);
+    findChest(level);
+    maze_reset(level);
+  }
+
+  if (!success) {
+    for (int i = 0; i <= level; i++) {
+      destroyMaze(i);
+    }
     return false;
   }
-  if (!loadMazetileset(map)) {
-    destroyMaze();
-    cute_tiled_free_map(map);
-    LOG_ERROR(game_log, "Failed to load map tileset");
-    return false;
-  }
-  cute_tiled_free_map(map);
-  countCoins();
-  findChest();
-  maze_reset();
 
   return true;
 }
 
 void maze_shutdown(void) {
-  unloadMazetileset();
-  destroyMaze();
+  for (int i = 0; i < LEVEL_COUNT; i++) {
+    unloadMazetileset(i);
+    destroyMaze(i);
+  }
 }

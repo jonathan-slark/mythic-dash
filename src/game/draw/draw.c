@@ -21,7 +21,7 @@ constexpr Color        SHADOW_COLOUR     = { 32, 32, 32, 255 };
 static draw_Text       SWORD_TIMER       = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
 static draw_Text       CREATURE_SCORE    = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
 static const draw_Text SCORE_TEXT        = { "Score: %d", 8, 0, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text LEVEL_TEXT        = { "Level: %02d / ?", 394, 0, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_TEXT        = { "Level: %02d / %02d", 386, 0, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text EXTRA_LIFE_TEXT   = { "@ %d", 428, 252, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text TITLE_TEXT        = { "Mythic Dash", 190, 40, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text PLAYER_READY_TEXT = { "Get Ready!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
@@ -151,7 +151,7 @@ void draw_cursor(void) {
 
 void draw_interface(void) {
   draw_text(SCORE_TEXT, player_getScore());
-  draw_text(LEVEL_TEXT, game_getLevel());
+  draw_text(LEVEL_TEXT, game_getLevel() + 1, LEVEL_COUNT);
 }
 
 void draw_nextLife(void) {

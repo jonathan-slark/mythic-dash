@@ -23,7 +23,7 @@ int                maze_getRows(void);
 int                maze_getCols(void);
 bool               maze_isCoin(Vector2 pos);
 void               maze_pickupCoin(Vector2 pos);
-void               maze_reset(void);
+void               maze_reset(int level);
 int                maze_getCoinCount(void);
 bool               maze_isSword(Vector2 pos);
 void               maze_pickupSword(Vector2 pos);

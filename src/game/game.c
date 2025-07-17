@@ -45,7 +45,7 @@ static const float MASTER_VOLUME = 1.0f;
 // --- Global state ---
 
 log_Log* game_log;
-Game     g_game = { .state = GAME_BOOT, .level = 1, .fpsIndex = COUNT(FPS) - 1 };
+Game     g_game = { .state = GAME_BOOT, .level = 0, .fpsIndex = COUNT(FPS) - 1 };
 
 // --- Helper functions ---
 
@@ -199,10 +199,10 @@ void game_unload(void) {
 void game_new(void) {
   player_totalReset();
   creature_reset();
-  maze_reset();
+  maze_reset(g_game.level);
   draw_resetCreatures();
   draw_resetPlayer();
-  g_game.level = 1;
+  g_game.level = 0;
   g_game.state = GAME_READY;
 }
 
@@ -213,7 +213,7 @@ int game_getLevel(void) { return g_game.level; }
 void game_nextLevel(void) {
   player_reset();
   creature_reset();
-  maze_reset();
+  maze_reset(g_game.level);
   g_game.level += 1;
   g_game.state  = GAME_READY;
 }
