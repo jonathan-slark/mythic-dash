@@ -351,7 +351,10 @@ game_Tile player_tileAhead(int tileNum) {
   return tile;
 }
 
-float player_getMaxSpeed(void) { return PLAYER_MAX_SPEED[game_getDifficulty()]; }
+float player_getMaxSpeed(void) {
+  // Player is faster in easy but we don't want creatures any faster
+  return PLAYER_MAX_SPEED[DIFFICULTY_NORMAL];
+}
 
 int player_getLives(void) {
   assert(g_player.lives >= 0 && g_player.lives < PLAYER_MAX_LIVES);

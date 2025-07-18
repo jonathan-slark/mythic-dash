@@ -225,7 +225,7 @@ void creature_penToStart(creature_Creature* creature, float frameTime, float slo
     if (fabsf(pos.x - startX) < slop) {
       actor_setPos(actor, (Vector2) { startX, pos.y });
       actor_setDir(actor, creature_START_DIR);
-      actor_setSpeed(actor, creature__getSpeed());
+      actor_setSpeed(actor, creature_getSpeed(creature));
       creature->update = g_state.update;
     }
   }

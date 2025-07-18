@@ -132,14 +132,15 @@ static void creatureDefaults(void) {
     g_state.creatures[i].teleportTimer    = 0.0f;
     g_state.creatures[i].whisperId        = -1;
   }
-  actor_setSpeed(g_state.creatures[1].actor, creature__getSpeed());
+  actor_setSpeed(g_state.creatures[1].actor, creature_getSpeed(&g_state.creatures[1]));
 
   creatureResetTargets();
 }
 
 static void creatureSetSpeeds(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    if (isInActiveState(&g_state.creatures[i])) actor_setSpeed(g_state.creatures[i].actor, creature__getSpeed());
+    if (isInActiveState(&g_state.creatures[i]))
+      actor_setSpeed(g_state.creatures[i].actor, creature_getSpeed(&g_state.creatures[i]));
   }
 }
 
@@ -169,7 +170,7 @@ static void creatureUpdateTeleportSlow(creature_Creature* creature, float frameT
   if (creature->teleportTimer == 0.0f) return;
 
   creature->teleportTimer = fmaxf(creature->teleportTimer - frameTime, 0.0f);
-  if (creature->teleportTimer == 0.0f) actor_setSpeed(creature->actor, creature__getSpeed());
+  if (creature->teleportTimer == 0.0f) actor_setSpeed(creature->actor, creature_getSpeed(creature));
 }
 
 static void creatureSetNearestStartTile(creature_Creature* creature) {
@@ -210,7 +211,7 @@ static void creatureDied(creature_Creature* creature) {
   assert(creature != nullptr);
 
   creature->update = creature_dead;
-  actor_setSpeed(creature->actor, player_getMaxSpeed());
+  actor_setSpeed(creature->actor, creature_getSpeed(creature));
   creature->teleportTimer = 0.0f;
   creatureSetNearestStartTile(creature);
   player_killedCreature(creature->id);
@@ -233,7 +234,7 @@ bool creature_init(void) {
     g_state.creatures[i].id = i;
   }
 
-  creatureDefaults();
+  // creatureDefaults();
   return true;
 }
 

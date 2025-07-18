@@ -40,8 +40,9 @@ const float MIN_SLOP        = 0.05f;
 const float MAX_SLOP        = 2.5f;
 const float OVERLAP_EPSILON = 2e-5f;
 
-static const float MASTER_VOLUME     = 1.0f;
-static const char  SCREENSHOT_FILE[] = "screenshot.png";
+static const float MASTER_VOLUME                        = 1.0f;
+static const char  SCREENSHOT_FILE[]                    = "screenshot.png";
+static const char* DIFFICULTY_STRINGS[DIFFICULTY_COUNT] = { "Easy", "Normal", "Arcade Mode" };
 
 // --- Global state ---
 
@@ -115,6 +116,7 @@ static void updateGame(float frameTime) {
 }
 
 static void newGame(game_Difficulty difficulty) {
+  LOG_INFO(game_log, "Starting new game, difficulty: %s", DIFFICULTY_STRINGS[difficulty]);
   g_game.level      = 0;
   g_game.state      = GAME_READY;
   g_game.difficulty = difficulty;

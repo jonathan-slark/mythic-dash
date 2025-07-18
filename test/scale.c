@@ -28,7 +28,7 @@ static int player_getMaxSpeed(void) { return PLAYER_MAX_SPEED; }
 
 // --- Functions to test ---
 
-static inline float creature__getSpeed(void) {
+static inline float creature_getSpeed(void) {
   if (player_hasSword()) {
     return fminf(FRIGHT_SPEED_MIN_MULT + (game_getLevel() - 1) * 0.0055f, FRIGHT_SPEED_MAX_MULT) * player_getMaxSpeed();
   } else {
@@ -56,7 +56,7 @@ static int getChestScoreMultiplier(void) {
 static void printCreatureSpeeds(void) {
   int level = 1;
   for (int i = 0; i < 20; i++) {
-    float speed = creature__getSpeed();
+    float speed = creature_getSpeed();
     fprintf(stdout, "Level: %02d, creature speed %f\n", level++, speed);
   }
 }
