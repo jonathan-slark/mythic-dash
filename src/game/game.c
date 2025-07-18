@@ -40,7 +40,8 @@ const float MIN_SLOP        = 0.05f;
 const float MAX_SLOP        = 2.5f;
 const float OVERLAP_EPSILON = 2e-5f;
 
-static const float MASTER_VOLUME = 1.0f;
+static const float MASTER_VOLUME     = 1.0f;
+static const char  SCREENSHOT_FILE[] = "screenshot.png";
 
 // --- Global state ---
 
@@ -86,6 +87,7 @@ static void spacePressed(void) {
 static void checkKeys(void) {
   if (engine_isKeyPressed(KEY_SPACE)) spacePressed();
   if (engine_isKeyPressed(KEY_ESCAPE)) escapePressed();
+  if (engine_isKeyPressed(KEY_S)) TakeScreenshot(SCREENSHOT_FILE);
 }
 
 static void drawGame(void) {
@@ -110,6 +112,18 @@ static void updateGame(float frameTime) {
   draw_updatePlayer(frameTime, slop);
   maze_update(frameTime);
   engine_updateMusic(asset_getMusic(), frameTime);
+}
+
+static void newGame(game_Difficulty difficulty) {
+  g_game.level      = 0;
+  g_game.state      = GAME_READY;
+  g_game.difficulty = difficulty;
+  player_totalReset();
+  creature_reset();
+  maze_reset(g_game.level);
+  draw_resetCreatures();
+  draw_resetPlayer();
+  debug_reset();
 }
 
 // --- Game functions ---
@@ -196,16 +210,13 @@ void game_unload(void) {
   log_destroy(&game_log);
 }
 
-void game_new(void) {
-  player_totalReset();
-  creature_reset();
-  maze_reset(g_game.level);
-  draw_resetCreatures();
-  draw_resetPlayer();
-  debug_reset();
-  g_game.level = 0;
-  g_game.state = GAME_READY;
-}
+void game_newEasy(void) { newGame(DIFFICULTY_EASY); }
+
+void game_newNormal(void) { newGame(DIFFICULTY_NORMAL); }
+
+void game_newArcade(void) { newGame(DIFFICULTY_ARCADE); }
+
+game_Difficulty game_getDifficulty(void) { return g_game.difficulty; }
 
 void game_over(void) { g_game.state = GAME_OVER; }
 

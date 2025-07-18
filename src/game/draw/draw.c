@@ -16,17 +16,22 @@ static const Color   CREATURE_DEAD_COLOUR                     = { 255, 255, 255,
 static const Vector2 PLAYER_COOLDOWN_OFFSET                   = { 5, -8 };
 static const Vector2 CREATURE_SCORE_OFFSET                    = { 1, -8 };
 
-constexpr Color        TEXT_COLOUR       = { 255, 255, 255, 255 };
-constexpr Color        SHADOW_COLOUR     = { 32, 32, 32, 255 };
-static draw_Text       SWORD_TIMER       = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
-static draw_Text       CREATURE_SCORE    = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
-static const draw_Text SCORE_TEXT        = { "Score: %d", 8, 0, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text LEVEL_TEXT        = { "Level: %02d / %02d", 386, 0, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text EXTRA_LIFE_TEXT   = { "@ %d", 428, 252, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text TITLE_TEXT        = { "Mythic Dash", 190, 40, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text PLAYER_READY_TEXT = { "Get Ready!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text GAME_OVER_TEXT    = { "Game over!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text SPACE_TEXT        = { "Press space", 206, 188, TEXT_COLOUR, FONT_NORMAL };
+constexpr Color        TEXT_COLOUR                       = { 255, 255, 255, 255 };
+constexpr Color        SHADOW_COLOUR                     = { 32, 32, 32, 255 };
+static draw_Text       SWORD_TIMER                       = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
+static draw_Text       CREATURE_SCORE                    = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
+static const draw_Text SCORE_TEXT                        = { "Score: %d", 8, 0, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_TEXT                        = { "Level: %02d / %02d", 386, 0, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text EXTRA_LIFE_TEXT                   = { "@ %d", 428, 252, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text TITLE_TEXT                        = { "Mythic Dash", 190, 40, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text PLAYER_READY_TEXT                 = { "Get Ready!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text GAME_OVER_TEXT                    = { "Game over!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text SPACE_TEXT                        = { "Press space", 206, 188, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text DIFFICULTY_TEXT[DIFFICULTY_COUNT] = {
+  {        "Easy", 228, 252, TEXT_COLOUR, FONT_NORMAL },
+  {      "Normal", 222, 252, TEXT_COLOUR, FONT_NORMAL },
+  { "Arcade Mode", 206, 252, TEXT_COLOUR, FONT_NORMAL }
+};
 
 // --- Draw functions ---
 
@@ -155,6 +160,7 @@ void draw_cursor(void) {
 void draw_interface(void) {
   draw_text(SCORE_TEXT, player_getScore());
   draw_text(LEVEL_TEXT, game_getLevel() + 1, LEVEL_COUNT);
+  draw_text(DIFFICULTY_TEXT[game_getDifficulty()]);
 }
 
 void draw_nextLife(void) {

@@ -41,12 +41,28 @@ typedef struct game_Tile {
   int row;
 } game_Tile;
 
-typedef enum { GAME_BOOT, GAME_TITLE, GAME_MENU, GAME_READY, GAME_RUN, GAME_PAUSE, GAME_OVER } game_GameState;
+typedef enum game_GameState {
+  GAME_BOOT,
+  GAME_TITLE,
+  GAME_MENU,
+  GAME_READY,
+  GAME_RUN,
+  GAME_PAUSE,
+  GAME_OVER
+} game_GameState;
+
+typedef enum game_Difficulty {
+  DIFFICULTY_EASY,
+  DIFFICULTY_NORMAL,
+  DIFFICULTY_ARCADE,
+  DIFFICULTY_COUNT
+} game_Difficulty;
 
 typedef struct {
-  game_GameState state;
-  game_GameState lastState;
-  int            level;
+  game_GameState  state;
+  game_GameState  lastState;
+  int             level;
+  game_Difficulty difficulty;
 #ifndef NDEBUG
   size_t fpsIndex;
 #endif
@@ -105,8 +121,11 @@ static inline game_Dir game_getOppositeDir(game_Dir dir) { return (dir + 2) % DI
 
 // --- Internal game functions (game.c) ---
 
-void game_new(void);
-void game_over(void);
-int  game_getLevel(void);
-void game_nextLevel(void);
-void game_playerDead(void);
+void            game_newEasy(void);
+void            game_newNormal(void);
+void            game_newArcade(void);
+game_Difficulty game_getDifficulty(void);
+void            game_over(void);
+int             game_getLevel(void);
+void            game_nextLevel(void);
+void            game_playerDead(void);
