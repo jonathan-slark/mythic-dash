@@ -59,7 +59,6 @@ void asset_unload(void) {
     engine_unloadSound(&g_assets.wailSounds[i]);
   }
   engine_fontUnload(&g_assets.font);
-  engine_textureUnload(&g_assets.cursorSpriteSheet);
   engine_textureUnload(&g_assets.playerSpriteSheet);
   engine_textureUnload(&g_assets.creatureSpriteSheet);
 }
