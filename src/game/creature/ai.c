@@ -27,22 +27,22 @@ static game_Tile getStartTile(creature_Creature* creature);
 
 // --- Constants ---
 
-static const CreatureStateHandler FrightenedHandler = { .update = creature__frightened, .selectDir = selectDirRandom };
+static const CreatureStateHandler FrightenedHandler = { .update = creature_frightened, .selectDir = selectDirRandom };
 
 static const CreatureStateHandler ChaseHandler = {
-  .update    = creature__chase,
+  .update    = creature_chase,
   .getTarget = getTargetTile,
   .selectDir = selectDirGreedy
 };
 
 static const CreatureStateHandler ScatterHandler = {
-  .update    = creature__scatter,
+  .update    = creature_scatter,
   .getTarget = getCornerTile,
   .selectDir = selectDirGreedy
 };
 
 static const CreatureStateHandler DeadHandler = {
-  .update    = creature__dead,
+  .update    = creature_dead,
   .getTarget = getStartTile,
   .selectDir = selectDirGreedy
 };
@@ -178,7 +178,7 @@ creatureUpdateCommon(creature_Creature* creature, float frameTime, float slop, c
 // --- Creature state functions ---
 
 // Creature moves back and forth in pen till released
-void creature__pen(creature_Creature* creature, float frameTime, float slop) {
+void creature_pen(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -191,14 +191,14 @@ void creature__pen(creature_Creature* creature, float frameTime, float slop) {
   // Release the ho... er... creatures!
   if (creature->startTimer <= frameTime) {
     creature->startTimer = 0.0f;
-    creature->update     = creature__penToStart;
+    creature->update     = creature_penToStart;
   } else {
     creature->startTimer -= frameTime;
   }
 }
 
 // Creature moves from pen to start position
-void creature__penToStart(creature_Creature* creature, float frameTime, float slop) {
+void creature_penToStart(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -230,7 +230,7 @@ void creature__penToStart(creature_Creature* creature, float frameTime, float sl
 }
 
 // Creature moves from maze start back to pen
-void creature__startToPen(creature_Creature* creature, float frameTime, float slop) {
+void creature_startToPen(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -255,13 +255,13 @@ void creature__startToPen(creature_Creature* creature, float frameTime, float sl
     if (fabsf(pos.x - startX) < slop) {
       actor_setPos(actor, (Vector2) { startX, pos.y });
       actor_setSpeed(creature->actor, SPEED_SLOW);
-      creature->update = creature__penToStart;
+      creature->update = creature_penToStart;
     }
   }
 }
 
 // Creature wanders randomly
-void creature__frightened(creature_Creature* creature, float frameTime, float slop) {
+void creature_frightened(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -270,7 +270,7 @@ void creature__frightened(creature_Creature* creature, float frameTime, float sl
 }
 
 // Creature chases player
-void creature__chase(creature_Creature* creature, float frameTime, float slop) {
+void creature_chase(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -279,7 +279,7 @@ void creature__chase(creature_Creature* creature, float frameTime, float slop) {
 }
 
 // Creature heads to it's assigned corner
-void creature__scatter(creature_Creature* creature, float frameTime, float slop) {
+void creature_scatter(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -288,7 +288,7 @@ void creature__scatter(creature_Creature* creature, float frameTime, float slop)
 }
 
 // Creature heads back to the pen
-void creature__dead(creature_Creature* creature, float frameTime, float slop) {
+void creature_dead(creature_Creature* creature, float frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -299,7 +299,7 @@ void creature__dead(creature_Creature* creature, float frameTime, float slop) {
   game_Tile startTile = maze_getTile(creature->mazeStart);
   Vector2   dest      = { startTile.col * TILE_SIZE, startTile.row * TILE_SIZE };
   if (fabsf(pos.x - dest.x) < slop && fabsf(pos.y - dest.y) < slop) {
-    creature->update = creature__startToPen;
+    creature->update = creature_startToPen;
     audio_stopWhispers(&creature->whisperId);
   }
 }

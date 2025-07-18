@@ -37,17 +37,16 @@ typedef struct creature_State {
 
 // --- Creature state function prototypes ---
 
-void creature__pen(creature_Creature *creature, float frameTime, float slop);
-void creature__penToStart(creature_Creature *creature, float frameTime,
-                          float slop);
-void creature__startToPen(creature_Creature *creature, float frameTime,
-                          float slop);
-void creature__frightened(creature_Creature *creature, float frameTime,
-                          float slop);
-void creature__dead(creature_Creature *creature, float frameTime, float slop);
-void creature__chase(creature_Creature *creature, float frameTime, float slop);
-void creature__scatter(creature_Creature *creature, float frameTime,
-                       float slop);
+void creature_pen(creature_Creature *creature, float frameTime, float slop);
+void creature_penToStart(creature_Creature *creature, float frameTime,
+                         float slop);
+void creature_startToPen(creature_Creature *creature, float frameTime,
+                         float slop);
+void creature_frightened(creature_Creature *creature, float frameTime,
+                         float slop);
+void creature_dead(creature_Creature *creature, float frameTime, float slop);
+void creature_chase(creature_Creature *creature, float frameTime, float slop);
+void creature_scatter(creature_Creature *creature, float frameTime, float slop);
 
 // --- Constants ---
 
@@ -81,28 +80,28 @@ static const struct {
            DIR_UP,
            SPEED_SLOW,
            creature_CHASETIMER * 1.0f,
-           creature__pen},
+           creature_pen},
     [1] = {{17 * TILE_SIZE, 7 * TILE_SIZE},
            creature_MAZE_START[1],
            {27, 1},
            DIR_UP,
            SPEED_SLOW,
            0.0f,
-           creature__scatter},
+           creature_scatter},
     [2] = {{13 * TILE_SIZE, 8 * TILE_SIZE},
            creature_MAZE_START[0],
            {1, 13},
            DIR_UP,
            SPEED_SLOW,
            creature_CHASETIMER * 0.0f,
-           creature__pen},
+           creature_pen},
     [3] = {{14 * TILE_SIZE, 7 * TILE_SIZE},
            creature_MAZE_START[0],
            {27, 13},
            DIR_DOWN,
            SPEED_SLOW,
            creature_CHASETIMER * 2.0f,
-           creature__pen},
+           creature_pen},
 };
 
 // --- Global state ---

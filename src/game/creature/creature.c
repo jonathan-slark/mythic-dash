@@ -40,20 +40,20 @@ static inline bool shouldTransitionState(void) {
 
 static inline bool isInActiveState(creature_Creature* creature) {
   assert(creature != nullptr);
-  return creature->update == creature__chase || creature->update == creature__scatter ||
-         creature->update == creature__frightened;
+  return creature->update == creature_chase || creature->update == creature_scatter ||
+         creature->update == creature_frightened;
 }
 
 static const char* getStateString(void (*update)(struct creature_Creature*, float, float)) {
   assert(update != nullptr);
 
-  if (update == creature__pen) return STATE_PEN_STR;
-  if (update == creature__penToStart) return STATE_PETTOSTART_STR;
-  if (update == creature__startToPen) return STATE_STARTTOPEN_STR;
-  if (update == creature__frightened) return STATE_FRIGHTENED_STR;
-  if (update == creature__dead) return STATE_DEAD_STR;
-  if (update == creature__chase) return STATE_CHASE_STR;
-  if (update == creature__scatter) return STATE_SCATTER_STR;
+  if (update == creature_pen) return STATE_PEN_STR;
+  if (update == creature_penToStart) return STATE_PETTOSTART_STR;
+  if (update == creature_startToPen) return STATE_STARTTOPEN_STR;
+  if (update == creature_frightened) return STATE_FRIGHTENED_STR;
+  if (update == creature_dead) return STATE_DEAD_STR;
+  if (update == creature_chase) return STATE_CHASE_STR;
+  if (update == creature_scatter) return STATE_SCATTER_STR;
   return "";
 }
 
@@ -71,8 +71,8 @@ static void transitionToState(void (*newState)(creature_Creature*, float, float)
 }
 
 static void transitionToPermanentChase(void) {
-  transitionToState(creature__chase);
-  g_state.lastUpdate = creature__chase;
+  transitionToState(creature_chase);
+  g_state.lastUpdate = creature_chase;
   g_state.stateNum++;
   assert(g_state.stateNum == COUNT(STATE_TIMERS) + 1);
 }
@@ -80,7 +80,7 @@ static void transitionToPermanentChase(void) {
 static void toggleCreatureState() {
   void (*newState)(
       creature_Creature*, float, float
-  ) = (g_state.update == nullptr || g_state.update == creature__chase) ? creature__scatter : creature__chase;
+  ) = (g_state.update == nullptr || g_state.update == creature_chase) ? creature_scatter : creature_chase;
   transitionToState(newState);
   g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
   assert(g_state.stateNum <= COUNT(STATE_TIMERS));
@@ -209,7 +209,7 @@ static void creatureSetNearestStartTile(creature_Creature* creature) {
 static void creatureDied(creature_Creature* creature) {
   assert(creature != nullptr);
 
-  creature->update = creature__dead;
+  creature->update = creature_dead;
   actor_setSpeed(creature->actor, player_getMaxSpeed());
   creature->teleportTimer = 0.0f;
   creatureSetNearestStartTile(creature);
@@ -280,7 +280,7 @@ void creature_update(float frameTime, float slop) {
 
     creatureCheckScoreTimer(&g_state.creatures[i], frameTime);
 
-    if (g_state.creatures[i].update != creature__frightened && g_state.creatures[i].update != creature__dead) {
+    if (g_state.creatures[i].update != creature_frightened && g_state.creatures[i].update != creature_dead) {
       creatureCheckTeleport(&g_state.creatures[i]);
       creatureUpdateTeleportSlow(&g_state.creatures[i], frameTime);
     }
@@ -342,7 +342,7 @@ const char* creature_getStateString(int id) {
 }
 
 void creature_swordPickup(void) {
-  transitionToState(creature__frightened);
+  transitionToState(creature_frightened);
   creatureSetSpeeds();
   creatureResetTargets();
   creatureResetTeleportTimer();
@@ -358,13 +358,13 @@ void creature_swordDrop(void) {
 bool creature_isFrightened(int id) {
   assert(id >= 0 && id < CREATURE_COUNT);
   assert(g_state.creatures[id].update != nullptr);
-  return g_state.creatures[id].update == creature__frightened;
+  return g_state.creatures[id].update == creature_frightened;
 }
 
 bool creature_isDead(int id) {
   assert(id >= 0 && id < CREATURE_COUNT);
   assert(g_state.creatures[id].update != nullptr);
-  return g_state.creatures[id].update == creature__dead || g_state.creatures[id].update == creature__startToPen;
+  return g_state.creatures[id].update == creature_dead || g_state.creatures[id].update == creature_startToPen;
 }
 
 void creature_setScore(int id, int score) {
