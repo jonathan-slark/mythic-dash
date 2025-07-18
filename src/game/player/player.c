@@ -42,7 +42,7 @@ static const float       PLAYER_SLOW_SPEED[DIFFICULTY_COUNT] = { 79.2f, 72.0f, 7
 static const int         MAX_LEVEL                           = 7;
 static const float       SWORD_MAX_TIMER[DIFFICULTY_COUNT]   = { 14.0f, 10.0f, 6.0f };
 static const float       SWORD_MIN_TIMER[DIFFICULTY_COUNT]   = { 8.4f, 6.0f, 3.6f };     // 60%
-static const int         SCORE_EXTRA_LIFE                    = 10000;
+static const int         SCORE_EXTRA_LIFE[DIFFICULTY_COUNT]  = { 3000, 5000, 10000 };
 static const int         SCORE_CHEST                         = 100;
 
 // --- Global state ---
@@ -193,11 +193,11 @@ static bool playerCheckTraps(void) {
 }
 
 static void playerCheckScore() {
-  if (g_player.lives < PLAYER_MAX_LIVES && g_player.score > g_player.lastScoreBonusLife &&
-      (g_player.score % SCORE_EXTRA_LIFE == 0)) {
+  int threshold = SCORE_EXTRA_LIFE[game_getDifficulty()];
+  if (g_player.lives < PLAYER_MAX_LIVES && g_player.score >= g_player.lastScoreBonusLife + threshold) {
     g_player.lives              += 1;
-    g_player.lastScoreBonusLife  = g_player.score;
-    LOG_INFO(game_log, "Player gained bonus life at score:", g_player.score);
+    g_player.lastScoreBonusLife += threshold;
+    LOG_INFO(game_log, "Player gained bonus life at score: %d", g_player.score);
   }
 }
 
@@ -393,4 +393,7 @@ int player_getCoinsCollected(void) {
   return g_player.coinsCollected;
 }
 
-int player_getNextExtraLifeScore(void) { return (g_player.score / SCORE_EXTRA_LIFE + 1) * SCORE_EXTRA_LIFE; }
+int player_getNextExtraLifeScore(void) {
+  game_Difficulty difficulty = game_getDifficulty();
+  return (g_player.score / SCORE_EXTRA_LIFE[difficulty] + 1) * SCORE_EXTRA_LIFE[difficulty];
+}
