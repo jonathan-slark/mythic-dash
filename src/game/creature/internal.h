@@ -6,7 +6,6 @@
 // Clang format Language: C
 
 #include "../internal.h"
-#include "../player/player.h"
 #include <assert.h>
 #include <raylib.h>
 
@@ -117,26 +116,6 @@ static const struct {
 
 extern creature_State g_state;
 
-// --- Helper functions ---
+// --- Internal functions ---
 
-static inline float creature_getSpeed(creature_Creature *creature) {
-  assert(creature != nullptr);
-  game_Difficulty difficulty = game_getDifficulty();
-
-  if (creature->update == creature_dead) {
-    return fminf(RETREAT_SPEED_MIN_MULT[difficulty] +
-                     (game_getLevel() - 1) * FRIGHT_LEVEL_MULT,
-                 RETREAT_SPEED_MAX_MULT[difficulty]) *
-           player_getMaxSpeed();
-  } else if (player_hasSword()) {
-    return fminf(FRIGHT_SPEED_MIN_MULT[difficulty] +
-                     (game_getLevel() - 1) * FRIGHT_LEVEL_MULT,
-                 FRIGHT_SPEED_MAX_MULT[difficulty]) *
-           player_getMaxSpeed();
-  } else {
-    return fminf(NORMAL_SPEED_MIN_MULT[difficulty] +
-                     (game_getLevel() - 1) * NORMAL_LEVEL_MULT,
-                 NORMAL_SPEED_MAX_MULT[difficulty]) *
-           player_getMaxSpeed();
-  }
-}
+float creature_getSpeed(creature_Creature *creature);

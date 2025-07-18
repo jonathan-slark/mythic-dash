@@ -6,6 +6,7 @@
 #include "../audio/audio.h"
 #include "../internal.h"
 #include "../maze/maze.h"
+#include "../player/player.h"
 #include "internal.h"
 #include "log/log.h"
 
@@ -27,6 +28,8 @@ static const float TELEPORT_TIMER       = 0.5f;
 creature_State g_state = { .update = nullptr, .lastUpdate = nullptr, .stateNum = 0, .stateTimer = 0.0f };
 
 // --- Helper functions ---
+
+static inline float isDead(creature_Creature* creature) { return creature->update == creature_dead; }
 
 static inline void updateTimer(float frameTime) {
   assert(frameTime >= 0.0f);
@@ -375,3 +378,32 @@ void creature_setScore(int id, int score) {
 }
 
 int creature_getScore(int id) { return g_state.creatures[id].score; }
+
+float creature_getSpeed(creature_Creature* creature) {
+  assert(creature != nullptr);
+
+  game_Difficulty difficulty = game_getDifficulty();
+  assert(difficulty >= 0 && difficulty < DIFFICULTY_COUNT);
+
+  float minMult, maxMult;
+
+  if (isDead(creature)) {
+    minMult = RETREAT_SPEED_MIN_MULT[difficulty];
+    maxMult = RETREAT_SPEED_MAX_MULT[difficulty];
+  } else if (player_hasSword()) {
+    minMult = FRIGHT_SPEED_MIN_MULT[difficulty];
+    maxMult = FRIGHT_SPEED_MAX_MULT[difficulty];
+  } else {
+    minMult = NORMAL_SPEED_MIN_MULT[difficulty];
+    maxMult = NORMAL_SPEED_MAX_MULT[difficulty];
+  }
+
+  // Get current level-based interpolation factor
+  // Level 1 → t = 0.0, Level LEVEL_COUNT → t = 1.0
+  int level = game_getLevel();
+  assert(level >= 0 && level < LEVEL_COUNT);
+  float t = (float) level / (LEVEL_COUNT - 1);  // normalised [0,1]
+
+  float speedMultiplier = minMult + t * (maxMult - minMult);
+  return player_getMaxSpeed() * speedMultiplier;
+}

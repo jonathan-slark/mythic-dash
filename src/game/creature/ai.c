@@ -6,6 +6,7 @@
 #include "../audio/audio.h"
 #include "../internal.h"
 #include "../maze/maze.h"
+#include "../player/player.h"
 #include "creature.h"
 #include "internal.h"
 
