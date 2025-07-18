@@ -216,6 +216,7 @@ void game_nextLevel(void) {
   maze_reset(g_game.level);
   g_game.level += 1;
   g_game.state  = GAME_READY;
+  draw_resetCreatures();
 }
 
 void game_playerDead(void) {

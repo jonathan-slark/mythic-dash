@@ -57,10 +57,11 @@ void draw_resetPlayer(void) {
 
 void draw_resetCreatures(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    Vector2  pos = Vector2Add(POS_ADJUST(creature_getPos(i)), asset_getCreatureOffset(i));
-    game_Dir dir = creature_getDir(i);
-    engine_resetAnim(asset_getCreatureAnim(i, dir));
-    engine_spriteSetPos(asset_getCreateSprite(i), pos);
+    Vector2  pos        = Vector2Add(POS_ADJUST(creature_getPos(i)), asset_getCreatureOffset(i));
+    game_Dir dir        = creature_getDir(i);
+    int      creatureID = i + game_getLevel() * CREATURE_COUNT;
+    engine_resetAnim(asset_getCreatureAnim(creatureID, dir));
+    engine_spriteSetPos(asset_getCreateSprite(creatureID), pos);
   }
 }
 

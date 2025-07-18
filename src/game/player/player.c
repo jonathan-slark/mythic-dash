@@ -250,6 +250,7 @@ void player_update(float frameTime, float slop) {
   if (engine_isKeyPressed(KEY_P)) debug_togglePlayerOverlay();
   if (engine_isKeyPressed(KEY_G)) debug_toggleCreatureOverlay();
   if (engine_isKeyPressed(KEY_I)) debug_togglePlayerImmune();
+  if (engine_isKeyPressed(KEY_N)) game_nextLevel();
 #endif
 
   if (g_player.state == PLAYER_DEAD || g_player.state == PLAYER_FALLING) {
