@@ -7,6 +7,8 @@
 
 // --- Types ---
 
+constexpr int CREATURE_TOTAL = CREATURE_COUNT * LEVEL_COUNT;
+
 typedef struct asset_AnimData {
   int   row;
   int   startCol;
@@ -41,8 +43,8 @@ typedef struct asset_Assets {
   engine_Sprite*  playerLivesSprites[PLAYER_MAX_LIVES];
   engine_Sprite*  playerNextLifeSprite;
   engine_Anim*    playerAnim[PLAYER_STATE_COUNT][DIR_COUNT];
-  engine_Sprite*  creatureSprites[CREATURE_COUNT];
-  engine_Anim*    creatureAnims[CREATURE_COUNT][DIR_COUNT];
+  engine_Sprite*  creatureSprites[CREATURE_TOTAL];
+  engine_Anim*    creatureAnims[CREATURE_TOTAL][DIR_COUNT];
   engine_Texture* cursorSpriteSheet;
   engine_Sprite*  cursorSprite;
   engine_Font*    font;
@@ -130,7 +132,7 @@ static const asset_ActorData PLAYER_DATA[PLAYER_STATE_COUNT] = {
   }  
 };
 
-static const asset_ActorData CREATURE_DATA[CREATURE_COUNT] = {
+static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
   {
     .size     = { 24.0f, 24.0f },
     .offset   = { -4.0f, -8.0f },
@@ -177,6 +179,294 @@ static const asset_ActorData CREATURE_DATA[CREATURE_COUNT] = {
       [DIR_RIGHT] = { .row = 2, .startCol = 9, .frameCount = 3, FRAME_TIME },
       [DIR_DOWN]  = { .row = 0, .startCol = 9, .frameCount = 3, FRAME_TIME },
       [DIR_LEFT]  = { .row = 1, .startCol = 9, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 3, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 12, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 3, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 15, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,  0.0f  },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 7, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 0, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,  0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 7, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 3, .frameCount = 3, FRAME_TIME }
+    },
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 7, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 6, .frameCount = 3, FRAME_TIME }
+    },
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 7, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 9, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 7, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 12, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 7, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 5, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 6, .startCol = 15, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,  0.0f  },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 11, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 0, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,  0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 11, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 3, .frameCount = 3, FRAME_TIME }
+    },
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 11, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 6, .frameCount = 3, FRAME_TIME }
+    },
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 11, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 9, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 11, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 12, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 11, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 15, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,  0.0f  },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 15, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 0, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,  0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 15, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 3, .frameCount = 3, FRAME_TIME }
+    },
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 15, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 6, .frameCount = 3, FRAME_TIME }
+    },
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 15, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 9, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 15, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 12, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 12, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 15, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 15, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,  0.0f  },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 19, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 18, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 16, .startCol = 0, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 17, .startCol = 0, .frameCount = 3, FRAME_TIME }
+    }
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,  0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 19, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 18, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 16, .startCol = 3, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 17, .startCol = 3, .frameCount = 3, FRAME_TIME }
+    },
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 19, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 18, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 16, .startCol = 6, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 17, .startCol = 6, .frameCount = 3, FRAME_TIME }
+    },
+  },
+  {
+    .size     = { 24.0f, 24.0f },
+    .offset   = { -4.0f, -8.0f },
+    .inset    = { 0.0f,   0.0f },
+    .loop = true,
+    .animData = {
+      [DIR_UP]    = { .row = 19, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_RIGHT] = { .row = 18, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_DOWN]  = { .row = 16, .startCol = 9, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 17, .startCol = 9, .frameCount = 3, FRAME_TIME }
     }
   }
 };

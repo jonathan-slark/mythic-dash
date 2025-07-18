@@ -117,11 +117,9 @@ bool asset_initPlayer(void) {
 
 bool asset_initCreatures(void) {
   GAME_TRY(creature_init());
-  for (int i = 0; i < CREATURE_COUNT; i++) {
-    GAME_TRY(
-        g_assets.creatureSprites[i] =
-            engine_createSprite(POS_ADJUST(creature_getPos(i)), CREATURE_DATA[i].size, (Vector2) { 0.0f, 0.0f })
-    );
+  for (int i = 0; i < CREATURE_TOTAL; i++) {
+    Vector2 null = { 0.0f, 0.0f };
+    GAME_TRY(g_assets.creatureSprites[i] = engine_createSprite(null, CREATURE_DATA[i].size, null));
     for (int j = 0; j < DIR_COUNT; j++) {
       GAME_TRY(
           g_assets.creatureAnims[i][j] = engine_createAnim(
@@ -166,7 +164,7 @@ void asset_shutdownPlayer(void) {
 
 void asset_shutdownCreatures(void) {
   creature_shutdown();
-  for (int i = 0; i < CREATURE_COUNT; i++) {
+  for (int i = 0; i < CREATURE_TOTAL; i++) {
     assert(g_assets.creatureSprites[i] != nullptr);
     engine_destroySprite(&g_assets.creatureSprites[i]);
     assert(g_assets.creatureSprites[i] == nullptr);
@@ -215,18 +213,18 @@ engine_Anim* asset_getPlayerAnim(game_PlayerState state, game_Dir dir) {
 }
 
 engine_Sprite* asset_getCreateSprite(int creatureID) {
-  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
+  assert(creatureID >= 0 && creatureID < CREATURE_TOTAL);
   return g_assets.creatureSprites[creatureID];
 }
 
 engine_Anim* asset_getCreatureAnim(int creatureID, game_Dir dir) {
-  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
+  assert(creatureID >= 0 && creatureID < CREATURE_TOTAL);
   assert(dir >= 0 && dir < DIR_COUNT);
   return g_assets.creatureAnims[creatureID][dir];
 }
 
 Vector2 asset_getCreatureOffset(int creatureID) {
-  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
+  assert(creatureID >= 0 && creatureID < CREATURE_TOTAL);
   return CREATURE_DATA[creatureID].offset;
 }
 

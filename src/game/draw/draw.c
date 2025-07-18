@@ -98,9 +98,10 @@ void draw_updateCreatures(float frameTime, float slop) {
   assert(slop >= 0.0f);
 
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    Vector2 pos = Vector2Add(POS_ADJUST(creature_getPos(i)), asset_getCreatureOffset(i));
-    engine_spriteSetPos(asset_getCreateSprite(i), pos);
-    engine_updateAnim(asset_getCreatureAnim(i, creature_getDir(i)), frameTime);
+    int     creatureID = i + game_getLevel() * CREATURE_COUNT;
+    Vector2 pos        = Vector2Add(POS_ADJUST(creature_getPos(i)), asset_getCreatureOffset(creatureID));
+    engine_spriteSetPos(asset_getCreateSprite(creatureID), pos);
+    engine_updateAnim(asset_getCreatureAnim(creatureID, creature_getDir(i)), frameTime);
   }
 }
 
@@ -126,8 +127,9 @@ void draw_player(void) {
 
 void draw_creatures(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    Color colour = creature_isFrightened(i) ? BLUE : creature_isDead(i) ? CREATURE_DEAD_COLOUR : WHITE;
-    engine_drawSprite(asset_getCreatureSpriteSheet(), asset_getCreateSprite(i), colour);
+    Color colour     = creature_isFrightened(i) ? BLUE : creature_isDead(i) ? CREATURE_DEAD_COLOUR : WHITE;
+    int   creatureID = i + game_getLevel() * CREATURE_COUNT;
+    engine_drawSprite(asset_getCreatureSpriteSheet(), asset_getCreateSprite(creatureID), colour);
 
     int score = creature_getScore(i);
     if (score > 0.0f) {
