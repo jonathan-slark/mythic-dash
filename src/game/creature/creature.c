@@ -60,8 +60,8 @@ static const char* getStateString(void (*update)(struct creature_Creature*, floa
 static void transitionToState(void (*newState)(creature_Creature*, float, float)) {
   assert(newState != nullptr);
 
-  g_state.lastUpdate = g_state.update;
-  g_state.update     = newState;
+  if (g_state.update != creature_frightened) g_state.lastUpdate = g_state.update;
+  g_state.update = newState;
   for (int i = 0; i < CREATURE_COUNT; i++) {
     if (isInActiveState(&g_state.creatures[i])) {
       g_state.creatures[i].update         = newState;

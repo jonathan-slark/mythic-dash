@@ -39,8 +39,8 @@ static const int         creature_BASE_SCORE = 200;
 static const float       COIN_SLOW_TIMER     = 0.2f;
 static const float       SWORD_SLOW_TIMER    = 0.2f;
 static const float       PLAYER_SLOW_SPEED   = 72.0f;  // 10% slow
-static const int         MAX_LEVEL           = 20;
-static const float       SWORD_MAX_TIMER     = 4.0f;
+static const int         MAX_LEVEL           = 7;
+static const float       SWORD_MAX_TIMER     = 6.0f;
 static const float       SWORD_MIN_TIMER     = 2.4f;   // 60%
 static const int         SCORE_EXTRA_LIFE    = 10000;
 static const int         SCORE_CHEST         = 100;
@@ -248,7 +248,7 @@ void player_update(float frameTime, float slop) {
   if (engine_isKeyPressed(KEY_F)) debug_toggleFPSOverlay();
   if (engine_isKeyPressed(KEY_M)) debug_toggleMazeOverlay();
   if (engine_isKeyPressed(KEY_P)) debug_togglePlayerOverlay();
-  if (engine_isKeyPressed(KEY_G)) debug_toggleCreatureOverlay();
+  if (engine_isKeyPressed(KEY_C)) debug_toggleCreatureOverlay();
   if (engine_isKeyPressed(KEY_I)) debug_togglePlayerImmune();
   if (engine_isKeyPressed(KEY_N)) game_nextLevel();
 #endif

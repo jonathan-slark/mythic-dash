@@ -202,6 +202,7 @@ void game_new(void) {
   maze_reset(g_game.level);
   draw_resetCreatures();
   draw_resetPlayer();
+  debug_reset();
   g_game.level = 0;
   g_game.state = GAME_READY;
 }

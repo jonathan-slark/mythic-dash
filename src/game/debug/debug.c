@@ -66,6 +66,8 @@ static void drawActorArrow(game_Actor* actor) {
 
 // --- Debug functions ---
 
+void debug_reset(void) { g_debug = (Debug) {}; }
+
 void debug_drawOverlay(void) {
   if (g_debug.isPlayerImmune) {
     DrawText("Player immune", OVERLAY_IMMUNE_POS.x, OVERLAY_IMMUNE_POS.y, OVERLAY_LARGE_TEXT_SIZE, RED);

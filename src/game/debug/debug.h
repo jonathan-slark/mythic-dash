@@ -26,6 +26,7 @@ static inline void checkFPSKeys(void) {
 
 // --- Debug functions ---
 
+void debug_reset(void);
 void debug_drawOverlay(void);
 void debug_toggleFPSOverlay(void);
 void debug_toggleMazeOverlay(void);

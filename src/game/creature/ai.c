@@ -190,8 +190,10 @@ void creature_pen(creature_Creature* creature, float frameTime, float slop) {
 
   // Release the ho... er... creatures!
   if (creature->startTimer <= frameTime) {
-    creature->startTimer = 0.0f;
-    creature->update     = creature_penToStart;
+    if (!player_hasSword()) {
+      creature->startTimer = 0.0f;
+      creature->update     = creature_penToStart;
+    }
   } else {
     creature->startTimer -= frameTime;
   }
@@ -254,8 +256,9 @@ void creature_startToPen(creature_Creature* creature, float frameTime, float slo
     actor_moveNoCheck(actor, dir, frameTime);
     if (fabsf(pos.x - startX) < slop) {
       actor_setPos(actor, (Vector2) { startX, pos.y });
-      actor_setSpeed(creature->actor, SPEED_SLOW);
-      creature->update = creature_penToStart;
+      actor_setSpeed(actor, SPEED_SLOW);
+      actor_setDir(actor, DIR_UP);
+      creature->update = creature_pen;
     }
   }
 }
