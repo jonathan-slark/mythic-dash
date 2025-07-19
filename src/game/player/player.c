@@ -357,7 +357,7 @@ float player_getMaxSpeed(void) {
 }
 
 int player_getLives(void) {
-  assert(g_player.lives >= 0 && g_player.lives < PLAYER_MAX_LIVES);
+  assert(g_player.lives >= 0 && g_player.lives <= PLAYER_MAX_LIVES);
   return g_player.lives;
 }
 

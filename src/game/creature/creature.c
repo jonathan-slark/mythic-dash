@@ -12,7 +12,17 @@
 
 // --- Constants ---
 
-static const float STATE_TIMERS[]       = { 7.0f, 20.0f, 7.0f, 20.0f, 5.0f, 20.0f, 5.0f };
+constexpr int      STATE_COUNT                                     = 7;
+static const float STATE_TIMERS_MIN[DIFFICULTY_COUNT][STATE_COUNT] = {
+  { 15.0f, 15.0f, 15.0f, 15.0f, 15.0f, 15.0f, 15.0f },
+  { 10.0f, 15.0f, 10.0f, 15.0f, 10.0f, 15.0f, 10.0f },
+  {  7.0f, 20.0f,  7.0f, 20.0f,  5.0f, 20.0f,  5.0f }
+};
+static const float STATE_TIMERS_MAX[DIFFICULTY_COUNT][STATE_COUNT] = {
+  { 12.0f, 15.0f, 12.0f, 15.0f, 12.0f, 15.0f, 12.0f },
+  {  7.0f, 20.0f,  7.0f, 20.0f,  5.0f, 20.0f,  5.0f },
+  {  3.0f, 20.0f,  3.0f, 20.0f,  1.0f, 20.0f,  1.0f }
+};
 static const char* STATE_PEN_STR        = "PEN";
 static const char* STATE_PETTOSTART_STR = "PEN2STA";
 static const char* STATE_STARTTOPEN_STR = "STA2PEN";
@@ -35,11 +45,9 @@ static inline void updateTimer(float frameTime) {
   assert(frameTime >= 0.0f);
   g_state.stateTimer = fmaxf(g_state.stateTimer - frameTime, 0.0f);
 }
-static inline bool isPermanentChaseState(void) { return g_state.stateNum == COUNT(STATE_TIMERS); }
+static inline bool isPermanentChaseState(void) { return g_state.stateNum == STATE_COUNT; }
 
-static inline bool shouldTransitionState(void) {
-  return g_state.stateTimer == 0.0f && g_state.stateNum <= COUNT(STATE_TIMERS);
-}
+static inline bool shouldTransitionState(void) { return g_state.stateTimer == 0.0f && g_state.stateNum <= STATE_COUNT; }
 
 static inline bool isInActiveState(creature_Creature* creature) {
   assert(creature != nullptr);
@@ -77,7 +85,23 @@ static void transitionToPermanentChase(void) {
   transitionToState(creature_chase);
   g_state.lastUpdate = creature_chase;
   g_state.stateNum++;
-  assert(g_state.stateNum == COUNT(STATE_TIMERS) + 1);
+  assert(g_state.stateNum == STATE_COUNT + 1);
+}
+
+static float getStateTimer(int stateNum) {
+  game_Difficulty difficulty = game_getDifficulty();
+  assert(difficulty >= 0 && difficulty < DIFFICULTY_COUNT);
+
+  float minTimer = STATE_TIMERS_MIN[difficulty][stateNum];
+  float maxTimer = STATE_TIMERS_MAX[difficulty][stateNum];
+
+  // Get current level-based interpolation factor
+  // Level 1 → t = 0.0, Level LEVEL_COUNT → t = 1.0
+  int level = game_getLevel();
+  assert(level >= 0 && level < LEVEL_COUNT);
+  float t = (float) level / (LEVEL_COUNT - 1);  // normalised [0,1]
+
+  return minTimer + t * (maxTimer - minTimer);
 }
 
 static void toggleCreatureState() {
@@ -85,8 +109,8 @@ static void toggleCreatureState() {
       creature_Creature*, float, float
   ) = (g_state.update == nullptr || g_state.update == creature_chase) ? creature_scatter : creature_chase;
   transitionToState(newState);
-  g_state.stateTimer = STATE_TIMERS[g_state.stateNum++];
-  assert(g_state.stateNum <= COUNT(STATE_TIMERS));
+  g_state.stateTimer = getStateTimer(g_state.stateNum++);
+  assert(g_state.stateNum <= STATE_COUNT);
   LOG_TRACE(game_log, "Changing to state: %s", getStateString(newState));
 }
 
