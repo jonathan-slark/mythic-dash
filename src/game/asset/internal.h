@@ -273,8 +273,8 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .animData = {
       [DIR_UP]    = { .row = 7, .startCol = 15, .frameCount = 3, FRAME_TIME },
       [DIR_RIGHT] = { .row = 6, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 5, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 6, .startCol = 15, .frameCount = 3, FRAME_TIME }
+      [DIR_DOWN]  = { .row = 4, .startCol = 15, .frameCount = 3, FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 15, .frameCount = 3, FRAME_TIME }
     }
   },
   {
