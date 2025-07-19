@@ -225,11 +225,11 @@ void game_over(void) { g_game.state = GAME_OVER; }
 int game_getLevel(void) { return g_game.level; }
 
 void game_nextLevel(void) {
+  g_game.level += 1;
+  g_game.state  = GAME_READY;
   player_reset();
   creature_reset();
   maze_reset(g_game.level);
-  g_game.level += 1;
-  g_game.state  = GAME_READY;
   draw_resetCreatures();
 }
 
