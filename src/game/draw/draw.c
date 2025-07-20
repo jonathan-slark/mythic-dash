@@ -26,6 +26,7 @@ static const draw_Text EXTRA_LIFE_TEXT                   = { "@ %d", 428, 252, T
 static const draw_Text TITLE_TEXT                        = { "Mythic Dash", 190, 40, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text PLAYER_READY_TEXT                 = { "Get Ready!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text GAME_OVER_TEXT                    = { "Game over!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text GAME_WON_TEXT                     = { "Game won!", 213, 100, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text SPACE_TEXT                        = { "Press space", 206, 188, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text DIFFICULTY_TEXT[DIFFICULTY_COUNT] = {
   {        "Easy", 228, 252, TEXT_COLOUR, FONT_NORMAL },
@@ -177,5 +178,10 @@ void draw_ready(void) {
 
 void draw_gameOver(void) {
   draw_shadowText(GAME_OVER_TEXT);
+  draw_shadowText(SPACE_TEXT);
+}
+
+void draw_gameWon(void) {
+  draw_shadowText(GAME_WON_TEXT);
   draw_shadowText(SPACE_TEXT);
 }

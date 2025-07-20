@@ -48,7 +48,8 @@ typedef enum game_GameState {
   GAME_READY,
   GAME_RUN,
   GAME_PAUSE,
-  GAME_OVER
+  GAME_OVER,
+  GAME_WON
 } game_GameState;
 
 typedef enum game_Difficulty {

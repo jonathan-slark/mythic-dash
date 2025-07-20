@@ -61,7 +61,8 @@ static void escapePressed(void) {
     case GAME_READY:
     case GAME_RUN:
     case GAME_PAUSE:
-    case GAME_OVER: menu_open(MENU_CONTEXT_INGAME); break;
+    case GAME_OVER:
+    case GAME_WON: menu_open(MENU_CONTEXT_INGAME); break;
   }
 }
 
@@ -81,7 +82,8 @@ static void spacePressed(void) {
 
     case GAME_READY: g_game.state = GAME_RUN; break;
 
-    case GAME_OVER: menu_open(MENU_CONTEXT_TITLE); break;
+    case GAME_OVER:
+    case GAME_WON: menu_open(MENU_CONTEXT_TITLE); break;
   }
 }
 
@@ -128,6 +130,8 @@ static void newGame(game_Difficulty difficulty) {
   debug_reset();
 }
 
+static void gameWon(void) { g_game.state = GAME_WON; }
+
 // --- Game functions ---
 
 bool game_load(void) {
@@ -169,7 +173,8 @@ void game_update(float frameTime) {
 
     case GAME_READY:
     case GAME_PAUSE:
-    case GAME_OVER: checkFPSKeys(); break;
+    case GAME_OVER:
+    case GAME_WON: break;
 
     case GAME_RUN:
       checkFPSKeys();
@@ -181,23 +186,33 @@ void game_update(float frameTime) {
 void game_draw(void) {
   switch (g_game.state) {
     case GAME_BOOT: assert(false); break;
+
     case GAME_TITLE:
       draw_title();
       menu_draw();
       break;
+
     case GAME_MENU:
       drawGame();
       menu_draw();
       break;
+
     case GAME_READY:
       drawGame();
       draw_ready();
       break;
+
     case GAME_RUN:
     case GAME_PAUSE: drawGame(); break;
+
     case GAME_OVER:
       drawGame();
       draw_gameOver();
+      break;
+
+    case GAME_WON:
+      drawGame();
+      draw_gameWon();
       break;
   }
 }
@@ -225,12 +240,16 @@ void game_over(void) { g_game.state = GAME_OVER; }
 int game_getLevel(void) { return g_game.level; }
 
 void game_nextLevel(void) {
-  g_game.level += 1;
-  g_game.state  = GAME_READY;
-  player_reset();
-  creature_reset();
-  maze_reset(g_game.level);
-  draw_resetCreatures();
+  if (g_game.level == LEVEL_COUNT - 1) {
+    gameWon();
+  } else {
+    g_game.level += 1;
+    g_game.state  = GAME_READY;
+    player_reset();
+    creature_reset();
+    maze_reset(g_game.level);
+    draw_resetCreatures();
+  }
 }
 
 void game_playerDead(void) {
