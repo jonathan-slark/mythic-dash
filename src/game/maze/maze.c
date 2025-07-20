@@ -5,6 +5,7 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include "../asset/asset.h"
+#include "../draw/draw.h"
 #include "../internal.h"
 #include "../player/player.h"
 #include "internal.h"
@@ -15,7 +16,7 @@
 const Vector2 MAZE_ORIGIN         = { 8.0f, 8.0f };  // Screen offset to the actual maze
 const float   CHEST_DESPAWN_TIMER = 10.0f;
 const float   CHEST_SCORE_TIMER   = 2.0f;
-const Vector2 CHEST_SCORE_OFFSET  = { 1.0f, 4.0f };
+const Vector2 CHEST_SCORE_OFFSET  = { 5.0f, 4.0f };
 
 // --- Global state ---
 
@@ -228,7 +229,14 @@ void maze_draw(void) {
 
   if (g_maze[level].chestScoreTimer > 0.0f) {
     Vector2 pos = Vector2Add(POS_ADJUST(getChestPos(level)), CHEST_SCORE_OFFSET);
-    engine_fontPrintf(asset_getFontTiny(), pos.x, pos.y, WHITE, "%d", g_maze[level].chestScore);
+    engine_fontPrintf(
+        asset_getFontTiny(),
+        pos.x + draw_getTextOffset(g_maze[level].chestScore),
+        pos.y,
+        WHITE,
+        "%d",
+        g_maze[level].chestScore
+    );
   }
 }
 

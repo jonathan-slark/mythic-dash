@@ -18,6 +18,7 @@ typedef struct draw_Text {
 // --- Draw functions ---
 
 void draw_text(draw_Text text, ...);
+int  draw_getTextOffset(int number);
 void draw_shadowText(draw_Text text, ...);
 void draw_resetPlayer(void);
 void draw_updatePlayer(float frameTime, float slop);

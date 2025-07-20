@@ -14,7 +14,7 @@
 const char*          PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWORD", "DEAD" };
 static const Color   CREATURE_DEAD_COLOUR                     = { 255, 255, 255, 100 };
 static const Vector2 PLAYER_COOLDOWN_OFFSET                   = { 5, -8 };
-static const Vector2 CREATURE_SCORE_OFFSET                    = { 1, -8 };
+static const Vector2 CREATURE_SCORE_OFFSET                    = { 5, -8 };
 
 constexpr Color        TEXT_COLOUR                       = { 255, 255, 255, 255 };
 constexpr Color        SHADOW_COLOUR                     = { 32, 32, 32, 255 };
@@ -42,6 +42,13 @@ void draw_text(draw_Text text, ...) {
   va_start(args, text);
   engine_fontPrintfV(font, text.xPos, text.yPos, text.colour, text.format, args);
   va_end(args);
+}
+
+int draw_getTextOffset(int number) {
+  if (number >= 1000) return -6;
+  if (number >= 100) return -4;
+  if (number >= 10) return -2;
+  return 0;
 }
 
 void draw_shadowText(draw_Text text, ...) {
@@ -125,10 +132,11 @@ void draw_player(void) {
   }
 
   if (swordTimer > 0.0f) {
+    int     timer    = (int) ceilf(swordTimer);
     Vector2 pos      = Vector2Add(POS_ADJUST(player_getPos()), PLAYER_COOLDOWN_OFFSET);
-    SWORD_TIMER.xPos = pos.x;
+    SWORD_TIMER.xPos = pos.x + draw_getTextOffset(timer);
     SWORD_TIMER.yPos = pos.y;
-    draw_text(SWORD_TIMER, (int) ceilf(swordTimer));
+    draw_text(SWORD_TIMER, timer);
   }
 }
 
@@ -140,9 +148,8 @@ void draw_creatures(void) {
 
     int score = creature_getScore(i);
     if (score > 0.0f) {
-      Vector2 pos = Vector2Add(POS_ADJUST(creature_getPos(i)), CREATURE_SCORE_OFFSET);
-      engine_fontPrintf(asset_getFontTiny(), pos.x, pos.y, WHITE, "%d", score);
-      CREATURE_SCORE.xPos = pos.x;
+      Vector2 pos         = Vector2Add(POS_ADJUST(creature_getPos(i)), CREATURE_SCORE_OFFSET);
+      CREATURE_SCORE.xPos = pos.x + draw_getTextOffset(score);
       CREATURE_SCORE.yPos = pos.y;
       draw_text(CREATURE_SCORE, score);
     }
