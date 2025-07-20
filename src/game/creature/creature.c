@@ -141,6 +141,12 @@ static void creatureResetTeleportTimer(void) {
   }
 }
 
+static void creatureStopWhispers(void) {
+  for (int i = 0; i < CREATURE_COUNT; i++) {
+    if (g_state.creatures[i].whisperId != -1) audio_stopWhispers(&g_state.creatures[i].whisperId);
+  }
+}
+
 static void creatureWail(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     if (isInActiveState(&g_state.creatures[i])) audio_playWail(actor_getPos(g_state.creatures[i].actor));
@@ -273,6 +279,7 @@ void creature_reset(void) {
   }
 
   creatureDefaults();
+  creatureStopWhispers();
   g_state.update     = nullptr;
   g_state.stateNum   = 0;
   g_state.stateTimer = 0.0f;
