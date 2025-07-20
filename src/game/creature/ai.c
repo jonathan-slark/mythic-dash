@@ -9,6 +9,7 @@
 #include "../player/player.h"
 #include "creature.h"
 #include "internal.h"
+#include "log/log.h"
 
 // --- Types ---
 
@@ -91,7 +92,6 @@ static game_Dir greedyDirSelect(creature_Creature* creature, game_Dir dirs[], in
   for (int i = 0; i < count; i++) {
     game_Tile nextTile = actor_nextTile(creature->actor, dirs[i]);
     int       dist     = maze_manhattanDistance(nextTile, targetTile);
-    LOG_TRACE(game_log, "Creature %d: direction = %s, dist = %d", creature->id, DIR_STRINGS[dirs[i]], dist);
     if (dist < minDist) {
       bestDirCount = 0;
     }
@@ -99,14 +99,29 @@ static game_Dir greedyDirSelect(creature_Creature* creature, game_Dir dirs[], in
       bestDirs[bestDirCount++] = dirs[i];
       minDist                  = dist;
     }
+    LOG_DEBUG(
+        game_log,
+        "Creature %d: direction = %s, dist = %d, bestDirCount = %d",
+        creature->id,
+        DIR_STRINGS[dirs[i]],
+        dist,
+        bestDirCount
+    );
   }
+
   assert(bestDirCount > 0);
   if (bestDirCount == 1) {
     LOG_TRACE(game_log, "Creature %d going: %s (best choice)", creature->id, DIR_STRINGS[bestDirs[0]]);
     return bestDirs[0];
   } else {
-    game_Dir dir = randomSelect(bestDirs, bestDirCount);
-    LOG_TRACE(game_log, "Creature %d going: %s (%d choices)", creature->id, DIR_STRINGS[bestDirs[0]], bestDirCount);
+    // Keep Arcade Mode deterministic
+    game_Dir dir = DIR_NONE;
+    if (game_getDifficulty() == DIFFICULTY_ARCADE) {
+      dir = bestDirs[0];
+    } else {
+      dir = randomSelect(bestDirs, bestDirCount);
+    }
+    LOG_DEBUG(game_log, "Creature %d going: %s (%d choices)", creature->id, DIR_STRINGS[dir], bestDirCount);
     return dir;
   }
 }
