@@ -3949,7 +3949,7 @@
   <tile id="312">
    <properties>
     <property name="doorType" type="int" value="0"/>
-    <property name="isChest" type="bool" value="false"/>
+    <property name="isChest" type="bool" value="true"/>
     <property name="isCoin" type="bool" value="false"/>
     <property name="isSword" type="bool" value="false"/>
     <property name="isWall" type="bool" value="false"/>
@@ -3961,7 +3961,7 @@
   <tile id="313">
    <properties>
     <property name="doorType" type="int" value="0"/>
-    <property name="isChest" type="bool" value="false"/>
+    <property name="isChest" type="bool" value="true"/>
     <property name="isCoin" type="bool" value="false"/>
     <property name="isSword" type="bool" value="false"/>
     <property name="isWall" type="bool" value="false"/>
@@ -3973,7 +3973,7 @@
   <tile id="314">
    <properties>
     <property name="doorType" type="int" value="0"/>
-    <property name="isChest" type="bool" value="false"/>
+    <property name="isChest" type="bool" value="true"/>
     <property name="isCoin" type="bool" value="false"/>
     <property name="isSword" type="bool" value="false"/>
     <property name="isWall" type="bool" value="false"/>
@@ -3985,7 +3985,7 @@
   <tile id="315">
    <properties>
     <property name="doorType" type="int" value="0"/>
-    <property name="isChest" type="bool" value="false"/>
+    <property name="isChest" type="bool" value="true"/>
     <property name="isCoin" type="bool" value="false"/>
     <property name="isSword" type="bool" value="false"/>
     <property name="isWall" type="bool" value="false"/>
@@ -3997,7 +3997,7 @@
   <tile id="316">
    <properties>
     <property name="doorType" type="int" value="0"/>
-    <property name="isChest" type="bool" value="false"/>
+    <property name="isChest" type="bool" value="true"/>
     <property name="isCoin" type="bool" value="false"/>
     <property name="isSword" type="bool" value="false"/>
     <property name="isWall" type="bool" value="false"/>
@@ -4009,7 +4009,7 @@
   <tile id="317">
    <properties>
     <property name="doorType" type="int" value="0"/>
-    <property name="isChest" type="bool" value="false"/>
+    <property name="isChest" type="bool" value="true"/>
     <property name="isCoin" type="bool" value="false"/>
     <property name="isSword" type="bool" value="false"/>
     <property name="isWall" type="bool" value="false"/>
@@ -4021,7 +4021,7 @@
   <tile id="318">
    <properties>
     <property name="doorType" type="int" value="0"/>
-    <property name="isChest" type="bool" value="false"/>
+    <property name="isChest" type="bool" value="true"/>
     <property name="isCoin" type="bool" value="false"/>
     <property name="isSword" type="bool" value="false"/>
     <property name="isWall" type="bool" value="false"/>
@@ -6536,7 +6536,7 @@
 0,493,433,493,0,493,0,493,493,493,0,229,263,0,0,0,261,385,0,493,493,493,0,493,0,493,433,493,0,
 0,493,0,493,0,493,0,493,0,493,0,493,0,0,0,0,0,493,0,493,0,493,0,493,0,493,0,493,0,
 0,493,0,493,0,493,493,493,493,493,0,493,0,0,0,0,0,493,0,493,493,493,493,493,0,493,0,493,0,
-0,493,0,493,0,0,0,459,0,0,0,493,493,493,490,493,493,493,0,0,0,437,0,0,0,493,0,493,0,
+0,493,0,493,0,0,0,459,0,0,0,493,493,493,319,493,493,493,0,0,0,437,0,0,0,493,0,493,0,
 0,493,493,493,493,493,493,493,493,493,493,493,0,0,0,0,0,493,493,493,493,493,493,493,493,493,493,493,0,
 0,493,0,0,0,0,493,0,0,0,0,493,0,493,493,493,0,493,0,0,0,0,493,0,0,0,0,493,0,
 0,493,493,493,493,493,493,493,493,493,493,493,493,493,0,493,493,493,493,493,493,493,493,493,493,493,493,493,0,
