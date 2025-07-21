@@ -39,4 +39,5 @@ engine_Sound*   asset_getDeathSound(void);
 engine_Sound*   asset_getFallingSound(void);
 engine_Sound*   asset_getWhispersSound(void);
 engine_Sound*   asset_getPickupSound(void);
+engine_Sound*   asset_getTwinkleSound(void);
 Music           asset_getMusic(void);

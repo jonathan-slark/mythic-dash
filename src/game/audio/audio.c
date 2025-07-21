@@ -110,3 +110,10 @@ void audio_playPickup(Vector2 pos) {
   engine_setSoundPan(sound, getPan(pos));
   engine_playSound(sound);
 }
+
+void audio_playTwinkle(Vector2 pos) {
+  if (!g_state.audioEnabled) return;
+  engine_Sound* sound = asset_getTwinkleSound();
+  engine_setSoundPan(sound, getPan(pos));
+  engine_playSound(sound);
+}

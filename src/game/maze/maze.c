@@ -5,6 +5,7 @@
 #include <raylib.h>
 #include <stdlib.h>
 #include "../asset/asset.h"
+#include "../audio/audio.h"
 #include "../draw/draw.h"
 #include "../internal.h"
 #include "../player/player.h"
@@ -167,7 +168,10 @@ void maze_pickupKey(Vector2 pos) {
   tile->isKeyCollected = true;
   LOG_INFO(game_log, "Key collected, door: %d", tile->linkedDoorTile);
   assert(tile->linkedDoorTile >= 0);
-  g_maze[level].tiles[tile->linkedDoorTile].isDoorOpen = true;
+  maze_Tile* doorTile  = &g_maze[level].tiles[tile->linkedDoorTile];
+  doorTile->isDoorOpen = true;
+  Vector2 doorPos      = doorTile->aabb.min;
+  audio_playTwinkle(doorPos);
 }
 
 void maze_trapTriggered(Vector2 pos) {
