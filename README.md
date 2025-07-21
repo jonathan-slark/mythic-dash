@@ -1,5 +1,7 @@
 # Mythic Dash
 
+An arcade-style dungeon dash inspired by Southeast Asian myths. Collect gold, dodge monsters from legend, and escape the vault alive.
+
 ## Asset Credits
 
 * [Cursive2 font](https://opengameart.org/content/new-original-grafx2-font-collection) - CC0

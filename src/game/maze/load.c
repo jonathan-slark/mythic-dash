@@ -449,6 +449,8 @@ bool maze_init(void) {
     level = fileNum - 1;
     cute_tiled_map_t* map;
 
+    LOG_INFO(game_log, "--- Map %d ---", fileNum);
+
     char format[] = ASSET_DIR "map/maze%02d.tmj";
     int  size     = snprintf(nullptr, 0, format, fileNum);
     char file[size + 1];
@@ -483,6 +485,8 @@ bool maze_init(void) {
     }
     return false;
   }
+
+  LOG_INFO(game_log, "--- Maps loaded ---");
 
   return true;
 }

@@ -8,6 +8,7 @@
 // --- Types ---
 
 constexpr int CREATURE_TOTAL = CREATURE_COUNT * LEVEL_COUNT;
+constexpr int MUSIC_TRACKS   = 2;
 
 typedef struct asset_AnimData {
   int   row;
@@ -56,7 +57,7 @@ typedef struct asset_Assets {
   engine_Sound*   whispersSound;
   engine_Sound*   pickupSound;
   engine_Sound*   twinkleSound;
-  Music           music;
+  Music           music[MUSIC_TRACKS];
 } asset_Assets;
 
 // --- Constants ---
@@ -79,7 +80,11 @@ static const asset_Sound FALLING_SOUND  = { .filepath = ASSET_DIR "sfx/falling.w
 static const asset_Sound WHISPERS_SOUND = { .filepath = ASSET_DIR "sfx/whispers.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound PICKUP_SOUND   = { .filepath = ASSET_DIR "sfx/pickup.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound TWINKLE_SOUND  = { .filepath = ASSET_DIR "sfx/twinkle.mp3", .volume = 1.0f, .pitch = 1.0f };
-static const asset_Music MUSIC = { .filepath = ASSET_DIR "music/01.mp3", .volume = 0.5f, .duckedVolume = 0.2f };
+
+static const asset_Music MUSIC[MUSIC_TRACKS] = {
+  { .filepath = ASSET_DIR "music/01.mp3", .volume = 0.5f, .duckedVolume = 0.2f },
+  { .filepath = ASSET_DIR "music/02.mp3", .volume = 0.5f, .duckedVolume = 0.2f }
+};
 
 static const float FRAME_TIME = 0.1f;
 

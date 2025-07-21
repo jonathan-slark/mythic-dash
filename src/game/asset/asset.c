@@ -14,17 +14,25 @@ static asset_Assets g_assets;
 
 // --- Helper functions
 
-bool loadSound(asset_Sound soundData, engine_Sound** sound) {
+static bool loadSound(asset_Sound soundData, engine_Sound** sound) {
   GAME_TRY(*sound = engine_loadSound(soundData.filepath, MAX_SOUNDS));
   engine_setSoundVolume(*sound, soundData.volume);
   engine_setSoundPitch(*sound, soundData.pitch);
   return true;
 }
 
-bool loadMusic(asset_Music musicData, Music* music) {
-  GAME_TRY(engine_loadMusic(musicData.filepath, music));
-  engine_setMusicVolume(*music, musicData.volume, musicData.duckedVolume);
+static bool loadMusic(const asset_Music musicData[], Music music[]) {
+  for (int i = 0; i < MUSIC_TRACKS; i++) {
+    GAME_TRY(engine_loadMusic(musicData[i].filepath, &music[i]));
+    engine_setMusicVolume(music[i], musicData[i].volume, musicData[i].duckedVolume);
+  }
   return true;
+}
+
+static void unloadMusic(Music music[]) {
+  for (int i = 0; i < MUSIC_TRACKS; i++) {
+    engine_unloadMusic(music[i]);
+  }
 }
 
 // --- Asset functions ---
@@ -45,12 +53,12 @@ bool asset_load(void) {
   GAME_TRY(loadSound(PICKUP_SOUND, &g_assets.pickupSound));
   GAME_TRY(loadSound(PICKUP_SOUND, &g_assets.pickupSound));
   GAME_TRY(loadSound(TWINKLE_SOUND, &g_assets.twinkleSound));
-  GAME_TRY(loadMusic(MUSIC, &g_assets.music));
+  GAME_TRY(loadMusic(MUSIC, g_assets.music));
   return true;
 }
 
 void asset_unload(void) {
-  engine_unloadMusic(g_assets.music);
+  unloadMusic(g_assets.music);
   engine_unloadSound(&g_assets.twinkleSound);
   engine_unloadSound(&g_assets.pickupSound);
   engine_unloadSound(&g_assets.whispersSound);
@@ -285,4 +293,4 @@ engine_Sound* asset_getTwinkleSound(void) {
   return g_assets.twinkleSound;
 }
 
-Music asset_getMusic(void) { return g_assets.music; }
+Music asset_getMusic(int track) { return g_assets.music[track]; }
