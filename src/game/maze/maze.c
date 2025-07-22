@@ -62,7 +62,7 @@ static void checkKeySpawn(int level) {
   }
 }
 
-static void updateChestDespawnTimer(float frameTime, int level) {
+static void updateChestDespawnTimer(double frameTime, int level) {
   assert(frameTime >= 0.0f);
   if (g_maze[level].chestDespawnTimer == 0.0f) return;
 
@@ -77,7 +77,7 @@ static void updateChestDespawnTimer(float frameTime, int level) {
   }
 }
 
-static void updateChestScoreTimer(float frameTime, int level) {
+static void updateChestScoreTimer(double frameTime, int level) {
   assert(frameTime >= 0.0f);
   if (g_maze[level].chestScoreTimer == 0.0f) return;
 
@@ -244,7 +244,7 @@ void maze_draw(void) {
   }
 }
 
-void maze_update(float frameTime) {
+void maze_update(double frameTime) {
   int level = game_getLevel();
   assert(g_maze[level].layerCount >= 0);
   assert(g_maze[level].count > 0);

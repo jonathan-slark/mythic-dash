@@ -14,7 +14,7 @@
 // --- Types ---
 
 typedef struct CreatureStateHandler {
-  void      (*update)(creature_Creature*, float, float);
+  void      (*update)(creature_Creature*, double, float);
   game_Tile (*getTarget)(creature_Creature*);
   game_Dir  (*selectDir)(creature_Creature*, game_Dir*, int);
 } CreatureStateHandler;
@@ -159,7 +159,7 @@ static game_Tile getTargetTile(creature_Creature* creature) {
 }
 
 static void
-creatureUpdateCommon(creature_Creature* creature, float frameTime, float slop, const CreatureStateHandler* handler) {
+creatureUpdateCommon(creature_Creature* creature, double frameTime, float slop, const CreatureStateHandler* handler) {
   game_Actor* actor      = creature->actor;
   game_Dir    currentDir = actor_getDir(actor);
 
@@ -194,7 +194,7 @@ creatureUpdateCommon(creature_Creature* creature, float frameTime, float slop, c
 // --- Creature state functions ---
 
 // Creature moves back and forth in pen till released
-void creature_pen(creature_Creature* creature, float frameTime, float slop) {
+void creature_pen(creature_Creature* creature, double frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -216,7 +216,7 @@ void creature_pen(creature_Creature* creature, float frameTime, float slop) {
 }
 
 // Creature moves from pen to start position
-void creature_penToStart(creature_Creature* creature, float frameTime, float slop) {
+void creature_penToStart(creature_Creature* creature, double frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -248,7 +248,7 @@ void creature_penToStart(creature_Creature* creature, float frameTime, float slo
 }
 
 // Creature moves from maze start back to pen
-void creature_startToPen(creature_Creature* creature, float frameTime, float slop) {
+void creature_startToPen(creature_Creature* creature, double frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -280,7 +280,7 @@ void creature_startToPen(creature_Creature* creature, float frameTime, float slo
 }
 
 // Creature wanders randomly
-void creature_frightened(creature_Creature* creature, float frameTime, float slop) {
+void creature_frightened(creature_Creature* creature, double frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -289,7 +289,7 @@ void creature_frightened(creature_Creature* creature, float frameTime, float slo
 }
 
 // Creature chases player
-void creature_chase(creature_Creature* creature, float frameTime, float slop) {
+void creature_chase(creature_Creature* creature, double frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -298,7 +298,7 @@ void creature_chase(creature_Creature* creature, float frameTime, float slop) {
 }
 
 // Creature heads to it's assigned corner
-void creature_scatter(creature_Creature* creature, float frameTime, float slop) {
+void creature_scatter(creature_Creature* creature, double frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
@@ -307,7 +307,7 @@ void creature_scatter(creature_Creature* creature, float frameTime, float slop) 
 }
 
 // Creature heads back to the pen
-void creature_dead(creature_Creature* creature, float frameTime, float slop) {
+void creature_dead(creature_Creature* creature, double frameTime, float slop) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);

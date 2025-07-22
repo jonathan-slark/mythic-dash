@@ -44,13 +44,13 @@ typedef struct player_State {
   Vector2 pos;
 } player_State;
 
-void player_update(float frameTime);
+void player_update(double frameTime);
 void player_reset(void);
 ```
 
 ```c
 // game.h (public)
 bool game_init(void);
-void game_update(float frameTime);
+void game_update(double frameTime);
 void game_shutdown(void);
 ```

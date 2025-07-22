@@ -88,7 +88,7 @@ void draw_resetCreatures(void) {
   }
 }
 
-void draw_updatePlayer(float frameTime, float slop) {
+void draw_updatePlayer(double frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= 0.0f);
 
@@ -117,7 +117,7 @@ void draw_updatePlayer(float frameTime, float slop) {
   }
 }
 
-void draw_updateCreatures(float frameTime, float slop) {
+void draw_updateCreatures(double frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= 0.0f);
 

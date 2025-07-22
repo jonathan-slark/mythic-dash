@@ -31,22 +31,22 @@ typedef struct Player {
 
 // --- Constants ---
 
-static const Vector2   PLAYER_START_POS                    = { 14 * TILE_SIZE, 10 * TILE_SIZE };
-static const float     PLAYER_MAX_SPEED[DIFFICULTY_COUNT]  = { 88.0f, 80.0f, 80.0f };
-static const game_Dir  PLAYER_START_DIR                    = DIR_LEFT;
-static const input_Key PLAYER_KEYS[]                       = { INPUT_UP, INPUT_RIGHT, INPUT_DOWN, INPUT_LEFT };
-static const int       SCORE_COIN                          = 10;
-static const int       SCORE_SWORD                         = 50;
-static const float     PLAYER_DEAD_TIMER                   = 2.0f;
-static const int       creature_BASE_SCORE                 = 200;
-static const float     COIN_SLOW_TIMER                     = 0.2f;
-static const float     SWORD_SLOW_TIMER                    = 0.2f;
-static const float     PLAYER_SLOW_SPEED[DIFFICULTY_COUNT] = { 79.2f, 72.0f, 72.0f };  // 10% slow
-static const int       MAX_LEVEL                           = 7;
-static const float     SWORD_MAX_TIMER[DIFFICULTY_COUNT]   = { 14.0f, 10.0f, 6.0f };
-static const float     SWORD_MIN_TIMER[DIFFICULTY_COUNT]   = { 8.4f, 6.0f, 3.6f };     // 60%
-static const int       SCORE_EXTRA_LIFE[DIFFICULTY_COUNT]  = { 3000, 5000, 10000 };
-static const int       SCORE_CHEST                         = 100;
+static const Vector2     PLAYER_START_POS                    = { 14 * TILE_SIZE, 10 * TILE_SIZE };
+static const float       PLAYER_MAX_SPEED[DIFFICULTY_COUNT]  = { 88.0f, 80.0f, 80.0f };
+static const game_Dir    PLAYER_START_DIR                    = DIR_LEFT;
+static const KeyboardKey PLAYER_KEYS[]                       = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
+static const int         SCORE_COIN                          = 10;
+static const int         SCORE_SWORD                         = 50;
+static const float       PLAYER_DEAD_TIMER                   = 2.0f;
+static const int         creature_BASE_SCORE                 = 200;
+static const float       COIN_SLOW_TIMER                     = 0.2f;
+static const float       SWORD_SLOW_TIMER                    = 0.2f;
+static const float       PLAYER_SLOW_SPEED[DIFFICULTY_COUNT] = { 79.2f, 72.0f, 72.0f };  // 10% slow
+static const int         MAX_LEVEL                           = 7;
+static const float       SWORD_MAX_TIMER[DIFFICULTY_COUNT]   = { 14.0f, 10.0f, 6.0f };
+static const float       SWORD_MIN_TIMER[DIFFICULTY_COUNT]   = { 8.4f, 6.0f, 3.6f };     // 60%
+static const int         SCORE_EXTRA_LIFE[DIFFICULTY_COUNT]  = { 3000, 5000, 10000 };
+static const int         SCORE_CHEST                         = 100;
 
 // --- Global state ---
 
@@ -105,7 +105,7 @@ static void swordPickup(void) {
   audio_resetChimePitch();
 }
 
-static void coinSlowUpdate(float frameTime) {
+static void coinSlowUpdate(double frameTime) {
   assert(frameTime >= 0.0f);
 
   if (g_player.coinSlowTimer == 0.0f) return;
@@ -114,7 +114,7 @@ static void coinSlowUpdate(float frameTime) {
     actor_setSpeed(g_player.actor, PLAYER_MAX_SPEED[game_getDifficulty()]);
 }
 
-static void swordSlowUpdate(float frameTime) {
+static void swordSlowUpdate(double frameTime) {
   assert(frameTime >= 0.0f);
 
   if (g_player.swordSlowTimer == 0.0f) return;
@@ -123,7 +123,7 @@ static void swordSlowUpdate(float frameTime) {
     actor_setSpeed(g_player.actor, PLAYER_MAX_SPEED[game_getDifficulty()]);
 }
 
-static void swordUpdate(float frameTime) {
+static void swordUpdate(double frameTime) {
   assert(frameTime >= 0.0f);
 
   if (g_player.swordTimer == 0.0f) return;
@@ -238,7 +238,7 @@ void player_ready(void) {
   g_player.levelData.levelScore = 0;
 }
 
-void player_update(float frameTime, float slop) {
+void player_update(double frameTime, float slop) {
   assert(g_player.actor != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= 0.0f);
@@ -270,7 +270,7 @@ void player_update(float frameTime, float slop) {
 
   game_Dir dir = DIR_NONE;
   for (int i = 0; i < DIR_COUNT; i++) {
-    if (input_isKeyPressed(PLAYER_KEYS[i]) && actor_canMove(g_player.actor, (game_Dir) i, slop)) {
+    if (engine_isKeyDown(PLAYER_KEYS[i]) && actor_canMove(g_player.actor, (game_Dir) i, slop)) {
       dir = (game_Dir) i;
       break;
     }

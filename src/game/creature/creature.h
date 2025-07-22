@@ -8,7 +8,7 @@
 
 bool        creature_init(void);
 void        creature_shutdown(void);
-void        creature_update(float frameTime, float slop);
+void        creature_update(double frameTime, float slop);
 Vector2     creature_getPos(int id);
 game_Dir    creature_getDir(int id);
 game_Actor* creature_getActor(int id);

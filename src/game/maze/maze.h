@@ -14,7 +14,7 @@ bool               maze_isWall(Vector2 pos, bool isPlayer);
 bool               maze_isTeleport(Vector2 pos, Vector2* dest);
 void               maze_tilesOverlay(void);
 void               maze_draw(void);
-void               maze_update(float frameTime);
+void               maze_update(double frameTime);
 game_Tile          maze_getTile(Vector2 pos);
 Vector2            maze_getPos(game_Tile tile);
 int                maze_manhattanDistance(game_Tile nextTile, game_Tile targetTile);

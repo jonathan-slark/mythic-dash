@@ -10,10 +10,10 @@
 constexpr int CREATURE_TOTAL = CREATURE_COUNT * LEVEL_COUNT;
 
 typedef struct asset_AnimData {
-  int   row;
-  int   startCol;
-  int   frameCount;
-  float frameTime;
+  int    row;
+  int    startCol;
+  int    frameCount;
+  double frameTime;
 } asset_AnimData;
 
 typedef struct asset_ActorData {

@@ -320,7 +320,7 @@ bool actor_canMove(game_Actor* actor, game_Dir dir, float slop) {
   return canMove;
 }
 
-void actor_moveNoCheck(game_Actor* actor, game_Dir dir, float frameTime) {
+void actor_moveNoCheck(game_Actor* actor, game_Dir dir, double frameTime) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(frameTime >= 0.0f);
@@ -329,7 +329,7 @@ void actor_moveNoCheck(game_Actor* actor, game_Dir dir, float frameTime) {
   actor->dir = dir;
 }
 
-void actor_move(game_Actor* actor, game_Dir dir, float frameTime) {
+void actor_move(game_Actor* actor, game_Dir dir, double frameTime) {
   assert(actor != nullptr);
   assert(dir >= 0 && dir < DIR_COUNT);
   assert(frameTime >= 0.0f);

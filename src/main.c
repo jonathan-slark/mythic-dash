@@ -3,7 +3,6 @@
 #include <engine/engine.h>
 #include <game/game.h>
 #include <log/log.h>
-#include "game/internal.h"
 
 // --- Constants ---
 
@@ -46,18 +45,19 @@ int main(void) {
   double accumulator = 0.0;
   double previous    = engine_getTime();
   while (!engine_shouldClose()) {
-    LOG_DEBUG(game_log, "New frame: %f", engine_getFrameTime());
-
     game_input();
 
-    double now    = engine_getTime();
-    double delta  = now - previous;
-    previous      = now;
-    accumulator  += delta;
-    while (accumulator >= FRAME_TIME) {
-      LOG_DEBUG(game_log, "game_update(): %f", engine_getTime());
-      game_update(FRAME_TIME);
-      accumulator -= FRAME_TIME;
+    double now   = engine_getTime();
+    double delta = now - previous;
+    previous     = now;
+    if (game_getDifficulty() == DIFFICULTY_ARCADE) {
+      accumulator += delta;
+      while (accumulator >= FRAME_TIME) {
+        game_update(FRAME_TIME);
+        accumulator -= FRAME_TIME;
+      }
+    } else {
+      game_update(delta);
     }
 
     engine_beginFrame();

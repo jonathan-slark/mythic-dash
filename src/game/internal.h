@@ -2,6 +2,7 @@
 #pragma once
 
 #include <engine/engine.h>
+#include <game/game.h>
 #include <log/log.h>
 #include <raylib.h>
 #include <raymath.h>
@@ -52,13 +53,6 @@ typedef enum game_GameState {
   GAME_OVER,
   GAME_WON
 } game_GameState;
-
-typedef enum game_Difficulty {
-  DIFFICULTY_EASY,
-  DIFFICULTY_NORMAL,
-  DIFFICULTY_ARCADE,
-  DIFFICULTY_COUNT
-} game_Difficulty;
 
 typedef struct {
   game_GameState  state;
@@ -126,12 +120,11 @@ static inline game_Dir game_getOppositeDir(game_Dir dir) { return (dir + 2) % DI
 
 // --- Internal game functions (game.c) ---
 
-void            game_newEasy(void);
-void            game_newNormal(void);
-void            game_newArcade(void);
-game_Difficulty game_getDifficulty(void);
-void            game_over(void);
-int             game_getLevel(void);
-void            game_levelClear(void);
-void            game_nextLevel(void);
-void            game_playerDead(void);
+void game_newEasy(void);
+void game_newNormal(void);
+void game_newArcade(void);
+void game_over(void);
+int  game_getLevel(void);
+void game_levelClear(void);
+void game_nextLevel(void);
+void game_playerDead(void);

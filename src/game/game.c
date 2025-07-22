@@ -54,7 +54,7 @@ Game     g_game = { .state = GAME_BOOT, .fpsIndex = COUNT(FPS) - 1 };
 
 // --- Helper functions ---
 
-static void updateMusic(float frameTime) { engine_updateMusic(asset_getMusic(g_game.musicTrack), frameTime); }
+static void updateMusic(double frameTime) { engine_updateMusic(asset_getMusic(g_game.musicTrack), frameTime); }
 
 static void escapePressed(void) {
   switch (g_game.state) {
@@ -123,7 +123,7 @@ static void drawGame(void) {
 #endif
 }
 
-static void updateGame(float frameTime) {
+static void updateGame(double frameTime) {
   float slop = BASE_SLOP * (frameTime / BASE_DT);
   slop       = fminf(fmaxf(slop, MIN_SLOP), MAX_SLOP);
   LOG_TRACE(game_log, "Slop: %f", slop);
@@ -183,7 +183,7 @@ bool game_load(void) {
 
 void game_input(void) { input_update(); }
 
-void game_update(float frameTime) {
+void game_update(double frameTime) {
   checkKeys();
   switch (g_game.state) {
     case GAME_BOOT: assert(false); break;

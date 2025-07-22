@@ -16,7 +16,7 @@ typedef struct player_levelData {
 bool             player_init(void);
 void             player_shutdown(void);
 void             player_ready(void);
-void             player_update(float frameTime, float slop);
+void             player_update(double frameTime, float slop);
 void             player_restart(void);
 void             player_reset(void);
 void             player_totalReset(void);

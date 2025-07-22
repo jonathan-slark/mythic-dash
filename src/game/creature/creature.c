@@ -41,7 +41,7 @@ creature_State g_state = { .update = nullptr, .lastUpdate = nullptr, .stateNum =
 
 static inline float isDead(creature_Creature* creature) { return creature->update == creature_dead; }
 
-static inline void updateTimer(float frameTime) {
+static inline void updateTimer(double frameTime) {
   assert(frameTime >= 0.0f);
   g_state.stateTimer = fmaxf(g_state.stateTimer - frameTime, 0.0f);
 }
@@ -55,7 +55,7 @@ static inline bool isInActiveState(creature_Creature* creature) {
          creature->update == creature_frightened;
 }
 
-static const char* getStateString(void (*update)(struct creature_Creature*, float, float)) {
+static const char* getStateString(void (*update)(struct creature_Creature*, double, float)) {
   assert(update != nullptr);
 
   if (update == creature_pen) return STATE_PEN_STR;
@@ -68,7 +68,7 @@ static const char* getStateString(void (*update)(struct creature_Creature*, floa
   return "";
 }
 
-static void transitionToState(void (*newState)(creature_Creature*, float, float)) {
+static void transitionToState(void (*newState)(creature_Creature*, double, float)) {
   assert(newState != nullptr);
 
   if (g_state.update != creature_frightened) g_state.lastUpdate = g_state.update;
@@ -106,7 +106,7 @@ static float getStateTimer(int stateNum) {
 
 static void toggleCreatureState() {
   void (*newState)(
-      creature_Creature*, float, float
+      creature_Creature*, double, float
   ) = (g_state.update == nullptr || g_state.update == creature_chase) ? creature_scatter : creature_chase;
   transitionToState(newState);
   g_state.stateTimer = getStateTimer(g_state.stateNum++);
@@ -115,7 +115,7 @@ static void toggleCreatureState() {
 }
 
 // Update the global state and change creature states
-static void updateState(float frameTime) {
+static void updateState(double frameTime) {
   assert(frameTime >= 0.0f);
 
   updateTimer(frameTime);
@@ -177,7 +177,7 @@ static void creatureSetSpeeds(void) {
   }
 }
 
-static void creatureCheckScoreTimer(creature_Creature* creature, float frameTime) {
+static void creatureCheckScoreTimer(creature_Creature* creature, double frameTime) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
 
@@ -196,7 +196,7 @@ static void creatureCheckTeleport(creature_Creature* creature) {
   }
 }
 
-static void creatureUpdateTeleportSlow(creature_Creature* creature, float frameTime) {
+static void creatureUpdateTeleportSlow(creature_Creature* creature, double frameTime) {
   assert(creature != nullptr);
   assert(frameTime >= 0.0f);
 
@@ -293,7 +293,7 @@ void creature_shutdown(void) {
   }
 }
 
-void creature_update(float frameTime, float slop) {
+void creature_update(double frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
