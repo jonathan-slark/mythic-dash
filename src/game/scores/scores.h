@@ -5,3 +5,4 @@
 
 void scores_load(void);
 void scores_save(void);
+void scores_levelClear(float time, int score);

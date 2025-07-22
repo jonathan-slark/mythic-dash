@@ -17,6 +17,7 @@ game_Tile        player_tileAhead(int tileNum);
 float            player_getMaxSpeed(void);
 void             player_dead(void);
 void             player_reset(void);
+void             player_levelClear(void);
 void             player_restart(void);
 void             player_totalReset(void);
 int              player_getLives(void);

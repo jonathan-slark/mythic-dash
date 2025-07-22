@@ -8,6 +8,7 @@
 #include "../creature/creature.h"
 #include "../debug/debug.h"
 #include "../maze/maze.h"
+#include "../scores/scores.h"
 #include "log/log.h"
 
 // --- Types ---
@@ -24,6 +25,8 @@ typedef struct Player {
   float            coinSlowTimer;
   float            swordSlowTimer;
   int              lastScoreBonusLife;
+  float            levelTimer;
+  int              levelScore;
 } Player;
 
 // --- Constants ---
@@ -57,6 +60,8 @@ static Player g_player = {
   .deadTimer          = 0.0f,
   .scoreMultiplier    = 1,
   .lastScoreBonusLife = 0,
+  .levelTimer         = 0.0f,
+  .levelScore         = 0,
 };
 
 // --- Helper functions ---
@@ -228,9 +233,16 @@ void player_restart(void) {
   audio_resetChimePitch();
 }
 
+void player_levelClear(void) {
+  g_player.levelScore = g_player.score - g_player.levelScore;
+  scores_levelClear(g_player.levelTimer, g_player.levelScore);
+}
+
 void player_reset() {
   player_restart();
   g_player.coinsCollected = 0;
+  g_player.levelTimer     = GetTime();
+  g_player.levelScore     = g_player.score;
 }
 
 void player_totalReset() {

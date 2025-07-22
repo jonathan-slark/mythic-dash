@@ -15,7 +15,7 @@ constexpr int BUFFER_LEN = 256;
 typedef struct {
   char  difficulty[ENTRY_LEN];
   int   level;
-  float seconds;
+  float time;
   int   score;
   int   lives;
   char  type[ENTRY_LEN];
@@ -69,7 +69,7 @@ void scores_load(void) {
         "%15[^,],%d,%f,%d,%d,%15[^,\n]",
         entry.difficulty,
         &entry.level,
-        &entry.seconds,
+        &entry.time,
         &entry.score,
         &entry.lives,
         entry.type
@@ -111,7 +111,7 @@ void scores_save(void) {
           "%s,%d,%.2f,%d,%d,%s\n",
           MODE_NAMES[i],
           g_saves.bestTimes[i][j].level = j + 1,
-          g_saves.bestTimes[i][j].seconds,
+          g_saves.bestTimes[i][j].time,
           g_saves.bestTimes[i][j].score,
           g_saves.bestTimes[i][j].lives,
           TYPE_TIME
@@ -121,7 +121,7 @@ void scores_save(void) {
           "%s,%d,%.2f,%d,%d,%s\n",
           MODE_NAMES[i],
           g_saves.bestTimes[i][j].level = j + 1,
-          g_saves.bestScores[i][j].seconds,
+          g_saves.bestScores[i][j].time,
           g_saves.bestScores[i][j].score,
           g_saves.bestScores[i][j].lives,
           TYPE_SCORE
@@ -130,4 +130,15 @@ void scores_save(void) {
   }
 
   if (fclose(file) == EOF) LOG_ERROR(game_log, "Error on closing file %s (%s)", SCORES_FILE, strerror(errno));
+}
+
+void scores_levelClear(float time, int score) {
+  int             level      = game_getLevel();
+  game_Difficulty difficulty = game_getDifficulty();
+  if (time > g_saves.bestTimes[difficulty][level].time) {
+    g_saves.bestTimes[difficulty][level].time = time;
+  }
+  if (score > g_saves.bestScores[difficulty][level].score) {
+    g_saves.bestScores[difficulty][level].score = score;
+  }
 }

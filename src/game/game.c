@@ -279,6 +279,7 @@ void game_nextLevel(void) {
   if (g_game.level == LEVEL_COUNT - 1) {
     gameWon();
   } else {
+    player_levelClear();
     g_game.level += 1;
     g_game.state  = GAME_READY;
     stopMusic();
