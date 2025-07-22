@@ -194,10 +194,12 @@ static bool playerCheckTraps(void) {
 
 static void playerCheckScore() {
   int threshold = SCORE_EXTRA_LIFE[game_getDifficulty()];
-  if (g_player.lives < PLAYER_MAX_LIVES && g_player.score >= g_player.lastScoreBonusLife + threshold) {
-    g_player.lives              += 1;
+  if (g_player.score >= g_player.lastScoreBonusLife + threshold) {
     g_player.lastScoreBonusLife += threshold;
-    LOG_INFO(game_log, "Player gained bonus life at score: %d", g_player.score);
+    if (g_player.lives < PLAYER_MAX_LIVES) {
+      g_player.lives += 1;
+      LOG_INFO(game_log, "Player gained bonus life at score: %d", g_player.score);
+    }
   }
 }
 

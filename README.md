@@ -49,3 +49,17 @@ creativecommons.org/licenses/by-nc-sa/3.0/
    * Fullscreen
    * Scale
 3. Controls
+
+## High Scores
+
+[Mode: Easy ▼]  [Sort by: Time ▼]
+
+╔════════════════════════════════════════╗
+║ Level        | Time   | Score | Lives  ║
+╠════════════════════════════════════════╣
+║ Level 1      | 0:32   | 3200  | 10     ║
+║ Level 2      | 0:45   | 3700  | 10     ║
+║ Level 3      | 0:52   | 4100  | 9      ║
+║ ...
+║ Full Run     | 5:24   | 28200 | 8      ║
+╚════════════════════════════════════════╝

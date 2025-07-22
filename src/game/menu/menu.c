@@ -8,7 +8,15 @@
 
 // --- Types ---
 
-typedef enum { MENU_MAIN, MENU_GAME, MENU_OPTIONS, MENU_CREDITS, MENU_COUNT, MENU_NONE } menu_ScreenState;
+typedef enum {
+  MENU_MAIN,
+  MENU_GAME,
+  MENU_HISCORES,
+  MENU_OPTIONS,
+  MENU_CREDITS,
+  MENU_COUNT,
+  MENU_NONE
+} menu_ScreenState;
 
 typedef struct {
   Rectangle        bounds;
@@ -39,7 +47,7 @@ static void returnToTitle(void);
 
 // --- Constants ---
 
-static const Rectangle BACKGROUND_RECTANGLE = { 180, 60, 110, 90 };
+static const Rectangle BACKGROUND_RECTANGLE = { 180, 60, 110, 100 };
 static const Color     BACKGROUND_COLOUR    = { 64, 64, 64, 200 };
 static const Color     BACKGROUND_BORDER    = { 255, 255, 255, 200 };
 
@@ -47,32 +55,37 @@ static const Color TEXT_NORMAL = { 255, 255, 255, 255 };
 static const Color TEXT_ACTIVE = { 151, 255, 49, 255 };
 
 static const menu_Button MAIN_BUTTONS[] = {
-  {  { 190, 70, 100, 10 },      "Start Game",    MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH },
-  {  { 190, 80, 100, 10 },         "Options", MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH },
-  {  { 190, 90, 100, 10 },         "Credits", MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH },
-  { { 190, 130, 100, 10 },       "Quit Game",    MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE },
-  { { 190, 110, 100, 10 },     "Resume Game",    MENU_NONE,          menu_close, MENU_CONTEXT_INGAME },
-  { { 190, 120, 100, 10 }, "Return to Title",    MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME },
-  { { 190, 130, 100, 10 }, "Exit to Desktop",    MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME },
+  {  { 190, 70, 100, 10 },      "Start Game",     MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH },
+  {  { 190, 80, 100, 10 },     "High Scores", MENU_HISCORES,             nullptr,   MENU_CONTEXT_BOTH },
+  {  { 190, 90, 100, 10 },         "Options",  MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH },
+  { { 190, 100, 100, 10 },         "Credits",  MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH },
+  { { 190, 140, 100, 10 },       "Quit Game",     MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE },
+  { { 190, 120, 100, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME },
+  { { 190, 130, 100, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME },
+  { { 190, 140, 100, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME }
+};
+static const menu_Button HISCORES_BUTTONS[] = {
+  { { 190, 140, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
 };
 static const menu_Button GAME_BUTTONS[] = {
   {  { 190, 70, 100, 10 },        "Easy", MENU_NONE,   game_newEasy, MENU_CONTEXT_BOTH },
   {  { 190, 80, 100, 10 },      "Normal", MENU_NONE, game_newNormal, MENU_CONTEXT_BOTH },
   {  { 190, 90, 100, 10 }, "Arcade Mode", MENU_NONE, game_newArcade, MENU_CONTEXT_BOTH },
-  { { 190, 130, 100, 10 },        "Back", MENU_MAIN,        nullptr, MENU_CONTEXT_BOTH }
+  { { 190, 140, 100, 10 },        "Back", MENU_MAIN,        nullptr, MENU_CONTEXT_BOTH }
 };
 static const menu_Button OPTIONS_BUTTONS[] = {
-  { { 190, 130, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
+  { { 190, 140, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
 };
 static const menu_Button CREDITS_BUTTONS[] = {
-  { { 190, 130, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
+  { { 190, 140, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
 };
 
 static const menu_Screen SCREENS[] = {
-  [MENU_MAIN]    = {    MAIN_BUTTONS,    COUNT(MAIN_BUTTONS), nullptr },
-  [MENU_GAME]    = {    GAME_BUTTONS,    COUNT(GAME_BUTTONS), nullptr },
-  [MENU_OPTIONS] = { OPTIONS_BUTTONS, COUNT(OPTIONS_BUTTONS), nullptr },
-  [MENU_CREDITS] = { CREDITS_BUTTONS, COUNT(CREDITS_BUTTONS), nullptr },
+  [MENU_MAIN]     = {     MAIN_BUTTONS,     COUNT(MAIN_BUTTONS), nullptr },
+  [MENU_HISCORES] = { HISCORES_BUTTONS, COUNT(HISCORES_BUTTONS), nullptr },
+  [MENU_GAME]     = {     GAME_BUTTONS,     COUNT(GAME_BUTTONS), nullptr },
+  [MENU_OPTIONS]  = {  OPTIONS_BUTTONS,  COUNT(OPTIONS_BUTTONS), nullptr },
+  [MENU_CREDITS]  = {  CREDITS_BUTTONS,  COUNT(CREDITS_BUTTONS), nullptr },
 };
 
 // --- Global state ---
@@ -254,6 +267,7 @@ void menu_back(void) {
       break;
 
     case MENU_GAME:
+    case MENU_HISCORES:
     case MENU_OPTIONS:
     case MENU_CREDITS: g_state.currentScreen = MENU_MAIN; break;
 

@@ -14,6 +14,7 @@
 #include "maze/maze.h"
 #include "menu/menu.h"
 #include "player/player.h"
+#include "scores/scores.h"
 
 // --- Constants ---
 
@@ -186,6 +187,7 @@ bool game_load(void) {
   GAME_TRY(asset_initPlayer());
   GAME_TRY(asset_initCreatures());
   GAME_TRY(asset_initCursor());
+  scores_load();
   LOG_INFO(game_log, "Game loading took %f seconds", GetTime() - start);
 
   menu_open(MENU_CONTEXT_TITLE);
@@ -248,6 +250,7 @@ void game_draw(void) {
 }
 
 void game_unload(void) {
+  scores_save();
   engine_shutdownAudio();
   asset_shutdownCursor();
   asset_shutdownCreatures();
