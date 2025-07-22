@@ -14,20 +14,18 @@
 // --- Types ---
 
 typedef struct Player {
-  game_Actor*             actor;
-  game_PlayerState        state;
-  int                     lives;
-  int                     score;
-  int                     coinsCollected;
-  float                   swordTimer;
-  float                   deadTimer;
-  int                     scoreMultiplier;
-  float                   coinSlowTimer;
-  float                   swordSlowTimer;
-  int                     lastScoreBonusLife;
-  float                   levelTimer;
-  int                     levelScore;
-  scores_LevelClearResult levelClearResult;
+  game_Actor*      actor;
+  game_PlayerState state;
+  int              lives;
+  int              score;
+  int              coinsCollected;
+  float            swordTimer;
+  float            deadTimer;
+  int              scoreMultiplier;
+  float            coinSlowTimer;
+  float            swordSlowTimer;
+  int              lastScoreBonusLife;
+  player_levelData levelData;
 } Player;
 
 // --- Constants ---
@@ -61,8 +59,7 @@ static Player g_player = {
   .deadTimer          = 0.0f,
   .scoreMultiplier    = 1,
   .lastScoreBonusLife = 0,
-  .levelTimer         = 0.0f,
-  .levelScore         = 0,
+  .levelData          = {}
 };
 
 // --- Helper functions ---
@@ -139,8 +136,8 @@ static void playerSwordUpdate(float frameTime) {
 }
 
 static void levelClear(void) {
-  g_player.levelScore       = g_player.score - g_player.levelScore;
-  g_player.levelClearResult = scores_levelClear(g_player.levelTimer, g_player.levelScore);
+  g_player.levelData.levelScore       = g_player.score - g_player.levelData.levelScore;
+  g_player.levelData.levelClearResult = scores_levelClear(g_player.levelData.levelTimer, g_player.levelData.levelScore);
 }
 
 static void playerCheckPickups(void) {
@@ -240,12 +237,14 @@ void player_restart(void) {
   audio_resetChimePitch();
 }
 
+player_levelData player_getLevelData(void) { return g_player.levelData; }
+
 void player_reset() {
   player_restart();
-  g_player.coinsCollected   = 0;
-  g_player.levelTimer       = GetTime();
-  g_player.levelScore       = g_player.score;
-  g_player.levelClearResult = (scores_LevelClearResult) {};
+  g_player.coinsCollected             = 0;
+  g_player.levelData.levelTimer       = GetTime();
+  g_player.levelData.levelScore       = g_player.score;
+  g_player.levelData.levelClearResult = (scores_LevelClearResult) {};
 }
 
 void player_totalReset() {

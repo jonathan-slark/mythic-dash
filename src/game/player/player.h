@@ -3,6 +3,13 @@
 
 #include <raylib.h>
 #include "../internal.h"
+#include "../scores/scores.h"
+
+typedef struct player_levelData {
+  float                   levelTimer;
+  int                     levelScore;
+  scores_LevelClearResult levelClearResult;
+} player_levelData;
 
 // --- Player functions ---
 
@@ -17,7 +24,7 @@ game_Tile        player_tileAhead(int tileNum);
 float            player_getMaxSpeed(void);
 void             player_dead(void);
 void             player_reset(void);
-void             player_levelClear(void);
+player_levelData player_getLevelData(void);
 void             player_restart(void);
 void             player_totalReset(void);
 int              player_getLives(void);

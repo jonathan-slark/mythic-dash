@@ -26,6 +26,9 @@ static const draw_Text EXTRA_LIFE_TEXT                   = { "@ %d", 428, 252, T
 static const draw_Text TITLE_TEXT                        = { "Mythic Dash", 190, 40, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text PLAYER_READY_TEXT                 = { "Get ready!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text LEVEL_CLEAR_TEXT                  = { "Level clear!", 200, 100, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_TIME_TEXT                   = { "Your time: %f%s", 180, 120, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_SCORE_TEXT                  = { "Your score: %f%s", 180, 130, TEXT_COLOUR, FONT_NORMAL };
+static const char      RECORD_TEXT[]                     = " - New record!";
 static const draw_Text GAME_OVER_TEXT                    = { "Game over!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text GAME_WON_TEXT                     = { "Game won!", 213, 100, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text SPACE_TEXT                        = { "Press space", 206, 188, TEXT_COLOUR, FONT_NORMAL };
@@ -186,6 +189,11 @@ void draw_ready(void) {
 
 void draw_levelClear(void) {
   draw_shadowText(LEVEL_CLEAR_TEXT);
+
+  player_levelData data = player_getLevelData();
+  draw_shadowText(LEVEL_TIME_TEXT, data.levelTimer, data.levelClearResult.isTimeRecord ? RECORD_TEXT : "");
+  draw_shadowText(LEVEL_SCORE_TEXT, data.levelScore, data.levelClearResult.isScoreRecord ? RECORD_TEXT : "");
+
   draw_shadowText(SPACE_TEXT);
 }
 
