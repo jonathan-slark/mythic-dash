@@ -6,10 +6,11 @@
 #include <raylib.h>
 #include <stddef.h>
 #include "asset/asset.h"
-#include "asset/internal.h"
+#include "audio/audio.h"
 #include "creature/creature.h"
 #include "debug/debug.h"
 #include "draw/draw.h"
+#include "input/input.h"
 #include "internal.h"
 #include "maze/maze.h"
 #include "menu/menu.h"
@@ -53,27 +54,6 @@ Game     g_game = { .state = GAME_BOOT, .fpsIndex = COUNT(FPS) - 1 };
 
 // --- Helper functions ---
 
-static void stopMusic(void) {
-  engine_stopMusic(asset_getMusic(g_game.musicTrack));
-  g_game.isMusicPaused = false;
-}
-
-static void pauseMusic(void) {
-  engine_pauseMusic(asset_getMusic(g_game.musicTrack));
-  g_game.isMusicPaused = true;
-}
-
-static void resumeMusic(void) {
-  engine_resumeMusic(asset_getMusic(g_game.musicTrack));
-  g_game.isMusicPaused = true;
-}
-
-static void startMusic(void) {
-  g_game.musicTrack = g_game.level % MUSIC_TRACKS;
-  engine_playMusic(asset_getMusic(g_game.musicTrack));
-  g_game.isMusicPaused = false;
-}
-
 static void updateMusic(float frameTime) { engine_updateMusic(asset_getMusic(g_game.musicTrack), frameTime); }
 
 static void escapePressed(void) {
@@ -107,11 +87,12 @@ static void spacePressed(void) {
       break;
 
     case GAME_READY:
+      player_ready();
       g_game.state = GAME_RUN;
       if (g_game.isMusicPaused) {
-        resumeMusic();
+        audio_resumeMusic();
       } else {
-        startMusic();
+        audio_startMusic();
       }
       break;
 
@@ -126,9 +107,9 @@ static void spacePressed(void) {
 }
 
 static void checkKeys(void) {
-  if (engine_isKeyPressed(KEY_SPACE)) spacePressed();
-  if (engine_isKeyPressed(KEY_ESCAPE)) escapePressed();
-  if (engine_isKeyPressed(KEY_S)) TakeScreenshot(SCREENSHOT_FILE);
+  if (input_isKeyPressed(INPUT_SPACE)) spacePressed();
+  if (input_isKeyPressed(INPUT_ESCAPE)) escapePressed();
+  if (input_isKeyPressed(INPUT_S)) TakeScreenshot(SCREENSHOT_FILE);
 }
 
 static void drawGame(void) {
@@ -175,7 +156,7 @@ static void gameWon(void) { g_game.state = GAME_WON; }
 bool game_load(void) {
   assert(g_game.state == GAME_BOOT);
 
-  double start = GetTime();
+  double start = engine_getTime();
 
   if (game_log != nullptr) {
     LOG_ERROR(game_log, "Game already loaded");
@@ -194,11 +175,13 @@ bool game_load(void) {
   GAME_TRY(asset_initCreatures());
   GAME_TRY(asset_initCursor());
   scores_load();
-  LOG_INFO(game_log, "Game loading took %f seconds", GetTime() - start);
+  LOG_INFO(game_log, "Game loading took %f seconds", engine_getTime() - start);
 
   menu_open(MENU_CONTEXT_TITLE);
   return true;
 }
+
+void game_input(void) { input_update(); }
 
 void game_update(float frameTime) {
   checkKeys();
@@ -281,13 +264,16 @@ void game_newArcade(void) { newGame(DIFFICULTY_ARCADE); }
 game_Difficulty game_getDifficulty(void) { return g_game.difficulty; }
 
 void game_over(void) {
-  stopMusic();
+  audio_stopMusic();
   g_game.state = GAME_OVER;
 }
 
 int game_getLevel(void) { return g_game.level; }
 
-void game_levelClear(void) { g_game.state = GAME_LEVELCLEAR; }
+void game_levelClear(void) {
+  scores_save();
+  g_game.state = GAME_LEVELCLEAR;
+}
 
 void game_nextLevel(void) {
   if (g_game.level == LEVEL_COUNT - 1) {
@@ -295,17 +281,18 @@ void game_nextLevel(void) {
   } else {
     g_game.level += 1;
     g_game.state  = GAME_READY;
-    stopMusic();
+    audio_stopMusic();
     player_reset();
     creature_reset();
     maze_reset(g_game.level);
+    draw_resetPlayer();
     draw_resetCreatures();
   }
 }
 
 void game_playerDead(void) {
   g_game.state = GAME_READY;
-  pauseMusic();
+  audio_pauseMusic();
   player_restart();
   creature_reset();
 }

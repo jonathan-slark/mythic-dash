@@ -6,7 +6,7 @@
 #include "../scores/scores.h"
 
 typedef struct player_levelData {
-  float                   levelTimer;
+  double                  levelTimer;
   int                     levelScore;
   scores_LevelClearResult levelClearResult;
 } player_levelData;
@@ -15,23 +15,24 @@ typedef struct player_levelData {
 
 bool             player_init(void);
 void             player_shutdown(void);
+void             player_ready(void);
 void             player_update(float frameTime, float slop);
+void             player_restart(void);
+void             player_reset(void);
+void             player_totalReset(void);
+game_Tile        player_tileAhead(int tileNum);
+game_Actor*      player_getActor(void);
 Vector2          player_getPos(void);
 game_Dir         player_getDir(void);
-bool             player_isMoving(void);
-game_Actor*      player_getActor(void);
-game_Tile        player_tileAhead(int tileNum);
 float            player_getMaxSpeed(void);
-void             player_dead(void);
-void             player_reset(void);
 player_levelData player_getLevelData(void);
-void             player_restart(void);
-void             player_totalReset(void);
 int              player_getLives(void);
 int              player_getScore(void);
 game_PlayerState player_getState(void);
-bool             player_hasSword(void);
 float            player_getSwordTimer(void);
-void             player_killedCreature(int creatureID);
 int              player_getCoinsCollected(void);
 int              player_getNextExtraLifeScore(void);
+bool             player_isMoving(void);
+bool             player_hasSword(void);
+void             player_dead(void);
+void             player_killedCreature(int creatureID);

@@ -4,6 +4,7 @@
 #include <log/log.h>
 #include <raylib.h>
 #include "../draw/draw.h"
+#include "../input/input.h"
 #include "../internal.h"
 
 // --- Types ---
@@ -189,15 +190,15 @@ static void drawMenuScreen(const menu_Screen* screen) {
 static void checkKeys(const menu_Screen* screen) {
   // Note: escape key is handled by game.c
   int button = g_state.selectedButton[g_state.currentScreen];
-  if (engine_isKeyPressed(KEY_UP)) {
+  if (input_isKeyPressed(INPUT_UP)) {
     g_state.selectedButton[g_state.currentScreen] = findPreviousActiveButton(screen, button);
     g_state.isMouseActive                         = false;
   }
-  if (engine_isKeyPressed(KEY_DOWN)) {
+  if (input_isKeyPressed(INPUT_DOWN)) {
     g_state.selectedButton[g_state.currentScreen] = findNextActiveButton(screen, button);
     g_state.isMouseActive                         = false;
   }
-  if (engine_isKeyPressed(KEY_ENTER) || engine_isKeyPressed(KEY_KP_ENTER)) {
+  if (input_isKeyPressed(INPUT_ENTER) || input_isKeyPressed(INPUT_KP_ENTER)) {
     g_state.activatedButton = button;
     g_state.isMouseActive   = false;
   }
@@ -238,7 +239,7 @@ void menu_open(menu_Context context) {
 void menu_close(void) {
   assert(
       g_game.lastState == GAME_PAUSE || g_game.lastState == GAME_READY || g_game.lastState == GAME_RUN ||
-      g_game.lastState == GAME_OVER
+      g_game.lastState == GAME_OVER || g_game.lastState == GAME_LEVELCLEAR
   );
   if (g_state.context == MENU_CONTEXT_INGAME) g_game.state = g_game.lastState;
 }

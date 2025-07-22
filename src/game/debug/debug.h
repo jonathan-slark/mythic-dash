@@ -2,6 +2,7 @@
 #pragma once
 
 #include <engine/engine.h>
+#include "../input/input.h"
 #include "../internal.h"
 
 // --- Helper functions ---
@@ -14,13 +15,13 @@ static inline void checkFPSKeys(void) {
 #ifdef NDEBUG
   (void) 0;
 #else
-  if (engine_isKeyPressed(KEY_MINUS)) {
+  if (input_isKeyPressed(INPUT_MINUS)) {
     g_game.fpsIndex = (g_game.fpsIndex == 0) ? COUNT(FPS) - 1 : g_game.fpsIndex - 1;
   }
-  if (engine_isKeyPressed(KEY_EQUAL)) {
+  if (input_isKeyPressed(INPUT_EQUAL)) {
     g_game.fpsIndex = (g_game.fpsIndex == COUNT(FPS) - 1) ? 0 : g_game.fpsIndex + 1;
   }
-  SetTargetFPS(FPS[g_game.fpsIndex]);
+  // SetTargetFPS(FPS[g_game.fpsIndex]);
 #endif
 }
 

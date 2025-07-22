@@ -137,7 +137,7 @@ scores_LevelClearResult scores_levelClear(float time, int score) {
   game_Difficulty         difficulty = game_getDifficulty();
   scores_LevelClearResult result     = {};
 
-  if (time > g_saves.bestTimes[difficulty][level].time) {
+  if (time < g_saves.bestTimes[difficulty][level].time || g_saves.bestTimes[difficulty][level].time == 0.0f) {
     g_saves.bestTimes[difficulty][level].time = time;
     result.isTimeRecord                       = true;
   }

@@ -7,6 +7,7 @@
 #include "../audio/audio.h"
 #include "../creature/creature.h"
 #include "../debug/debug.h"
+#include "../input/input.h"
 #include "../maze/maze.h"
 #include "../scores/scores.h"
 #include "log/log.h"
@@ -30,22 +31,22 @@ typedef struct Player {
 
 // --- Constants ---
 
-static const Vector2     PLAYER_START_POS                    = { 14 * TILE_SIZE, 10 * TILE_SIZE };
-static const float       PLAYER_MAX_SPEED[DIFFICULTY_COUNT]  = { 88.0f, 80.0f, 80.0f };
-static const game_Dir    PLAYER_START_DIR                    = DIR_LEFT;
-static const KeyboardKey PLAYER_KEYS[]                       = { KEY_UP, KEY_RIGHT, KEY_DOWN, KEY_LEFT };
-static const int         SCORE_COIN                          = 10;
-static const int         SCORE_SWORD                         = 50;
-static const float       PLAYER_DEAD_TIMER                   = 2.0f;
-static const int         creature_BASE_SCORE                 = 200;
-static const float       COIN_SLOW_TIMER                     = 0.2f;
-static const float       SWORD_SLOW_TIMER                    = 0.2f;
-static const float       PLAYER_SLOW_SPEED[DIFFICULTY_COUNT] = { 79.2f, 72.0f, 72.0f };  // 10% slow
-static const int         MAX_LEVEL                           = 7;
-static const float       SWORD_MAX_TIMER[DIFFICULTY_COUNT]   = { 14.0f, 10.0f, 6.0f };
-static const float       SWORD_MIN_TIMER[DIFFICULTY_COUNT]   = { 8.4f, 6.0f, 3.6f };     // 60%
-static const int         SCORE_EXTRA_LIFE[DIFFICULTY_COUNT]  = { 3000, 5000, 10000 };
-static const int         SCORE_CHEST                         = 100;
+static const Vector2   PLAYER_START_POS                    = { 14 * TILE_SIZE, 10 * TILE_SIZE };
+static const float     PLAYER_MAX_SPEED[DIFFICULTY_COUNT]  = { 88.0f, 80.0f, 80.0f };
+static const game_Dir  PLAYER_START_DIR                    = DIR_LEFT;
+static const input_Key PLAYER_KEYS[]                       = { INPUT_UP, INPUT_RIGHT, INPUT_DOWN, INPUT_LEFT };
+static const int       SCORE_COIN                          = 10;
+static const int       SCORE_SWORD                         = 50;
+static const float     PLAYER_DEAD_TIMER                   = 2.0f;
+static const int       creature_BASE_SCORE                 = 200;
+static const float     COIN_SLOW_TIMER                     = 0.2f;
+static const float     SWORD_SLOW_TIMER                    = 0.2f;
+static const float     PLAYER_SLOW_SPEED[DIFFICULTY_COUNT] = { 79.2f, 72.0f, 72.0f };  // 10% slow
+static const int       MAX_LEVEL                           = 7;
+static const float     SWORD_MAX_TIMER[DIFFICULTY_COUNT]   = { 14.0f, 10.0f, 6.0f };
+static const float     SWORD_MIN_TIMER[DIFFICULTY_COUNT]   = { 8.4f, 6.0f, 3.6f };     // 60%
+static const int       SCORE_EXTRA_LIFE[DIFFICULTY_COUNT]  = { 3000, 5000, 10000 };
+static const int       SCORE_CHEST                         = 100;
 
 // --- Global state ---
 
@@ -59,12 +60,11 @@ static Player g_player = {
   .deadTimer          = 0.0f,
   .scoreMultiplier    = 1,
   .lastScoreBonusLife = 0,
-  .levelData          = {}
 };
 
 // --- Helper functions ---
 
-static void playerCoinPickup(void) {
+static void coinPickup(void) {
   g_player.coinSlowTimer  = COIN_SLOW_TIMER;
   g_player.score         += SCORE_COIN;
   g_player.coinsCollected++;
@@ -80,12 +80,12 @@ static int getChestScoreMultiplier(void) {
 
 static int getChestScore(void) { return getChestScoreMultiplier() * SCORE_CHEST; }
 
-static void playerChestPickup(void) {
+static void chestPickup(void) {
   g_player.score += getChestScore();
   audio_playPickup(player_getPos());
 }
 
-static void playerKeyPickup(void) { audio_playPickup(player_getPos()); }
+static void keyPickup(void) { audio_playPickup(player_getPos()); }
 
 static float getSwordTimer(void) {
   float t                    = fminf(fmaxf((game_getLevel() - 1) / (MAX_LEVEL - 1.0f), 0.0f), 1.0f);
@@ -94,7 +94,7 @@ static float getSwordTimer(void) {
   return SWORD_MAX_TIMER[difficulty] - t * (SWORD_MAX_TIMER[difficulty] - SWORD_MIN_TIMER[difficulty]);
 }
 
-static void playerSwordPickup(void) {
+static void swordPickup(void) {
   g_player.state           = PLAYER_SWORD;
   g_player.swordTimer      = getSwordTimer();
   g_player.swordSlowTimer  = SWORD_SLOW_TIMER;
@@ -105,7 +105,7 @@ static void playerSwordPickup(void) {
   audio_resetChimePitch();
 }
 
-static void playerCoinSlowUpdate(float frameTime) {
+static void coinSlowUpdate(float frameTime) {
   assert(frameTime >= 0.0f);
 
   if (g_player.coinSlowTimer == 0.0f) return;
@@ -114,7 +114,7 @@ static void playerCoinSlowUpdate(float frameTime) {
     actor_setSpeed(g_player.actor, PLAYER_MAX_SPEED[game_getDifficulty()]);
 }
 
-static void playerSwordSlowUpdate(float frameTime) {
+static void swordSlowUpdate(float frameTime) {
   assert(frameTime >= 0.0f);
 
   if (g_player.swordSlowTimer == 0.0f) return;
@@ -123,7 +123,7 @@ static void playerSwordSlowUpdate(float frameTime) {
     actor_setSpeed(g_player.actor, PLAYER_MAX_SPEED[game_getDifficulty()]);
 }
 
-static void playerSwordUpdate(float frameTime) {
+static void swordUpdate(float frameTime) {
   assert(frameTime >= 0.0f);
 
   if (g_player.swordTimer == 0.0f) return;
@@ -136,27 +136,28 @@ static void playerSwordUpdate(float frameTime) {
 }
 
 static void levelClear(void) {
+  g_player.levelData.levelTimer       = engine_getTime() - g_player.levelData.levelTimer;
   g_player.levelData.levelScore       = g_player.score - g_player.levelData.levelScore;
   g_player.levelData.levelClearResult = scores_levelClear(g_player.levelData.levelTimer, g_player.levelData.levelScore);
 }
 
-static void playerCheckPickups(void) {
+static void checkPickups(void) {
   // Check centre of tile, feels right.
   Vector2 pos = actor_getPos(g_player.actor);
   pos         = Vector2AddValue(pos, ACTOR_SIZE / 2.0f);
   if (maze_isCoin(pos)) {
     maze_pickupCoin(pos);
-    playerCoinPickup();
+    coinPickup();
   } else if (maze_isSword(pos)) {
     maze_pickupSword(pos);
-    playerSwordPickup();
+    swordPickup();
     creature_swordPickup();
   } else if (maze_isChest(pos)) {
     maze_pickupChest(pos, getChestScore());
-    playerChestPickup();
+    chestPickup();
   } else if (maze_isKey(pos)) {
     maze_pickupKey(pos);
-    playerKeyPickup();
+    keyPickup();
   }
 
   if (maze_getCoinCount() == g_player.coinsCollected) {
@@ -179,7 +180,7 @@ static void fallToDeath(void) {
   audio_playFalling(player_getPos());
 }
 
-static bool playerCheckTraps(void) {
+static bool checkTraps(void) {
   // Wait till player is right on top of the trap
   Vector2 pos = actor_getPos(g_player.actor);
   switch (player_getDir()) {
@@ -201,7 +202,7 @@ static bool playerCheckTraps(void) {
   return false;
 }
 
-static void playerCheckScore() {
+static void checkScore() {
   int threshold = SCORE_EXTRA_LIFE[game_getDifficulty()];
   if (g_player.score >= g_player.lastScoreBonusLife + threshold) {
     g_player.lastScoreBonusLife += threshold;
@@ -226,38 +227,15 @@ bool player_init(void) {
   return g_player.actor != nullptr;
 }
 
-void player_restart(void) {
-  assert(g_player.actor != nullptr);
-  g_player.state           = PLAYER_NORMAL;
-  g_player.swordTimer      = 0.0f;
-  g_player.scoreMultiplier = 1;
-  actor_setPos(g_player.actor, PLAYER_START_POS);
-  actor_setDir(g_player.actor, PLAYER_START_DIR);
-  actor_startMoving(g_player.actor);
-  audio_resetChimePitch();
-}
-
-player_levelData player_getLevelData(void) { return g_player.levelData; }
-
-void player_reset() {
-  player_restart();
-  g_player.coinsCollected             = 0;
-  g_player.levelData.levelTimer       = GetTime();
-  g_player.levelData.levelScore       = g_player.score;
-  g_player.levelData.levelClearResult = (scores_LevelClearResult) {};
-}
-
-void player_totalReset() {
-  player_reset();
-  g_player.lives              = PLAYER_LIVES;
-  g_player.score              = 0;
-  g_player.lastScoreBonusLife = 0;
-}
-
 void player_shutdown(void) {
   assert(g_player.actor != nullptr);
   actor_destroy(&g_player.actor);
   assert(g_player.actor == nullptr);
+}
+
+void player_ready(void) {
+  g_player.levelData.levelTimer = engine_getTime();
+  g_player.levelData.levelScore = 0;
 }
 
 void player_update(float frameTime, float slop) {
@@ -266,12 +244,12 @@ void player_update(float frameTime, float slop) {
   assert(slop >= 0.0f);
 
 #ifndef NDEBUG
-  if (engine_isKeyPressed(KEY_F)) debug_toggleFPSOverlay();
-  if (engine_isKeyPressed(KEY_M)) debug_toggleMazeOverlay();
-  if (engine_isKeyPressed(KEY_P)) debug_togglePlayerOverlay();
-  if (engine_isKeyPressed(KEY_C)) debug_toggleCreatureOverlay();
-  if (engine_isKeyPressed(KEY_I)) debug_togglePlayerImmune();
-  if (engine_isKeyPressed(KEY_N)) game_nextLevel();
+  if (input_isKeyPressed(INPUT_F)) debug_toggleFPSOverlay();
+  if (input_isKeyPressed(INPUT_M)) debug_toggleMazeOverlay();
+  if (input_isKeyPressed(INPUT_P)) debug_togglePlayerOverlay();
+  if (input_isKeyPressed(INPUT_C)) debug_toggleCreatureOverlay();
+  if (input_isKeyPressed(INPUT_I)) debug_togglePlayerImmune();
+  if (input_isKeyPressed(INPUT_N)) game_nextLevel();
 #endif
 
   if (g_player.state == PLAYER_DEAD || g_player.state == PLAYER_FALLING) {
@@ -286,13 +264,13 @@ void player_update(float frameTime, float slop) {
     return;
   }
 
-  playerCoinSlowUpdate(frameTime);
-  playerSwordUpdate(frameTime);
-  playerSwordSlowUpdate(frameTime);
+  coinSlowUpdate(frameTime);
+  swordUpdate(frameTime);
+  swordSlowUpdate(frameTime);
 
   game_Dir dir = DIR_NONE;
   for (int i = 0; i < DIR_COUNT; i++) {
-    if (engine_isKeyDown(PLAYER_KEYS[i]) && actor_canMove(g_player.actor, (game_Dir) i, slop)) {
+    if (input_isKeyPressed(PLAYER_KEYS[i]) && actor_canMove(g_player.actor, (game_Dir) i, slop)) {
       dir = (game_Dir) i;
       break;
     }
@@ -302,39 +280,32 @@ void player_update(float frameTime, float slop) {
 
   actor_move(g_player.actor, dir, frameTime);
 
-  if (playerCheckTraps()) return;  // Dead!
-  playerCheckPickups();
-  playerCheckScore();
+  if (checkTraps()) return;  // Dead!
+  checkPickups();
+  checkScore();
 }
 
-Vector2 player_getPos(void) {
+void player_restart(void) {
   assert(g_player.actor != nullptr);
-  return actor_getPos(g_player.actor);
+  g_player.state           = PLAYER_NORMAL;
+  g_player.swordTimer      = 0.0f;
+  g_player.scoreMultiplier = 1;
+  actor_setPos(g_player.actor, PLAYER_START_POS);
+  actor_setDir(g_player.actor, PLAYER_START_DIR);
+  actor_startMoving(g_player.actor);
+  audio_resetChimePitch();
 }
 
-game_Dir player_getDir(void) {
-  assert(g_player.actor != nullptr);
-  return actor_getDir(g_player.actor);
+void player_reset() {
+  player_restart();
+  g_player.coinsCollected = 0;
 }
 
-int player_getScore(void) {
-  assert(g_player.actor != nullptr);
-  return g_player.score;
-}
-
-game_PlayerState player_getState(void) {
-  assert(g_player.state >= 0 && g_player.state < PLAYER_STATE_COUNT);
-  return g_player.state;
-}
-
-bool player_isMoving(void) {
-  assert(g_player.actor != nullptr);
-  return actor_isMoving(g_player.actor);
-}
-
-game_Actor* player_getActor(void) {
-  assert(g_player.actor != nullptr);
-  return g_player.actor;
+void player_totalReset() {
+  player_reset();
+  g_player.lives              = PLAYER_LIVES;
+  g_player.score              = 0;
+  g_player.lastScoreBonusLife = 0;
 }
 
 game_Tile player_tileAhead(int tileNum) {
@@ -367,41 +338,46 @@ game_Tile player_tileAhead(int tileNum) {
   return tile;
 }
 
+game_Actor* player_getActor(void) {
+  assert(g_player.actor != nullptr);
+  return g_player.actor;
+}
+
+Vector2 player_getPos(void) {
+  assert(g_player.actor != nullptr);
+  return actor_getPos(g_player.actor);
+}
+
+game_Dir player_getDir(void) {
+  assert(g_player.actor != nullptr);
+  return actor_getDir(g_player.actor);
+}
+
 float player_getMaxSpeed(void) {
   // Player is faster in easy but we don't want creatures any faster
   return PLAYER_MAX_SPEED[DIFFICULTY_NORMAL];
 }
+
+player_levelData player_getLevelData(void) { return g_player.levelData; }
 
 int player_getLives(void) {
   assert(g_player.lives >= 0 && g_player.lives <= PLAYER_MAX_LIVES);
   return g_player.lives;
 }
 
-void player_dead(void) {
-  if (debug_isPlayerImmune()) return;
-
-  deadCommon();
-  g_player.state = PLAYER_DEAD;
-  audio_playDeath(player_getPos());
+int player_getScore(void) {
+  assert(g_player.actor != nullptr);
+  return g_player.score;
 }
 
-bool player_hasSword(void) {
-  assert(g_player.swordTimer >= 0.0f);
-  return g_player.swordTimer > 0.0f;
+game_PlayerState player_getState(void) {
+  assert(g_player.state >= 0 && g_player.state < PLAYER_STATE_COUNT);
+  return g_player.state;
 }
 
 float player_getSwordTimer(void) {
   assert(g_player.swordTimer >= 0.0f);
   return g_player.swordTimer;
-}
-
-void player_killedCreature(int creatureID) {
-  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
-
-  int score                 = creature_BASE_SCORE * g_player.scoreMultiplier;
-  g_player.score           += score;
-  g_player.scoreMultiplier *= 2;
-  creature_setScore(creatureID, score);
 }
 
 int player_getCoinsCollected(void) {
@@ -412,4 +388,31 @@ int player_getCoinsCollected(void) {
 int player_getNextExtraLifeScore(void) {
   game_Difficulty difficulty = game_getDifficulty();
   return (g_player.score / SCORE_EXTRA_LIFE[difficulty] + 1) * SCORE_EXTRA_LIFE[difficulty];
+}
+
+bool player_isMoving(void) {
+  assert(g_player.actor != nullptr);
+  return actor_isMoving(g_player.actor);
+}
+
+bool player_hasSword(void) {
+  assert(g_player.swordTimer >= 0.0f);
+  return g_player.swordTimer > 0.0f;
+}
+
+void player_dead(void) {
+  if (debug_isPlayerImmune()) return;
+
+  deadCommon();
+  g_player.state = PLAYER_DEAD;
+  audio_playDeath(player_getPos());
+}
+
+void player_killedCreature(int creatureID) {
+  assert(creatureID >= 0 && creatureID < CREATURE_COUNT);
+
+  int score                 = creature_BASE_SCORE * g_player.scoreMultiplier;
+  g_player.score           += score;
+  g_player.scoreMultiplier *= 2;
+  creature_setScore(creatureID, score);
 }

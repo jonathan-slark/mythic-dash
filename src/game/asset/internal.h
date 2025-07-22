@@ -8,7 +8,6 @@
 // --- Types ---
 
 constexpr int CREATURE_TOTAL = CREATURE_COUNT * LEVEL_COUNT;
-constexpr int MUSIC_TRACKS   = 2;
 
 typedef struct asset_AnimData {
   int   row;

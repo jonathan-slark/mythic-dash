@@ -42,6 +42,27 @@ static inline float getPan(Vector2 pos) { return 1.0f - pos.x / (maze_getCols() 
 
 // --- Audio functions ----
 
+void audio_startMusic(void) {
+  g_game.musicTrack = g_game.level % MUSIC_TRACKS;
+  engine_playMusic(asset_getMusic(g_game.musicTrack));
+  g_game.isMusicPaused = false;
+}
+
+void audio_stopMusic(void) {
+  engine_stopMusic(asset_getMusic(g_game.musicTrack));
+  g_game.isMusicPaused = false;
+}
+
+void audio_pauseMusic(void) {
+  engine_pauseMusic(asset_getMusic(g_game.musicTrack));
+  g_game.isMusicPaused = true;
+}
+
+void audio_resumeMusic(void) {
+  engine_resumeMusic(asset_getMusic(g_game.musicTrack));
+  g_game.isMusicPaused = true;
+}
+
 void audo_playChime(Vector2 pos) {
   if (!g_state.audioEnabled) return;
 

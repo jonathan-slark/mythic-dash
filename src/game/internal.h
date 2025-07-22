@@ -95,6 +95,7 @@ extern const char* DIR_STRINGS[];
 constexpr int WAIL_SOUND_COUNT = 4;
 constexpr int MAX_KEY_TYPES    = 2;
 constexpr int LEVEL_COUNT      = 7;
+constexpr int MUSIC_TRACKS     = 2;
 
 // --- Global state ---
 

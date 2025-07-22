@@ -3,6 +3,7 @@
 #include <engine/engine.h>
 #include <game/game.h>
 #include <log/log.h>
+#include "game/internal.h"
 
 // --- Constants ---
 
@@ -18,6 +19,9 @@ static const log_Config LOG_CONFIG = {
   .subsystem     = "MAIN"
 };
 
+const double TARGET_FPS = 60.0;  // For Arcade Mode
+const double FRAME_TIME = 1.0 / TARGET_FPS;
+
 // --- Main ---
 
 int main(void) {
@@ -27,7 +31,7 @@ int main(void) {
     return 1;
   }
 
-  if (!engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE, 0, LOG_LEVEL_INFO)) {
+  if (!engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE, 0, false, LOG_LEVEL_INFO)) {
     LOG_ERROR(log, "Failed to initialise engine");
     return 1;
   }
@@ -39,9 +43,23 @@ int main(void) {
   }
   LOG_INFO(log, "Game loaded");
 
+  double accumulator = 0.0;
+  double previous    = engine_getTime();
   while (!engine_shouldClose()) {
-    float frameTime = engine_getFrameTime();
-    game_update(frameTime);
+    LOG_DEBUG(game_log, "New frame: %f", engine_getFrameTime());
+
+    game_input();
+
+    double now    = engine_getTime();
+    double delta  = now - previous;
+    previous      = now;
+    accumulator  += delta;
+    while (accumulator >= FRAME_TIME) {
+      LOG_DEBUG(game_log, "game_update(): %f", engine_getTime());
+      game_update(FRAME_TIME);
+      accumulator -= FRAME_TIME;
+    }
+
     engine_beginFrame();
     engine_clearScreen(BLACK);
     game_draw();
