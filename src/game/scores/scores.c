@@ -61,7 +61,7 @@ void scores_load(void) {
     return;
   }
 
-  score_Entry entry;
+  score_Entry entry = {};
   char        line[BUFFER_LEN];
   while (fgets(line, sizeof(line), file) != nullptr) {
     int returnValue = sscanf(
@@ -132,13 +132,20 @@ void scores_save(void) {
   if (fclose(file) == EOF) LOG_ERROR(game_log, "Error on closing file %s (%s)", SCORES_FILE, strerror(errno));
 }
 
-void scores_levelClear(float time, int score) {
-  int             level      = game_getLevel();
-  game_Difficulty difficulty = game_getDifficulty();
+scores_LevelClearResult scores_levelClear(float time, int score) {
+  int                     level      = game_getLevel();
+  game_Difficulty         difficulty = game_getDifficulty();
+  scores_LevelClearResult result     = {};
+
   if (time > g_saves.bestTimes[difficulty][level].time) {
     g_saves.bestTimes[difficulty][level].time = time;
+    result.isTimeRecord                       = true;
   }
+
   if (score > g_saves.bestScores[difficulty][level].score) {
     g_saves.bestScores[difficulty][level].score = score;
+    result.isScoreRecord                        = true;
   }
+
+  return result;
 }

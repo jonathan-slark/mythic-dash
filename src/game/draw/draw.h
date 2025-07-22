@@ -31,5 +31,6 @@ void draw_interface(void);
 void draw_nextLife(void);
 void draw_title(void);
 void draw_ready(void);
+void draw_levelClear(void);
 void draw_gameOver(void);
 void draw_gameWon(void);

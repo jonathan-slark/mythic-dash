@@ -48,6 +48,7 @@ typedef enum game_GameState {
   GAME_READY,
   GAME_RUN,
   GAME_PAUSE,
+  GAME_LEVELCLEAR,
   GAME_OVER,
   GAME_WON
 } game_GameState;
@@ -130,5 +131,6 @@ void            game_newArcade(void);
 game_Difficulty game_getDifficulty(void);
 void            game_over(void);
 int             game_getLevel(void);
+void            game_levelClear(void);
 void            game_nextLevel(void);
 void            game_playerDead(void);

@@ -14,19 +14,20 @@
 // --- Types ---
 
 typedef struct Player {
-  game_Actor*      actor;
-  game_PlayerState state;
-  int              lives;
-  int              score;
-  int              coinsCollected;
-  float            swordTimer;
-  float            deadTimer;
-  int              scoreMultiplier;
-  float            coinSlowTimer;
-  float            swordSlowTimer;
-  int              lastScoreBonusLife;
-  float            levelTimer;
-  int              levelScore;
+  game_Actor*             actor;
+  game_PlayerState        state;
+  int                     lives;
+  int                     score;
+  int                     coinsCollected;
+  float                   swordTimer;
+  float                   deadTimer;
+  int                     scoreMultiplier;
+  float                   coinSlowTimer;
+  float                   swordSlowTimer;
+  int                     lastScoreBonusLife;
+  float                   levelTimer;
+  int                     levelScore;
+  scores_LevelClearResult levelClearResult;
 } Player;
 
 // --- Constants ---
@@ -137,6 +138,11 @@ static void playerSwordUpdate(float frameTime) {
   }
 }
 
+static void levelClear(void) {
+  g_player.levelScore       = g_player.score - g_player.levelScore;
+  g_player.levelClearResult = scores_levelClear(g_player.levelTimer, g_player.levelScore);
+}
+
 static void playerCheckPickups(void) {
   // Check centre of tile, feels right.
   Vector2 pos = actor_getPos(g_player.actor);
@@ -157,7 +163,8 @@ static void playerCheckPickups(void) {
   }
 
   if (maze_getCoinCount() == g_player.coinsCollected) {
-    game_nextLevel();
+    levelClear();
+    game_levelClear();
   }
 }
 
@@ -233,16 +240,12 @@ void player_restart(void) {
   audio_resetChimePitch();
 }
 
-void player_levelClear(void) {
-  g_player.levelScore = g_player.score - g_player.levelScore;
-  scores_levelClear(g_player.levelTimer, g_player.levelScore);
-}
-
 void player_reset() {
   player_restart();
-  g_player.coinsCollected = 0;
-  g_player.levelTimer     = GetTime();
-  g_player.levelScore     = g_player.score;
+  g_player.coinsCollected   = 0;
+  g_player.levelTimer       = GetTime();
+  g_player.levelScore       = g_player.score;
+  g_player.levelClearResult = (scores_LevelClearResult) {};
 }
 
 void player_totalReset() {

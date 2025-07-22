@@ -87,6 +87,7 @@ static void escapePressed(void) {
     case GAME_RUN:
     case GAME_PAUSE:
     case GAME_OVER:
+    case GAME_LEVELCLEAR:
     case GAME_WON: menu_open(MENU_CONTEXT_INGAME); break;
   }
 }
@@ -112,6 +113,11 @@ static void spacePressed(void) {
       } else {
         startMusic();
       }
+      break;
+
+    case GAME_LEVELCLEAR:
+      g_game.state = GAME_READY;
+      game_nextLevel();
       break;
 
     case GAME_OVER:
@@ -204,6 +210,7 @@ void game_update(float frameTime) {
 
     case GAME_READY:
     case GAME_PAUSE:
+    case GAME_LEVELCLEAR:
     case GAME_OVER:
     case GAME_WON: break;
 
@@ -236,6 +243,11 @@ void game_draw(void) {
 
     case GAME_RUN:
     case GAME_PAUSE: drawGame(); break;
+
+    case GAME_LEVELCLEAR:
+      drawGame();
+      draw_levelClear();
+      break;
 
     case GAME_OVER:
       drawGame();
@@ -275,11 +287,12 @@ void game_over(void) {
 
 int game_getLevel(void) { return g_game.level; }
 
+void game_levelClear(void) { g_game.state = GAME_LEVELCLEAR; }
+
 void game_nextLevel(void) {
   if (g_game.level == LEVEL_COUNT - 1) {
     gameWon();
   } else {
-    player_levelClear();
     g_game.level += 1;
     g_game.state  = GAME_READY;
     stopMusic();
