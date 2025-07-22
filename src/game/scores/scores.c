@@ -3,7 +3,6 @@
 #include <errno.h>
 #include <raylib.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "../internal.h"
 #include "log/log.h"
@@ -15,7 +14,7 @@ constexpr int BUFFER_LEN = 256;
 
 typedef struct {
   char  difficulty[ENTRY_LEN];
-  char  level[ENTRY_LEN];
+  int   level;
   float seconds;
   int   score;
   int   lives;
@@ -41,7 +40,7 @@ static const char* MODE_NAMES[DIFFICULTY_COUNT] = { "Easy", "Normal", "Arcade" }
 
 // --- Global state ---
 
-static score_Saves g_saves;
+static score_Saves g_saves = {};
 
 // --- Helper functions ---
 
@@ -51,14 +50,6 @@ static game_Difficulty getDifficulty(const char difficulty[]) {
   }
 
   assert(false);
-}
-
-static int stringToInt(const char string[]) {
-  long result = strtol(string, nullptr, 0);
-  if (errno > 0) {
-    LOG_WARN(game_log, "Could no convert string to integer (%s)", strerror(errno));
-  }
-  return (int) result;
 }
 
 // --- Score functions ---
@@ -75,9 +66,9 @@ void scores_load(void) {
   while (fgets(line, sizeof(line), file) != nullptr) {
     int returnValue = sscanf(
         line,
-        "%15[^,],%15[^,],%f,%d,%d,%15[^,]",
+        "%15[^,],%d,%f,%d,%d,%15[^,\n]",
         entry.difficulty,
-        entry.level,
+        &entry.level,
         &entry.seconds,
         &entry.score,
         &entry.lives,
@@ -89,15 +80,15 @@ void scores_load(void) {
     }
 
     if (strcmp(entry.type, TYPE_TIME) == 0) {
-      g_saves.bestTimes[getDifficulty(entry.difficulty)][stringToInt(entry.level)] = entry;
+      g_saves.bestTimes[getDifficulty(entry.difficulty)][entry.level] = entry;
     } else if (strcmp(entry.type, TYPE_SCORE) == 0) {
-      g_saves.bestScores[getDifficulty(entry.difficulty)][stringToInt(entry.level)] = entry;
+      g_saves.bestScores[getDifficulty(entry.difficulty)][entry.level] = entry;
     } else if (strcmp(entry.type, TYPE_FULL_TIME) == 0) {
-      g_saves.fullRunsBestTimes[getDifficulty(entry.level)] = entry;
+      g_saves.fullRunsBestTimes[getDifficulty(entry.difficulty)] = entry;
     } else if (strcmp(entry.type, TYPE_FULL_SCORE) == 0) {
-      g_saves.fullRunsBestScores[stringToInt(entry.level)] = entry;
+      g_saves.fullRunsBestScores[entry.level] = entry;
     } else {
-      LOG_ERROR(game_log, "Syntax error in %s", SCORES_FILE);
+      LOG_ERROR(game_log, "Syntax error in %s (%s)", SCORES_FILE, entry.type);
       return;
     }
   }
@@ -117,8 +108,9 @@ void scores_save(void) {
     for (int j = 0; j < LEVEL_COUNT; j++) {
       fprintf(
           file,
-          "%s,%.2f,%.d,%d,%s\n",
+          "%s,%d,%.2f,%d,%d,%s\n",
           MODE_NAMES[i],
+          g_saves.bestTimes[i][j].level = j + 1,
           g_saves.bestTimes[i][j].seconds,
           g_saves.bestTimes[i][j].score,
           g_saves.bestTimes[i][j].lives,
@@ -126,8 +118,9 @@ void scores_save(void) {
       );
       fprintf(
           file,
-          "%s,%.2f,%.d,%d,%s\n",
+          "%s,%d,%.2f,%d,%d,%s\n",
           MODE_NAMES[i],
+          g_saves.bestTimes[i][j].level = j + 1,
           g_saves.bestScores[i][j].seconds,
           g_saves.bestScores[i][j].score,
           g_saves.bestScores[i][j].lives,
