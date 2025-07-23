@@ -64,12 +64,22 @@ static void escapePressed(void) {
     case GAME_TITLE:
     case GAME_MENU: menu_back(); break;
 
-    case GAME_READY:
+    case GAME_START:
+    case GAME_DEAD:
     case GAME_RUN:
     case GAME_PAUSE:
     case GAME_OVER:
     case GAME_LEVELCLEAR:
     case GAME_WON: menu_open(MENU_CONTEXT_INGAME); break;
+  }
+}
+
+static void readyCommon(void) {
+  g_game.state = GAME_RUN;
+  if (g_game.isMusicPaused) {
+    audio_resumeMusic();
+  } else {
+    audio_startMusic();
   }
 }
 
@@ -87,18 +97,15 @@ static void spacePressed(void) {
 #endif
       break;
 
-    case GAME_READY:
-      g_game.state = GAME_RUN;
-      if (g_game.isMusicPaused) {
-        audio_resumeMusic();
-      } else {
-        audio_startMusic();
-      }
+    case GAME_START:
+      readyCommon();
       player_ready();
       break;
 
+    case GAME_DEAD: readyCommon(); break;
+
     case GAME_LEVELCLEAR:
-      g_game.state = GAME_READY;
+      g_game.state = GAME_START;
       game_nextLevel();
       break;
 
@@ -139,7 +146,7 @@ static void updateGame(double frameTime) {
 static void newGame(game_Difficulty difficulty) {
   LOG_INFO(game_log, "Starting new game, difficulty: %s", DIFFICULTY_STRINGS[difficulty]);
   g_game.level      = 0;
-  g_game.state      = GAME_READY;
+  g_game.state      = GAME_START;
   g_game.difficulty = difficulty;
   g_game.musicTrack = 0;
   player_totalReset();
@@ -192,7 +199,8 @@ void game_update(double frameTime) {
     case GAME_TITLE:
     case GAME_MENU: menu_update(); break;
 
-    case GAME_READY:
+    case GAME_START:
+    case GAME_DEAD:
     case GAME_PAUSE:
     case GAME_LEVELCLEAR:
     case GAME_OVER:
@@ -220,7 +228,8 @@ void game_draw(void) {
       menu_draw();
       break;
 
-    case GAME_READY:
+    case GAME_START:
+    case GAME_DEAD:
       drawGame();
       draw_ready();
       break;
@@ -281,7 +290,7 @@ void game_nextLevel(void) {
     gameWon();
   } else {
     g_game.level += 1;
-    g_game.state  = GAME_READY;
+    g_game.state  = GAME_START;
     audio_stopMusic();
     player_reset();
     creature_reset();
@@ -292,7 +301,7 @@ void game_nextLevel(void) {
 }
 
 void game_playerDead(void) {
-  g_game.state = GAME_READY;
+  g_game.state = GAME_DEAD;
   audio_pauseMusic();
   player_restart();
   creature_reset();

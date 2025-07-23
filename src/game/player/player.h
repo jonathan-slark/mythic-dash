@@ -6,10 +6,10 @@
 #include "../scores/scores.h"
 
 typedef struct player_levelData {
-  double                  levelTimer;
-  int                     levelScore;
-  int                     levelFrameCount;
-  scores_LevelClearResult levelClearResult;
+  double        time;
+  int           score;
+  int           frameCount;
+  scores_Result clearResult;
 } player_levelData;
 
 // --- Player functions ---
@@ -27,6 +27,7 @@ Vector2          player_getPos(void);
 game_Dir         player_getDir(void);
 float            player_getMaxSpeed(void);
 player_levelData player_getLevelData(void);
+player_levelData player_getFullRunData(void);
 int              player_getLives(void);
 int              player_getScore(void);
 game_PlayerState player_getState(void);

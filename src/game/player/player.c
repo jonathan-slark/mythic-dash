@@ -20,6 +20,7 @@ typedef struct Player {
   game_PlayerState state;
   int              lives;
   int              score;
+  int              previousScore;
   int              coinsCollected;
   float            swordTimer;
   float            deadTimer;
@@ -27,7 +28,8 @@ typedef struct Player {
   float            coinSlowTimer;
   float            swordSlowTimer;
   int              lastScoreBonusLife;
-  player_levelData levelData;
+  player_levelData levelData[LEVEL_COUNT];
+  player_levelData fullRun;
 } Player;
 
 // --- Constants ---
@@ -56,11 +58,15 @@ static Player g_player = {
   .state              = PLAYER_NORMAL,
   .lives              = PLAYER_LIVES,
   .score              = 0,
+  .previousScore      = 0,
   .coinsCollected     = 0,
   .swordTimer         = 0.0f,
   .deadTimer          = 0.0f,
   .scoreMultiplier    = 1,
+  .coinSlowTimer      = 0.0f,
+  .swordSlowTimer     = 0.0f,
   .lastScoreBonusLife = 0,
+  .levelData          = {}
 };
 
 // --- Helper functions ---
@@ -137,14 +143,35 @@ static void swordUpdate(double frameTime) {
 }
 
 static void levelClear(void) {
-  // Araced Mode is 100% deterministic, game updates using fixed timestep
+  int level = game_getLevel();
+
   if (game_getDifficulty() == DIFFICULTY_ARCADE) {
-    g_player.levelData.levelTimer = g_player.levelData.levelFrameCount * FRAME_TIME;
+    // Araced Mode is 100% deterministic, game updates using fixed timestep
+    g_player.levelData[level].time = g_player.levelData[level].frameCount * FRAME_TIME;
   } else {
-    g_player.levelData.levelTimer = engine_getTime() - g_player.levelData.levelTimer;
+    g_player.levelData[level].time = engine_getTime() - g_player.levelData[level].time;
   }
-  g_player.levelData.levelScore       = g_player.score - g_player.levelData.levelScore;
-  g_player.levelData.levelClearResult = scores_levelClear(g_player.levelData.levelTimer, g_player.levelData.levelScore);
+
+  g_player.levelData[level].score = g_player.score - g_player.previousScore;
+  g_player.previousScore          = g_player.score;
+
+  g_player.levelData[level].clearResult = scores_levelClear(
+      g_player.levelData[level].time, g_player.levelData[level].score
+  );
+
+  if (level == LEVEL_COUNT - 1) {
+    g_player.fullRun.time  = 0.0;
+    g_player.fullRun.score = 0;
+    for (int i = 0; i < LEVEL_COUNT; i++) {
+      if (game_getDifficulty() == DIFFICULTY_ARCADE) {
+        g_player.fullRun.time += g_player.levelData[level].frameCount * FRAME_TIME;
+      } else {
+        g_player.fullRun.time += g_player.levelData[level].time;
+      }
+      g_player.fullRun.score += g_player.levelData[level].score;
+    }
+    g_player.fullRun.clearResult = scores_fullRun(g_player.fullRun.time, g_player.fullRun.score);
+  }
 }
 
 static void checkPickups(void) {
@@ -240,10 +267,11 @@ void player_shutdown(void) {
 }
 
 void player_ready(void) {
-  g_player.levelData.levelTimer      = engine_getTime();
-  g_player.levelData.levelFrameCount = 0;
-  g_player.levelData.levelScore      = 0;
-  g_accumulator                      = 0.0;
+  int level                            = game_getLevel();
+  g_player.levelData[level].time       = engine_getTime();
+  g_player.levelData[level].frameCount = 0;
+  g_player.levelData[level].score      = 0;
+  g_accumulator                        = 0.0;
 }
 
 void player_update(double frameTime, float slop) {
@@ -251,7 +279,7 @@ void player_update(double frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= 0.0f);
 
-  if (game_getDifficulty() == DIFFICULTY_ARCADE) g_player.levelData.levelFrameCount++;
+  if (game_getDifficulty() == DIFFICULTY_ARCADE) g_player.levelData[game_getLevel()].frameCount++;
 
 #ifndef NDEBUG
   if (input_isKeyPressed(INPUT_F)) debug_toggleFPSOverlay();
@@ -314,8 +342,8 @@ void player_restart(void) {
 // Next level
 void player_reset() {
   player_restart();
-  g_player.coinsCollected = 0;
-  g_player.levelData      = (player_levelData) {};
+  g_player.coinsCollected             = 0;
+  g_player.levelData[game_getLevel()] = (player_levelData) {};
 }
 
 // New game
@@ -376,7 +404,8 @@ float player_getMaxSpeed(void) {
   return PLAYER_MAX_SPEED[DIFFICULTY_NORMAL];
 }
 
-player_levelData player_getLevelData(void) { return g_player.levelData; }
+player_levelData player_getLevelData(void) { return g_player.levelData[game_getLevel()]; }
+player_levelData player_getFullRunData(void) { return g_player.fullRun; }
 
 int player_getLives(void) {
   assert(g_player.lives >= 0 && g_player.lives <= PLAYER_MAX_LIVES);

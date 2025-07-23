@@ -238,8 +238,8 @@ void menu_open(menu_Context context) {
 
 void menu_close(void) {
   assert(
-      g_game.lastState == GAME_PAUSE || g_game.lastState == GAME_READY || g_game.lastState == GAME_RUN ||
-      g_game.lastState == GAME_OVER || g_game.lastState == GAME_LEVELCLEAR
+      g_game.lastState == GAME_PAUSE || g_game.lastState == GAME_START || g_game.lastState == GAME_DEAD ||
+      g_game.lastState == GAME_RUN || g_game.lastState == GAME_OVER || g_game.lastState == GAME_LEVELCLEAR
   );
   if (g_state.context == MENU_CONTEXT_INGAME) g_game.state = g_game.lastState;
 }

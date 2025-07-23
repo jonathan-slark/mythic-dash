@@ -13,12 +13,12 @@ constexpr int ENTRY_LEN  = 16;
 constexpr int BUFFER_LEN = 256;
 
 typedef struct {
-  char  difficulty[ENTRY_LEN];
-  int   level;
-  float time;
-  int   score;
-  int   lives;
-  char  type[ENTRY_LEN];
+  char   difficulty[ENTRY_LEN];
+  int    level;
+  double time;
+  int    score;
+  int    lives;
+  char   type[ENTRY_LEN];
 } score_Entry;
 
 typedef struct {
@@ -66,7 +66,7 @@ void scores_load(void) {
   while (fgets(line, sizeof(line), file) != nullptr) {
     int returnValue = sscanf(
         line,
-        "%15[^,],%d,%f,%d,%d,%15[^,\n]",
+        "%15[^,],%d,%lf,%d,%d,%15[^,\n]",
         entry.difficulty,
         &entry.level,
         &entry.time,
@@ -108,7 +108,7 @@ void scores_save(void) {
     for (int j = 0; j < LEVEL_COUNT; j++) {
       fprintf(
           file,
-          "%s,%d,%.2f,%d,%d,%s\n",
+          "%s,%d,%.3f,%d,%d,%s\n",
           MODE_NAMES[i],
           g_saves.bestTimes[i][j].level = j + 1,
           g_saves.bestTimes[i][j].time,
@@ -118,33 +118,74 @@ void scores_save(void) {
       );
       fprintf(
           file,
-          "%s,%d,%.2f,%d,%d,%s\n",
+          "%s,%d,%.3f,%d,%d,%s\n",
           MODE_NAMES[i],
-          g_saves.bestTimes[i][j].level = j + 1,
+          g_saves.bestScores[i][j].level = j + 1,
           g_saves.bestScores[i][j].time,
           g_saves.bestScores[i][j].score,
           g_saves.bestScores[i][j].lives,
           TYPE_SCORE
       );
     }
+    fprintf(
+        file,
+        "%s,%d,%.3f,%d,%d,%s\n",
+        MODE_NAMES[i],
+        g_saves.fullRunsBestTimes[i].level = 0,
+        g_saves.fullRunsBestTimes[i].time,
+        g_saves.fullRunsBestTimes[i].score,
+        g_saves.fullRunsBestTimes[i].lives,
+        TYPE_FULL_TIME
+    );
+    fprintf(
+        file,
+        "%s,%d,%.3f,%d,%d,%s\n",
+        MODE_NAMES[i],
+        g_saves.fullRunsBestScores[i].level = 0,
+        g_saves.fullRunsBestScores[i].time,
+        g_saves.fullRunsBestScores[i].score,
+        g_saves.fullRunsBestScores[i].lives,
+        TYPE_FULL_SCORE
+    );
   }
 
   if (fclose(file) == EOF) LOG_ERROR(game_log, "Error on closing file %s (%s)", SCORES_FILE, strerror(errno));
 }
 
-scores_LevelClearResult scores_levelClear(float time, int score) {
-  int                     level      = game_getLevel();
-  game_Difficulty         difficulty = game_getDifficulty();
-  scores_LevelClearResult result     = {};
+scores_Result scores_levelClear(double time, int score) {
+  int             level      = game_getLevel();
+  game_Difficulty difficulty = game_getDifficulty();
+  scores_Result   result     = {};
 
   if (time < g_saves.bestTimes[difficulty][level].time || g_saves.bestTimes[difficulty][level].time == 0.0f) {
-    g_saves.bestTimes[difficulty][level].time = time;
-    result.isTimeRecord                       = true;
+    g_saves.bestTimes[difficulty][level].time  = time;
+    g_saves.bestTimes[difficulty][level].score = score;
+    result.isTimeRecord                        = true;
   }
 
   if (score > g_saves.bestScores[difficulty][level].score) {
+    g_saves.bestScores[difficulty][level].time  = time;
     g_saves.bestScores[difficulty][level].score = score;
     result.isScoreRecord                        = true;
+  }
+
+  return result;
+}
+
+scores_Result scores_fullRun(double time, int score) {
+  game_Difficulty difficulty = game_getDifficulty();
+  scores_Result   result     = {};
+
+  if (time < g_saves.fullRunsBestTimes[difficulty].time || g_saves.fullRunsBestTimes[difficulty].time == 0.0f) {
+    g_saves.fullRunsBestTimes[difficulty].time  = time;
+    g_saves.fullRunsBestTimes[difficulty].score = score;
+    result.isTimeRecord                         = true;
+  }
+
+  if (score > g_saves.fullRunsBestScores[difficulty].score) {
+    g_saves.fullRunsBestScores[difficulty].time  = time;
+    g_saves.fullRunsBestScores[difficulty].score = score;
+    result.isScoreRecord                         = true;
   }
 
   return result;
