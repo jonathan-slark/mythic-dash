@@ -18,9 +18,6 @@ static const log_Config LOG_CONFIG = {
   .subsystem     = "MAIN"
 };
 
-const double TARGET_FPS = 60.0;  // For Arcade Mode
-const double FRAME_TIME = 1.0 / TARGET_FPS;
-
 // --- Main ---
 
 int main(void) {
@@ -42,8 +39,8 @@ int main(void) {
   }
   LOG_INFO(log, "Game loaded");
 
-  double accumulator = 0.0;
-  double previous    = engine_getTime();
+  g_accumulator   = 0.0;
+  double previous = engine_getTime();
   while (!engine_shouldClose()) {
     game_input();
 
@@ -51,10 +48,10 @@ int main(void) {
     double delta = now - previous;
     previous     = now;
     if (game_getDifficulty() == DIFFICULTY_ARCADE) {
-      accumulator += delta;
-      while (accumulator >= FRAME_TIME) {
+      g_accumulator += delta;
+      while (g_accumulator >= FRAME_TIME) {
         game_update(FRAME_TIME);
-        accumulator -= FRAME_TIME;
+        g_accumulator -= FRAME_TIME;
       }
     } else {
       game_update(delta);

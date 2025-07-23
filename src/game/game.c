@@ -50,6 +50,7 @@ static const char* DIFFICULTY_STRINGS[DIFFICULTY_COUNT] = { "Easy", "Normal", "A
 // --- Global state ---
 
 log_Log* game_log;
+double   g_accumulator;
 Game     g_game = { .state = GAME_BOOT, .fpsIndex = COUNT(FPS) - 1 };
 
 // --- Helper functions ---
@@ -87,13 +88,13 @@ static void spacePressed(void) {
       break;
 
     case GAME_READY:
-      player_ready();
       g_game.state = GAME_RUN;
       if (g_game.isMusicPaused) {
         audio_resumeMusic();
       } else {
         audio_startMusic();
       }
+      player_ready();
       break;
 
     case GAME_LEVELCLEAR:

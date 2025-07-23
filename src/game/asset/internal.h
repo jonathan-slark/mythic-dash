@@ -85,7 +85,7 @@ static const asset_Music MUSIC[MUSIC_TRACKS] = {
   { .filepath = ASSET_DIR "music/02.mp3", .volume = 0.5f, .duckedVolume = 0.2f }
 };
 
-static const float FRAME_TIME = 0.1f;
+static const float ANIM_FRAME_TIME = 0.1f;
 
 static const Vector2 PLAYER_LIVES_OFFSET     = { 8.0f, 248.0f };
 static const Vector2 PLAYER_NEXT_LIFE_OFFSET = { 412.0f, 248.0f };
@@ -100,40 +100,40 @@ static const asset_ActorData PLAYER_DATA[PLAYER_STATE_COUNT] = {
     .inset    = { 8.0f, 8.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 4, .startCol = 0, .frameCount = 5, FRAME_TIME},
-      [DIR_RIGHT] = { .row = 2, .startCol = 0, .frameCount = 5, FRAME_TIME},
-      [DIR_DOWN]  = { .row = 0, .startCol = 0, .frameCount = 5, FRAME_TIME},
-      [DIR_LEFT]  = { .row = 6, .startCol = 0, .frameCount = 5, FRAME_TIME}
+      [DIR_UP]    = { .row = 4, .startCol = 0, .frameCount = 5, ANIM_FRAME_TIME},
+      [DIR_RIGHT] = { .row = 2, .startCol = 0, .frameCount = 5, ANIM_FRAME_TIME},
+      [DIR_DOWN]  = { .row = 0, .startCol = 0, .frameCount = 5, ANIM_FRAME_TIME},
+      [DIR_LEFT]  = { .row = 6, .startCol = 0, .frameCount = 5, ANIM_FRAME_TIME}
     }
   },
   {
     .inset    = { 8.0f, 8.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 4, .startCol = 5, .frameCount = 4, FRAME_TIME},
-      [DIR_RIGHT] = { .row = 2, .startCol = 5, .frameCount = 4, FRAME_TIME},
-      [DIR_DOWN]  = { .row = 0, .startCol = 5, .frameCount = 4, FRAME_TIME},
-      [DIR_LEFT]  = { .row = 6, .startCol = 5, .frameCount = 4, FRAME_TIME}
+      [DIR_UP]    = { .row = 4, .startCol = 5, .frameCount = 4, ANIM_FRAME_TIME},
+      [DIR_RIGHT] = { .row = 2, .startCol = 5, .frameCount = 4, ANIM_FRAME_TIME},
+      [DIR_DOWN]  = { .row = 0, .startCol = 5, .frameCount = 4, ANIM_FRAME_TIME},
+      [DIR_LEFT]  = { .row = 6, .startCol = 5, .frameCount = 4, ANIM_FRAME_TIME}
     }
   },
   {
     .inset    = { 8.0f, 8.0f },
     .loop = false,
     .animData = {
-      [DIR_UP]    = { .row = 4, .startCol = 21, .frameCount = 3, FRAME_TIME * 2.0f},
-      [DIR_RIGHT] = { .row = 2, .startCol = 21, .frameCount = 3, FRAME_TIME * 2.0f},
-      [DIR_DOWN]  = { .row = 0, .startCol = 21, .frameCount = 3, FRAME_TIME * 2.0f},
-      [DIR_LEFT]  = { .row = 6, .startCol = 21, .frameCount = 3, FRAME_TIME * 2.0f}
+      [DIR_UP]    = { .row = 4, .startCol = 21, .frameCount = 3, ANIM_FRAME_TIME * 2.0f},
+      [DIR_RIGHT] = { .row = 2, .startCol = 21, .frameCount = 3, ANIM_FRAME_TIME * 2.0f},
+      [DIR_DOWN]  = { .row = 0, .startCol = 21, .frameCount = 3, ANIM_FRAME_TIME * 2.0f},
+      [DIR_LEFT]  = { .row = 6, .startCol = 21, .frameCount = 3, ANIM_FRAME_TIME * 2.0f}
     }
   },
   {
     .inset    = { 8.0f, 8.0f },
     .loop = false,
     .animData = {
-      [DIR_UP]    = { .row = 10, .startCol = 0, .frameCount = 5, FRAME_TIME},
-      [DIR_RIGHT] = { .row = 9, .startCol = 0, .frameCount = 5, FRAME_TIME},
-      [DIR_DOWN]  = { .row = 8, .startCol = 0, .frameCount = 5, FRAME_TIME},
-      [DIR_LEFT]  = { .row = 11, .startCol = 0, .frameCount = 5, FRAME_TIME}
+      [DIR_UP]    = { .row = 10, .startCol = 0, .frameCount = 5, ANIM_FRAME_TIME},
+      [DIR_RIGHT] = { .row = 9, .startCol = 0, .frameCount = 5, ANIM_FRAME_TIME},
+      [DIR_DOWN]  = { .row = 8, .startCol = 0, .frameCount = 5, ANIM_FRAME_TIME},
+      [DIR_LEFT]  = { .row = 11, .startCol = 0, .frameCount = 5, ANIM_FRAME_TIME}
     }
   }  
 };
@@ -145,10 +145,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,  0.0f  },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 3, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 2, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 0, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 1, .startCol = 0, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 3, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -157,10 +157,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,  0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 3, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 2, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 0, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 1, .startCol = 3, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 3, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME }
     },
   },
   {
@@ -169,10 +169,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 3, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 2, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 0, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 1, .startCol = 6, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 3, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME }
     },
   },
   {
@@ -181,10 +181,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 3, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 2, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 0, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 1, .startCol = 9, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 3, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -193,10 +193,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 3, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 2, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 0, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 1, .startCol = 12, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 3, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -205,10 +205,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 3, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 2, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 0, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 1, .startCol = 15, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 3, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 2, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 0, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 1, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -217,10 +217,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,  0.0f  },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 7, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 6, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 4, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 5, .startCol = 0, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 7, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -229,10 +229,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,  0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 7, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 6, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 4, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 5, .startCol = 3, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 7, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME }
     },
   },
   {
@@ -241,10 +241,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 7, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 6, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 4, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 5, .startCol = 6, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 7, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME }
     },
   },
   {
@@ -253,10 +253,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 7, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 6, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 4, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 5, .startCol = 9, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 7, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -265,10 +265,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 7, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 6, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 4, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 5, .startCol = 12, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 7, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -277,10 +277,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 7, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 6, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 4, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 5, .startCol = 15, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 7, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 6, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 4, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 5, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -289,10 +289,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,  0.0f  },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 11, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 10, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 8, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 9, .startCol = 0, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 11, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -301,10 +301,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,  0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 11, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 10, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 8, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 9, .startCol = 3, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 11, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME }
     },
   },
   {
@@ -313,10 +313,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 11, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 10, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 8, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 9, .startCol = 6, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 11, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME }
     },
   },
   {
@@ -325,10 +325,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 11, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 10, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 8, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 9, .startCol = 9, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 11, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -337,10 +337,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 11, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 10, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 8, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 9, .startCol = 12, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 11, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -349,10 +349,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 11, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 10, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 8, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 9, .startCol = 15, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 11, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 10, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 8, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 9, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -361,10 +361,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,  0.0f  },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 15, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 14, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 12, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 13, .startCol = 0, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 15, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -373,10 +373,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,  0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 15, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 14, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 12, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 13, .startCol = 3, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 15, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME }
     },
   },
   {
@@ -385,10 +385,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 15, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 14, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 12, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 13, .startCol = 6, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 15, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME }
     },
   },
   {
@@ -397,10 +397,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 15, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 14, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 12, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 13, .startCol = 9, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 15, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -409,10 +409,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 15, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 14, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 12, .startCol = 12, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 13, .startCol = 12, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 15, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 12, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -421,10 +421,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 15, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 14, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 12, .startCol = 15, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 13, .startCol = 15, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 15, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 14, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 12, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 13, .startCol = 15, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -433,10 +433,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,  0.0f  },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 19, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 18, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 16, .startCol = 0, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 17, .startCol = 0, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 19, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 18, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 16, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 17, .startCol = 0, .frameCount = 3, ANIM_FRAME_TIME }
     }
   },
   {
@@ -445,10 +445,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,  0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 19, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 18, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 16, .startCol = 3, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 17, .startCol = 3, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 19, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 18, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 16, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 17, .startCol = 3, .frameCount = 3, ANIM_FRAME_TIME }
     },
   },
   {
@@ -457,10 +457,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 19, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 18, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 16, .startCol = 6, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 17, .startCol = 6, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 19, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 18, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 16, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 17, .startCol = 6, .frameCount = 3, ANIM_FRAME_TIME }
     },
   },
   {
@@ -469,10 +469,10 @@ static const asset_ActorData CREATURE_DATA[CREATURE_TOTAL] = {
     .inset    = { 0.0f,   0.0f },
     .loop = true,
     .animData = {
-      [DIR_UP]    = { .row = 19, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_RIGHT] = { .row = 18, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_DOWN]  = { .row = 16, .startCol = 9, .frameCount = 3, FRAME_TIME },
-      [DIR_LEFT]  = { .row = 17, .startCol = 9, .frameCount = 3, FRAME_TIME }
+      [DIR_UP]    = { .row = 19, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_RIGHT] = { .row = 18, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_DOWN]  = { .row = 16, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME },
+      [DIR_LEFT]  = { .row = 17, .startCol = 9, .frameCount = 3, ANIM_FRAME_TIME }
     }
   }
 };

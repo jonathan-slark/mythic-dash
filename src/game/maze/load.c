@@ -23,7 +23,7 @@ typedef struct {
 // --- Constants ---
 
 constexpr size_t   BUFFER_SIZE         = 1024;
-static const float FRAME_TIME          = 0.1f;
+static const float ANIM_FRAME_TIME     = 0.1f;
 static const int   TILE_PROPERTY_COUNT = 8;
 static const int   TELEPORT_TYPES      = 3;
 static const int   MAP_PROPERTY_COUNT  = 1;
@@ -208,7 +208,7 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int level) {
               tilesetRow,
               tilesetCol,
               animCount,
-              FRAME_TIME,
+              ANIM_FRAME_TIME,
               inset,
               type != TILE_TRAP ||
                   (type == TILE_TRAP && tileData[tileId].trapType != TRAP_SPIKE &&

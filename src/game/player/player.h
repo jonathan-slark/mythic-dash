@@ -8,6 +8,7 @@
 typedef struct player_levelData {
   double                  levelTimer;
   int                     levelScore;
+  int                     levelFrameCount;
   scores_LevelClearResult levelClearResult;
 } player_levelData;
 

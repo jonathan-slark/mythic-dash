@@ -10,6 +10,7 @@
 #include "../input/input.h"
 #include "../maze/maze.h"
 #include "../scores/scores.h"
+#include "game/game.h"
 #include "log/log.h"
 
 // --- Types ---
@@ -136,7 +137,12 @@ static void swordUpdate(double frameTime) {
 }
 
 static void levelClear(void) {
-  g_player.levelData.levelTimer       = engine_getTime() - g_player.levelData.levelTimer;
+  // Araced Mode is 100% deterministic, game updates using fixed timestep
+  if (game_getDifficulty() == DIFFICULTY_ARCADE) {
+    g_player.levelData.levelTimer = g_player.levelData.levelFrameCount * FRAME_TIME;
+  } else {
+    g_player.levelData.levelTimer = engine_getTime() - g_player.levelData.levelTimer;
+  }
   g_player.levelData.levelScore       = g_player.score - g_player.levelData.levelScore;
   g_player.levelData.levelClearResult = scores_levelClear(g_player.levelData.levelTimer, g_player.levelData.levelScore);
 }
@@ -234,14 +240,18 @@ void player_shutdown(void) {
 }
 
 void player_ready(void) {
-  g_player.levelData.levelTimer = engine_getTime();
-  g_player.levelData.levelScore = 0;
+  g_player.levelData.levelTimer      = engine_getTime();
+  g_player.levelData.levelFrameCount = 0;
+  g_player.levelData.levelScore      = 0;
+  g_accumulator                      = 0.0;
 }
 
 void player_update(double frameTime, float slop) {
   assert(g_player.actor != nullptr);
   assert(frameTime >= 0.0f);
   assert(slop >= 0.0f);
+
+  if (game_getDifficulty() == DIFFICULTY_ARCADE) g_player.levelData.levelFrameCount++;
 
 #ifndef NDEBUG
   if (input_isKeyPressed(INPUT_F)) debug_toggleFPSOverlay();
@@ -285,22 +295,30 @@ void player_update(double frameTime, float slop) {
   checkScore();
 }
 
+// Player dead
 void player_restart(void) {
   assert(g_player.actor != nullptr);
+  assert(g_player.deadTimer == 0.0f);
   g_player.state           = PLAYER_NORMAL;
+  g_player.coinSlowTimer   = 0.0f;
   g_player.swordTimer      = 0.0f;
+  g_player.swordSlowTimer  = 0.0f;
   g_player.scoreMultiplier = 1;
   actor_setPos(g_player.actor, PLAYER_START_POS);
   actor_setDir(g_player.actor, PLAYER_START_DIR);
+  actor_setSpeed(g_player.actor, PLAYER_MAX_SPEED[game_getDifficulty()]);
   actor_startMoving(g_player.actor);
   audio_resetChimePitch();
 }
 
+// Next level
 void player_reset() {
   player_restart();
   g_player.coinsCollected = 0;
+  g_player.levelData      = (player_levelData) {};
 }
 
+// New game
 void player_totalReset() {
   player_reset();
   g_player.lives              = PLAYER_LIVES;
