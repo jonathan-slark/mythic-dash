@@ -5,7 +5,9 @@
 #include <raylib.h>
 #include <stdio.h>
 #include <string.h>
+#include "../draw/draw.h"
 #include "../internal.h"
+#include "game/game.h"
 #include "log/log.h"
 
 // --- Types ---
@@ -31,17 +33,23 @@ typedef struct {
 
 // --- Constants ---
 
-static const char  SCORES_FILE[]                = "scores.csv";
-static const int   ENTRY_COUNT                  = 5;
-static const char  TYPE_TIME[]                  = "time";
-static const char  TYPE_SCORE[]                 = "score";
-static const char  TYPE_FULL_TIME[]             = "fullTime";
-static const char  TYPE_FULL_SCORE[]            = "fullScore";
-static const char* MODE_NAMES[DIFFICULTY_COUNT] = { "Easy", "Normal", "Arcade" };
+static const char      SCORES_FILE[]                = "scores.csv";
+static const int       ENTRY_COUNT                  = 5;
+static const char      TYPE_TIME[]                  = "time";
+static const char      TYPE_SCORE[]                 = "score";
+static const char      TYPE_FULL_TIME[]             = "fullTime";
+static const char      TYPE_FULL_SCORE[]            = "fullScore";
+static const char*     MODE_NAMES[DIFFICULTY_COUNT] = { "Easy", "Normal", "Arcade" };
+static const draw_Text TEMP_HEADER = { "[Mode: Easy \x85] [Sort by: Time \x85]", 190, 70, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_SCORE_HEADER = { "Level     Time       Score", 190, 90, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text FULL_RUN_TIME      = { "Full Run  %s  %d", 190, 170, TEXT_COLOUR, FONT_NORMAL };
+static const int       LINE_HEIGHT        = 10;
+static const int       LEVEL_SCORE_YPOS   = 100;
 
 // --- Global state ---
 
-static score_Saves g_saves = {};
+static score_Saves g_saves      = {};
+static draw_Text   g_levelScore = { "Level %d   %s  %d", 190, LEVEL_SCORE_YPOS, TEXT_COLOUR, FONT_NORMAL };
 
 // --- Helper functions ---
 
@@ -197,6 +205,26 @@ const char* scores_printTime(double time) {
   const double secondsPerMinute = 60.0;
   int          minutes          = (int) time / secondsPerMinute;
   double       seconds          = fmod(time, secondsPerMinute);
-  snprintf(buffer, sizeof(buffer), "%d:%06.3f", minutes, seconds);
+  snprintf(buffer, sizeof(buffer), "%02d:%06.3f", minutes, seconds);
   return buffer;
+}
+
+void scores_drawMenu(void) {
+  game_Difficulty difficulty = DIFFICULTY_EASY;
+
+  draw_shadowText(TEMP_HEADER);
+  draw_shadowText(LEVEL_SCORE_HEADER);
+
+  g_levelScore.yPos = LEVEL_SCORE_YPOS;
+  for (int level = 0; level < LEVEL_COUNT; level++) {
+    draw_shadowText(
+        g_levelScore,
+        level + 1,
+        scores_printTime(g_saves.bestTimes[difficulty][level].time),
+        g_saves.bestScores[difficulty][level].score
+    );
+    g_levelScore.yPos += LINE_HEIGHT;
+  }
+
+  draw_shadowText(FULL_RUN_TIME, scores_printTime(g_saves.fullRunsBestScores[difficulty].time));
 }

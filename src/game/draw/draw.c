@@ -26,7 +26,6 @@ static const Rectangle GAME_WON_BG_RECTANGLE = { 130, 90, 220, 90 };
 static const Color     GAME_WON_BG_COLOUR    = { 64, 64, 64, 200 };
 static const Color     GAME_WON_BG_BORDER    = { 255, 255, 255, 200 };
 
-constexpr Color        TEXT_COLOUR            = { 255, 255, 255, 255 };
 constexpr Color        RECORD_COLOUR          = { 253, 255, 0, 255 };
 constexpr Color        SHADOW_COLOUR          = { 32, 32, 32, 255 };
 static draw_Text       SWORD_TIMER            = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };

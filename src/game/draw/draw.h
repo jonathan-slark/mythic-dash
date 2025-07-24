@@ -15,6 +15,10 @@ typedef struct draw_Text {
   draw_FontSize fontSize;
 } draw_Text;
 
+// --- Constants ---
+
+constexpr Color TEXT_COLOUR = { 255, 255, 255, 255 };
+
 // --- Draw functions ---
 
 void draw_text(draw_Text text, ...);

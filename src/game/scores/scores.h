@@ -15,3 +15,4 @@ void          scores_save(void);
 scores_Result scores_levelClear(double time, int score);
 scores_Result scores_fullRun(double time, int score);
 const char*   scores_printTime(double time);
+void          scores_drawMenu(void);

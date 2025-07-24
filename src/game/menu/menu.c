@@ -67,7 +67,7 @@ static const menu_Button MAIN_BUTTONS[] = {
   { { 190, 140, 100, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME }
 };
 static const menu_Button HISCORES_BUTTONS[] = {
-  { { 190, 140, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
+  { { 190, 190, 100, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH }
 };
 static const menu_Button GAME_BUTTONS[] = {
   {  { 190, 70, 100, 10 },        "Easy", MENU_NONE,   game_newEasy, MENU_CONTEXT_BOTH },
@@ -83,11 +83,11 @@ static const menu_Button CREDITS_BUTTONS[] = {
 };
 
 static const menu_Screen SCREENS[] = {
-  [MENU_MAIN]     = {     MAIN_BUTTONS,     COUNT(MAIN_BUTTONS), nullptr },
-  [MENU_HISCORES] = { HISCORES_BUTTONS, COUNT(HISCORES_BUTTONS), nullptr },
-  [MENU_GAME]     = {     GAME_BUTTONS,     COUNT(GAME_BUTTONS), nullptr },
-  [MENU_OPTIONS]  = {  OPTIONS_BUTTONS,  COUNT(OPTIONS_BUTTONS), nullptr },
-  [MENU_CREDITS]  = {  CREDITS_BUTTONS,  COUNT(CREDITS_BUTTONS), nullptr },
+  [MENU_MAIN]     = {     MAIN_BUTTONS,     COUNT(MAIN_BUTTONS),         nullptr },
+  [MENU_HISCORES] = { HISCORES_BUTTONS, COUNT(HISCORES_BUTTONS), scores_drawMenu },
+  [MENU_GAME]     = {     GAME_BUTTONS,     COUNT(GAME_BUTTONS),         nullptr },
+  [MENU_OPTIONS]  = {  OPTIONS_BUTTONS,  COUNT(OPTIONS_BUTTONS),         nullptr },
+  [MENU_CREDITS]  = {  CREDITS_BUTTONS,  COUNT(CREDITS_BUTTONS),         nullptr },
 };
 
 static const float MOUSE_ACTIVE_DISTANCE = 100.0f;

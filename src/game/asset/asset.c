@@ -41,7 +41,7 @@ bool asset_load(void) {
   GAME_TRY(g_assets.creatureSpriteSheet = engine_textureLoad(FILE_CREATURES));
   GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
   g_assets.cursorSpriteSheet = maze_getTileSet();
-  GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 6, 10, 32, 127, 0, 2));
+  GAME_TRY(g_assets.font = engine_fontLoad(FILE_FONT, 6, 10, 32, 160, 0, 2));
   GAME_TRY(g_assets.fontTiny = engine_fontLoad(FILE_FONT_TINY, 5, 7, 48, 57, 0, 0));
   for (int i = 0; i < WAIL_SOUND_COUNT; i++) {
     GAME_TRY(loadSound(WAIL_SOUNDS[i], &g_assets.wailSounds[i]));
