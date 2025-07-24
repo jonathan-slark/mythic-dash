@@ -197,6 +197,6 @@ const char* scores_printTime(double time) {
   const double secondsPerMinute = 60.0;
   int          minutes          = (int) time / secondsPerMinute;
   double       seconds          = fmod(time, secondsPerMinute);
-  snprintf(buffer, sizeof(buffer), "%d min %.3fs", minutes, seconds);
+  snprintf(buffer, sizeof(buffer), "%d:%06.3f", minutes, seconds);
   return buffer;
 }
