@@ -1,6 +1,7 @@
 #include "scores.h"
 #include <assert.h>
 #include <errno.h>
+#include <math.h>
 #include <raylib.h>
 #include <stdio.h>
 #include <string.h>
@@ -189,4 +190,13 @@ scores_Result scores_fullRun(double time, int score) {
   }
 
   return result;
+}
+
+const char* scores_printTime(double time) {
+  static char  buffer[BUFFER_LEN];
+  const double secondsPerMinute = 60.0;
+  int          minutes          = (int) time / secondsPerMinute;
+  double       seconds          = fmod(time, secondsPerMinute);
+  snprintf(buffer, sizeof(buffer), "%d min %.3fs", minutes, seconds);
+  return buffer;
 }
