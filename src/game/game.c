@@ -212,6 +212,7 @@ void game_update(double frameTime) {
       updateMusic(frameTime);
       break;
   }
+  input_flush();
 }
 
 void game_draw(void) {

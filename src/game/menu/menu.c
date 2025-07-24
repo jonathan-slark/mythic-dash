@@ -89,6 +89,8 @@ static const menu_Screen SCREENS[] = {
   [MENU_CREDITS]  = {  CREDITS_BUTTONS,  COUNT(CREDITS_BUTTONS), nullptr },
 };
 
+static const float MOUSE_ACTIVE_DISTANCE = 100.0f;
+
 // --- Global state ---
 
 static menu_State g_state = {
@@ -134,7 +136,6 @@ static void resetButtonState(const menu_Screen* screen) {
   if (!isButtonActive(&screen->buttons[button]))
     g_state.selectedButton[g_state.currentScreen] = findPreviousActiveButton(screen, button);
   g_state.activatedButton = -1;
-  g_state.isMouseActive   = false;
 }
 
 static void updateMenuScreen(const menu_Screen* screen) {
@@ -144,7 +145,7 @@ static void updateMenuScreen(const menu_Screen* screen) {
     const menu_Button* button = &screen->buttons[i];
     assert(button != nullptr);
     if (isButtonActive(button)) {
-      if (g_state.activatedButton == i || engine_isMouseButtonClick(MOUSE_LEFT_BUTTON, button->bounds)) {
+      if (g_state.activatedButton == i || input_isMouseButtonClick(INPUT_LEFT_BUTTON, button->bounds)) {
         if (button->action != nullptr) {
           button->action();
         } else if (button->targetScreen != MENU_NONE) {
@@ -206,7 +207,7 @@ static void checkKeys(const menu_Screen* screen) {
 
 static void checkMouse(void) {
   Vector2 pos = engine_getMousePosition();
-  if (!Vector2Equals(g_state.lastMousePos, pos)) {
+  if (Vector2Distance(g_state.lastMousePos, pos) >= MOUSE_ACTIVE_DISTANCE) {
     g_state.isMouseActive = true;
     g_state.lastMousePos  = pos;
   }

@@ -351,6 +351,7 @@ void player_totalReset() {
   player_reset();
   g_player.lives              = PLAYER_LIVES;
   g_player.score              = 0;
+  g_player.previousScore      = 0;
   g_player.lastScoreBonusLife = 0;
 }
 

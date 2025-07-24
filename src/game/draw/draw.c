@@ -8,6 +8,7 @@
 #include "../creature/creature.h"
 #include "../internal.h"
 #include "../player/player.h"
+#include "game/game.h"
 
 // --- Constants ---
 
@@ -24,29 +25,32 @@ static const Rectangle GAME_WON_BG_RECTANGLE = { 140, 90, 200, 90 };
 static const Color     GAME_WON_BG_COLOUR    = { 64, 64, 64, 200 };
 static const Color     GAME_WON_BG_BORDER    = { 255, 255, 255, 200 };
 
-constexpr Color        TEXT_COLOUR          = { 255, 255, 255, 255 };
-constexpr Color        RECORD_COLOUR        = { 253, 255, 0, 255 };
-constexpr Color        SHADOW_COLOUR        = { 32, 32, 32, 255 };
-static draw_Text       SWORD_TIMER          = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
-static draw_Text       CREATURE_SCORE       = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
-static const draw_Text SCORE_TEXT           = { "Score: %d", 8, 0, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text LEVEL_TEXT           = { "Level: %02d / %02d", 386, 0, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text EXTRA_LIFE_TEXT      = { "@ %d", 428, 252, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text TITLE_TEXT           = { "Mythic Dash", 190, 40, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text PLAYER_READY_TEXT    = { "Get ready!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text LEVEL_CLEAR_TEXT     = { "Level clear!", 165, 100, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text LEVEL_TIME_TEXT      = { "This level's time:  %0.3f", 165, 120, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text LEVEL_SCORE_TEXT     = { "This level's score: %d", 165, 130, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text TIME_RECORD_TEXT     = { "New record time!", 165, 150, RECORD_COLOUR, FONT_NORMAL };
-static const draw_Text SCORE_RECORD_TEXT    = { "New record score!", 165, 160, RECORD_COLOUR, FONT_NORMAL };
-static const draw_Text GAME_OVER_TEXT       = { "Game over!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text GAME_WON_TEXT        = { "Game won!", 150, 100, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text TOTAL_RUN_TIME_TEXT  = { "This run's total time:  %0.3f", 150, 120, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text TOTal_RUN_SCORE_TEXT = { "This run's total score: %d", 150, 130, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text TOTAL_RUN_TIME_RECORD_TEXT = { "New record total time!", 150, 150, RECORD_COLOUR, FONT_NORMAL };
-static const draw_Text
-    TOTAl_RUN_SCORE_RECORD_TEXT   = { "New record total score!", 150, 160, RECORD_COLOUR, FONT_NORMAL };
-static const draw_Text SPACE_TEXT = { "Press space", 206, 188, TEXT_COLOUR, FONT_NORMAL };
+constexpr Color        TEXT_COLOUR                         = { 255, 255, 255, 255 };
+constexpr Color        RECORD_COLOUR                       = { 253, 255, 0, 255 };
+constexpr Color        SHADOW_COLOUR                       = { 32, 32, 32, 255 };
+static draw_Text       SWORD_TIMER                         = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
+static draw_Text       CREATURE_SCORE                      = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
+static const draw_Text SCORE_TEXT                          = { "Score: %d", 8, 0, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_TEXT                          = { "Level: %02d / %02d", 386, 0, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text EXTRA_LIFE_TEXT                     = { "@ %d", 428, 252, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text TITLE_TEXT                          = { "Mythic Dash", 190, 40, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text PLAYER_READY_TEXT[DIFFICULTY_COUNT] = {
+  {        "Get ready!", 210, 100, TEXT_COLOUR, FONT_NORMAL },
+  {     "Player ready!", 201, 100, TEXT_COLOUR, FONT_NORMAL },
+  { "Ready Player One!", 189, 100, TEXT_COLOUR, FONT_NORMAL },
+};
+static const draw_Text LEVEL_CLEAR_TEXT       = { "Level clear!", 165, 100, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_TIME_TEXT        = { "This level's time:  %0.3f", 165, 120, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_SCORE_TEXT       = { "This level's score: %d", 165, 130, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text TIME_RECORD_TEXT       = { "New record time!", 165, 150, RECORD_COLOUR, FONT_NORMAL };
+static const draw_Text SCORE_RECORD_TEXT      = { "New record score!", 165, 160, RECORD_COLOUR, FONT_NORMAL };
+static const draw_Text GAME_OVER_TEXT         = { "Game over!", 210, 100, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text GAME_WON_TEXT          = { "Game won!", 150, 100, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text TOTAL_RUN_TIME_TEXT    = { "This run's total time:  %0.3f", 150, 120, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text TOTal_RUN_SCORE_TEXT   = { "This run's total score: %d", 150, 130, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text TOTAL_RUN_TIME_RECORD  = { "New record total time!", 150, 150, RECORD_COLOUR, FONT_NORMAL };
+static const draw_Text TOTAl_RUN_SCORE_RECORD = { "New record total score!", 150, 160, RECORD_COLOUR, FONT_NORMAL };
+static const draw_Text SPACE_TEXT             = { "Press space", 206, 188, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text DIFFICULTY_TEXT[DIFFICULTY_COUNT] = {
   {        "Easy", 228, 252, TEXT_COLOUR, FONT_NORMAL },
   {      "Normal", 222, 252, TEXT_COLOUR, FONT_NORMAL },
@@ -198,7 +202,7 @@ void draw_nextLife(void) {
 void draw_title(void) { draw_text(TITLE_TEXT); }
 
 void draw_ready(void) {
-  draw_shadowText(PLAYER_READY_TEXT);
+  draw_shadowText(PLAYER_READY_TEXT[game_getDifficulty()]);
   draw_shadowText(SPACE_TEXT);
 }
 
@@ -233,6 +237,6 @@ void draw_gameWon(void) {
   draw_shadowText(TOTAL_RUN_TIME_TEXT, data.time);
   draw_shadowText(TOTal_RUN_SCORE_TEXT, data.score);
 
-  if (data.clearResult.isTimeRecord) draw_shadowText(TOTAL_RUN_TIME_RECORD_TEXT);
-  if (data.clearResult.isScoreRecord) draw_shadowText(TOTAl_RUN_SCORE_RECORD_TEXT);
+  if (data.clearResult.isTimeRecord) draw_shadowText(TOTAL_RUN_TIME_RECORD);
+  if (data.clearResult.isScoreRecord) draw_shadowText(TOTAl_RUN_SCORE_RECORD);
 }

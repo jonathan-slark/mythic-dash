@@ -3,6 +3,7 @@
 
 // --- Types ---
 
+#include <raylib.h>
 typedef enum input_Key {
   INPUT_ESCAPE,
   INPUT_SPACE,
@@ -21,10 +22,15 @@ typedef enum input_Key {
   INPUT_N,
   INPUT_MINUS,
   INPUT_EQUAL,
-  INPUT_COUNT
+  INPUT_KEY_COUNT
 } input_Key;
+
+typedef enum input_MouseButton { INPUT_LEFT_BUTTON, INPUT_BUTTON_COUNT } input_MouseButton;
 
 // --- Input functions ---
 
 void input_update(void);
+void input_flush(void);
 bool input_isKeyPressed(input_Key key);
+bool input_isMouseButtonPressed(input_MouseButton button);
+bool input_isMouseButtonClick(input_MouseButton button, Rectangle rectangle);
