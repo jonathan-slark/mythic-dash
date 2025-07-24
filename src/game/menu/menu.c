@@ -6,6 +6,7 @@
 #include "../draw/draw.h"
 #include "../input/input.h"
 #include "../internal.h"
+#include "../player/player.h"
 
 // --- Types ---
 
@@ -216,6 +217,8 @@ static void checkMouse(void) {
 // --- Menu functions ---
 
 void menu_open(menu_Context context) {
+  if (g_game.state == GAME_RUN) player_onPause();
+
   switch (context) {
     case MENU_CONTEXT_TITLE:
       g_game.lastState = GAME_BOOT;
@@ -243,6 +246,8 @@ void menu_close(void) {
       g_game.lastState == GAME_RUN || g_game.lastState == GAME_OVER || g_game.lastState == GAME_LEVELCLEAR
   );
   if (g_state.context == MENU_CONTEXT_INGAME) g_game.state = g_game.lastState;
+
+  if (g_game.state == GAME_RUN) player_onResume();
 }
 
 void menu_update(void) {

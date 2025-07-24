@@ -21,6 +21,8 @@ void             player_update(double frameTime, float slop);
 void             player_restart(void);
 void             player_reset(void);
 void             player_totalReset(void);
+void             player_onPause(void);
+void             player_onResume(void);
 game_Tile        player_tileAhead(int tileNum);
 game_Actor*      player_getActor(void);
 Vector2          player_getPos(void);

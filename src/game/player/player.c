@@ -21,6 +21,8 @@ typedef struct Player {
   int              lives;
   int              score;
   int              previousScore;
+  double           time;
+  double           previousTime;
   int              coinsCollected;
   float            swordTimer;
   float            deadTimer;
@@ -143,13 +145,15 @@ static void swordUpdate(double frameTime) {
 }
 
 static void levelClear(void) {
+  g_player.time += engine_getTime() - g_player.previousTime;
+
   int level = game_getLevel();
 
   if (game_getDifficulty() == DIFFICULTY_ARCADE) {
     // Araced Mode is 100% deterministic, game updates using fixed timestep
     g_player.levelData[level].time = g_player.levelData[level].frameCount * FRAME_TIME;
   } else {
-    g_player.levelData[level].time = engine_getTime() - g_player.levelData[level].time;
+    g_player.levelData[level].time = g_player.time;
   }
 
   g_player.levelData[level].score = g_player.score - g_player.previousScore;
@@ -267,11 +271,11 @@ void player_shutdown(void) {
 }
 
 void player_ready(void) {
-  int level                            = game_getLevel();
-  g_player.levelData[level].time       = engine_getTime();
-  g_player.levelData[level].frameCount = 0;
-  g_player.levelData[level].score      = 0;
-  g_accumulator                        = 0.0;
+  g_player.previousTime     = engine_getTime();
+  g_player.time             = 0.0;
+  int level                 = game_getLevel();
+  g_player.levelData[level] = (player_levelData) {};
+  g_accumulator             = 0.0;
 }
 
 void player_update(double frameTime, float slop) {
@@ -354,6 +358,10 @@ void player_totalReset() {
   g_player.previousScore      = 0;
   g_player.lastScoreBonusLife = 0;
 }
+
+void player_onPause(void) { g_player.time += engine_getTime() - g_player.previousTime; }
+
+void player_onResume(void) { g_player.previousTime = engine_getTime(); }
 
 game_Tile player_tileAhead(int tileNum) {
   assert(tileNum > 0);
