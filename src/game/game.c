@@ -256,7 +256,6 @@ void game_draw(void) {
 }
 
 void game_unload(void) {
-  scores_save();
   engine_shutdownAudio();
   asset_shutdownCursor();
   asset_shutdownCreatures();

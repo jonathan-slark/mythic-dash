@@ -87,6 +87,7 @@ void scores_load(void) {
       LOG_ERROR(game_log, "Unable to process %s", SCORES_FILE);
       return;
     }
+    entry.level--;
 
     if (strcmp(entry.type, TYPE_TIME) == 0) {
       g_saves.bestTimes[getDifficulty(entry.difficulty)][entry.level] = entry;
@@ -95,7 +96,7 @@ void scores_load(void) {
     } else if (strcmp(entry.type, TYPE_FULL_TIME) == 0) {
       g_saves.fullRunsBestTimes[getDifficulty(entry.difficulty)] = entry;
     } else if (strcmp(entry.type, TYPE_FULL_SCORE) == 0) {
-      g_saves.fullRunsBestScores[entry.level] = entry;
+      g_saves.fullRunsBestScores[getDifficulty(entry.difficulty)] = entry;
     } else {
       LOG_ERROR(game_log, "Syntax error in %s (%s)", SCORES_FILE, entry.type);
       return;
@@ -226,5 +227,9 @@ void scores_drawMenu(void) {
     g_levelScore.yPos += LINE_HEIGHT;
   }
 
-  draw_shadowText(FULL_RUN_TIME, scores_printTime(g_saves.fullRunsBestScores[difficulty].time));
+  draw_shadowText(
+      FULL_RUN_TIME,
+      scores_printTime(g_saves.fullRunsBestScores[difficulty].time),
+      g_saves.fullRunsBestScores[difficulty].score
+  );
 }
