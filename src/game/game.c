@@ -102,7 +102,10 @@ static void spacePressed(void) {
       player_ready();
       break;
 
-    case GAME_DEAD: readyCommon(); break;
+    case GAME_DEAD:
+      readyCommon();
+      player_onResume();
+      break;
 
     case GAME_LEVELCLEAR:
       g_game.state = GAME_START;

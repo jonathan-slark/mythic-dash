@@ -458,6 +458,7 @@ bool player_hasSword(void) {
 
 void player_dead(void) {
   if (debug_isPlayerImmune()) return;
+  player_onPause();
 
   deadCommon();
   g_player.state = PLAYER_DEAD;

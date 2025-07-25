@@ -40,16 +40,16 @@ static const char      TYPE_SCORE[]                 = "score";
 static const char      TYPE_FULL_TIME[]             = "fullTime";
 static const char      TYPE_FULL_SCORE[]            = "fullScore";
 static const char*     MODE_NAMES[DIFFICULTY_COUNT] = { "Easy", "Normal", "Arcade" };
-static const draw_Text TEMP_HEADER = { "[Mode: Easy \x85] [Sort by: Time \x85]", 190, 70, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text LEVEL_SCORE_HEADER = { "Level     Time       Score", 190, 90, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text FULL_RUN_TIME      = { "Full Run  %s  %d", 190, 170, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text TEMP_HEADER = { "[Mode: Easy \x85] [Sort by: Time \x85]", 144, 70, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_SCORE_HEADER = { "Level     Time       Score", 144, 90, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text FULL_RUN_TIME      = { "Full Run  %s  %d", 144, 170, TEXT_COLOUR, FONT_NORMAL };
 static const int       LINE_HEIGHT        = 10;
 static const int       LEVEL_SCORE_YPOS   = 100;
 
 // --- Global state ---
 
 static score_Saves g_saves      = {};
-static draw_Text   g_levelScore = { "Level %d   %s  %d", 190, LEVEL_SCORE_YPOS, TEXT_COLOUR, FONT_NORMAL };
+static draw_Text   g_levelScore = { "Level %d   %s  %d", 144, LEVEL_SCORE_YPOS, TEXT_COLOUR, FONT_NORMAL };
 
 // --- Helper functions ---
 
