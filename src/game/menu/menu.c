@@ -62,7 +62,7 @@ static void returnToTitle(void);
 // --- Constants ---
 
 static const Rectangle BG_MAIN             = { 189, 60, 102, 100 };
-static const Rectangle BG_HISCORES         = { 129, 60, 222, 150 };
+static const Rectangle BG_HISCORES         = { 132, 60, 216, 150 };
 static const Color     BG_COLOUR           = { 64, 64, 64, 200 };
 static const Color     BG_DROP_DOWN_COLOUR = { 40, 40, 40, 200 };
 static const Color     BG_BORDER           = { 255, 255, 255, 200 };
@@ -87,18 +87,18 @@ static menu_Button MAIN_BUTTONS[] = {
 };
 
 static menu_Button SCORES_MODE[] = {
-  { { 135, 70, 24, 10 },   "Easy", MENU_NONE, scores_setEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  { { 135, 70, 24, 10 }, "Normal", MENU_NONE, scores_setNormal, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  { { 135, 70, 24, 10 }, "Arcade", MENU_NONE, scores_setArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 },   "Easy", MENU_NONE, scores_setEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Normal", MENU_NONE, scores_setNormal, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Arcade", MENU_NONE, scores_setArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
 };
 static menu_Button SCORES_SORT[] = {
-  { { 237, 70, 24, 10 },   "Time", MENU_NONE, scores_setTime, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  { { 237, 70, 24, 10 },  "Score", MENU_NONE, scores_setScore, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 234, 70, 24, 10 },   "Time", MENU_NONE, scores_setTime, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 234, 70, 24, 10 },  "Score", MENU_NONE, scores_setScore, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
 };
 static menu_Button SCORES_BUTTONS[] = {
-  { { 135,  70,  96, 10 },    "Mode", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, true, SCORES_MODE, COUNT(SCORES_MODE), 0 },
-  { { 237,  70, 108, 10 }, "Sort by", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, true, SCORES_SORT, COUNT(SCORES_SORT), 0 },
-  { { 135, 190,  24, 10 },    "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false,    nullptr,                  0, 0 }
+  { { 138,  70,  96, 10 },    "Mode", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, true, SCORES_MODE, COUNT(SCORES_MODE), 0 },
+  { { 234,  70, 108, 10 }, "Sort by", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, true, SCORES_SORT, COUNT(SCORES_SORT), 0 },
+  { { 138, 190,  24, 10 },    "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false,    nullptr,                  0, 0 }
 };
 
 static menu_Button GAME_BUTTONS[] = {
