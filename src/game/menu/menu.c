@@ -92,8 +92,8 @@ static menu_Button SCORES_MODE[] = {
   { { 135, 70, 24, 10 }, "Arcade", MENU_NONE, scores_setArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
 };
 static menu_Button SCORES_SORT[] = {
-  { { 237, 70, 24, 10 },   "Time", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  { { 237, 70, 24, 10 },  "Score", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 237, 70, 24, 10 },   "Time", MENU_NONE, scores_setTime, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 237, 70, 24, 10 },  "Score", MENU_NONE, scores_setScore, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
 };
 static menu_Button SCORES_BUTTONS[] = {
   { { 135,  70,  96, 10 },    "Mode", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, true, SCORES_MODE, COUNT(SCORES_MODE), 0 },
@@ -174,31 +174,74 @@ static void resetButtonState(const menu_Screen* screen) {
   g_state.activatedButton = -1;
 }
 
+// New helper functions for dropdown handling
+static void handleDropdownInput(const menu_Screen* screen) {
+  menu_Button* button = &screen->buttons[g_state.activeDropdown];
+  for (int i = 0; i < button->dropdownItemCount; i++) {
+    const menu_Button* item         = &button->dropdownItems[i];
+    Rectangle          dropdownRect = {
+      button->bounds.x,
+      button->bounds.y + button->bounds.height,
+      button->bounds.width,
+      button->bounds.height * (button->dropdownItemCount + 2)
+    };
+    Rectangle itemRect = {
+      dropdownRect.x, dropdownRect.y + (i + 1) * button->bounds.height, dropdownRect.width, button->bounds.height
+    };
+    if (g_state.activatedButton == i || input_isMouseButtonClick(INPUT_LEFT_BUTTON, itemRect)) {
+      if (item->action != nullptr) {
+        item->action();
+      }
+      button->selectedItem    = i;
+      g_state.activeDropdown  = -1;
+      g_state.activatedButton = -1;
+    }
+  }
+}
+
+static void drawDropdown(const menu_Button* button, int index) {
+  if (g_state.activeDropdown == index && button->dropdownItems) {
+    // Create dropdown container below button
+    Rectangle dropdownRect = {
+      button->bounds.x,
+      button->bounds.y + button->bounds.height,
+      button->bounds.width,
+      button->bounds.height * (button->dropdownItemCount + 2)
+    };
+
+    // Draw dropdown background
+    engine_drawRectangle(dropdownRect, BG_DROP_DOWN_COLOUR);
+    engine_drawRectangleOutline(dropdownRect, BG_BORDER);
+
+    // Draw dropdown items
+    for (int j = 0; j < button->dropdownItemCount; j++) {
+      const menu_Button* item = &button->dropdownItems[j];
+      if (isButtonActive(item)) {
+        Rectangle itemRect = {
+          dropdownRect.x, dropdownRect.y + (j + 1) * button->bounds.height, dropdownRect.width, button->bounds.height
+        };
+
+        bool isSelected    = !g_state.isMouseActive && g_state.dropdownSelection == j;
+        bool isItemHovered = g_state.isMouseActive && engine_isMouseHover(itemRect);
+
+        draw_Text itemText = {
+          .xPos     = itemRect.x + TEXT_WIDTH,
+          .yPos     = itemRect.y,
+          .format   = item->text,
+          .colour   = isItemHovered || isSelected ? TEXT_ACTIVE : TEXT_NORMAL,
+          .fontSize = FONT_NORMAL
+        };
+        draw_shadowText(itemText);
+      }
+    }
+  }
+}
+
 static void updateMenuScreen(const menu_Screen* screen) {
   assert(screen != nullptr);
 
   if (g_state.activeDropdown != -1) {
-    menu_Button* button = &screen->buttons[g_state.activeDropdown];
-    for (int i = 0; i < button->dropdownItemCount; i++) {
-      const menu_Button* item         = &button->dropdownItems[i];
-      Rectangle          dropdownRect = {
-        button->bounds.x,
-        button->bounds.y + button->bounds.height,
-        button->bounds.width,
-        button->bounds.height * (button->dropdownItemCount + 2)
-      };
-      Rectangle itemRect = {
-        dropdownRect.x, dropdownRect.y + (i + 1) * button->bounds.height, dropdownRect.width, button->bounds.height
-      };
-      if (g_state.activatedButton == i || input_isMouseButtonClick(INPUT_LEFT_BUTTON, itemRect)) {
-        if (item->action != nullptr) {
-          item->action();
-        }
-        button->selectedItem    = i;
-        g_state.activeDropdown  = -1;
-        g_state.activatedButton = -1;
-      }
-    }
+    handleDropdownInput(screen);
   }
 
   for (int i = 0; i < screen->buttonCount; i++) {
@@ -234,7 +277,7 @@ static void drawMenuScreen(const menu_Screen* screen) {
   engine_drawRectangle(screen->background, screen->backgroundColour);
   engine_drawRectangleOutline(screen->background, screen->borderColour);
 
-  // First pass: draw regular buttons
+  // Draw regular buttons
   for (int i = 0; i < screen->buttonCount; i++) {
     const menu_Button* button = &screen->buttons[i];
     assert(button != nullptr);
@@ -265,43 +308,11 @@ static void drawMenuScreen(const menu_Screen* screen) {
     screen->customDraw();
   }
 
-  // Second pass: Draw dropdown containers (on top of buttons)
+  // Draw dropdowns if any
   for (int i = 0; i < screen->buttonCount; i++) {
     const menu_Button* button = &screen->buttons[i];
-    if (isButtonActive(button) && button->isDropdown && g_state.activeDropdown == i && button->dropdownItems) {
-      // Create dropdown container below button
-      Rectangle dropdownRect = {
-        button->bounds.x,
-        button->bounds.y + button->bounds.height,
-        button->bounds.width,
-        button->bounds.height * (button->dropdownItemCount + 2)
-      };
-
-      // Draw dropdown background
-      engine_drawRectangle(dropdownRect, BG_DROP_DOWN_COLOUR);
-      engine_drawRectangleOutline(dropdownRect, BG_BORDER);
-
-      // Draw dropdown items
-      for (int j = 0; j < button->dropdownItemCount; j++) {
-        const menu_Button* item = &button->dropdownItems[j];
-        if (isButtonActive(item)) {
-          Rectangle itemRect = {
-            dropdownRect.x, dropdownRect.y + (j + 1) * button->bounds.height, dropdownRect.width, button->bounds.height
-          };
-
-          bool isSelected    = !g_state.isMouseActive && g_state.dropdownSelection == j;
-          bool isItemHovered = g_state.isMouseActive && engine_isMouseHover(itemRect);
-
-          draw_Text itemText = {
-            .xPos     = itemRect.x + TEXT_WIDTH,
-            .yPos     = itemRect.y,
-            .format   = item->text,
-            .colour   = isItemHovered || isSelected ? TEXT_ACTIVE : TEXT_NORMAL,
-            .fontSize = FONT_NORMAL
-          };
-          draw_shadowText(itemText);
-        }
-      }
+    if (isButtonActive(button) && button->isDropdown) {
+      drawDropdown(button, i);
     }
   }
 }
