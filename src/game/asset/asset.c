@@ -53,12 +53,14 @@ bool asset_load(void) {
   GAME_TRY(loadSound(PICKUP_SOUND, &g_assets.pickupSound));
   GAME_TRY(loadSound(PICKUP_SOUND, &g_assets.pickupSound));
   GAME_TRY(loadSound(TWINKLE_SOUND, &g_assets.twinkleSound));
+  GAME_TRY(loadSound(WIN_SOUND, &g_assets.winSound));
   GAME_TRY(loadMusic(MUSIC, g_assets.music));
   return true;
 }
 
 void asset_unload(void) {
   unloadMusic(g_assets.music);
+  engine_unloadSound(&g_assets.winSound);
   engine_unloadSound(&g_assets.twinkleSound);
   engine_unloadSound(&g_assets.pickupSound);
   engine_unloadSound(&g_assets.whispersSound);
@@ -293,4 +295,8 @@ engine_Sound* asset_getTwinkleSound(void) {
   return g_assets.twinkleSound;
 }
 
+engine_Sound* asset_getWinSound(void) {
+  assert(g_assets.winSound != nullptr);
+  return g_assets.winSound;
+}
 Music asset_getMusic(int track) { return g_assets.music[track]; }

@@ -176,6 +176,8 @@ static void levelClear(void) {
     }
     g_player.fullRun.clearResult = scores_fullRun(g_player.fullRun.time, g_player.fullRun.score);
   }
+
+  audio_playWin(player_getPos());
 }
 
 static void checkPickups(void) {

@@ -40,4 +40,5 @@ engine_Sound*   asset_getFallingSound(void);
 engine_Sound*   asset_getWhispersSound(void);
 engine_Sound*   asset_getPickupSound(void);
 engine_Sound*   asset_getTwinkleSound(void);
+engine_Sound*   asset_getWinSound(void);
 Music           asset_getMusic(int track);

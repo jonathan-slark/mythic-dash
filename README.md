@@ -16,6 +16,7 @@ An arcade-style dungeon dash inspired by Southeast Asian myths. Collect gold, do
 * [Game Pickup by IENBA](https://freesound.org/people/IENBA/sounds/698768/) - CC0
 * [Chime Sound by jgreer](https://freesound.org/people/jgreer/sounds/333629/) - CC0
 * [Magical Twinkle by Universfield](https://freesound.org/people/Universfield/sounds/758819/) - CC BY 4.0
+* [Jingle_Win_Synth_03.wav by LittleRobotSoundFactory](https://freesound.org/people/LittleRobotSoundFactory/sounds/274177/) - CC BY 4.0
 
 ## Music Credits
 
