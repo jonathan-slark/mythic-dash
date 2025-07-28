@@ -17,6 +17,7 @@ An arcade-style dungeon dash inspired by Southeast Asian myths. Collect gold, do
 * [Chime Sound by jgreer](https://freesound.org/people/jgreer/sounds/333629/) - CC0
 * [Magical Twinkle by Universfield](https://freesound.org/people/Universfield/sounds/758819/) - CC BY 4.0
 * [Jingle_Win_Synth_03.wav by LittleRobotSoundFactory](https://freesound.org/people/LittleRobotSoundFactory/sounds/274177/) - CC BY 4.0
+* [Deep Church Bell by ZoshP](https://freesound.org/people/ZoshP/sounds/530914/) - CC0
 
 ## Music Credits
 

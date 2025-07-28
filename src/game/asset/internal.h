@@ -57,6 +57,7 @@ typedef struct asset_Assets {
   engine_Sound*   pickupSound;
   engine_Sound*   twinkleSound;
   engine_Sound*   winSound;
+  engine_Sound*   gameOverSound;
   Music           music[MUSIC_TRACKS];
 } asset_Assets;
 
@@ -74,13 +75,14 @@ static const asset_Sound WAIL_SOUNDS[] = {
   {   .filepath = ASSET_DIR "sfx/wail-up.wav", .volume = 0.2f, .pitch = 1.0f },
   {   .filepath = ASSET_DIR "sfx/wail-up.wav", .volume = 0.2f, .pitch = 1.2f }
 };
-static const asset_Sound CHIME_SOUND    = { .filepath = ASSET_DIR "sfx/chime.wav", .volume = 0.5f, .pitch = 1.0f };
-static const asset_Sound DEATH_SOUND    = { .filepath = ASSET_DIR "sfx/death.wav", .volume = 1.0f, .pitch = 1.0f };
-static const asset_Sound FALLING_SOUND  = { .filepath = ASSET_DIR "sfx/falling.wav", .volume = 1.0f, .pitch = 1.0f };
-static const asset_Sound WHISPERS_SOUND = { .filepath = ASSET_DIR "sfx/whispers.wav", .volume = 1.0f, .pitch = 1.0f };
-static const asset_Sound PICKUP_SOUND   = { .filepath = ASSET_DIR "sfx/pickup.wav", .volume = 1.0f, .pitch = 1.0f };
-static const asset_Sound TWINKLE_SOUND  = { .filepath = ASSET_DIR "sfx/twinkle.mp3", .volume = 1.0f, .pitch = 1.0f };
-static const asset_Sound WIN_SOUND      = { .filepath = ASSET_DIR "sfx/win.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound CHIME_SOUND     = { .filepath = ASSET_DIR "sfx/chime.wav", .volume = 0.5f, .pitch = 1.0f };
+static const asset_Sound DEATH_SOUND     = { .filepath = ASSET_DIR "sfx/death.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound FALLING_SOUND   = { .filepath = ASSET_DIR "sfx/falling.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound WHISPERS_SOUND  = { .filepath = ASSET_DIR "sfx/whispers.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound PICKUP_SOUND    = { .filepath = ASSET_DIR "sfx/pickup.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound TWINKLE_SOUND   = { .filepath = ASSET_DIR "sfx/twinkle.mp3", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound WIN_SOUND       = { .filepath = ASSET_DIR "sfx/win.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound GAME_OVER_SOUND = { .filepath = ASSET_DIR "sfx/game-over.wav", .volume = 1.0f, .pitch = 1.0f };
 
 static const asset_Music MUSIC[MUSIC_TRACKS] = {
   { .filepath = ASSET_DIR "music/01.mp3", .volume = 0.5f, .duckedVolume = 0.2f },

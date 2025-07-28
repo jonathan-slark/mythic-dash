@@ -145,3 +145,10 @@ void audio_playWin(Vector2 pos) {
   engine_setSoundPan(sound, getPan(pos));
   engine_playSound(sound);
 }
+
+void audio_playGameOver(Vector2 pos) {
+  if (!g_state.audioEnabled) return;
+  engine_Sound* sound = asset_getGameOverSound();
+  engine_setSoundPan(sound, getPan(pos));
+  engine_playSound(sound);
+}

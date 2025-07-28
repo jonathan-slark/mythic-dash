@@ -308,6 +308,7 @@ void player_update(double frameTime, float slop) {
     if (g_player.deadTimer == 0.0f) {
       if (g_player.lives == 0) {
         game_over();
+        audio_playGameOver(player_getPos());
       } else {
         game_playerDead();
       }
