@@ -19,6 +19,7 @@ typedef struct Player {
   game_Actor*      actor;
   game_PlayerState state;
   int              lives;
+  int              previousLives;
   int              score;
   int              previousScore;
   double           time;
@@ -159,8 +160,11 @@ static void levelClear(void) {
   g_player.levelData[level].score = g_player.score - g_player.previousScore;
   g_player.previousScore          = g_player.score;
 
+  g_player.levelData[level].lives = g_player.lives - g_player.previousLives;
+  g_player.previousLives          = g_player.lives;
+
   g_player.levelData[level].clearResult = scores_levelClear(
-      g_player.levelData[level].time, g_player.levelData[level].score
+      g_player.levelData[level].time, g_player.levelData[level].score, g_player.levelData[level].lives
   );
 
   if (level == LEVEL_COUNT - 1) {
@@ -173,8 +177,11 @@ static void levelClear(void) {
         g_player.fullRun.time += g_player.levelData[level].time;
       }
       g_player.fullRun.score += g_player.levelData[level].score;
+      g_player.fullRun.lives += g_player.levelData[level].lives;
     }
-    g_player.fullRun.clearResult = scores_fullRun(g_player.fullRun.time, g_player.fullRun.score);
+    g_player.fullRun.clearResult = scores_fullRun(
+        g_player.fullRun.time, g_player.fullRun.score, g_player.fullRun.lives
+    );
   }
 
   audio_playWin(player_getPos());
@@ -356,6 +363,7 @@ void player_reset() {
 void player_totalReset() {
   player_reset();
   g_player.lives              = PLAYER_LIVES;
+  g_player.previousLives      = g_player.lives;
   g_player.score              = 0;
   g_player.previousScore      = 0;
   g_player.lastScoreBonusLife = 0;

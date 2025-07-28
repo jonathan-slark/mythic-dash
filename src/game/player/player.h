@@ -8,6 +8,7 @@
 typedef struct player_levelData {
   double        time;
   int           score;
+  int           lives;
   int           frameCount;
   scores_Result clearResult;
 } player_levelData;

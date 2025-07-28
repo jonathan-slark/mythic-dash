@@ -14,8 +14,8 @@ typedef struct scores_Result {
 
 void          scores_load(void);
 void          scores_save(void);
-scores_Result scores_levelClear(double time, int score);
-scores_Result scores_fullRun(double time, int score);
+scores_Result scores_levelClear(double time, int score, int lives);
+scores_Result scores_fullRun(double time, int score, int lives);
 const char*   scores_printTime(double time);
 void          scores_drawMenu(void);
 void          scores_setEasy(void);

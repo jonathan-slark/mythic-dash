@@ -47,8 +47,8 @@ static const char      TYPE_SCORE[]                 = "score";
 static const char      TYPE_FULL_TIME[]             = "fullTime";
 static const char      TYPE_FULL_SCORE[]            = "fullScore";
 static const char*     MODE_NAMES[DIFFICULTY_COUNT] = { "Easy", "Normal", "Arcade" };
-static const draw_Text LEVEL_SCORE_HEADER = { "Level     Time       Score", 135, 90, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text FULL_RUN_TIME      = { "Full Run  %s  %d", 135, 170, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text LEVEL_SCORE_HEADER = { "Level          Time  Score  Lives", 135, 90, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text FULL_RUN_TIME      = { "Full Run  %9s  %5d  %5d", 135, 170, TEXT_COLOUR, FONT_NORMAL };
 static const int       LINE_HEIGHT        = 10;
 static const int       LEVEL_SCORE_YPOS   = 100;
 
@@ -56,7 +56,7 @@ static const int       LEVEL_SCORE_YPOS   = 100;
 
 static score_State g_state      = { DIFFICULTY_EASY, SORTBY_TIME };
 static score_Saves g_saves      = {};
-static draw_Text   g_levelScore = { "Level %d   %s  %d", 135, LEVEL_SCORE_YPOS, TEXT_COLOUR, FONT_NORMAL };
+static draw_Text   g_levelScore = { "Level %d   %9s  %5d  %5d", 135, LEVEL_SCORE_YPOS, TEXT_COLOUR, FONT_NORMAL };
 
 // --- Helper functions ---
 
@@ -173,7 +173,7 @@ void scores_save(void) {
   if (fclose(file) == EOF) LOG_ERROR(game_log, "Error on closing file %s (%s)", SCORES_FILE, strerror(errno));
 }
 
-scores_Result scores_levelClear(double time, int score) {
+scores_Result scores_levelClear(double time, int score, int lives) {
   int             level      = game_getLevel();
   game_Difficulty difficulty = game_getDifficulty();
   scores_Result   result     = {};
@@ -181,31 +181,35 @@ scores_Result scores_levelClear(double time, int score) {
   if (time < g_saves.bestTimes[difficulty][level].time || g_saves.bestTimes[difficulty][level].time == 0.0f) {
     g_saves.bestTimes[difficulty][level].time  = time;
     g_saves.bestTimes[difficulty][level].score = score;
+    g_saves.bestTimes[difficulty][level].lives = lives;
     result.isTimeRecord                        = true;
   }
 
   if (score > g_saves.bestScores[difficulty][level].score) {
     g_saves.bestScores[difficulty][level].time  = time;
     g_saves.bestScores[difficulty][level].score = score;
+    g_saves.bestScores[difficulty][level].lives = lives;
     result.isScoreRecord                        = true;
   }
 
   return result;
 }
 
-scores_Result scores_fullRun(double time, int score) {
+scores_Result scores_fullRun(double time, int score, int lives) {
   game_Difficulty difficulty = game_getDifficulty();
   scores_Result   result     = {};
 
   if (time < g_saves.fullRunsBestTimes[difficulty].time || g_saves.fullRunsBestTimes[difficulty].time == 0.0f) {
     g_saves.fullRunsBestTimes[difficulty].time  = time;
     g_saves.fullRunsBestTimes[difficulty].score = score;
+    g_saves.fullRunsBestTimes[difficulty].lives = LINE_HEIGHT;
     result.isTimeRecord                         = true;
   }
 
   if (score > g_saves.fullRunsBestScores[difficulty].score) {
     g_saves.fullRunsBestScores[difficulty].time  = time;
     g_saves.fullRunsBestScores[difficulty].score = score;
+    g_saves.fullRunsBestScores[difficulty].lives = lives;
     result.isScoreRecord                         = true;
   }
 
@@ -217,7 +221,7 @@ const char* scores_printTime(double time) {
   const double secondsPerMinute = 60.0;
   int          minutes          = (int) time / secondsPerMinute;
   double       seconds          = fmod(time, secondsPerMinute);
-  snprintf(buffer, sizeof(buffer), "%02d:%06.3f", minutes, seconds);
+  snprintf(buffer, sizeof(buffer), "%d:%06.3f", minutes, seconds);
   return buffer;
 }
 
@@ -228,27 +232,33 @@ void scores_drawMenu(void) {
   for (int level = 0; level < LEVEL_COUNT; level++) {
     float time;
     int   score;
+    int   lives;
     if (g_state.sort == SORTBY_TIME) {
       time  = g_saves.bestTimes[g_state.difficulty][level].time;
       score = g_saves.bestTimes[g_state.difficulty][level].score;
+      lives = g_saves.bestTimes[g_state.difficulty][level].lives;
     } else {
       time  = g_saves.bestScores[g_state.difficulty][level].time;
       score = g_saves.bestScores[g_state.difficulty][level].score;
+      lives = g_saves.bestScores[g_state.difficulty][level].lives;
     }
-    draw_shadowText(g_levelScore, level + 1, scores_printTime(time), score);
+    if (time > 0.0) draw_shadowText(g_levelScore, level + 1, scores_printTime(time), score, lives);
     g_levelScore.yPos += LINE_HEIGHT;
   }
 
   float time;
   int   score;
+  int   lives;
   if (g_state.sort == SORTBY_TIME) {
     time  = g_saves.fullRunsBestTimes[g_state.difficulty].time;
     score = g_saves.fullRunsBestTimes[g_state.difficulty].score;
+    lives = g_saves.fullRunsBestTimes[g_state.difficulty].lives;
   } else {
     time  = g_saves.fullRunsBestScores[g_state.difficulty].time;
     score = g_saves.fullRunsBestScores[g_state.difficulty].score;
+    lives = g_saves.fullRunsBestScores[g_state.difficulty].lives;
   }
-  draw_shadowText(FULL_RUN_TIME, scores_printTime(time), score);
+  if (time > 0.0) draw_shadowText(FULL_RUN_TIME, scores_printTime(time), score, lives);
 }
 
 void scores_setEasy(void) { setDifficulty(DIFFICULTY_EASY); }
