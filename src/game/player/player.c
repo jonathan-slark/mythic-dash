@@ -330,7 +330,7 @@ void player_update(double frameTime, float slop) {
 // Player dead
 void player_restart(void) {
   assert(g_player.actor != nullptr);
-  assert(g_player.deadTimer == 0.0f);
+  g_player.deadTimer       = 0.0f;
   g_player.state           = PLAYER_NORMAL;
   g_player.coinSlowTimer   = 0.0f;
   g_player.swordTimer      = 0.0f;

@@ -8,6 +8,7 @@
 #include "../input/input.h"
 #include "../internal.h"
 #include "../player/player.h"
+#include "../scores/scores.h"
 
 // --- Types ---
 
@@ -23,24 +24,24 @@ typedef enum {
 
 typedef struct menu_Button menu_Button;
 typedef struct menu_Button {
-  const Rectangle        bounds;
-  const char*            text;
-  const menu_ScreenState targetScreen;           // Screen to navigate to
-  void                   (*const action)(void);  // Custom action callback
-  const menu_Context     context;
-  const bool             isDropdown;
-  const menu_Button*     dropdownItems;
-  const int              dropdownItemCount;
-  bool                   isExpanded;
+  Rectangle        bounds;
+  const char*      text;
+  menu_ScreenState targetScreen;     // Screen to navigate to
+  void             (*action)(void);  // Custom action callback
+  menu_Context     context;
+  bool             isDropdown;
+  menu_Button*     dropdownItems;
+  int              dropdownItemCount;
+  int              selectedItem;
 } menu_Button;
 
 typedef struct menu_Screen {
-  const menu_Button* buttons;
-  const int          buttonCount;
-  const Rectangle    background;
-  const Color        backgroundColour;
-  const Color        borderColour;
-  void               (*const customDraw)(void);  // Optional custom drawing
+  menu_Button* buttons;
+  int          buttonCount;
+  Rectangle    background;
+  Color        backgroundColour;
+  Color        borderColour;
+  void         (*customDraw)(void);  // Optional custom drawing
 } menu_Screen;
 
 typedef struct menu_State {
@@ -60,60 +61,62 @@ static void returnToTitle(void);
 
 // --- Constants ---
 
-static const Rectangle BG_MAIN     = { 189, 60, 102, 100 };
-static const Rectangle BG_HISCORES = { 129, 60, 222, 150 };
-static const Color     BG_COLOUR   = { 64, 64, 64, 200 };
-static const Color     BG_BORDER   = { 255, 255, 255, 200 };
+static const Rectangle BG_MAIN             = { 189, 60, 102, 100 };
+static const Rectangle BG_HISCORES         = { 129, 60, 222, 150 };
+static const Color     BG_COLOUR           = { 64, 64, 64, 200 };
+static const Color     BG_DROP_DOWN_COLOUR = { 40, 40, 40, 200 };
+static const Color     BG_BORDER           = { 255, 255, 255, 200 };
 
 static const Color TEXT_NORMAL = { 255, 255, 255, 255 };
 static const Color TEXT_ACTIVE = { 151, 255, 49, 255 };
 
 static const char DROP_DOWN_TEXT[] = "[%s: %s \x85]";
 static const int  BUFFER_LEN       = 256;
+static const int  TEXT_WIDTH       = 6;
 
 // clang-format off
-static const menu_Button MAIN_BUTTONS[] = {
-  {  { 195, 70, 60, 10 },      "Start Game",     MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, false },
-  {  { 195, 80, 66, 10 },     "High Scores", MENU_HISCORES,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, false },
-  {  { 195, 90, 42, 10 },         "Options",  MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, false },
-  { { 195, 100, 42, 10 },         "Credits",  MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, false },
-  { { 195, 140, 54, 10 },       "Quit Game",     MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE, false, nullptr, 0, false },
-  { { 195, 120, 66, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME, false, nullptr, 0, false },
-  { { 195, 130, 90, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME, false, nullptr, 0, false },
-  { { 195, 140, 90, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME, false, nullptr, 0, false }
+static menu_Button MAIN_BUTTONS[] = {
+  {  { 195, 70, 60, 10 },      "Start Game",     MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  {  { 195, 80, 66, 10 },     "High Scores", MENU_HISCORES,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  {  { 195, 90, 42, 10 },         "Options",  MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 195, 100, 42, 10 },         "Credits",  MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 195, 140, 54, 10 },       "Quit Game",     MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE, false, nullptr, 0, 0 },
+  { { 195, 120, 66, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME, false, nullptr, 0, 0 },
+  { { 195, 130, 90, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME, false, nullptr, 0, 0 },
+  { { 195, 140, 90, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME, false, nullptr, 0, 0 }
 };
 
-static const menu_Button SCORES_MODE[] = {
-  { { 135, 70, 24, 10 },   "Easy", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, false },
-  { { 135, 70, 24, 10 }, "Normal", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, false },
-  { { 135, 70, 24, 10 }, "Arcade", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, false },
+static menu_Button SCORES_MODE[] = {
+  { { 135, 70, 24, 10 },   "Easy", MENU_NONE, scores_setEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 135, 70, 24, 10 }, "Normal", MENU_NONE, scores_setNormal, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 135, 70, 24, 10 }, "Arcade", MENU_NONE, scores_setArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
 };
-static const menu_Button SCORES_SORT[] = {
-  { { 237, 70, 24, 10 },   "Time", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, false },
-  { { 237, 70, 24, 10 },  "Score", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, false },
+static menu_Button SCORES_SORT[] = {
+  { { 237, 70, 24, 10 },   "Time", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 237, 70, 24, 10 },  "Score", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
 };
-static const menu_Button SCORES_BUTTONS[] = {
-  { { 135,  70,  96, 10 },    "Mode", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, true, SCORES_MODE, COUNT(SCORES_MODE), false },
-  { { 237,  70, 108, 10 }, "Sort by", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, true, SCORES_SORT, COUNT(SCORES_SORT), false },
-  { { 135, 190,  24, 10 },    "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false,    nullptr,                  0, false }
-};
-
-static const menu_Button GAME_BUTTONS[] = {
-  {  { 195, 70, 24, 10 },        "Easy", MENU_NONE,   game_newEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, false },
-  {  { 195, 80, 36, 10 },      "Normal", MENU_NONE, game_newNormal, MENU_CONTEXT_BOTH, false, nullptr, 0, false },
-  {  { 195, 90, 66, 10 }, "Arcade Mode", MENU_NONE, game_newArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, false },
-  { { 195, 140, 24, 10 },        "Back", MENU_MAIN,        nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, false }
+static menu_Button SCORES_BUTTONS[] = {
+  { { 135,  70,  96, 10 },    "Mode", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, true, SCORES_MODE, COUNT(SCORES_MODE), 0 },
+  { { 237,  70, 108, 10 }, "Sort by", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, true, SCORES_SORT, COUNT(SCORES_SORT), 0 },
+  { { 135, 190,  24, 10 },    "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false,    nullptr,                  0, 0 }
 };
 
-static const menu_Button OPTIONS_BUTTONS[] = {
-  { { 195, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, false }
+static menu_Button GAME_BUTTONS[] = {
+  {  { 195, 70, 24, 10 },        "Easy", MENU_NONE,   game_newEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  {  { 195, 80, 36, 10 },      "Normal", MENU_NONE, game_newNormal, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  {  { 195, 90, 66, 10 }, "Arcade Mode", MENU_NONE, game_newArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 195, 140, 24, 10 },        "Back", MENU_MAIN,        nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
 };
 
-static const menu_Button CREDITS_BUTTONS[] = {
-  { { 195, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, false }
+static menu_Button OPTIONS_BUTTONS[] = {
+  { { 195, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
 };
 
-static const menu_Screen SCREENS[] = {
+static menu_Button CREDITS_BUTTONS[] = {
+  { { 195, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
+};
+
+static menu_Screen SCREENS[] = {
   [MENU_MAIN]     = {    MAIN_BUTTONS,    COUNT(MAIN_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,         nullptr },
   [MENU_HISCORES] = {  SCORES_BUTTONS,  COUNT(SCORES_BUTTONS), BG_HISCORES, BG_COLOUR, BG_BORDER, scores_drawMenu },
   [MENU_GAME]     = {    GAME_BUTTONS,    COUNT(GAME_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,         nullptr },
@@ -174,18 +177,51 @@ static void resetButtonState(const menu_Screen* screen) {
 static void updateMenuScreen(const menu_Screen* screen) {
   assert(screen != nullptr);
 
+  if (g_state.activeDropdown != -1) {
+    menu_Button* button = &screen->buttons[g_state.activeDropdown];
+    for (int i = 0; i < button->dropdownItemCount; i++) {
+      const menu_Button* item         = &button->dropdownItems[i];
+      Rectangle          dropdownRect = {
+        button->bounds.x,
+        button->bounds.y + button->bounds.height,
+        button->bounds.width,
+        button->bounds.height * (button->dropdownItemCount + 2)
+      };
+      Rectangle itemRect = {
+        dropdownRect.x, dropdownRect.y + (i + 1) * button->bounds.height, dropdownRect.width, button->bounds.height
+      };
+      if (g_state.activatedButton == i || input_isMouseButtonClick(INPUT_LEFT_BUTTON, itemRect)) {
+        if (item->action != nullptr) {
+          item->action();
+        }
+        button->selectedItem    = i;
+        g_state.activeDropdown  = -1;
+        g_state.activatedButton = -1;
+      }
+    }
+  }
+
   for (int i = 0; i < screen->buttonCount; i++) {
     const menu_Button* button = &screen->buttons[i];
     assert(button != nullptr);
     if (isButtonActive(button)) {
       if (g_state.activatedButton == i || input_isMouseButtonClick(INPUT_LEFT_BUTTON, button->bounds)) {
-        if (button->action != nullptr) {
-          button->action();
-        } else if (button->targetScreen != MENU_NONE) {
-          g_state.currentScreen = button->targetScreen;
-          screen                = &SCREENS[g_state.currentScreen];
-          resetButtonState(screen);
-          break;
+        if (button->isDropdown) {
+          g_state.dropdownSelection = button->selectedItem;
+          if (g_state.activeDropdown != i) {
+            g_state.activeDropdown = i;
+          } else {
+            g_state.activeDropdown = -1;
+          }
+        } else {
+          if (button->action != nullptr) {
+            button->action();
+          } else if (button->targetScreen != MENU_NONE) {
+            g_state.currentScreen = button->targetScreen;
+            screen                = &SCREENS[g_state.currentScreen];
+            resetButtonState(screen);
+            break;
+          }
         }
       }
     }
@@ -214,7 +250,9 @@ static void drawMenuScreen(const menu_Screen* screen) {
       };
       char format[BUFFER_LEN];
       if (button->isDropdown) {
-        snprintf(format, sizeof(format), DROP_DOWN_TEXT, button->text, button->dropdownItems[0].text);
+        snprintf(
+            format, sizeof(format), DROP_DOWN_TEXT, button->text, button->dropdownItems[button->selectedItem].text
+        );
         text.format = format;
       } else {
         text.format = button->text;
@@ -223,16 +261,75 @@ static void drawMenuScreen(const menu_Screen* screen) {
     }
   }
 
-  // Second pass: Draw dropdown containers (on top of buttons)
-  for (int i = 0; i < screen->buttonCount; i++) {
-  }
-
   if (screen->customDraw != nullptr) {
     screen->customDraw();
+  }
+
+  // Second pass: Draw dropdown containers (on top of buttons)
+  for (int i = 0; i < screen->buttonCount; i++) {
+    const menu_Button* button = &screen->buttons[i];
+    if (isButtonActive(button) && button->isDropdown && g_state.activeDropdown == i && button->dropdownItems) {
+      // Create dropdown container below button
+      Rectangle dropdownRect = {
+        button->bounds.x,
+        button->bounds.y + button->bounds.height,
+        button->bounds.width,
+        button->bounds.height * (button->dropdownItemCount + 2)
+      };
+
+      // Draw dropdown background
+      engine_drawRectangle(dropdownRect, BG_DROP_DOWN_COLOUR);
+      engine_drawRectangleOutline(dropdownRect, BG_BORDER);
+
+      // Draw dropdown items
+      for (int j = 0; j < button->dropdownItemCount; j++) {
+        const menu_Button* item = &button->dropdownItems[j];
+        if (isButtonActive(item)) {
+          Rectangle itemRect = {
+            dropdownRect.x, dropdownRect.y + (j + 1) * button->bounds.height, dropdownRect.width, button->bounds.height
+          };
+
+          bool isSelected    = !g_state.isMouseActive && g_state.dropdownSelection == j;
+          bool isItemHovered = g_state.isMouseActive && engine_isMouseHover(itemRect);
+
+          draw_Text itemText = {
+            .xPos     = itemRect.x + TEXT_WIDTH,
+            .yPos     = itemRect.y,
+            .format   = item->text,
+            .colour   = isItemHovered || isSelected ? TEXT_ACTIVE : TEXT_NORMAL,
+            .fontSize = FONT_NORMAL
+          };
+          draw_shadowText(itemText);
+        }
+      }
+    }
   }
 }
 
 static void checkKeys(const menu_Screen* screen) {
+  // Handle dropdown navigation if active
+  if (g_state.activeDropdown != -1) {
+    menu_Button* dropdownBtn = &screen->buttons[g_state.activeDropdown];
+
+    // Navigate dropdown items
+    if (input_isKeyPressed(INPUT_UP)) {
+      g_state.dropdownSelection =
+          (g_state.dropdownSelection - 1 + dropdownBtn->dropdownItemCount) % dropdownBtn->dropdownItemCount;
+      g_state.isMouseActive = false;
+    }
+    if (input_isKeyPressed(INPUT_DOWN)) {
+      g_state.dropdownSelection = (g_state.dropdownSelection + 1) % dropdownBtn->dropdownItemCount;
+      g_state.isMouseActive     = false;
+    }
+    if (input_isKeyPressed(INPUT_ENTER) || input_isKeyPressed(INPUT_KP_ENTER)) {
+      g_state.activatedButton   = g_state.dropdownSelection;
+      dropdownBtn->selectedItem = g_state.dropdownSelection;
+      g_state.isMouseActive     = false;
+    }
+
+    return;  // Skip main navigation when dropdown is active
+  }
+
   // Note: escape key is handled by game.c
   int button = g_state.selectedButton[g_state.currentScreen];
   if (input_isKeyPressed(INPUT_UP)) {
@@ -244,8 +341,15 @@ static void checkKeys(const menu_Screen* screen) {
     g_state.isMouseActive                         = false;
   }
   if (input_isKeyPressed(INPUT_ENTER) || input_isKeyPressed(INPUT_KP_ENTER)) {
-    g_state.activatedButton = button;
-    g_state.isMouseActive   = false;
+    // Toggle dropdown if button has one
+    if (screen->buttons[button].isDropdown) {
+      g_state.activeDropdown = button;
+    }
+    // Otherwise activate normally
+    else {
+      g_state.activatedButton = button;
+    }
+    g_state.isMouseActive = false;
   }
 }
 
@@ -279,6 +383,7 @@ void menu_open(menu_Context context) {
   g_state.currentScreen     = MENU_MAIN;
   g_state.context           = context;
   g_state.lastMousePos      = engine_getMousePosition();
+  g_state.activeDropdown    = -1;
   const menu_Screen* screen = &SCREENS[g_state.currentScreen];
   resetButtonState(screen);
 }
@@ -309,7 +414,9 @@ void menu_draw(void) {
 void menu_back(void) {
   switch (g_state.currentScreen) {
     case MENU_MAIN:
-      if (g_state.context == MENU_CONTEXT_TITLE) {
+      if (g_state.activeDropdown != -1) {
+        g_state.activeDropdown = -1;
+      } else if (g_state.context == MENU_CONTEXT_TITLE) {
         engine_requestClose();
       } else {
         menu_close();
@@ -319,7 +426,13 @@ void menu_back(void) {
     case MENU_GAME:
     case MENU_HISCORES:
     case MENU_OPTIONS:
-    case MENU_CREDITS: g_state.currentScreen = MENU_MAIN; break;
+    case MENU_CREDITS:
+      if (g_state.activeDropdown != -1) {
+        g_state.activeDropdown = -1;
+      } else {
+        g_state.currentScreen = MENU_MAIN;
+      }
+      break;
 
     case MENU_COUNT:
     case MENU_NONE: assert(false); break;

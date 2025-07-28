@@ -1,6 +1,8 @@
 // clang-format Language: C
 #pragma once
 
+#include <game/game.h>
+
 // --- Types ---
 
 typedef struct scores_Result {
@@ -16,3 +18,8 @@ scores_Result scores_levelClear(double time, int score);
 scores_Result scores_fullRun(double time, int score);
 const char*   scores_printTime(double time);
 void          scores_drawMenu(void);
+void          scores_setEasy(void);
+void          scores_setNormal(void);
+void          scores_setArcade(void);
+void          scores_setScore(void);
+void          scores_setTime(void);

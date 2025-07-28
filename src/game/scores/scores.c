@@ -15,7 +15,7 @@
 constexpr int ENTRY_LEN  = 16;
 constexpr int BUFFER_LEN = 256;
 
-typedef struct {
+typedef struct score_Entry {
   char   difficulty[ENTRY_LEN];
   int    level;
   double time;
@@ -24,12 +24,19 @@ typedef struct {
   char   type[ENTRY_LEN];
 } score_Entry;
 
-typedef struct {
+typedef struct score_Saves {
   score_Entry bestTimes[DIFFICULTY_COUNT][LEVEL_COUNT];
   score_Entry bestScores[DIFFICULTY_COUNT][LEVEL_COUNT];
   score_Entry fullRunsBestTimes[DIFFICULTY_COUNT];
   score_Entry fullRunsBestScores[DIFFICULTY_COUNT];
 } score_Saves;
+
+typedef enum SortBy { SORTBY_TIME, SORTBY_SCORE } SortBy;
+
+typedef struct score_State {
+  game_Difficulty difficulty;
+  SortBy          sort;
+} score_State;
 
 // --- Constants ---
 
@@ -47,6 +54,7 @@ static const int       LEVEL_SCORE_YPOS   = 100;
 
 // --- Global state ---
 
+static score_State g_state      = { DIFFICULTY_EASY, SORTBY_TIME };
 static score_Saves g_saves      = {};
 static draw_Text   g_levelScore = { "Level %d   %s  %d", 135, LEVEL_SCORE_YPOS, TEXT_COLOUR, FONT_NORMAL };
 
@@ -59,6 +67,10 @@ static game_Difficulty getDifficulty(const char difficulty[]) {
 
   assert(false);
 }
+
+static void setDifficulty(game_Difficulty difficulty) { g_state.difficulty = difficulty; }
+
+static void setSortby(SortBy sort) { g_state.sort = sort; }
 
 // --- Score functions ---
 
@@ -210,24 +222,41 @@ const char* scores_printTime(double time) {
 }
 
 void scores_drawMenu(void) {
-  game_Difficulty difficulty = DIFFICULTY_EASY;
-
   draw_shadowText(LEVEL_SCORE_HEADER);
 
   g_levelScore.yPos = LEVEL_SCORE_YPOS;
   for (int level = 0; level < LEVEL_COUNT; level++) {
-    draw_shadowText(
-        g_levelScore,
-        level + 1,
-        scores_printTime(g_saves.bestTimes[difficulty][level].time),
-        g_saves.bestScores[difficulty][level].score
-    );
+    float time;
+    int   score;
+    if (g_state.sort == SORTBY_TIME) {
+      time  = g_saves.bestTimes[g_state.difficulty][level].time;
+      score = g_saves.bestTimes[g_state.difficulty][level].score;
+    } else {
+      time  = g_saves.bestScores[g_state.difficulty][level].time;
+      score = g_saves.bestScores[g_state.difficulty][level].score;
+    }
+    draw_shadowText(g_levelScore, level + 1, scores_printTime(time), score);
     g_levelScore.yPos += LINE_HEIGHT;
   }
 
-  draw_shadowText(
-      FULL_RUN_TIME,
-      scores_printTime(g_saves.fullRunsBestScores[difficulty].time),
-      g_saves.fullRunsBestScores[difficulty].score
-  );
+  float time;
+  int   score;
+  if (g_state.sort == SORTBY_TIME) {
+    time  = g_saves.fullRunsBestTimes[g_state.difficulty].time;
+    score = g_saves.fullRunsBestTimes[g_state.difficulty].score;
+  } else {
+    time  = g_saves.fullRunsBestScores[g_state.difficulty].time;
+    score = g_saves.fullRunsBestScores[g_state.difficulty].score;
+  }
+  draw_shadowText(FULL_RUN_TIME, scores_printTime(time), score);
 }
+
+void scores_setEasy(void) { setDifficulty(DIFFICULTY_EASY); }
+
+void scores_setNormal(void) { setDifficulty(DIFFICULTY_NORMAL); }
+
+void scores_setArcade(void) { setDifficulty(DIFFICULTY_ARCADE); }
+
+void scores_setScore(void) { setSortby(SORTBY_SCORE); }
+
+void scores_setTime(void) { setSortby(SORTBY_TIME); }
