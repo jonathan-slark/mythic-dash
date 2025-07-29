@@ -58,6 +58,7 @@ typedef struct asset_Assets {
   engine_Sound*   twinkleSound;
   engine_Sound*   winSound;
   engine_Sound*   gameOverSound;
+  engine_Sound*   lifeSound;
   Music           music[MUSIC_TRACKS];
 } asset_Assets;
 
@@ -83,6 +84,7 @@ static const asset_Sound PICKUP_SOUND    = { .filepath = ASSET_DIR "sfx/pickup.w
 static const asset_Sound TWINKLE_SOUND   = { .filepath = ASSET_DIR "sfx/twinkle.mp3", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound WIN_SOUND       = { .filepath = ASSET_DIR "sfx/win.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound GAME_OVER_SOUND = { .filepath = ASSET_DIR "sfx/game-over.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound LIFE_SOUND      = { .filepath = ASSET_DIR "sfx/life.wav", .volume = 1.0f, .pitch = 1.0f };
 
 static const asset_Music MUSIC[MUSIC_TRACKS] = {
   { .filepath = ASSET_DIR "music/01.mp3", .volume = 0.5f, .duckedVolume = 0.2f },

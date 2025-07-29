@@ -55,12 +55,14 @@ bool asset_load(void) {
   GAME_TRY(loadSound(TWINKLE_SOUND, &g_assets.twinkleSound));
   GAME_TRY(loadSound(WIN_SOUND, &g_assets.winSound));
   GAME_TRY(loadSound(GAME_OVER_SOUND, &g_assets.gameOverSound));
+  GAME_TRY(loadSound(LIFE_SOUND, &g_assets.lifeSound));
   GAME_TRY(loadMusic(MUSIC, g_assets.music));
   return true;
 }
 
 void asset_unload(void) {
   unloadMusic(g_assets.music);
+  engine_unloadSound(&g_assets.lifeSound);
   engine_unloadSound(&g_assets.gameOverSound);
   engine_unloadSound(&g_assets.winSound);
   engine_unloadSound(&g_assets.twinkleSound);
@@ -210,8 +212,15 @@ engine_Sprite* asset_getPlayerSprite(game_PlayerState state) {
 }
 
 engine_Sprite* asset_getPlayerLivesSprite(int life) {
-  assert(life >= 0 && life < PLAYER_MAX_LIVES);
+  assert(life >= 0 && life < PLAYER_MAX_LIVES - 1);
   return g_assets.playerLivesSprites[life];
+}
+
+Vector2 asset_getPlayerLivesSpritePos(int life) {
+  assert(life >= 0 && life < PLAYER_MAX_LIVES - 1);
+  Vector2 pos  = PLAYER_LIVES_OFFSET;
+  pos.x       += life * ACTOR_SIZE;
+  return pos;
 }
 
 engine_Sprite* asset_getPlayerNextLifeSprite(void) {
@@ -307,4 +316,8 @@ engine_Sound* asset_getGameOverSound(void) {
   return g_assets.gameOverSound;
 }
 
+engine_Sound* asset_getLifeSound(void) {
+  assert(g_assets.lifeSound != nullptr);
+  return g_assets.lifeSound;
+}
 Music asset_getMusic(int track) { return g_assets.music[track]; }

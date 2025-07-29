@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../actor/actor.h"
+#include "../asset/asset.h"
 #include "../audio/audio.h"
 #include "../creature/creature.h"
 #include "../debug/debug.h"
@@ -228,7 +229,7 @@ static void levelClear(void) {
       g_player.levelData[level].time, g_player.levelData[level].score, g_player.levelData[level].lives
   );
 
-  if (level == LEVEL_COUNT - 1) {
+  if (level == LEVEL_COUNT - 1 && game_getStartLevel() == 0) {
     g_player.fullRun.time  = 0.0;
     g_player.fullRun.score = 0;
     g_player.fullRun.lives = 0;
@@ -319,6 +320,7 @@ static void checkScore() {
     if (g_player.lives < PLAYER_MAX_LIVES) {
       g_player.lives += 1;
       LOG_INFO(game_log, "Player gained bonus life at score: %d", g_player.score);
+      audio_playLife(asset_getPlayerLivesSpritePos(g_player.lives - 1));
     }
   }
 }
