@@ -17,6 +17,8 @@ const char*          PLAYER_STATE_STRINGS[PLAYER_STATE_COUNT] = { "NORMAL", "SWO
 static const Color   CREATURE_DEAD_COLOUR                     = { 255, 255, 255, 100 };
 static const Vector2 PLAYER_COOLDOWN_OFFSET                   = { 5, -8 };
 static const Vector2 CREATURE_SCORE_OFFSET                    = { 5, -8 };
+static const int     NEW_LIFE_OFFSETX                         = 1;
+static const int     NEW_LIFE_OFFSETY                         = 4;
 
 static const Rectangle LEVEL_CLEAR_BG_RECTANGLE = { 143, 90, 194, 90 };
 static const Color     LEVEL_CLEAR_BG_COLOUR    = { 64, 64, 64, 200 };
@@ -30,6 +32,7 @@ constexpr Color        RECORD_COLOUR          = { 253, 255, 0, 255 };
 constexpr Color        SHADOW_COLOUR          = { 32, 32, 32, 255 };
 static draw_Text       SWORD_TIMER            = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
 static draw_Text       CREATURE_SCORE         = { "%d", 0, 0, TEXT_COLOUR, FONT_TINY };
+static draw_Text       NEW_LIFE               = { "+1", 0, 0, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text SCORE_TEXT             = { "Score: %d", 8, 0, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text LEVEL_TEXT             = { "Level: %02d / %02d", 386, 0, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text EXTRA_LIFE_TEXT        = { "@ %d", 428, 252, TEXT_COLOUR, FONT_NORMAL };
@@ -150,8 +153,17 @@ void draw_player(void) {
   Color colour = flash ? BLACK : WHITE;
   engine_drawSprite(asset_getPlayerSpriteSheet(), asset_getPlayerSprite(player_getState()), colour);
 
-  for (int i = 0; i < player_getLives() - 1; i++) {
-    engine_drawSprite(asset_getPlayerSpriteSheet(), asset_getPlayerLivesSprite(i), WHITE);
+  int lives = player_getLives() - 1;
+  for (int i = 0; i < lives; i++) {
+    if (i == lives - 1 && player_getNewLifeTimer() > 0.0f) {
+      draw_Text text = NEW_LIFE;
+      Vector2   pos  = asset_getPlayerLivesSpritePos(i);
+      text.xPos      = pos.x + NEW_LIFE_OFFSETX;
+      text.yPos      = pos.y + NEW_LIFE_OFFSETY;
+      draw_shadowText(text);
+    } else {
+      engine_drawSprite(asset_getPlayerSpriteSheet(), asset_getPlayerLivesSprite(i), WHITE);
+    }
   }
 
   if (swordTimer > 0.0f) {

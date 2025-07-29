@@ -51,7 +51,7 @@ static const char* DIFFICULTY_STRINGS[DIFFICULTY_COUNT] = { "Easy", "Normal", "A
 
 log_Log* game_log;
 double   g_accumulator;
-Game     g_game = { .state = GAME_BOOT, .fpsIndex = COUNT(FPS) - 1 };
+Game g_game = { .state = GAME_BOOT, .fpsIndex = COUNT(FPS) - 1, .startDifficulty = DIFFICULTY_EASY, .startLevel = 0 };
 
 // --- Helper functions ---
 
@@ -146,7 +146,13 @@ static void updateGame(double frameTime) {
   maze_update(frameTime);
 }
 
-static void gameWon(void) { g_game.state = GAME_WON; }
+static void gameWon(void) {
+  if (g_game.startLevel == 0) {
+    g_game.state = GAME_WON;
+  } else {
+    menu_open(MENU_CONTEXT_TITLE);
+  }
+}
 
 // --- Game functions ---
 
@@ -179,7 +185,7 @@ bool game_load(void) {
 }
 
 void game_start(void) {
-  if (g_game.startLevel > player_getContinue(g_game.startDifficulty)) return;
+  if (g_game.startLevel > player_getProgress(g_game.startDifficulty)) return;
 
   LOG_INFO(game_log, "Starting new game, difficulty: %s", DIFFICULTY_STRINGS[g_game.startDifficulty]);
   g_game.difficulty = g_game.startDifficulty;

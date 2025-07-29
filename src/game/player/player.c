@@ -30,6 +30,7 @@ typedef struct Player {
   game_PlayerState state;
   int              lives;
   int              previousLives;
+  float            newLifeTimer;
   int              score;
   int              previousScore;
   double           time;
@@ -55,6 +56,7 @@ static const KeyboardKey PLAYER_KEYS[]                       = { KEY_UP, KEY_RIG
 static const int         SCORE_COIN                          = 10;
 static const int         SCORE_SWORD                         = 50;
 static const float       PLAYER_DEAD_TIMER                   = 2.0f;
+static const float       NEW_LIFE_TIMER                      = 3.0f;
 static const int         creature_BASE_SCORE                 = 200;
 static const float       COIN_SLOW_TIMER                     = 0.2f;
 static const float       SWORD_SLOW_TIMER                    = 0.2f;
@@ -145,6 +147,13 @@ static void swordSlowUpdate(double frameTime) {
     actor_setSpeed(g_player.actor, PLAYER_MAX_SPEED[game_getDifficulty()]);
 }
 
+static void newLifeUpdate(double frameTime) {
+  assert(frameTime >= 0.0f);
+
+  if (g_player.newLifeTimer == 0.0f) return;
+  g_player.newLifeTimer = fmaxf(g_player.newLifeTimer -= frameTime, 0.0f);
+}
+
 static void swordUpdate(double frameTime) {
   assert(frameTime >= 0.0f);
 
@@ -168,16 +177,16 @@ static void updateProgress(game_Difficulty difficulty, int levelCompleted) {
     case DIFFICULTY_ARCADE: target = &g_player.progress.arcade; break;
     default: assert(false);
   }
-  if (target != nullptr && levelCompleted > *target) *target = levelCompleted;
+  if (target != nullptr && levelCompleted + 1 > *target) *target = levelCompleted + 1;
 }
 
 static void saveProgress(void) {
   FILE* file = fopen("progress.txt", "w");
   if (!file) return;
 
-  fprintf(file, "easy=%d\n", g_player.progress.easy + 1);
-  fprintf(file, "normal=%d\n", g_player.progress.normal + 1);
-  fprintf(file, "arcade=%d\n", g_player.progress.arcade + 1);
+  fprintf(file, "easy=%d\n", g_player.progress.easy);
+  fprintf(file, "normal=%d\n", g_player.progress.normal);
+  fprintf(file, "arcade=%d\n", g_player.progress.arcade);
 
   fclose(file);
 }
@@ -194,11 +203,11 @@ bool loadProgress(void) {
     int  level;
     if (sscanf(line, "%15[^=]=%d", mode, &level) == 2) {
       if (strcmp(mode, "easy") == 0)
-        g_player.progress.easy = level - 1;
+        g_player.progress.easy = level;
       else if (strcmp(mode, "normal") == 0)
-        g_player.progress.normal = level - 1;
+        g_player.progress.normal = level;
       else if (strcmp(mode, "arcade") == 0)
-        g_player.progress.arcade = level - 1;
+        g_player.progress.arcade = level;
     }
   }
 
@@ -321,6 +330,7 @@ static void checkScore() {
       g_player.lives += 1;
       LOG_INFO(game_log, "Player gained bonus life at score: %d", g_player.score);
       audio_playLife(asset_getPlayerLivesSpritePos(g_player.lives - 1));
+      g_player.newLifeTimer = NEW_LIFE_TIMER;
     }
   }
 }
@@ -386,6 +396,7 @@ void player_update(double frameTime, float slop) {
   coinSlowUpdate(frameTime);
   swordUpdate(frameTime);
   swordSlowUpdate(frameTime);
+  newLifeUpdate(frameTime);
 
   game_Dir dir = DIR_NONE;
   for (int i = 0; i < DIR_COUNT; i++) {
@@ -524,7 +535,7 @@ int player_getNextExtraLifeScore(void) {
   return (g_player.score / SCORE_EXTRA_LIFE[difficulty] + 1) * SCORE_EXTRA_LIFE[difficulty];
 }
 
-int player_getContinue(game_Difficulty difficulty) {
+int player_getProgress(game_Difficulty difficulty) {
   switch (difficulty) {
     case DIFFICULTY_EASY: return g_player.progress.easy; break;
     case DIFFICULTY_NORMAL: return g_player.progress.normal; break;
@@ -532,8 +543,11 @@ int player_getContinue(game_Difficulty difficulty) {
     default: assert(false);
   }
 }
+
+float player_getNewLifeTimer(void) { return g_player.newLifeTimer; }
+
 void player_drawContinue(void) {
-  int progressLevel = player_getContinue(game_getStartDifficulty());
+  int progressLevel = player_getProgress(game_getStartDifficulty());
   if (progressLevel < game_getStartLevel()) {
     draw_shadowText(LOCKED_TEXT);
   }
