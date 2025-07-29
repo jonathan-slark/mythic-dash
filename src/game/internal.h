@@ -59,6 +59,7 @@ typedef struct {
   game_GameState  state;
   game_GameState  lastState;
   int             level;
+  int             startLevel;
   game_Difficulty difficulty;
   game_Difficulty startDifficulty;
   int             musicTrack;
@@ -122,14 +123,21 @@ static inline game_Dir game_getOppositeDir(game_Dir dir) { return (dir + 2) % DI
 
 // --- Internal game functions (game.c) ---
 
-void game_setEasy(void);
-void game_setNormal(void);
-void game_setArcade(void);
-void game_new(void);
-void game_continue(void);
-void game_over(void);
-int  game_getLevel(void);
-int  game_getStartDifficulty(void);
-void game_levelClear(void);
-void game_nextLevel(void);
-void game_playerDead(void);
+void            game_setEasy(void);
+void            game_setNormal(void);
+void            game_setArcade(void);
+void            game_setLevel1(void);
+void            game_setLevel2(void);
+void            game_setLevel3(void);
+void            game_setLevel4(void);
+void            game_setLevel5(void);
+void            game_setLevel6(void);
+void            game_setLevel7(void);
+void            game_start(void);
+void            game_over(void);
+int             game_getLevel(void);
+game_Difficulty game_getStartDifficulty(void);
+int             game_getStartLevel(void);
+void            game_levelClear(void);
+void            game_nextLevel(void);
+void            game_playerDead(void);

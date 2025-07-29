@@ -62,7 +62,7 @@ static void returnToTitle(void);
 
 // --- Constants ---
 
-static const Rectangle BG_MAIN             = { 189, 60, 102, 100 };
+static const Rectangle BG_MAIN             = { 165, 60, 150, 100 };
 static const Rectangle BG_HISCORES         = { 132, 60, 216, 150 };
 static const Color     BG_COLOUR           = { 64, 64, 64, 200 };
 static const Color     BG_DROP_DOWN_COLOUR = { 40, 40, 40, 200 };
@@ -77,23 +77,23 @@ static const int  TEXT_WIDTH       = 6;
 
 // clang-format off
 static menu_Button MAIN_BUTTONS[] = {
-  {  { 195, 70, 60, 10 },      "Start Game",     MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  {  { 195, 80, 66, 10 },     "High Scores", MENU_HISCORES,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  {  { 195, 90, 42, 10 },         "Options",  MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  { { 195, 100, 42, 10 },         "Credits",  MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  { { 195, 140, 54, 10 },       "Quit Game",     MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE, false, nullptr, 0, 0 },
-  { { 195, 120, 66, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME, false, nullptr, 0, 0 },
-  { { 195, 130, 90, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME, false, nullptr, 0, 0 },
-  { { 195, 140, 90, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME, false, nullptr, 0, 0 }
+  {  { 171, 70, 60, 10 },      "Start Game",     MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  {  { 171, 80, 66, 10 },     "High Scores", MENU_HISCORES,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  {  { 171, 90, 42, 10 },         "Options",  MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 171, 100, 42, 10 },         "Credits",  MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 171, 140, 54, 10 },       "Quit Game",     MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE, false, nullptr, 0, 0 },
+  { { 171, 120, 66, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME, false, nullptr, 0, 0 },
+  { { 171, 130, 90, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME, false, nullptr, 0, 0 },
+  { { 171, 140, 90, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME, false, nullptr, 0, 0 }
 };
 
 static menu_Button SCORES_MODE[] = {
-  { { 138, 70, 24, 10 },   "Easy", MENU_NONE, scores_setEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Easy  ", MENU_NONE, scores_setEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
   { { 138, 70, 24, 10 }, "Normal", MENU_NONE, scores_setNormal, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
   { { 138, 70, 24, 10 }, "Arcade", MENU_NONE, scores_setArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
 };
 static menu_Button SCORES_SORT[] = {
-  { { 234, 70, 24, 10 },   "Time", MENU_NONE, scores_setTime, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 234, 70, 24, 10 },  "Time ", MENU_NONE, scores_setTime, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
   { { 234, 70, 24, 10 },  "Score", MENU_NONE, scores_setScore, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
 };
 static menu_Button SCORES_BUTTONS[] = {
@@ -102,32 +102,39 @@ static menu_Button SCORES_BUTTONS[] = {
   { { 138, 190,  24, 10 },    "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false,    nullptr,                  0, 0 }
 };
 
-static menu_Button RESUME_BUTTONS[] = {
-  {  { 195,  70, 108, 10 }, "Start new game", MENU_NONE,      game_new, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  {  { 195,  80, 144, 10 },  "Continue game", MENU_NONE, game_continue, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  {  { 195, 140, 24, 10 },            "Back", MENU_GAME,       nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
+static menu_Button GAME_DIFFICULTY[] = {
+  { { 171, 70, 24, 10 }, "Easy   ", MENU_NONE,   game_setEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 171, 70, 24, 10 }, "Normal ", MENU_NONE, game_setNormal, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 171, 70, 24, 10 }, "Arcade ", MENU_NONE, game_setArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
 };
-
+static menu_Button GAME_LEVEL[] = {
+  { { 171, 70, 24, 10 },   "Level 1", MENU_NONE, game_setLevel1, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 171, 70, 24, 10 },   "Level 2", MENU_NONE, game_setLevel2, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 171, 70, 24, 10 },   "Level 3", MENU_NONE, game_setLevel3, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 171, 70, 24, 10 },   "Level 4", MENU_NONE, game_setLevel4, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 171, 70, 24, 10 },   "Level 5", MENU_NONE, game_setLevel5, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 171, 70, 24, 10 },   "Level 6", MENU_NONE, game_setLevel6, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 171, 70, 24, 10 },   "Level 7", MENU_NONE, game_setLevel7, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+};
 static menu_Button GAME_BUTTONS[] = {
-  {  { 195, 70, 24, 10 },        "Easy", MENU_RESUME,   game_setEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  {  { 195, 80, 36, 10 },      "Normal", MENU_RESUME, game_setNormal, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  {  { 195, 90, 66, 10 }, "Arcade Mode", MENU_RESUME, game_setArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  { { 195, 140, 24, 10 },        "Back", MENU_MAIN,          nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
+  {  { 171,  70,  60, 10 }, "Start Game", MENU_NONE, game_start, MENU_CONTEXT_BOTH, false,         nullptr,                      0, 0 },
+  {  { 171,  90, 138, 10 }, "Difficulty", MENU_NONE,    nullptr, MENU_CONTEXT_BOTH,  true, GAME_DIFFICULTY, COUNT(GAME_DIFFICULTY), 0 },
+  {  { 171, 100, 138, 10 }, "Level     ", MENU_NONE,    nullptr, MENU_CONTEXT_BOTH,  true,      GAME_LEVEL,      COUNT(GAME_LEVEL), 0 },
+  {  { 171, 140,  24, 10 },       "Back", MENU_MAIN,    nullptr, MENU_CONTEXT_BOTH, false,         nullptr,                      0, 0 }
 };
 
 static menu_Button OPTIONS_BUTTONS[] = {
-  { { 195, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
+  { { 171, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
 };
 
 static menu_Button CREDITS_BUTTONS[] = {
-  { { 195, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
+  { { 171, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
 };
 
 static menu_Screen SCREENS[] = {
   [MENU_MAIN]     = {    MAIN_BUTTONS,    COUNT(MAIN_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr },
   [MENU_HISCORES] = {  SCORES_BUTTONS,  COUNT(SCORES_BUTTONS), BG_HISCORES, BG_COLOUR, BG_BORDER,     scores_drawMenu },
-  [MENU_GAME]     = {    GAME_BUTTONS,    COUNT(GAME_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr },
-  [MENU_RESUME]   = {  RESUME_BUTTONS,  COUNT(RESUME_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER, player_drawContinue },
+  [MENU_GAME]     = {    GAME_BUTTONS,    COUNT(GAME_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER, player_drawContinue },
   [MENU_OPTIONS]  = { OPTIONS_BUTTONS, COUNT(OPTIONS_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr },
   [MENU_CREDITS]  = { CREDITS_BUTTONS, COUNT(CREDITS_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr }
 };

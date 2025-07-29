@@ -148,20 +148,6 @@ static void updateGame(double frameTime) {
 
 static void gameWon(void) { g_game.state = GAME_WON; }
 
-static void startGame(int level) {
-  LOG_INFO(game_log, "Starting new game, difficulty: %s", DIFFICULTY_STRINGS[g_game.startDifficulty]);
-  g_game.difficulty = g_game.startDifficulty;
-  g_game.level      = level;
-  g_game.state      = GAME_START;
-  g_game.musicTrack = 0;
-  player_totalReset();
-  creature_reset();
-  maze_reset(g_game.level);
-  draw_resetCreatures();
-  draw_resetPlayer();
-  debug_reset();
-}
-
 // --- Game functions ---
 
 bool game_load(void) {
@@ -192,11 +178,20 @@ bool game_load(void) {
   return true;
 }
 
-void game_new(void) { startGame(0); }
+void game_start(void) {
+  if (g_game.startLevel > player_getContinue(g_game.startDifficulty)) return;
 
-void game_continue(void) {
-  int level = player_getContinue(g_game.startDifficulty);
-  if (level > 0) startGame(level);
+  LOG_INFO(game_log, "Starting new game, difficulty: %s", DIFFICULTY_STRINGS[g_game.startDifficulty]);
+  g_game.difficulty = g_game.startDifficulty;
+  g_game.level      = g_game.startLevel;
+  g_game.state      = GAME_START;
+  g_game.musicTrack = 0;
+  player_totalReset();
+  creature_reset();
+  maze_reset(g_game.level);
+  draw_resetCreatures();
+  draw_resetPlayer();
+  debug_reset();
 }
 
 void game_input(void) { input_update(); }
@@ -281,6 +276,20 @@ void game_setNormal(void) { g_game.startDifficulty = DIFFICULTY_NORMAL; }
 
 void game_setArcade(void) { g_game.startDifficulty = DIFFICULTY_ARCADE; }
 
+void game_setLevel1(void) { g_game.startLevel = 0; }
+
+void game_setLevel2(void) { g_game.startLevel = 1; }
+
+void game_setLevel3(void) { g_game.startLevel = 2; }
+
+void game_setLevel4(void) { g_game.startLevel = 3; }
+
+void game_setLevel5(void) { g_game.startLevel = 4; }
+
+void game_setLevel6(void) { g_game.startLevel = 5; }
+
+void game_setLevel7(void) { g_game.startLevel = 6; }
+
 game_Difficulty game_getDifficulty(void) { return g_game.difficulty; }
 
 void game_over(void) {
@@ -290,7 +299,9 @@ void game_over(void) {
 
 int game_getLevel(void) { return g_game.level; }
 
-int game_getStartDifficulty(void) { return g_game.startDifficulty; }
+game_Difficulty game_getStartDifficulty(void) { return g_game.startDifficulty; }
+
+int game_getStartLevel(void) { return g_game.startLevel; }
 
 void game_levelClear(void) {
   scores_save();

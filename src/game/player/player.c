@@ -63,8 +63,7 @@ static const float       SWORD_MAX_TIMER[DIFFICULTY_COUNT]   = { 14.0f, 10.0f, 6
 static const float       SWORD_MIN_TIMER[DIFFICULTY_COUNT]   = { 8.4f, 6.0f, 3.6f };     // 60%
 static const int         SCORE_EXTRA_LIFE[DIFFICULTY_COUNT]  = { 3000, 5000, 10000 };
 static const int         SCORE_CHEST                         = 100;
-static const draw_Text   CONTIUNUE_TEXT = { " - from level %d", 195, 90, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text   LOCKED_TEXT    = { " - (locked)", 195, 90, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text   LOCKED_TEXT = { "             (locked)", 168, 110, TEXT_RED, FONT_NORMAL };
 
 // --- Global state ---
 
@@ -532,11 +531,8 @@ int player_getContinue(game_Difficulty difficulty) {
   }
 }
 void player_drawContinue(void) {
-  game_Difficulty difficulty = game_getStartDifficulty();
-  int             level      = player_getContinue(difficulty);
-  if (level > 0) {
-    draw_shadowText(CONTIUNUE_TEXT, level + 1);
-  } else {
+  int progressLevel = player_getContinue(game_getStartDifficulty());
+  if (progressLevel < game_getStartLevel()) {
     draw_shadowText(LOCKED_TEXT);
   }
 }

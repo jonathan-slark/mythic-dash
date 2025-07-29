@@ -17,7 +17,8 @@ typedef struct draw_Text {
 
 // --- Constants ---
 
-constexpr Color TEXT_COLOUR = { 255, 255, 255, 255 };
+constexpr Color TEXT_COLOUR = { 245, 245, 245, 255 };
+constexpr Color TEXT_RED    = { 230, 41, 55, 255 };
 
 // --- Draw functions ---
 
