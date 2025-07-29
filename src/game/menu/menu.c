@@ -15,6 +15,7 @@
 typedef enum {
   MENU_MAIN,
   MENU_GAME,
+  MENU_RESUME,
   MENU_HISCORES,
   MENU_OPTIONS,
   MENU_CREDITS,
@@ -101,11 +102,17 @@ static menu_Button SCORES_BUTTONS[] = {
   { { 138, 190,  24, 10 },    "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, false,    nullptr,                  0, 0 }
 };
 
+static menu_Button RESUME_BUTTONS[] = {
+  {  { 195,  70, 108, 10 }, "Start new game", MENU_NONE,      game_new, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  {  { 195,  80, 144, 10 },  "Continue game", MENU_NONE, game_continue, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  {  { 195, 140, 24, 10 },            "Back", MENU_GAME,       nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
+};
+
 static menu_Button GAME_BUTTONS[] = {
-  {  { 195, 70, 24, 10 },        "Easy", MENU_NONE,   game_newEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  {  { 195, 80, 36, 10 },      "Normal", MENU_NONE, game_newNormal, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  {  { 195, 90, 66, 10 }, "Arcade Mode", MENU_NONE, game_newArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
-  { { 195, 140, 24, 10 },        "Back", MENU_MAIN,        nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
+  {  { 195, 70, 24, 10 },        "Easy", MENU_RESUME,   game_setEasy, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  {  { 195, 80, 36, 10 },      "Normal", MENU_RESUME, game_setNormal, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  {  { 195, 90, 66, 10 }, "Arcade Mode", MENU_RESUME, game_setArcade, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 },
+  { { 195, 140, 24, 10 },        "Back", MENU_MAIN,          nullptr, MENU_CONTEXT_BOTH, false, nullptr, 0, 0 }
 };
 
 static menu_Button OPTIONS_BUTTONS[] = {
@@ -117,11 +124,12 @@ static menu_Button CREDITS_BUTTONS[] = {
 };
 
 static menu_Screen SCREENS[] = {
-  [MENU_MAIN]     = {    MAIN_BUTTONS,    COUNT(MAIN_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,         nullptr },
-  [MENU_HISCORES] = {  SCORES_BUTTONS,  COUNT(SCORES_BUTTONS), BG_HISCORES, BG_COLOUR, BG_BORDER, scores_drawMenu },
-  [MENU_GAME]     = {    GAME_BUTTONS,    COUNT(GAME_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,         nullptr },
-  [MENU_OPTIONS]  = { OPTIONS_BUTTONS, COUNT(OPTIONS_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,         nullptr },
-  [MENU_CREDITS]  = { CREDITS_BUTTONS, COUNT(CREDITS_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,         nullptr },
+  [MENU_MAIN]     = {    MAIN_BUTTONS,    COUNT(MAIN_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr },
+  [MENU_HISCORES] = {  SCORES_BUTTONS,  COUNT(SCORES_BUTTONS), BG_HISCORES, BG_COLOUR, BG_BORDER,     scores_drawMenu },
+  [MENU_GAME]     = {    GAME_BUTTONS,    COUNT(GAME_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr },
+  [MENU_RESUME]   = {  RESUME_BUTTONS,  COUNT(RESUME_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER, player_drawContinue },
+  [MENU_OPTIONS]  = { OPTIONS_BUTTONS, COUNT(OPTIONS_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr },
+  [MENU_CREDITS]  = { CREDITS_BUTTONS, COUNT(CREDITS_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr }
 };
 // clang-format on
 
@@ -259,7 +267,8 @@ static void updateMenuScreen(const menu_Screen* screen) {
         } else {
           if (button->action != nullptr) {
             button->action();
-          } else if (button->targetScreen != MENU_NONE) {
+          }
+          if (button->targetScreen != MENU_NONE) {
             g_state.currentScreen = button->targetScreen;
             screen                = &SCREENS[g_state.currentScreen];
             resetButtonState(screen);
@@ -431,6 +440,14 @@ void menu_back(void) {
         engine_requestClose();
       } else {
         menu_close();
+      }
+      break;
+
+    case MENU_RESUME:
+      if (g_state.activeDropdown != -1) {
+        g_state.activeDropdown = -1;
+      } else {
+        g_state.currentScreen = MENU_GAME;
       }
       break;
 

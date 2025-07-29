@@ -60,6 +60,7 @@ typedef struct {
   game_GameState  lastState;
   int             level;
   game_Difficulty difficulty;
+  game_Difficulty startDifficulty;
   int             musicTrack;
   bool            isMusicPaused;
 #ifndef NDEBUG
@@ -121,11 +122,14 @@ static inline game_Dir game_getOppositeDir(game_Dir dir) { return (dir + 2) % DI
 
 // --- Internal game functions (game.c) ---
 
-void game_newEasy(void);
-void game_newNormal(void);
-void game_newArcade(void);
+void game_setEasy(void);
+void game_setNormal(void);
+void game_setArcade(void);
+void game_new(void);
+void game_continue(void);
 void game_over(void);
 int  game_getLevel(void);
+int  game_getStartDifficulty(void);
 void game_levelClear(void);
 void game_nextLevel(void);
 void game_playerDead(void);

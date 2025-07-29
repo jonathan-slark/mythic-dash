@@ -4,6 +4,7 @@
 #include <raylib.h>
 #include "../internal.h"
 #include "../scores/scores.h"
+#include "game/game.h"
 
 typedef struct player_levelData {
   double        time;
@@ -37,6 +38,8 @@ game_PlayerState player_getState(void);
 float            player_getSwordTimer(void);
 int              player_getCoinsCollected(void);
 int              player_getNextExtraLifeScore(void);
+int              player_getContinue(game_Difficulty difficulty);
+void             player_drawContinue(void);
 bool             player_isMoving(void);
 bool             player_hasSword(void);
 void             player_dead(void);

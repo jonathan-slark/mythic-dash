@@ -3,10 +3,13 @@
 #include <engine/engine.h>
 #include <raylib.h>
 #include <raymath.h>
+#include <stdio.h>
+#include <string.h>
 #include "../actor/actor.h"
 #include "../audio/audio.h"
 #include "../creature/creature.h"
 #include "../debug/debug.h"
+#include "../draw/draw.h"
 #include "../input/input.h"
 #include "../maze/maze.h"
 #include "../scores/scores.h"
@@ -14,6 +17,12 @@
 #include "log/log.h"
 
 // --- Types ---
+
+typedef struct Progress {
+  int easy;
+  int normal;
+  int arcade;
+} Progress;
 
 typedef struct Player {
   game_Actor*      actor;
@@ -31,6 +40,7 @@ typedef struct Player {
   float            coinSlowTimer;
   float            swordSlowTimer;
   int              lastScoreBonusLife;
+  Progress         progress;
   player_levelData levelData[LEVEL_COUNT];
   player_levelData fullRun;
 } Player;
@@ -53,6 +63,8 @@ static const float       SWORD_MAX_TIMER[DIFFICULTY_COUNT]   = { 14.0f, 10.0f, 6
 static const float       SWORD_MIN_TIMER[DIFFICULTY_COUNT]   = { 8.4f, 6.0f, 3.6f };     // 60%
 static const int         SCORE_EXTRA_LIFE[DIFFICULTY_COUNT]  = { 3000, 5000, 10000 };
 static const int         SCORE_CHEST                         = 100;
+static const draw_Text   CONTIUNUE_TEXT = { " - from level %d", 195, 90, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text   LOCKED_TEXT    = { " - (locked)", 195, 90, TEXT_COLOUR, FONT_NORMAL };
 
 // --- Global state ---
 
@@ -145,12 +157,62 @@ static void swordUpdate(double frameTime) {
   }
 }
 
+static void updateProgress(game_Difficulty difficulty, int levelCompleted) {
+  assert(difficulty >= 0 && difficulty < DIFFICULTY_COUNT);
+  assert(levelCompleted >= 0 && levelCompleted < LEVEL_COUNT);
+
+  int* target = nullptr;
+  switch (difficulty) {
+    case DIFFICULTY_EASY: target = &g_player.progress.easy; break;
+    case DIFFICULTY_NORMAL: target = &g_player.progress.normal; break;
+    case DIFFICULTY_ARCADE: target = &g_player.progress.arcade; break;
+    default: assert(false);
+  }
+  if (target != nullptr && levelCompleted > *target) *target = levelCompleted;
+}
+
+static void saveProgress(void) {
+  FILE* file = fopen("progress.txt", "w");
+  if (!file) return;
+
+  fprintf(file, "easy=%d\n", g_player.progress.easy + 1);
+  fprintf(file, "normal=%d\n", g_player.progress.normal + 1);
+  fprintf(file, "arcade=%d\n", g_player.progress.arcade + 1);
+
+  fclose(file);
+}
+
+bool loadProgress(void) {
+  g_player.progress = (Progress) {};
+
+  FILE* file = fopen("progress.txt", "r");
+  if (!file) return true;
+
+  char line[64];
+  while (fgets(line, sizeof(line), file)) {
+    char mode[16];
+    int  level;
+    if (sscanf(line, "%15[^=]=%d", mode, &level) == 2) {
+      if (strcmp(mode, "easy") == 0)
+        g_player.progress.easy = level - 1;
+      else if (strcmp(mode, "normal") == 0)
+        g_player.progress.normal = level - 1;
+      else if (strcmp(mode, "arcade") == 0)
+        g_player.progress.arcade = level - 1;
+    }
+  }
+
+  fclose(file);
+  return true;
+}
+
 static void levelClear(void) {
   g_player.time += engine_getTime() - g_player.previousTime;
 
-  int level = game_getLevel();
+  int level      = game_getLevel();
+  int difficulty = game_getDifficulty();
 
-  if (game_getDifficulty() == DIFFICULTY_ARCADE) {
+  if (difficulty == DIFFICULTY_ARCADE) {
     // Araced Mode is 100% deterministic, game updates using fixed timestep
     g_player.levelData[level].time = g_player.levelData[level].frameCount * FRAME_TIME;
   } else {
@@ -170,6 +232,7 @@ static void levelClear(void) {
   if (level == LEVEL_COUNT - 1) {
     g_player.fullRun.time  = 0.0;
     g_player.fullRun.score = 0;
+    g_player.fullRun.lives = 0;
     for (int i = 0; i < LEVEL_COUNT; i++) {
       if (game_getDifficulty() == DIFFICULTY_ARCADE) {
         g_player.fullRun.time += g_player.levelData[level].frameCount * FRAME_TIME;
@@ -185,6 +248,8 @@ static void levelClear(void) {
   }
 
   audio_playWin(player_getPos());
+  updateProgress(difficulty, level);
+  saveProgress();
 }
 
 static void checkPickups(void) {
@@ -270,6 +335,7 @@ bool player_init(void) {
       PLAYER_MAX_SPEED[game_getDifficulty()],
       true
   );
+  GAME_TRY(loadProgress());
   return g_player.actor != nullptr;
 }
 
@@ -455,6 +521,24 @@ int player_getCoinsCollected(void) {
 int player_getNextExtraLifeScore(void) {
   game_Difficulty difficulty = game_getDifficulty();
   return (g_player.score / SCORE_EXTRA_LIFE[difficulty] + 1) * SCORE_EXTRA_LIFE[difficulty];
+}
+
+int player_getContinue(game_Difficulty difficulty) {
+  switch (difficulty) {
+    case DIFFICULTY_EASY: return g_player.progress.easy; break;
+    case DIFFICULTY_NORMAL: return g_player.progress.normal; break;
+    case DIFFICULTY_ARCADE: return g_player.progress.arcade; break;
+    default: assert(false);
+  }
+}
+void player_drawContinue(void) {
+  game_Difficulty difficulty = game_getStartDifficulty();
+  int             level      = player_getContinue(difficulty);
+  if (level > 0) {
+    draw_shadowText(CONTIUNUE_TEXT, level + 1);
+  } else {
+    draw_shadowText(LOCKED_TEXT);
+  }
 }
 
 bool player_isMoving(void) {

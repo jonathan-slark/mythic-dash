@@ -146,11 +146,13 @@ static void updateGame(double frameTime) {
   maze_update(frameTime);
 }
 
-static void newGame(game_Difficulty difficulty) {
-  LOG_INFO(game_log, "Starting new game, difficulty: %s", DIFFICULTY_STRINGS[difficulty]);
-  g_game.level      = 0;
+static void gameWon(void) { g_game.state = GAME_WON; }
+
+static void startGame(int level) {
+  LOG_INFO(game_log, "Starting new game, difficulty: %s", DIFFICULTY_STRINGS[g_game.startDifficulty]);
+  g_game.difficulty = g_game.startDifficulty;
+  g_game.level      = level;
   g_game.state      = GAME_START;
-  g_game.difficulty = difficulty;
   g_game.musicTrack = 0;
   player_totalReset();
   creature_reset();
@@ -159,8 +161,6 @@ static void newGame(game_Difficulty difficulty) {
   draw_resetPlayer();
   debug_reset();
 }
-
-static void gameWon(void) { g_game.state = GAME_WON; }
 
 // --- Game functions ---
 
@@ -190,6 +190,13 @@ bool game_load(void) {
 
   menu_open(MENU_CONTEXT_TITLE);
   return true;
+}
+
+void game_new(void) { startGame(0); }
+
+void game_continue(void) {
+  int level = player_getContinue(g_game.startDifficulty);
+  if (level > 0) startGame(level);
 }
 
 void game_input(void) { input_update(); }
@@ -268,11 +275,11 @@ void game_unload(void) {
   log_destroy(&game_log);
 }
 
-void game_newEasy(void) { newGame(DIFFICULTY_EASY); }
+void game_setEasy(void) { g_game.startDifficulty = DIFFICULTY_EASY; }
 
-void game_newNormal(void) { newGame(DIFFICULTY_NORMAL); }
+void game_setNormal(void) { g_game.startDifficulty = DIFFICULTY_NORMAL; }
 
-void game_newArcade(void) { newGame(DIFFICULTY_ARCADE); }
+void game_setArcade(void) { g_game.startDifficulty = DIFFICULTY_ARCADE; }
 
 game_Difficulty game_getDifficulty(void) { return g_game.difficulty; }
 
@@ -282,6 +289,8 @@ void game_over(void) {
 }
 
 int game_getLevel(void) { return g_game.level; }
+
+int game_getStartDifficulty(void) { return g_game.startDifficulty; }
 
 void game_levelClear(void) {
   scores_save();
