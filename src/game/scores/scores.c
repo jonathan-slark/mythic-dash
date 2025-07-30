@@ -202,7 +202,7 @@ scores_Result scores_fullRun(double time, int score, int lives) {
   if (time < g_saves.fullRunsBestTimes[difficulty].time || g_saves.fullRunsBestTimes[difficulty].time == 0.0f) {
     g_saves.fullRunsBestTimes[difficulty].time  = time;
     g_saves.fullRunsBestTimes[difficulty].score = score;
-    g_saves.fullRunsBestTimes[difficulty].lives = LINE_HEIGHT;
+    g_saves.fullRunsBestTimes[difficulty].lives = lives;
     result.isTimeRecord                         = true;
   }
 
