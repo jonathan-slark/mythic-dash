@@ -212,12 +212,12 @@ engine_Sprite* asset_getPlayerSprite(game_PlayerState state) {
 }
 
 engine_Sprite* asset_getPlayerLivesSprite(int life) {
-  assert(life >= 0 && life < PLAYER_MAX_LIVES - 1);
+  assert(life >= 0 && life < PLAYER_MAX_LIVES);
   return g_assets.playerLivesSprites[life];
 }
 
 Vector2 asset_getPlayerLivesSpritePos(int life) {
-  assert(life >= 0 && life < PLAYER_MAX_LIVES - 1);
+  assert(life >= 0 && life < PLAYER_MAX_LIVES);
   Vector2 pos  = PLAYER_LIVES_OFFSET;
   pos.x       += life * ACTOR_SIZE;
   return pos;
