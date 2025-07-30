@@ -74,6 +74,7 @@ static Player g_player = {
   .actor              = nullptr,
   .state              = PLAYER_NORMAL,
   .lives              = PLAYER_LIVES,
+  .previousLives      = 0,
   .score              = 0,
   .previousScore      = 0,
   .coinsCollected     = 0,
