@@ -63,7 +63,7 @@ void audio_resumeMusic(void) {
   g_game.isMusicPaused = true;
 }
 
-void audo_playChime(Vector2 pos) {
+void audio_playChime(Vector2 pos) {
   if (!g_state.audioEnabled) return;
 
   if (++g_state.coinsCollected >= COIN_THRESHOLD) {

@@ -59,7 +59,7 @@ typedef struct asset_Assets {
   engine_Sound*   winSound;
   engine_Sound*   gameOverSound;
   engine_Sound*   lifeSound;
-  Music           music[MUSIC_TRACKS];
+  engine_Music*   music[MUSIC_TRACKS];
 } asset_Assets;
 
 // --- Constants ---
@@ -86,9 +86,16 @@ static const asset_Sound WIN_SOUND       = { .filepath = ASSET_DIR "sfx/win.wav"
 static const asset_Sound GAME_OVER_SOUND = { .filepath = ASSET_DIR "sfx/game-over.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound LIFE_SOUND      = { .filepath = ASSET_DIR "sfx/life.wav", .volume = 1.0f, .pitch = 1.0f };
 
+static const float       FADE_IN_RATE        = 1.0f / 1.0f;
+static const float       FADE_OUT_RATE       = 1.0f / 0.25f;
 static const asset_Music MUSIC[MUSIC_TRACKS] = {
-  { .filepath = ASSET_DIR "music/01.mp3", .volume = 0.5f, .duckedVolume = 0.2f },
-  { .filepath = ASSET_DIR "music/02.mp3", .volume = 0.5f, .duckedVolume = 0.2f }
+  { .filepath = ASSET_DIR "music/01.wav", .volume = 0.4f, .duckedVolume = 0.2f },
+  { .filepath = ASSET_DIR "music/02.wav", .volume = 0.4f, .duckedVolume = 0.2f },
+  { .filepath = ASSET_DIR "music/03.wav", .volume = 0.4f, .duckedVolume = 0.2f },
+  { .filepath = ASSET_DIR "music/04.wav", .volume = 0.4f, .duckedVolume = 0.2f },
+  { .filepath = ASSET_DIR "music/05.wav", .volume = 0.4f, .duckedVolume = 0.2f },
+  { .filepath = ASSET_DIR "music/06.wav", .volume = 0.4f, .duckedVolume = 0.2f },
+  { .filepath = ASSET_DIR "music/07.wav", .volume = 0.4f, .duckedVolume = 0.2f }
 };
 
 static const float ANIM_FRAME_TIME = 0.1f;

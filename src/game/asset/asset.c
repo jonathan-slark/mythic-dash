@@ -21,17 +21,18 @@ static bool loadSound(asset_Sound soundData, engine_Sound** sound) {
   return true;
 }
 
-static bool loadMusic(const asset_Music musicData[], Music music[]) {
+static bool loadMusic(const asset_Music musicData[], engine_Music* music[]) {
   for (int i = 0; i < MUSIC_TRACKS; i++) {
-    GAME_TRY(engine_loadMusic(musicData[i].filepath, &music[i]));
-    engine_setMusicVolume(music[i], musicData[i].volume, musicData[i].duckedVolume);
+    GAME_TRY(music[i] = engine_loadMusic(musicData[i].filepath));
+    engine_setMusicVolume(music[i], musicData[i].volume);
+    engine_setMusicDucking(music[i], musicData[i].volume, musicData[i].duckedVolume, FADE_IN_RATE, FADE_OUT_RATE);
   }
   return true;
 }
 
-static void unloadMusic(Music music[]) {
+static void unloadMusic(engine_Music* music[]) {
   for (int i = 0; i < MUSIC_TRACKS; i++) {
-    engine_unloadMusic(music[i]);
+    engine_unloadMusic(&music[i]);
   }
 }
 
@@ -320,4 +321,5 @@ engine_Sound* asset_getLifeSound(void) {
   assert(g_assets.lifeSound != nullptr);
   return g_assets.lifeSound;
 }
-Music asset_getMusic(int track) { return g_assets.music[track]; }
+
+engine_Music* asset_getMusic(int track) { return g_assets.music[track]; }

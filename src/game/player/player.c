@@ -94,7 +94,7 @@ static void coinPickup(void) {
   g_player.score         += SCORE_COIN;
   g_player.coinsCollected++;
   actor_setSpeed(g_player.actor, PLAYER_SLOW_SPEED[game_getDifficulty()]);
-  audo_playChime(player_getPos());
+  audio_playChime(player_getPos());
 }
 
 static int getChestScoreMultiplier(void) {
