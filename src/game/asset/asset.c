@@ -36,6 +36,14 @@ static void unloadMusic(engine_Music* music[]) {
   }
 }
 
+static bool loadTitleMusic(const asset_Music musicData, engine_Music** music) {
+  GAME_TRY(*music = engine_loadMusic(musicData.filepath));
+  engine_setMusicVolume(*music, musicData.volume);
+  return true;
+}
+
+static void unloadTitleMusic(engine_Music* music) { engine_unloadMusic(&music); }
+
 // --- Asset functions ---
 
 bool asset_load(void) {
@@ -57,12 +65,14 @@ bool asset_load(void) {
   GAME_TRY(loadSound(WIN_SOUND, &g_assets.winSound));
   GAME_TRY(loadSound(GAME_OVER_SOUND, &g_assets.gameOverSound));
   GAME_TRY(loadSound(LIFE_SOUND, &g_assets.lifeSound));
-  GAME_TRY(loadMusic(MUSIC, g_assets.music));
+  GAME_TRY(loadMusic(MUSIC, g_assets.levelMusic));
+  GAME_TRY(loadTitleMusic(TITLE_MUSIC, &g_assets.titleMusic));
   return true;
 }
 
 void asset_unload(void) {
-  unloadMusic(g_assets.music);
+  unloadTitleMusic(g_assets.titleMusic);
+  unloadMusic(g_assets.levelMusic);
   engine_unloadSound(&g_assets.lifeSound);
   engine_unloadSound(&g_assets.gameOverSound);
   engine_unloadSound(&g_assets.winSound);
@@ -322,4 +332,12 @@ engine_Sound* asset_getLifeSound(void) {
   return g_assets.lifeSound;
 }
 
-engine_Music* asset_getMusic(int track) { return g_assets.music[track]; }
+engine_Music* asset_getMusic(int track) {
+  assert(g_assets.levelMusic[track] != nullptr);
+  return g_assets.levelMusic[track];
+}
+
+engine_Music* asset_getTitleMusic(void) {
+  assert(g_assets.titleMusic != nullptr);
+  return g_assets.titleMusic;
+}

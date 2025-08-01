@@ -59,7 +59,8 @@ typedef struct asset_Assets {
   engine_Sound*   winSound;
   engine_Sound*   gameOverSound;
   engine_Sound*   lifeSound;
-  engine_Music*   music[MUSIC_TRACKS];
+  engine_Music*   levelMusic[MUSIC_TRACKS];
+  engine_Music*   titleMusic;
 } asset_Assets;
 
 // --- Constants ---
@@ -96,6 +97,11 @@ static const asset_Music MUSIC[MUSIC_TRACKS] = {
   { .filepath = ASSET_DIR "music/05.wav", .volume = 0.4f, .duckedVolume = 0.2f },
   { .filepath = ASSET_DIR "music/06.wav", .volume = 0.4f, .duckedVolume = 0.2f },
   { .filepath = ASSET_DIR "music/07.wav", .volume = 0.4f, .duckedVolume = 0.2f }
+};
+static const asset_Music TITLE_MUSIC = {
+  .filepath     = ASSET_DIR "music/title.wav",
+  .volume       = 0.4f,
+  .duckedVolume = 0.2f
 };
 
 static const float ANIM_FRAME_TIME = 0.1f;

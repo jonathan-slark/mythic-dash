@@ -55,7 +55,22 @@ Game g_game = { .state = GAME_BOOT, .fpsIndex = COUNT(FPS) - 1, .startDifficulty
 
 // --- Helper functions ---
 
-static void updateMusic(double frameTime) { engine_updateMusic(asset_getMusic(g_game.musicTrack), frameTime); }
+static inline void updateMusic(double frameTime) {
+  switch (g_game.state) {
+    case GAME_BOOT: assert(false); break;
+
+    case GAME_TITLE: engine_updateMusic(asset_getTitleMusic(), frameTime); break;
+
+    case GAME_MENU:
+    case GAME_START:
+    case GAME_DEAD:
+    case GAME_RUN:
+    case GAME_PAUSE:
+    case GAME_OVER:
+    case GAME_LEVELCLEAR:
+    case GAME_WON: engine_updateMusic(asset_getMusic(g_game.musicTrack), frameTime); break;
+  }
+}
 
 static void escapePressed(void) {
   switch (g_game.state) {
@@ -74,15 +89,6 @@ static void escapePressed(void) {
   }
 }
 
-static void readyCommon(void) {
-  g_game.state = GAME_RUN;
-  if (g_game.isMusicPaused) {
-    audio_resumeMusic();
-  } else {
-    audio_startMusic();
-  }
-}
-
 static void spacePressed(void) {
   switch (g_game.state) {
     case GAME_BOOT: assert(false); break;
@@ -98,12 +104,12 @@ static void spacePressed(void) {
       break;
 
     case GAME_START:
-      readyCommon();
+      g_game.state = GAME_RUN;
       player_ready();
       break;
 
     case GAME_DEAD:
-      readyCommon();
+      g_game.state = GAME_RUN;
       player_onResume();
       break;
 
@@ -113,7 +119,11 @@ static void spacePressed(void) {
       break;
 
     case GAME_OVER:
-    case GAME_WON: menu_open(MENU_CONTEXT_TITLE); break;
+    case GAME_WON:
+      audio_stopMusic();
+      audio_startTitleMusic();
+      menu_open(MENU_CONTEXT_TITLE);
+      break;
   }
 }
 
@@ -180,6 +190,7 @@ bool game_load(void) {
   scores_load();
   LOG_INFO(game_log, "Game loading took %f seconds", engine_getTime() - start);
 
+  audio_startTitleMusic();
   menu_open(MENU_CONTEXT_TITLE);
   return true;
 }
@@ -188,6 +199,7 @@ void game_start(void) {
   if (g_game.startLevel > player_getProgress(g_game.startDifficulty)) return;
 
   LOG_INFO(game_log, "Starting new game, difficulty: %s", DIFFICULTY_STRINGS[g_game.startDifficulty]);
+  audio_stopTitleMusic();
   g_game.difficulty = g_game.startDifficulty;
   g_game.level      = g_game.startLevel;
   g_game.state      = GAME_START;
@@ -198,6 +210,7 @@ void game_start(void) {
   draw_resetCreatures();
   draw_resetPlayer();
   debug_reset();
+  audio_startMusic();
 }
 
 void game_input(void) { input_update(); }
@@ -208,14 +221,17 @@ void game_update(double frameTime) {
     case GAME_BOOT: assert(false); break;
 
     case GAME_TITLE:
-    case GAME_MENU: menu_update(); break;
+    case GAME_MENU:
+      updateMusic(frameTime);
+      menu_update();
+      break;
 
     case GAME_START:
     case GAME_DEAD:
     case GAME_PAUSE:
     case GAME_LEVELCLEAR:
     case GAME_OVER:
-    case GAME_WON: break;
+    case GAME_WON: updateMusic(frameTime); break;
 
     case GAME_RUN:
       checkFPSKeys();
@@ -298,10 +314,7 @@ void game_setLevel7(void) { g_game.startLevel = 6; }
 
 game_Difficulty game_getDifficulty(void) { return g_game.difficulty; }
 
-void game_over(void) {
-  audio_stopMusic();
-  g_game.state = GAME_OVER;
-}
+void game_over(void) { g_game.state = GAME_OVER; }
 
 int game_getLevel(void) { return g_game.level; }
 
@@ -318,9 +331,10 @@ void game_nextLevel(void) {
   if (g_game.level == LEVEL_COUNT - 1) {
     gameWon();
   } else {
+    audio_stopMusic();
     g_game.level += 1;
     g_game.state  = GAME_START;
-    audio_stopMusic();
+    audio_startMusic();
     player_reset();
     creature_reset();
     maze_reset(g_game.level);
@@ -331,7 +345,6 @@ void game_nextLevel(void) {
 
 void game_playerDead(void) {
   g_game.state = GAME_DEAD;
-  audio_pauseMusic();
   player_restart();
   creature_reset();
 }

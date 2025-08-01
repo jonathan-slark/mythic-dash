@@ -63,7 +63,6 @@ typedef struct {
   game_Difficulty difficulty;
   game_Difficulty startDifficulty;
   int             musicTrack;
-  bool            isMusicPaused;
 #ifndef NDEBUG
   size_t fpsIndex;
 #endif

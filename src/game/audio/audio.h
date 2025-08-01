@@ -7,6 +7,8 @@ void audio_startMusic(void);
 void audio_stopMusic(void);
 void audio_pauseMusic(void);
 void audio_resumeMusic(void);
+void audio_startTitleMusic(void);
+void audio_stopTitleMusic(void);
 void audio_playChime(Vector2 pos);
 void audio_resetChimePitch(void);
 void audio_playDeath(Vector2 pos);
