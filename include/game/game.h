@@ -7,7 +7,8 @@ typedef enum game_Difficulty {
   DIFFICULTY_EASY,
   DIFFICULTY_NORMAL,
   DIFFICULTY_ARCADE,
-  DIFFICULTY_COUNT
+  DIFFICULTY_COUNT,
+  DIFFICULTY_NONE
 } game_Difficulty;
 
 // --- Constants ---

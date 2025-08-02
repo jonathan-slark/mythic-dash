@@ -66,6 +66,7 @@ static game_Difficulty getDifficulty(const char difficulty[]) {
   }
 
   assert(false);
+  return DIFFICULTY_NONE;
 }
 
 static void setDifficulty(game_Difficulty difficulty) { g_state.difficulty = difficulty; }

@@ -168,8 +168,11 @@ static bool createMaze(cute_tiled_map_t* map, MapTile tileData[], int level) {
 
   for (int i = 0; i < TELEPORT_TYPES; i++) {
     teleportCount[i] = 0;
-    keyCount[i]      = 0;
-    doorCount[i]     = 0;
+  }
+
+  for (int i = 0; i < MAX_KEY_TYPES; i++) {
+    keyCount[i]  = 0;
+    doorCount[i] = 0;
   }
 
   layer        = map->layers;

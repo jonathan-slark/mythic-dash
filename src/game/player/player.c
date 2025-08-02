@@ -543,6 +543,7 @@ int player_getProgress(game_Difficulty difficulty) {
     case DIFFICULTY_ARCADE: return g_player.progress.arcade; break;
     default: assert(false);
   }
+  return -1;
 }
 
 float player_getNewLifeTimer(void) { return g_player.newLifeTimer; }

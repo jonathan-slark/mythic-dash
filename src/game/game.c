@@ -51,7 +51,14 @@ static const char* DIFFICULTY_STRINGS[DIFFICULTY_COUNT] = { "Easy", "Normal", "A
 
 log_Log* game_log;
 double   g_accumulator;
-Game g_game = { .state = GAME_BOOT, .fpsIndex = COUNT(FPS) - 1, .startDifficulty = DIFFICULTY_EASY, .startLevel = 0 };
+Game     g_game = {
+      .state = GAME_BOOT,
+#ifndef NDEBUG
+  .fpsIndex = COUNT(FPS) - 1,
+#endif
+  .startDifficulty = DIFFICULTY_EASY,
+  .startLevel      = 0
+};
 
 // --- Helper functions ---
 
