@@ -21,28 +21,12 @@ static bool loadSound(asset_Sound soundData, engine_Sound** sound) {
   return true;
 }
 
-static bool loadMusic(const asset_Music musicData[], engine_Music* music[]) {
-  for (int i = 0; i < MUSIC_TRACKS; i++) {
-    GAME_TRY(music[i] = engine_loadMusic(musicData[i].filepath));
-    engine_setMusicVolume(music[i], musicData[i].volume);
-    engine_setMusicDucking(music[i], musicData[i].volume, musicData[i].duckedVolume, FADE_IN_RATE, FADE_OUT_RATE);
-  }
-  return true;
-}
-
-static void unloadMusic(engine_Music* music[]) {
-  for (int i = 0; i < MUSIC_TRACKS; i++) {
-    engine_unloadMusic(&music[i]);
-  }
-}
-
-static bool loadTitleMusic(const asset_Music musicData, engine_Music** music) {
+static bool loadMusic(const asset_Music musicData, engine_Music** music) {
   GAME_TRY(*music = engine_loadMusic(musicData.filepath));
   engine_setMusicVolume(*music, musicData.volume);
+  engine_setMusicDucking(*music, musicData.volume, musicData.duckedVolume, FADE_IN_RATE, FADE_OUT_RATE);
   return true;
 }
-
-static void unloadTitleMusic(engine_Music* music) { engine_unloadMusic(&music); }
 
 // --- Asset functions ---
 
@@ -65,14 +49,12 @@ bool asset_load(void) {
   GAME_TRY(loadSound(WIN_SOUND, &g_assets.winSound));
   GAME_TRY(loadSound(GAME_OVER_SOUND, &g_assets.gameOverSound));
   GAME_TRY(loadSound(LIFE_SOUND, &g_assets.lifeSound));
-  GAME_TRY(loadMusic(MUSIC, g_assets.levelMusic));
-  GAME_TRY(loadTitleMusic(TITLE_MUSIC, &g_assets.titleMusic));
+  GAME_TRY(loadMusic(MUSIC, &g_assets.music));
   return true;
 }
 
 void asset_unload(void) {
-  unloadTitleMusic(g_assets.titleMusic);
-  unloadMusic(g_assets.levelMusic);
+  engine_unloadMusic(&g_assets.music);
   engine_unloadSound(&g_assets.lifeSound);
   engine_unloadSound(&g_assets.gameOverSound);
   engine_unloadSound(&g_assets.winSound);
@@ -332,12 +314,7 @@ engine_Sound* asset_getLifeSound(void) {
   return g_assets.lifeSound;
 }
 
-engine_Music* asset_getMusic(int track) {
-  assert(g_assets.levelMusic[track] != nullptr);
-  return g_assets.levelMusic[track];
-}
-
-engine_Music* asset_getTitleMusic(void) {
-  assert(g_assets.titleMusic != nullptr);
-  return g_assets.titleMusic;
+engine_Music* asset_getMusic(void) {
+  assert(g_assets.music != nullptr);
+  return g_assets.music;
 }

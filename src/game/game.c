@@ -59,8 +59,7 @@ static inline void updateMusic(double frameTime) {
   switch (g_game.state) {
     case GAME_BOOT: assert(false); break;
 
-    case GAME_TITLE: engine_updateMusic(asset_getTitleMusic(), frameTime); break;
-
+    case GAME_TITLE:
     case GAME_MENU:
     case GAME_START:
     case GAME_DEAD:
@@ -68,7 +67,7 @@ static inline void updateMusic(double frameTime) {
     case GAME_PAUSE:
     case GAME_OVER:
     case GAME_LEVELCLEAR:
-    case GAME_WON: engine_updateMusic(asset_getMusic(g_game.musicTrack), frameTime); break;
+    case GAME_WON: engine_updateMusic(asset_getMusic(), frameTime); break;
   }
 }
 
@@ -119,11 +118,7 @@ static void spacePressed(void) {
       break;
 
     case GAME_OVER:
-    case GAME_WON:
-      audio_stopMusic();
-      audio_startTitleMusic();
-      menu_open(MENU_CONTEXT_TITLE);
-      break;
+    case GAME_WON: menu_open(MENU_CONTEXT_TITLE); break;
   }
 }
 
@@ -190,7 +185,7 @@ bool game_load(void) {
   scores_load();
   LOG_INFO(game_log, "Game loading took %f seconds", engine_getTime() - start);
 
-  audio_startTitleMusic();
+  audio_startMusic();
   menu_open(MENU_CONTEXT_TITLE);
   return true;
 }
@@ -199,18 +194,15 @@ void game_start(void) {
   if (g_game.startLevel > player_getProgress(g_game.startDifficulty)) return;
 
   LOG_INFO(game_log, "Starting new game, difficulty: %s", DIFFICULTY_STRINGS[g_game.startDifficulty]);
-  audio_stopTitleMusic();
   g_game.difficulty = g_game.startDifficulty;
   g_game.level      = g_game.startLevel;
   g_game.state      = GAME_START;
-  g_game.musicTrack = 0;
   player_totalReset();
   creature_reset();
   maze_reset(g_game.level);
   draw_resetCreatures();
   draw_resetPlayer();
   debug_reset();
-  audio_startMusic();
 }
 
 void game_input(void) { input_update(); }
@@ -283,6 +275,7 @@ void game_draw(void) {
 }
 
 void game_unload(void) {
+  audio_stopMusic();
   engine_shutdownAudio();
   asset_shutdownCursor();
   asset_shutdownCreatures();
@@ -331,10 +324,8 @@ void game_nextLevel(void) {
   if (g_game.level == LEVEL_COUNT - 1) {
     gameWon();
   } else {
-    audio_stopMusic();
     g_game.level += 1;
     g_game.state  = GAME_START;
-    audio_startMusic();
     player_reset();
     creature_reset();
     maze_reset(g_game.level);

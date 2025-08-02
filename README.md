@@ -19,30 +19,16 @@ An arcade-style dungeon dash inspired by Southeast Asian myths. Collect gold, do
 * [Jingle_Win_Synth_03.wav by LittleRobotSoundFactory](https://freesound.org/people/LittleRobotSoundFactory/sounds/274177/) - CC BY 4.0
 * [Deep Church Bell by ZoshP](https://freesound.org/people/ZoshP/sounds/530914/) - CC0
 * [Action 03 by rhodesmas](https://freesound.org/people/rhodesmas/sounds/320883/) - CC BY 3.0
-
-## Music Credits
-
-* [Improvisation 1](https://freemusicarchive.org/music/Electric_Kulintang/Live_at_WFMU_on_Rob_Weisbergs_Show_on_9272008/Improvisation_1/) by Electric Kulintang - [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/)
-* [Improvisation 2](https://freemusicarchive.org/music/Electric_Kulintang/Live_at_WFMU_on_Rob_Weisbergs_Show_on_9272008/Improvisation_2/) by Electric Kulintang - [CC BY-NC-SA 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/)
-
-This music has been used in accordance with the license terms.  
-No commercial use is made, and this game is freely distributed.
-
-## In Game
-
-Music:
-"Track Title" by Artist Name
-Licensed under CC BY-NC-SA 3.0
-creativecommons.org/licenses/by-nc-sa/3.0/
+* [RPG - Misty Mountains by Hitctrl](https://opengameart.org/content/rpg-misty-mountains) - CC BY 3.0
 
 ## Menu
 
 1. New Game
-2. Settings
+2. Options
 3. Credits
 4. Quit
 
-## Settings
+## Options
 
 1. Volume
    * Master
@@ -51,18 +37,5 @@ creativecommons.org/licenses/by-nc-sa/3.0/
 2. Display
    * Fullscreen
    * Scale
-3. Controls
-
-## High Scores
-
-[Mode: Easy ▼]  [Sort by: Time ▼]
-
-╔════════════════════════════════════════╗
-║ Level        | Time   | Score | Lives  ║
-╠════════════════════════════════════════╣
-║ Level 1      | 0:32   | 3200  | 10     ║
-║ Level 2      | 0:45   | 3700  | 10     ║
-║ Level 3      | 0:52   | 4100  | 9      ║
-║ ...
-║ Full Run     | 5:24   | 28200 | 8      ║
-╚════════════════════════════════════════╝
+3. Cheats
+   * Enable Cheats
