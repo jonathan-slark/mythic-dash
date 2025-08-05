@@ -245,12 +245,12 @@ static void levelClear(void) {
     g_player.fullRun.lives = 0;
     for (int i = 0; i < LEVEL_COUNT; i++) {
       if (game_getDifficulty() == DIFFICULTY_ARCADE) {
-        g_player.fullRun.time += g_player.levelData[level].frameCount * FRAME_TIME;
+        g_player.fullRun.time += g_player.levelData[i].frameCount * FRAME_TIME;
       } else {
-        g_player.fullRun.time += g_player.levelData[level].time;
+        g_player.fullRun.time += g_player.levelData[i].time;
       }
-      g_player.fullRun.score += g_player.levelData[level].score;
-      g_player.fullRun.lives += g_player.levelData[level].lives;
+      g_player.fullRun.score += g_player.levelData[i].score;
+      g_player.fullRun.lives += g_player.levelData[i].lives;
     }
     g_player.fullRun.clearResult = scores_fullRun(
         g_player.fullRun.time, g_player.fullRun.score, g_player.fullRun.lives
@@ -279,11 +279,6 @@ static void checkPickups(void) {
   } else if (maze_isKey(pos)) {
     maze_pickupKey(pos);
     keyPickup();
-  }
-
-  if (maze_getCoinCount() == g_player.coinsCollected) {
-    levelClear();
-    game_levelClear();
   }
 }
 
@@ -414,6 +409,11 @@ void player_update(double frameTime, float slop) {
   if (checkTraps()) return;  // Dead!
   checkPickups();
   checkScore();
+
+  if (maze_getCoinCount() == g_player.coinsCollected) {
+    levelClear();
+    game_levelClear();
+  }
 }
 
 // Player dead
@@ -425,6 +425,7 @@ void player_restart(void) {
   g_player.swordTimer      = 0.0f;
   g_player.swordSlowTimer  = 0.0f;
   g_player.scoreMultiplier = 1;
+  g_player.newLifeTimer    = 0.0f;
   actor_setPos(g_player.actor, PLAYER_START_POS);
   actor_setDir(g_player.actor, PLAYER_START_DIR);
   actor_setSpeed(g_player.actor, PLAYER_MAX_SPEED[game_getDifficulty()]);
