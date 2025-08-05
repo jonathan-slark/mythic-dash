@@ -142,3 +142,10 @@ void audio_playLife(Vector2 pos) {
   engine_setSoundPan(sound, getPan(pos));
   engine_playSound(sound);
 }
+
+void audio_playRes(Vector2 pos) {
+  if (!g_state.audioEnabled) return;
+  engine_Sound* sound = asset_getResSound();
+  engine_setSoundPan(sound, getPan(pos));
+  engine_playSound(sound);
+}

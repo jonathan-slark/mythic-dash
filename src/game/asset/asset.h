@@ -44,4 +44,5 @@ engine_Sound*   asset_getTwinkleSound(void);
 engine_Sound*   asset_getWinSound(void);
 engine_Sound*   asset_getGameOverSound(void);
 engine_Sound*   asset_getLifeSound(void);
+engine_Sound*   asset_getResSound(void);
 engine_Music*   asset_getMusic(void);

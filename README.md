@@ -20,6 +20,7 @@ An arcade-style dungeon dash inspired by Southeast Asian myths. Collect gold, do
 * [Deep Church Bell by ZoshP](https://freesound.org/people/ZoshP/sounds/530914/) - CC0
 * [Action 03 by rhodesmas](https://freesound.org/people/rhodesmas/sounds/320883/) - CC BY 3.0
 * [RPG - Misty Mountains by Hitctrl](https://opengameart.org/content/rpg-misty-mountains) - CC BY 3.0
+* [Blip Squeak by GameAudio](https://freesound.org/people/GameAudio/sounds/220189/) - CC0
 
 ## Menu
 

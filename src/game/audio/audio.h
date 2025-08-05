@@ -18,3 +18,4 @@ void audio_playTwinkle(Vector2 pos);
 void audio_playWin(Vector2 pos);
 void audio_playGameOver(Vector2 pos);
 void audio_playLife(Vector2 pos);
+void audio_playRes(Vector2 pos);

@@ -49,12 +49,14 @@ bool asset_load(void) {
   GAME_TRY(loadSound(WIN_SOUND, &g_assets.winSound));
   GAME_TRY(loadSound(GAME_OVER_SOUND, &g_assets.gameOverSound));
   GAME_TRY(loadSound(LIFE_SOUND, &g_assets.lifeSound));
+  GAME_TRY(loadSound(RES_SOUND, &g_assets.resSound));
   GAME_TRY(loadMusic(MUSIC, &g_assets.music));
   return true;
 }
 
 void asset_unload(void) {
   engine_unloadMusic(&g_assets.music);
+  engine_unloadSound(&g_assets.resSound);
   engine_unloadSound(&g_assets.lifeSound);
   engine_unloadSound(&g_assets.gameOverSound);
   engine_unloadSound(&g_assets.winSound);
@@ -312,6 +314,11 @@ engine_Sound* asset_getGameOverSound(void) {
 engine_Sound* asset_getLifeSound(void) {
   assert(g_assets.lifeSound != nullptr);
   return g_assets.lifeSound;
+}
+
+engine_Sound* asset_getResSound(void) {
+  assert(g_assets.resSound != nullptr);
+  return g_assets.resSound;
 }
 
 engine_Music* asset_getMusic(void) {

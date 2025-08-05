@@ -59,6 +59,7 @@ typedef struct asset_Assets {
   engine_Sound*   winSound;
   engine_Sound*   gameOverSound;
   engine_Sound*   lifeSound;
+  engine_Sound*   resSound;
   engine_Music*   music;
 } asset_Assets;
 
@@ -82,9 +83,10 @@ static const asset_Sound FALLING_SOUND   = { .filepath = ASSET_DIR "sfx/falling.
 static const asset_Sound WHISPERS_SOUND  = { .filepath = ASSET_DIR "sfx/whispers.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound PICKUP_SOUND    = { .filepath = ASSET_DIR "sfx/pickup.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound TWINKLE_SOUND   = { .filepath = ASSET_DIR "sfx/twinkle.mp3", .volume = 1.0f, .pitch = 1.0f };
-static const asset_Sound WIN_SOUND       = { .filepath = ASSET_DIR "sfx/win.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound WIN_SOUND       = { .filepath = ASSET_DIR "sfx/win.wav", .volume = 0.8f, .pitch = 1.0f };
 static const asset_Sound GAME_OVER_SOUND = { .filepath = ASSET_DIR "sfx/game-over.wav", .volume = 1.0f, .pitch = 1.0f };
 static const asset_Sound LIFE_SOUND      = { .filepath = ASSET_DIR "sfx/life.wav", .volume = 1.0f, .pitch = 1.0f };
+static const asset_Sound RES_SOUND       = { .filepath = ASSET_DIR "sfx/res.wav", .volume = 1.0f, .pitch = 1.0f };
 
 static const float       FADE_IN_RATE  = 1.0f / 1.0f;
 static const float       FADE_OUT_RATE = 1.0f / 0.25f;

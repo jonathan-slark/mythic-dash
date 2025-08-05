@@ -285,6 +285,7 @@ void creature_startToPen(creature_Creature* creature, double frameTime, float sl
       actor_setDir(actor, DIR_UP);
       creature->mazeStart = CREATURE_DATA[creature->id].mazeStart;
       creature->update    = creature_pen;
+      audio_playRes(actor_getPos(actor));
     }
   }
 }
