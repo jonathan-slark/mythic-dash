@@ -138,10 +138,18 @@ void draw_updateCreatures(double frameTime, [[maybe_unused]] float slop) {
   assert(slop >= 0.0f);
 
   for (int i = 0; i < CREATURE_COUNT; i++) {
-    int     creatureID = i + game_getLevel() * CREATURE_COUNT;
-    Vector2 pos        = Vector2Add(POS_ADJUST(creature_getPos(i)), asset_getCreatureOffset(creatureID));
+    static game_Dir prevDir[CREATURE_COUNT] = {};
+    game_Dir        dir                     = creature_getDir(i);
+    int             creatureID              = i + game_getLevel() * CREATURE_COUNT;
+
+    if (dir != prevDir[i]) {
+      engine_resetAnim(asset_getCreatureAnim(creatureID, dir));
+      prevDir[i] = dir;
+    }
+
+    Vector2 pos = Vector2Add(POS_ADJUST(creature_getPos(i)), asset_getCreatureOffset(creatureID));
     engine_spriteSetPos(asset_getCreateSprite(creatureID), pos);
-    engine_updateAnim(asset_getCreatureAnim(creatureID, creature_getDir(i)), frameTime);
+    engine_updateAnim(asset_getCreatureAnim(creatureID, dir), frameTime);
   }
 }
 

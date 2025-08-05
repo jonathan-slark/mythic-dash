@@ -160,10 +160,11 @@ static game_Tile getTargetTile(creature_Creature* creature) {
 
 static void
 creatureUpdateCommon(creature_Creature* creature, double frameTime, float slop, const CreatureStateHandler* handler) {
-  game_Actor* actor      = creature->actor;
-  game_Dir    currentDir = actor_getDir(actor);
+  game_Actor* actor = creature->actor;
+  actor_move(actor, actor_getDir(actor), frameTime);
+  // Actor can change directions after teleport
+  game_Dir currentDir = actor_getDir(actor);
 
-  actor_move(actor, currentDir, frameTime);
   if (creature->decisionCooldown > 0.0f)
     creature->decisionCooldown = fmaxf(creature->decisionCooldown - frameTime, 0.0f);
 
