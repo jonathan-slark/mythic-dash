@@ -191,6 +191,15 @@ creatureUpdateCommon(creature_Creature* creature, double frameTime, float slop, 
   }
 }
 
+static Vector2 getStartPos(int id) {
+  // Creature 1 starts outside so send it to the centre
+  if (id == 1) {
+    return MAZE_CENTRE;
+  } else {
+    return CREATURE_DATA[id].startPos;
+  }
+}
+
 // --- Creature state functions ---
 
 // Creature moves back and forth in pen till released
@@ -205,13 +214,13 @@ void creature_pen(creature_Creature* creature, double frameTime, float slop) {
   if (!actor_canMove(actor, currentDir, slop)) actor_setDir(actor, game_getOppositeDir(currentDir));
 
   // Release the ho... er... creatures!
-  if (creature->startTimer <= frameTime) {
-    if (!player_hasSword()) {
+  if (!player_hasSword()) {
+    if (creature->startTimer <= frameTime) {
       creature->startTimer = 0.0f;
       creature->update     = creature_penToStart;
+    } else {
+      creature->startTimer -= frameTime;
     }
-  } else {
-    creature->startTimer -= frameTime;
   }
 }
 
@@ -240,7 +249,7 @@ void creature_penToStart(creature_Creature* creature, double frameTime, float sl
     actor_moveNoCheck(actor, dir, frameTime);
     if (fabsf(pos.x - startX) < slop) {
       actor_setPos(actor, (Vector2) { startX, pos.y });
-      actor_setDir(actor, creature_START_DIR);
+      actor_setDir(actor, CREATURE_START_DIR);
       actor_setSpeed(actor, creature_getSpeed(creature));
       creature->update = g_state.update;
     }
@@ -265,8 +274,8 @@ void creature_startToPen(creature_Creature* creature, double frameTime, float sl
     actor_setDir(actor, dir);
     actor_moveNoCheck(actor, dir, frameTime);
   } else {
-    LOG_TRACE(game_log, "Moving to centre tile");
-    float startX = MAZE_CENTRE.x;
+    LOG_TRACE(game_log, "Moving to original tile");
+    float startX = getStartPos(creature->id).x;
     dir          = pos.x < startX ? DIR_RIGHT : DIR_LEFT;
     actor_setDir(actor, dir);
     actor_moveNoCheck(actor, dir, frameTime);
@@ -274,7 +283,8 @@ void creature_startToPen(creature_Creature* creature, double frameTime, float sl
       actor_setPos(actor, (Vector2) { startX, pos.y });
       actor_setSpeed(actor, SPEED_SLOW);
       actor_setDir(actor, DIR_UP);
-      creature->update = creature_pen;
+      creature->mazeStart = CREATURE_DATA[creature->id].mazeStart;
+      creature->update    = creature_pen;
     }
   }
 }

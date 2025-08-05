@@ -33,6 +33,7 @@ typedef struct creature_State {
   void (*lastUpdate)(creature_Creature *, double, float);
   size_t stateNum;
   float stateTimer;
+  float penTimer;
 } creature_State;
 
 // --- Creature state function prototypes ---
@@ -69,10 +70,10 @@ static const float FRIGHT_LEVEL_MULT = 0.0055f;
 static const float DECISION_COOLDOWN = 0.1f;
 
 static const Vector2 MAZE_CENTRE = {14 * TILE_SIZE, 7 * TILE_SIZE};
-static const Vector2 creature_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},
+static const Vector2 CREATURE_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},
                                               {17 * TILE_SIZE, 7 * TILE_SIZE}};
-static const game_Dir creature_START_DIR = DIR_LEFT;
-static const float creature_CHASETIMER = 5.0f;
+static const game_Dir CREATURE_START_DIR = DIR_LEFT;
+static const float CREATURE_CHASETIMER = 5.0f;
 static const game_Tile DEFAULT_TARGET_TILE = {-1, -1};
 static const struct {
   Vector2 startPos;
@@ -84,32 +85,32 @@ static const struct {
   void (*update)(creature_Creature *, double, float);
 } CREATURE_DATA[CREATURE_COUNT] = {
     [0] = {{15 * TILE_SIZE, 8 * TILE_SIZE},
-           creature_MAZE_START[1],
+           CREATURE_MAZE_START[1],
            {1, 1},
            DIR_UP,
            SPEED_SLOW,
-           creature_CHASETIMER * 1.0f,
+           CREATURE_CHASETIMER * 1.0f,
            creature_pen},
     [1] = {{17 * TILE_SIZE, 7 * TILE_SIZE},
-           creature_MAZE_START[1],
+           CREATURE_MAZE_START[1],
            {27, 1},
            DIR_UP,
            SPEED_SLOW,
            0.0f,
            creature_scatter},
     [2] = {{13 * TILE_SIZE, 8 * TILE_SIZE},
-           creature_MAZE_START[0],
+           CREATURE_MAZE_START[0],
            {1, 13},
            DIR_UP,
            SPEED_SLOW,
-           creature_CHASETIMER * 0.0f,
+           CREATURE_CHASETIMER * 0.0f,
            creature_pen},
     [3] = {{14 * TILE_SIZE, 7 * TILE_SIZE},
-           creature_MAZE_START[0],
+           CREATURE_MAZE_START[0],
            {27, 13},
            DIR_DOWN,
            SPEED_SLOW,
-           creature_CHASETIMER * 2.0f,
+           CREATURE_CHASETIMER * 2.0f,
            creature_pen},
 };
 

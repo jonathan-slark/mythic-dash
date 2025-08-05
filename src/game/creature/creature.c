@@ -104,7 +104,7 @@ static float getStateTimer(int stateNum) {
   return minTimer + t * (maxTimer - minTimer);
 }
 
-static void toggleCreatureState() {
+static void toggleState() {
   void (*newState)(
       creature_Creature*, double, float
   ) = (g_state.update == nullptr || g_state.update == creature_chase) ? creature_scatter : creature_chase;
@@ -124,12 +124,12 @@ static void updateState(double frameTime) {
     if (isPermanentChaseState()) {
       transitionToPermanentChase();
     } else {
-      toggleCreatureState();
+      toggleState();
     }
   }
 }
 
-static void creatureResetTargets(void) {
+static void resetTargets(void) {
   for (int i = 0; i < CREATURE_COUNT; i++) {
     g_state.creatures[i].targetTile = DEFAULT_TARGET_TILE;
   }
@@ -167,7 +167,7 @@ static void creatureDefaults(void) {
   }
   actor_setSpeed(g_state.creatures[1].actor, creature_getSpeed(&g_state.creatures[1]));
 
-  creatureResetTargets();
+  resetTargets();
 }
 
 static void creatureSetSpeeds(void) {
@@ -210,13 +210,13 @@ static void creatureSetNearestStartTile(creature_Creature* creature) {
   assert(creature != nullptr);
 
   game_Tile curTile    = maze_getTile(actor_getPos(creature->actor));
-  size_t    startCount = COUNT(creature_MAZE_START);
+  size_t    startCount = COUNT(CREATURE_MAZE_START);
   size_t    bestTiles[startCount];
   size_t    bestTileCount = 0;
   int       minDist       = INT_MAX;
 
   for (size_t i = 0; i < startCount; i++) {
-    game_Tile destTile = maze_getTile(creature_MAZE_START[i]);
+    game_Tile destTile = maze_getTile(CREATURE_MAZE_START[i]);
     int       dist     = maze_manhattanDistance(curTile, destTile);
     if (dist < minDist) {
       bestTileCount = 0;
@@ -231,17 +231,20 @@ static void creatureSetNearestStartTile(creature_Creature* creature) {
   assert(minDist >= 0 && minDist < INT_MAX);
 
   if (bestTileCount == 1) {
-    creature->mazeStart = creature_MAZE_START[bestTiles[0]];
+    creature->mazeStart = CREATURE_MAZE_START[bestTiles[0]];
     LOG_TRACE(game_log, "Creature %d best start tile %d (best choice)", creature->id, bestTiles[0]);
   } else {
     size_t bestTile     = bestTiles[GetRandomValue(0, bestTileCount - 1)];
-    creature->mazeStart = creature_MAZE_START[bestTile];
+    creature->mazeStart = CREATURE_MAZE_START[bestTile];
     LOG_TRACE(game_log, "Creature %d best start tile %d (%d choices)", creature->id, bestTile, bestTileCount);
   }
 }
 
 static void creatureDied(creature_Creature* creature) {
   assert(creature != nullptr);
+
+  creature->startTimer  = g_state.penTimer;
+  g_state.penTimer     += CREATURE_CHASETIMER;
 
   creature->update = creature_dead;
   actor_setSpeed(creature->actor, creature_getSpeed(creature));
@@ -267,7 +270,6 @@ bool creature_init(void) {
     g_state.creatures[i].id = i;
   }
 
-  // creatureDefaults();
   return true;
 }
 
@@ -283,6 +285,7 @@ void creature_reset(void) {
   g_state.update     = nullptr;
   g_state.stateNum   = 0;
   g_state.stateTimer = 0.0f;
+  g_state.penTimer   = 0.0f;
 }
 
 void creature_shutdown(void) {
@@ -379,7 +382,7 @@ const char* creature_getStateString(int id) {
 void creature_swordPickup(void) {
   transitionToState(creature_frightened);
   creatureSetSpeeds();
-  creatureResetTargets();
+  resetTargets();
   creatureResetTeleportTimer();
   creatureWail();
 }
@@ -388,6 +391,7 @@ void creature_swordDrop(void) {
   assert(g_state.lastUpdate != nullptr);
   transitionToState(g_state.lastUpdate);
   creatureSetSpeeds();
+  g_state.penTimer = 0.0f;
 }
 
 bool creature_isFrightened(int id) {
