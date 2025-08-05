@@ -72,7 +72,8 @@ static const float DECISION_COOLDOWN = 0.1f;
 static const Vector2 MAZE_CENTRE = {14 * TILE_SIZE, 7 * TILE_SIZE};
 static const Vector2 CREATURE_MAZE_START[] = {{11 * TILE_SIZE, 7 * TILE_SIZE},
                                               {17 * TILE_SIZE, 7 * TILE_SIZE}};
-static const game_Dir CREATURE_START_DIR = DIR_LEFT;
+static const game_Dir CREATURE_START_DIR[CREATURE_COUNT] = {DIR_DOWN, DIR_UP,
+                                                            DIR_DOWN, DIR_UP};
 static const float CREATURE_CHASETIMER = 5.0f;
 static const game_Tile DEFAULT_TARGET_TILE = {-1, -1};
 static const struct {

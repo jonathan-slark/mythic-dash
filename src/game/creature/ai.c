@@ -200,6 +200,12 @@ static Vector2 getStartPos(int id) {
   }
 }
 
+static void updateStartTimer(creature_Creature* creature, double frameTime) {
+  if (!player_hasSword()) {
+    creature->startTimer = fmaxf(creature->startTimer - frameTime, 0.0f);
+  }
+}
+
 // --- Creature state functions ---
 
 // Creature moves back and forth in pen till released
@@ -214,14 +220,8 @@ void creature_pen(creature_Creature* creature, double frameTime, float slop) {
   if (!actor_canMove(actor, currentDir, slop)) actor_setDir(actor, game_getOppositeDir(currentDir));
 
   // Release the ho... er... creatures!
-  if (!player_hasSword()) {
-    if (creature->startTimer <= frameTime) {
-      creature->startTimer = 0.0f;
-      creature->update     = creature_penToStart;
-    } else {
-      creature->startTimer -= frameTime;
-    }
-  }
+  updateStartTimer(creature, frameTime);
+  if (!player_hasSword() && creature->startTimer == 0.0f) creature->update = creature_penToStart;
 }
 
 // Creature moves from pen to start position
@@ -249,7 +249,7 @@ void creature_penToStart(creature_Creature* creature, double frameTime, float sl
     actor_moveNoCheck(actor, dir, frameTime);
     if (fabsf(pos.x - startX) < slop) {
       actor_setPos(actor, (Vector2) { startX, pos.y });
-      actor_setDir(actor, CREATURE_START_DIR);
+      actor_setDir(actor, CREATURE_START_DIR[creature->id]);
       actor_setSpeed(actor, creature_getSpeed(creature));
       creature->update = g_state.update;
     }
@@ -265,6 +265,8 @@ void creature_startToPen(creature_Creature* creature, double frameTime, float sl
   game_Actor* actor = creature->actor;
   assert(actor != nullptr);
   game_Dir dir = actor_getDir(actor);
+
+  updateStartTimer(creature, frameTime);
 
   float   startY = MAZE_CENTRE.y;
   Vector2 pos    = actor_getPos(actor);
@@ -323,6 +325,7 @@ void creature_dead(creature_Creature* creature, double frameTime, float slop) {
   assert(frameTime >= 0.0f);
   assert(slop >= MIN_SLOP && slop <= MAX_SLOP);
 
+  updateStartTimer(creature, frameTime);
   creatureUpdateCommon(creature, frameTime, slop, &DeadHandler);
 
   Vector2   pos       = actor_getPos(creature->actor);
