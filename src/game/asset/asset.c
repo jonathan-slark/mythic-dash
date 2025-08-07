@@ -325,7 +325,3 @@ engine_Music* asset_getMusic(void) {
   assert(g_assets.music != nullptr);
   return g_assets.music;
 }
-
-void asset_updateMusicDucking(float volume) {
-  engine_setMusicDucking(g_assets.music, volume, MUSIC.duckedVolume, FADE_IN_RATE, FADE_OUT_RATE);
-}

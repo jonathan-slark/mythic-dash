@@ -46,4 +46,3 @@ engine_Sound*   asset_getGameOverSound(void);
 engine_Sound*   asset_getLifeSound(void);
 engine_Sound*   asset_getResSound(void);
 engine_Music*   asset_getMusic(void);
-void            asset_updateMusicDucking(float volume);

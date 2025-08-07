@@ -92,6 +92,7 @@ static const int  TEXT_WIDTH       = 6;
 
 static const Vector2 SLIDER_SIZE   = { 10 * TEXT_WIDTH, 7 };
 static const Color   SLIDER_COLOUR = { 239, 177, 0, 200 };
+static const float   VOLUME_SHIFT  = 0.1f;
 
 // clang-format off
 static menu_Button MAIN_BUTTONS[] = {
@@ -337,11 +338,8 @@ static void updateMenuScreen(const menu_Screen* screen) {
       if (g_state.activatedButton == i || input_isMouseButtonClick(INPUT_LEFT_BUTTON, button->bounds)) {
         switch (button->type) {
           case MENU_BUTTON_NORMAL: activateNormalButton(screen, button); break;
-
           case MENU_BUTTON_DROPDOWN: activateDropdownButton(button, i); break;
-
           case MENU_BUTTON_TEXT: break;
-
           case MENU_BUTTON_SLIDER: activateSliderButton(button); break;
         }
       }
@@ -420,6 +418,12 @@ static void drawMenuScreen(const menu_Screen* screen) {
   }
 }
 
+static void volumeChange(const menu_Button* button, float shift) {
+  *button->sliderValue += shift;
+  *button->sliderValue  = CLAMP(*button->sliderValue, button->sliderMin, button->sliderMax);
+  button->action();
+}
+
 static void checkKeys(const menu_Screen* screen) {
   // Handle dropdown navigation if active
   if (g_state.activeDropdown != -1) {
@@ -463,6 +467,16 @@ static void checkKeys(const menu_Screen* screen) {
       g_state.activatedButton = button;
     }
     g_state.isMouseActive = false;
+  }
+  if (input_isKeyPressed(INPUT_LEFT)) {
+    if (screen->buttons[button].type == MENU_BUTTON_SLIDER) {
+      volumeChange(&screen->buttons[button], -VOLUME_SHIFT);
+    }
+  }
+  if (input_isKeyPressed(INPUT_RIGHT)) {
+    if (screen->buttons[button].type == MENU_BUTTON_SLIDER) {
+      volumeChange(&screen->buttons[button], VOLUME_SHIFT);
+    }
   }
 }
 
