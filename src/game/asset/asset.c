@@ -325,3 +325,15 @@ engine_Music* asset_getMusic(void) {
   assert(g_assets.music != nullptr);
   return g_assets.music;
 }
+
+float asset_getWailVolume(int id) { return WAIL_SOUNDS[id].volume; }
+float asset_getChimeVolume(void) { return CHIME_SOUND.volume; }
+float asset_getDeathVolume(void) { return DEATH_SOUND.volume; }
+float asset_getFallingVolume(void) { return FALLING_SOUND.volume; }
+float asset_getWhispersVolume(void) { return WHISPERS_SOUND.volume; }
+float asset_getPickupVolume(void) { return PICKUP_SOUND.volume; }
+float asset_getTwinkleVolume(void) { return TWINKLE_SOUND.volume; }
+float asset_getWinVolume(void) { return WIN_SOUND.volume; }
+float asset_getGameOverVolume(void) { return GAME_OVER_SOUND.volume; }
+float asset_getLifeVolume(void) { return LIFE_SOUND.volume; }
+float asset_getResVolume(void) { return RES_SOUND.volume; }

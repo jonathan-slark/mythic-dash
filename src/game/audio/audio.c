@@ -50,18 +50,18 @@ void audio_onVolumeChange(void) {
   engine_setMusicVolume(asset_getMusic(), g_volume.music);
 
   for (int i = 0; i < WAIL_SOUND_COUNT; i++) {
-    engine_setSoundVolume(asset_getWailSound(i), g_volume.sfx);
+    engine_setSoundVolume(asset_getWailSound(i), asset_getWailVolume(i) * g_volume.sfx);
   }
-  engine_setSoundVolume(asset_getChimeSound(), g_volume.sfx);
-  engine_setSoundVolume(asset_getDeathSound(), g_volume.sfx);
-  engine_setSoundVolume(asset_getFallingSound(), g_volume.sfx);
-  engine_setSoundVolume(asset_getWhispersSound(), g_volume.sfx);
-  engine_setSoundVolume(asset_getPickupSound(), g_volume.sfx);
-  engine_setSoundVolume(asset_getTwinkleSound(), g_volume.sfx);
-  engine_setSoundVolume(asset_getWinSound(), g_volume.sfx);
-  engine_setSoundVolume(asset_getGameOverSound(), g_volume.sfx);
-  engine_setSoundVolume(asset_getLifeSound(), g_volume.sfx);
-  engine_setSoundVolume(asset_getResSound(), g_volume.sfx);
+  engine_setSoundVolume(asset_getChimeSound(), asset_getChimeVolume() * g_volume.sfx);
+  engine_setSoundVolume(asset_getDeathSound(), asset_getDeathVolume() * g_volume.sfx);
+  engine_setSoundVolume(asset_getFallingSound(), asset_getFallingVolume() * g_volume.sfx);
+  engine_setSoundVolume(asset_getWhispersSound(), asset_getWhispersVolume() * g_volume.sfx);
+  engine_setSoundVolume(asset_getPickupSound(), asset_getPickupVolume() * g_volume.sfx);
+  engine_setSoundVolume(asset_getTwinkleSound(), asset_getTwinkleVolume() * g_volume.sfx);
+  engine_setSoundVolume(asset_getWinSound(), asset_getWinVolume() * g_volume.sfx);
+  engine_setSoundVolume(asset_getGameOverSound(), asset_getGameOverVolume() * g_volume.sfx);
+  engine_setSoundVolume(asset_getLifeSound(), asset_getLifeVolume() * g_volume.sfx);
+  engine_setSoundVolume(asset_getResSound(), asset_getResVolume() * g_volume.sfx);
 }
 
 void audio_startMusic(void) { engine_playMusic(asset_getMusic()); }
