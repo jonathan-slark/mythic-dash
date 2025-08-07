@@ -142,11 +142,11 @@ static menu_Button GAME_BUTTONS[] = {
 };
 
 static menu_Button OPTIONS_BUTTONS[] = {
-  { { 165,  70, 36, 10 },         "Volume", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_TEXT, nullptr, 0, 0,          nullptr, 0, 0 },
-  { { 165,  80, 84, 10 }, " Master       ", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0, &g_volume.master, 0, 1 },
-  { { 165,  90, 84, 10 }, " Music        ", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0,  &g_volume.music, 0, 1 },
-  { { 165, 100, 84, 10 }, " Sound Effects", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0,    &g_volume.sfx, 0, 1 },
-  { { 165, 140, 24, 10 },          "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0,          nullptr, 0, 0 }
+  { { 165,  70,  36, 10 },         "Volume", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_TEXT, nullptr, 0, 0,          nullptr, 0, 0 },
+  { { 165,  80, 150, 10 }, " Master       ", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0, &g_volume.master, 0, 1 },
+  { { 165,  90, 150, 10 }, " Music        ", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0,  &g_volume.music, 0, 1 },
+  { { 165, 100, 150, 10 }, " Sound Effects", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0,    &g_volume.sfx, 0, 1 },
+  { { 165, 140,  24, 10 },           "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0,          nullptr, 0, 0 }
 };
 
 static menu_Button CREDITS_BUTTONS[] = {
@@ -190,7 +190,8 @@ static int findPreviousActiveButton(const menu_Screen* screen, int start) {
   do {
     index = (index - 1 + screen->buttonCount) % screen->buttonCount;
     attempts++;
-  } while (!isButtonActive(&screen->buttons[index]) && attempts < screen->buttonCount);
+  } while ((!isButtonActive(&screen->buttons[index]) || screen->buttons[index].type == MENU_BUTTON_TEXT) &&
+           attempts < screen->buttonCount);
   return index;
 }
 
@@ -200,14 +201,15 @@ static int findNextActiveButton(const menu_Screen* screen, int start) {
   do {
     index = (index + 1) % screen->buttonCount;
     attempts++;
-  } while (!isButtonActive(&screen->buttons[index]) && attempts < screen->buttonCount);
+  } while ((!isButtonActive(&screen->buttons[index]) || screen->buttons[index].type == MENU_BUTTON_TEXT) &&
+           attempts < screen->buttonCount);
   return index;
 }
 
 static void resetButtonState(const menu_Screen* screen) {
   int button = g_state.selectedButton[g_state.currentScreen];
-  if (!isButtonActive(&screen->buttons[button]))
-    g_state.selectedButton[g_state.currentScreen] = findPreviousActiveButton(screen, button);
+  if (!isButtonActive(&screen->buttons[button]) || screen->buttons[button].type == MENU_BUTTON_TEXT)
+    g_state.selectedButton[g_state.currentScreen] = findNextActiveButton(screen, button);
   g_state.activatedButton = -1;
 }
 
@@ -277,9 +279,7 @@ static void drawDropdown(const menu_Button* button, int index) {
 static void updateMenuScreen(const menu_Screen* screen) {
   assert(screen != nullptr);
 
-  if (g_state.activeDropdown != -1) {
-    handleDropdownInput(screen);
-  }
+  if (g_state.activeDropdown != -1) handleDropdownInput(screen);
 
   for (int i = 0; i < screen->buttonCount; i++) {
     const menu_Button* button = &screen->buttons[i];
@@ -288,9 +288,7 @@ static void updateMenuScreen(const menu_Screen* screen) {
       if (g_state.activatedButton == i || input_isMouseButtonClick(INPUT_LEFT_BUTTON, button->bounds)) {
         switch (button->type) {
           case MENU_BUTTON_NORMAL:
-            if (button->action != nullptr) {
-              button->action();
-            }
+            if (button->action != nullptr) button->action();
             if (button->targetScreen != MENU_NONE) {
               g_state.currentScreen = button->targetScreen;
               screen                = &SCREENS[g_state.currentScreen];
@@ -335,19 +333,25 @@ static void drawDropdownButton(const menu_Button* button, bool isSelected, bool 
   drawButtonText(button, format, colour);
 }
 
-static void drawSliderButton(const menu_Button* button, bool isSelected) {
+static void drawSliderButton(const menu_Button* button, bool isSelected, bool isHovered) {
   Color colour = isSelected ? TEXT_ACTIVE : TEXT_NORMAL;
   drawButtonText(button, button->text, colour);
 
   Rectangle outline = {
-    button->bounds.x + button->bounds.width + TEXT_WIDTH, button->bounds.y, SLIDER_SIZE.x, SLIDER_SIZE.y
+    button->bounds.x + button->bounds.width - SLIDER_SIZE.x, button->bounds.y, SLIDER_SIZE.x, SLIDER_SIZE.y
   };
-  engine_drawRectangleOutline(outline, BG_BORDER);
+  colour = isHovered ? TEXT_ACTIVE : BG_BORDER;
+  engine_drawRectangleOutline(outline, colour);
 
-  Rectangle slider = {
-    button->bounds.x + button->bounds.width + TEXT_WIDTH + 2, button->bounds.y + 2, SLIDER_SIZE.x - 4, SLIDER_SIZE.y - 4
-  };
-  engine_drawRectangle(slider, SLIDER_COLOUR);
+  if (*button->sliderValue > 0.0f) {
+    Rectangle slider = {
+      button->bounds.x + button->bounds.width - SLIDER_SIZE.x + 2,
+      button->bounds.y + 2,
+      (SLIDER_SIZE.x - 4) * *button->sliderValue,
+      SLIDER_SIZE.y - 4
+    };
+    engine_drawRectangle(slider, SLIDER_COLOUR);
+  }
 }
 
 static void drawTextButton(const menu_Button* button) { drawButtonText(button, button->text, TEXT_NORMAL); }
@@ -369,7 +373,7 @@ static void drawMenuScreen(const menu_Screen* screen) {
       switch (button->type) {
         case MENU_BUTTON_NORMAL: drawNormalButton(button, isSelected, isHovered); break;
         case MENU_BUTTON_DROPDOWN: drawDropdownButton(button, isSelected, isHovered); break;
-        case MENU_BUTTON_SLIDER: drawSliderButton(button, isSelected); break;
+        case MENU_BUTTON_SLIDER: drawSliderButton(button, isSelected, isHovered); break;
         case MENU_BUTTON_TEXT: drawTextButton(button); break;
       }
     }
