@@ -32,5 +32,6 @@ typedef enum input_MouseButton { INPUT_LEFT_BUTTON, INPUT_BUTTON_COUNT } input_M
 void input_update(void);
 void input_flush(void);
 bool input_isKeyPressed(input_Key key);
+bool input_isKeyPressedRepeat(input_Key key);
 bool input_isMouseButtonPressed(input_MouseButton button);
 bool input_isMouseButtonClick(input_MouseButton button, Rectangle rectangle);

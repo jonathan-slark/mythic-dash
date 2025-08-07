@@ -468,12 +468,12 @@ static void checkKeys(const menu_Screen* screen) {
     }
     g_state.isMouseActive = false;
   }
-  if (input_isKeyPressed(INPUT_LEFT)) {
+  if (input_isKeyPressed(INPUT_LEFT) || input_isKeyPressedRepeat(INPUT_LEFT)) {
     if (screen->buttons[button].type == MENU_BUTTON_SLIDER) {
       volumeChange(&screen->buttons[button], -VOLUME_SHIFT);
     }
   }
-  if (input_isKeyPressed(INPUT_RIGHT)) {
+  if (input_isKeyPressed(INPUT_RIGHT) || input_isKeyPressedRepeat(INPUT_RIGHT)) {
     if (screen->buttons[button].type == MENU_BUTTON_SLIDER) {
       volumeChange(&screen->buttons[button], VOLUME_SHIFT);
     }
