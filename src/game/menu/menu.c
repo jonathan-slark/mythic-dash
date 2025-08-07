@@ -276,6 +276,55 @@ static void drawDropdown(const menu_Button* button, int index) {
   }
 }
 
+static void activateNormalButton(const menu_Screen* screen, const menu_Button* button) {
+  if (button->action != nullptr) button->action();
+  if (button->targetScreen != MENU_NONE) {
+    g_state.currentScreen = button->targetScreen;
+    screen                = &SCREENS[g_state.currentScreen];
+    resetButtonState(screen);
+  }
+}
+
+static void activateDropdownButton(const menu_Button* button, int buttonID) {
+  g_state.dropdownSelection = button->selectedItem;
+  if (g_state.activeDropdown != buttonID) {
+    g_state.activeDropdown = buttonID;
+  } else {
+    g_state.activeDropdown = -1;
+  }
+}
+
+static Rectangle getSliderOutline(const menu_Button* button) {
+  return (Rectangle) {
+    button->bounds.x + button->bounds.width - SLIDER_SIZE.x, button->bounds.y, SLIDER_SIZE.x, SLIDER_SIZE.y
+  };
+}
+
+static Rectangle getSliderRectangle(const menu_Button* button) {
+  return (Rectangle) {
+    button->bounds.x + button->bounds.width - SLIDER_SIZE.x + 2.0f,
+    button->bounds.y + 2.0f,
+    (SLIDER_SIZE.x - 4.0f),
+    SLIDER_SIZE.y - 4.0f
+  };
+}
+
+static void activateSliderButton(const menu_Button* button) {
+  // Check if the click was actually insider the slider area
+  if (!input_isMouseButtonClick(INPUT_LEFT_BUTTON, getSliderOutline(button))) return;
+
+  int       scale             = engine_getScale();
+  Rectangle slider            = getSliderRectangle(button);
+  int       sliderXScaled     = slider.x * scale;
+  int       sliderWidthScaled = slider.width * scale;
+  float     mouseX            = engine_getMousePosition().x;
+  float     newValue          = (mouseX - (float) sliderXScaled) / (float) sliderWidthScaled;
+  *button->sliderValue        = CLAMP(newValue, button->sliderMin, button->sliderMax);
+
+  // Audio module callback
+  button->action();
+}
+
 static void updateMenuScreen(const menu_Screen* screen) {
   assert(screen != nullptr);
 
@@ -287,27 +336,13 @@ static void updateMenuScreen(const menu_Screen* screen) {
     if (isButtonActive(button)) {
       if (g_state.activatedButton == i || input_isMouseButtonClick(INPUT_LEFT_BUTTON, button->bounds)) {
         switch (button->type) {
-          case MENU_BUTTON_NORMAL:
-            if (button->action != nullptr) button->action();
-            if (button->targetScreen != MENU_NONE) {
-              g_state.currentScreen = button->targetScreen;
-              screen                = &SCREENS[g_state.currentScreen];
-              resetButtonState(screen);
-              break;
-            }
-            break;
+          case MENU_BUTTON_NORMAL: activateNormalButton(screen, button); break;
 
-          case MENU_BUTTON_DROPDOWN:
-            g_state.dropdownSelection = button->selectedItem;
-            if (g_state.activeDropdown != i) {
-              g_state.activeDropdown = i;
-            } else {
-              g_state.activeDropdown = -1;
-            }
-            break;
+          case MENU_BUTTON_DROPDOWN: activateDropdownButton(button, i); break;
 
-          case MENU_BUTTON_TEXT:
-          case MENU_BUTTON_SLIDER: break;
+          case MENU_BUTTON_TEXT: break;
+
+          case MENU_BUTTON_SLIDER: activateSliderButton(button); break;
         }
       }
     }
@@ -337,19 +372,12 @@ static void drawSliderButton(const menu_Button* button, bool isSelected, bool is
   Color colour = isSelected ? TEXT_ACTIVE : TEXT_NORMAL;
   drawButtonText(button, button->text, colour);
 
-  Rectangle outline = {
-    button->bounds.x + button->bounds.width - SLIDER_SIZE.x, button->bounds.y, SLIDER_SIZE.x, SLIDER_SIZE.y
-  };
   colour = isHovered ? TEXT_ACTIVE : BG_BORDER;
-  engine_drawRectangleOutline(outline, colour);
+  engine_drawRectangleOutline(getSliderOutline(button), colour);
 
   if (*button->sliderValue > 0.0f) {
-    Rectangle slider = {
-      button->bounds.x + button->bounds.width - SLIDER_SIZE.x + 2,
-      button->bounds.y + 2,
-      (SLIDER_SIZE.x - 4) * *button->sliderValue,
-      SLIDER_SIZE.y - 4
-    };
+    Rectangle slider  = getSliderRectangle(button);
+    slider.width     *= *button->sliderValue;  // TODO: use sliderMin/sliderMax
     engine_drawRectangle(slider, SLIDER_COLOUR);
   }
 }
@@ -397,7 +425,6 @@ static void checkKeys(const menu_Screen* screen) {
   if (g_state.activeDropdown != -1) {
     menu_Button* dropdownBtn = &screen->buttons[g_state.activeDropdown];
 
-    // Navigate dropdown items
     if (input_isKeyPressed(INPUT_UP)) {
       g_state.dropdownSelection =
           (g_state.dropdownSelection - 1 + dropdownBtn->dropdownItemCount) % dropdownBtn->dropdownItemCount;

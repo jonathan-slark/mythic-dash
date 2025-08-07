@@ -46,7 +46,9 @@ static inline float getPan(Vector2 pos) { return 1.0f - pos.x / (maze_getCols() 
 
 void audio_onVolumeChange(void) {
   engine_setMasterVolume(g_volume.master);
+
   engine_setMusicVolume(asset_getMusic(), g_volume.music);
+  asset_updateMusicDucking(g_volume.music);
 
   for (int i = 0; i < WAIL_SOUND_COUNT; i++) {
     engine_setSoundVolume(asset_getWailSound(i), g_volume.sfx);
