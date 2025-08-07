@@ -23,6 +23,8 @@ typedef struct audio_State {
 
 // --- Global state ---
 
+audio_Volume g_volume = { 1.0f, 1.0f, 1.0f };
+
 static audio_State g_state = {
   .coinPitches = {
       0.7937f,  // -4 semitones
@@ -40,7 +42,26 @@ static audio_State g_state = {
 
 static inline float getPan(Vector2 pos) { return 1.0f - pos.x / (maze_getCols() * TILE_SIZE); }
 
-// --- Audio functions ----
+// --- Audio functions ---
+
+void audio_onVolumeChange(void) {
+  engine_setMasterVolume(g_volume.master);
+  engine_setMusicVolume(asset_getMusic(), g_volume.music);
+
+  for (int i = 0; i < WAIL_SOUND_COUNT; i++) {
+    engine_setSoundVolume(asset_getWailSound(i), g_volume.sfx);
+  }
+  engine_setSoundVolume(asset_getChimeSound(), g_volume.sfx);
+  engine_setSoundVolume(asset_getDeathSound(), g_volume.sfx);
+  engine_setSoundVolume(asset_getFallingSound(), g_volume.sfx);
+  engine_setSoundVolume(asset_getWhispersSound(), g_volume.sfx);
+  engine_setSoundVolume(asset_getPickupSound(), g_volume.sfx);
+  engine_setSoundVolume(asset_getTwinkleSound(), g_volume.sfx);
+  engine_setSoundVolume(asset_getWinSound(), g_volume.sfx);
+  engine_setSoundVolume(asset_getGameOverSound(), g_volume.sfx);
+  engine_setSoundVolume(asset_getLifeSound(), g_volume.sfx);
+  engine_setSoundVolume(asset_getResSound(), g_volume.sfx);
+}
 
 void audio_startMusic(void) { engine_playMusic(asset_getMusic()); }
 
