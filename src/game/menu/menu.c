@@ -79,6 +79,7 @@ static void returnToTitle(void);
 
 static const Rectangle BG_MAIN             = { 159, 60, 162, 100 };
 static const Rectangle BG_HISCORES         = { 132, 60, 216, 150 };
+static const Rectangle BG_OPTIONS          = { 153, 60, 174, 120 };
 static const Color     BG_COLOUR           = { 64, 64, 64, 200 };
 static const Color     BG_DROP_DOWN_COLOUR = { 40, 40, 40, 200 };
 static const Color     BG_BORDER           = { 255, 255, 255, 200 };
@@ -90,7 +91,7 @@ static const char DROP_DOWN_TEXT[] = "[%s: %s \x85]";
 static const int  BUFFER_LEN       = 256;
 static const int  TEXT_WIDTH       = 6;
 
-static const Vector2 SLIDER_SIZE   = { 10 * TEXT_WIDTH, 7 };
+static const Vector2 SLIDER_SIZE   = { 12 * TEXT_WIDTH, 7 };
 static const Color   SLIDER_COLOUR = { 239, 177, 0, 200 };
 static const float   VOLUME_SHIFT  = 0.1f;
 
@@ -106,11 +107,13 @@ static menu_Button MAIN_BUTTONS[] = {
   { { 165, 140, 90, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 }
 };
 
+// [Mode: Arcade ↓]
 static menu_Button SCORES_MODE[] = {
   { { 138, 70, 24, 10 }, "Easy  ", MENU_NONE, scores_setEasy,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
   { { 138, 70, 24, 10 }, "Normal", MENU_NONE, scores_setNormal, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
   { { 138, 70, 24, 10 }, "Arcade", MENU_NONE, scores_setArcade, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
 };
+// [Sort by: Score ↓]
 static menu_Button SCORES_SORT[] = {
   { { 234, 70, 24, 10 },  "Time ", MENU_NONE, scores_setTime,  MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
   { { 234, 70, 24, 10 },  "Score", MENU_NONE, scores_setScore, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
@@ -121,11 +124,13 @@ static menu_Button SCORES_BUTTONS[] = {
   { { 138, 190,  24, 10 },    "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,     nullptr,                  0, 0, nullptr, 0, 0 }
 };
 
+// [Difficulty: Arcade  ↓]
 static menu_Button GAME_DIFFICULTY[] = {
   { { 165, 70, 24, 10 }, "Easy   ", MENU_NONE,   game_setEasy, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
   { { 165, 70, 24, 10 }, "Normal ", MENU_NONE, game_setNormal, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
   { { 165, 70, 24, 10 }, "Arcade ", MENU_NONE, game_setArcade, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
 };
+// [Level     : Level 1 ↓]
 static menu_Button GAME_LEVEL[] = {
   { { 165, 70, 24, 10 },   "Level 1", MENU_NONE, game_setLevel1, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
   { { 165, 70, 24, 10 },   "Level 2", MENU_NONE, game_setLevel2, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
@@ -142,12 +147,27 @@ static menu_Button GAME_BUTTONS[] = {
   {  { 165, 140,  24, 10 },       "Back", MENU_MAIN,    nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0, nullptr, 0, 0 }
 };
 
+// [Fullscreen: Borderless ↓]
+static menu_Button FULLSCREEN_MODE[] = {
+  { { 138, 70, 24, 10 }, "Borderless", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "On        ", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Off       ", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+};
+// [Scale     : 3x         ↓]
+static menu_Button SCALE_LEVEL[] = {
+  { { 138, 70, 24, 10 }, "3x        ", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "4x        ", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "5x        ", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+};
 static menu_Button OPTIONS_BUTTONS[] = {
-  { { 165,  70,  36, 10 },        "Volume", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_TEXT, nullptr, 0, 0,          nullptr, 0, 0 },
-  { { 171,  80, 144, 10 },        "Master", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0, &g_volume.master, 0, 1 },
-  { { 171,  90, 144, 10 },         "Music", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0,  &g_volume.music, 0, 1 },
-  { { 171, 100, 144, 10 }, "Sound Effects", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0,    &g_volume.sfx, 0, 1 },
-  { { 165, 140,  24, 10 },          "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0,          nullptr, 0, 0 }
+  { { 159,  70,  36, 10 },        "Volume", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,          nullptr, 0, 0 },
+  { { 165,  80, 156, 10 },        "Master", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0, &g_volume.master, 0, 1 },
+  { { 165,  90, 156, 10 },         "Music", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0,  &g_volume.music, 0, 1 },
+  { { 165, 100, 156, 10 }, "Sound Effects", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0,    &g_volume.sfx, 0, 1 },
+  { { 159, 120,  36, 10 },       "Display", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,          nullptr, 0, 0 },
+  { { 165, 130, 156, 10 },    "Fullscreen", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, FULLSCREEN_MODE, COUNT(FULLSCREEN_MODE), 0,          nullptr, 0, 0 },
+  { { 165, 140, 156, 10 },    "Scale     ", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN,     SCALE_LEVEL,     COUNT(SCALE_LEVEL), 0,          nullptr, 0, 0 },
+  { { 159, 160,  24, 10 },          "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0,          nullptr, 0, 0 }
 };
 
 static menu_Button CREDITS_BUTTONS[] = {
@@ -158,7 +178,7 @@ static menu_Screen SCREENS[] = {
   [MENU_MAIN]     = {    MAIN_BUTTONS,    COUNT(MAIN_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr },
   [MENU_HISCORES] = {  SCORES_BUTTONS,  COUNT(SCORES_BUTTONS), BG_HISCORES, BG_COLOUR, BG_BORDER,     scores_drawMenu },
   [MENU_GAME]     = {    GAME_BUTTONS,    COUNT(GAME_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER, player_drawContinue },
-  [MENU_OPTIONS]  = { OPTIONS_BUTTONS, COUNT(OPTIONS_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr },
+  [MENU_OPTIONS]  = { OPTIONS_BUTTONS, COUNT(OPTIONS_BUTTONS),  BG_OPTIONS, BG_COLOUR, BG_BORDER,             nullptr },
   [MENU_CREDITS]  = { CREDITS_BUTTONS, COUNT(CREDITS_BUTTONS),     BG_MAIN, BG_COLOUR, BG_BORDER,             nullptr }
 };
 // clang-format on
@@ -214,9 +234,36 @@ static void resetButtonState(const menu_Screen* screen) {
   g_state.activatedButton = -1;
 }
 
+static Rectangle getDropdownRectangle(const menu_Button* button) {
+  return (Rectangle) {
+    button->bounds.x,
+    button->bounds.y + button->bounds.height,
+    button->bounds.width,
+    button->bounds.height * (button->dropdownItemCount + 2)
+  };
+}
+static void activateDropdownButton(const menu_Button* button, int buttonID) {
+  g_state.dropdownSelection = button->selectedItem;
+  if (g_state.activeDropdown != buttonID) {
+    g_state.activeDropdown = buttonID;
+  } else {
+    g_state.activeDropdown = -1;
+  }
+}
+
 // New helper functions for dropdown handling
 static void handleDropdownInput(const menu_Screen* screen) {
   menu_Button* button = &screen->buttons[g_state.activeDropdown];
+
+  // If mouse is clicked outside the drop down, close it
+  Rectangle dropdownRect = getDropdownRectangle(button);
+  if (input_isMouseButtonPressed(INPUT_LEFT_BUTTON) &&
+      !(input_isMouseButtonClick(INPUT_LEFT_BUTTON, dropdownRect) ||
+        input_isMouseButtonClick(INPUT_LEFT_BUTTON, button->bounds))) {
+    activateDropdownButton(button, g_state.activeDropdown);
+    return;
+  }
+
   for (int i = 0; i < button->dropdownItemCount; i++) {
     const menu_Button* item         = &button->dropdownItems[i];
     Rectangle          dropdownRect = {
@@ -242,12 +289,7 @@ static void handleDropdownInput(const menu_Screen* screen) {
 static void drawDropdown(const menu_Button* button, int index) {
   if (g_state.activeDropdown == index && button->dropdownItems) {
     // Create dropdown container below button
-    Rectangle dropdownRect = {
-      button->bounds.x,
-      button->bounds.y + button->bounds.height,
-      button->bounds.width,
-      button->bounds.height * (button->dropdownItemCount + 2)
-    };
+    Rectangle dropdownRect = getDropdownRectangle(button);
 
     // Draw dropdown background
     engine_drawRectangle(dropdownRect, BG_DROP_DOWN_COLOUR);
@@ -286,15 +328,6 @@ static void activateNormalButton(const menu_Screen* screen, const menu_Button* b
   }
 }
 
-static void activateDropdownButton(const menu_Button* button, int buttonID) {
-  g_state.dropdownSelection = button->selectedItem;
-  if (g_state.activeDropdown != buttonID) {
-    g_state.activeDropdown = buttonID;
-  } else {
-    g_state.activeDropdown = -1;
-  }
-}
-
 static Rectangle getSliderOutline(const menu_Button* button) {
   return (Rectangle) {
     button->bounds.x + button->bounds.width - SLIDER_SIZE.x, button->bounds.y, SLIDER_SIZE.x, SLIDER_SIZE.y
@@ -329,9 +362,9 @@ static void activateSliderButton(const menu_Button* button) {
 static void updateMenuScreen(const menu_Screen* screen) {
   assert(screen != nullptr);
 
-  if (g_state.activeDropdown != -1) handleDropdownInput(screen);
-
   for (int i = 0; i < screen->buttonCount; i++) {
+    if (g_state.activeDropdown != -1 && g_state.activeDropdown != i) continue;
+
     const menu_Button* button = &screen->buttons[i];
     assert(button != nullptr);
     if (isButtonActive(button)) {
@@ -345,6 +378,8 @@ static void updateMenuScreen(const menu_Screen* screen) {
       }
     }
   }
+
+  if (g_state.activeDropdown != -1) handleDropdownInput(screen);
 }
 
 static void drawButtonText(const menu_Button* button, const char* string, Color colour) {
@@ -394,7 +429,7 @@ static void drawMenuScreen(const menu_Screen* screen) {
     assert(button != nullptr);
     if (isButtonActive(button)) {
       bool isSelected = !g_state.isMouseActive && g_state.selectedButton[g_state.currentScreen] == i;
-      bool isHovered  = g_state.isMouseActive && engine_isMouseHover(button->bounds);
+      bool isHovered  = g_state.activeDropdown == -1 && g_state.isMouseActive && engine_isMouseHover(button->bounds);
 
       switch (button->type) {
         case MENU_BUTTON_NORMAL: drawNormalButton(button, isSelected, isHovered); break;
