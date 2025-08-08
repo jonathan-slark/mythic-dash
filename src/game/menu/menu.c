@@ -143,11 +143,11 @@ static menu_Button GAME_BUTTONS[] = {
 };
 
 static menu_Button OPTIONS_BUTTONS[] = {
-  { { 165,  70,  36, 10 },         "Volume", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_TEXT, nullptr, 0, 0,          nullptr, 0, 0 },
-  { { 165,  80, 150, 10 }, " Master       ", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0, &g_volume.master, 0, 1 },
-  { { 165,  90, 150, 10 }, " Music        ", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0,  &g_volume.music, 0, 1 },
-  { { 165, 100, 150, 10 }, " Sound Effects", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0,    &g_volume.sfx, 0, 1 },
-  { { 165, 140,  24, 10 },           "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0,          nullptr, 0, 0 }
+  { { 165,  70,  36, 10 },        "Volume", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_TEXT, nullptr, 0, 0,          nullptr, 0, 0 },
+  { { 171,  80, 144, 10 },        "Master", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0, &g_volume.master, 0, 1 },
+  { { 171,  90, 144, 10 },         "Music", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0,  &g_volume.music, 0, 1 },
+  { { 171, 100, 144, 10 }, "Sound Effects", MENU_MAIN, audio_onVolumeChange, MENU_CONTEXT_BOTH, MENU_BUTTON_SLIDER, nullptr, 0, 0,    &g_volume.sfx, 0, 1 },
+  { { 165, 140,  24, 10 },          "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0,          nullptr, 0, 0 }
 };
 
 static menu_Button CREDITS_BUTTONS[] = {
