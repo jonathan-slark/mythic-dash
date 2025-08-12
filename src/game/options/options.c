@@ -9,7 +9,7 @@
 
 static const float             DEFAULT_VOLUME       = 1.0f;
 static const engine_WindowMode DEFAULT_WINDOW_MODE  = MODE_BORDERLESS;
-static const int               DEFAULT_SCREEN_SCALE = 1;
+static const int               DEFAULT_SCREEN_SCALE = -1;
 static const char              OPTIONS_FILE[]       = "options.txt";
 
 #define MASTER_VOLUME "masterVolume"

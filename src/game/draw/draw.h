@@ -17,8 +17,9 @@ typedef struct draw_Text {
 
 // --- Constants ---
 
-constexpr Color TEXT_COLOUR = { 245, 245, 245, 255 };
-constexpr Color TEXT_RED    = { 230, 41, 55, 255 };
+constexpr Color  TEXT_COLOUR = { 245, 245, 245, 255 };
+constexpr Color  TEXT_RED    = { 230, 41, 55, 255 };
+static const int MAX_SCALE   = 8;
 
 // --- Draw functions ---
 
@@ -39,9 +40,14 @@ void draw_ready(void);
 void draw_levelClear(void);
 void draw_gameOver(void);
 void draw_gameWon(void);
+int  draw_getMaxScale(void);
 void draw_fullscreenBorderless(void);
 void draw_fullscreenOn(void);
 void draw_fullscreenOff(void);
+void draw_setScale8x(void);
+void draw_setScale7x(void);
+void draw_setScale6x(void);
+void draw_setScale5x(void);
 void draw_setScale4x(void);
 void draw_setScale3x(void);
 void draw_setScale2x(void);

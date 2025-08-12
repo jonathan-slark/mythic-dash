@@ -29,18 +29,13 @@ int main(void) {
   }
 
   options_load();
-  if (!engine_init(
-          ORG_SCR_WIDTH,
-          ORG_SCR_HEIGHT,
-          WINDOW_TITLE,
-          options_getWindowMode(),
-          options_getScreenScale(),
-          0,
-          LOG_LEVEL_INFO
-      )) {
+  int windowMode  = options_getWindowMode();
+  int screenScale = options_getScreenScale();
+  if (!engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE, windowMode, screenScale, 0, LOG_LEVEL_INFO)) {
     LOG_FATAL(log, "Failed to initialise engine");
     return 1;
   }
+  if (screenScale == -1) options_setScreenSacle(engine_getScale());
 
   LOG_INFO(log, "Loading game...");
   if (!game_load()) {

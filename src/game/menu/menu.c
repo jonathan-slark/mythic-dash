@@ -76,6 +76,9 @@ typedef struct menu_State {
 // --- Function prototypes ---
 
 static void returnToTitle(void);
+static void fullscreenBorderless(void);
+static void fullscreenOn(void);
+static void fullscreenOff(void);
 
 // --- Constants ---
 
@@ -151,12 +154,16 @@ static menu_Button GAME_BUTTONS[] = {
 
 // [Fullscreen: Borderless ↓]
 static menu_Button FULLSCREEN_MODE[] = {
-  { { 138, 70, 24, 10 }, "Borderless", MENU_NONE, draw_fullscreenBorderless, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "On        ", MENU_NONE,         draw_fullscreenOn, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "Off       ", MENU_NONE,        draw_fullscreenOff, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Borderless", MENU_NONE, fullscreenBorderless, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "On        ", MENU_NONE,         fullscreenOn, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Off       ", MENU_NONE,        fullscreenOff, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
 };
 // [Scale     : 3x         ↓]
 static menu_Button SCALE_LEVEL[] = {
+  { { 138, 70, 24, 10 }, "8x        ", MENU_NONE, draw_setScale8x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "7x        ", MENU_NONE, draw_setScale7x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "6x        ", MENU_NONE, draw_setScale6x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "5x        ", MENU_NONE, draw_setScale5x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
   { { 138, 70, 24, 10 }, "4x        ", MENU_NONE, draw_setScale4x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
   { { 138, 70, 24, 10 }, "3x        ", MENU_NONE, draw_setScale3x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
   { { 138, 70, 24, 10 }, "2x        ", MENU_NONE, draw_setScale2x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
@@ -172,6 +179,8 @@ static menu_Button OPTIONS_BUTTONS[] = {
   { { 165, 140, 156, 10 },    "Scale     ", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN,     SCALE_LEVEL,     COUNT(SCALE_LEVEL), 0,                 nullptr,                 nullptr, 0, 0 },
   { { 159, 160,  24, 10 },          "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0,                 nullptr,                 nullptr, 0, 0 }
 };
+static const int WINDOW_MODE_DROPDOWN = 5;
+static const int SCREEN_SCALE_DROPDOWN = 6;
 
 static menu_Button CREDITS_BUTTONS[] = {
   { { 165, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 }
@@ -526,6 +535,29 @@ static void checkMouse(void) {
   }
 }
 
+static void setSelectedDropdowns(void) {
+  OPTIONS_BUTTONS[WINDOW_MODE_DROPDOWN].selectedItem = options_getWindowMode();
+
+  int maxScale                                             = draw_getMaxScale();
+  int dropdownIndex                                        = MAX_SCALE - maxScale;
+  OPTIONS_BUTTONS[SCREEN_SCALE_DROPDOWN].dropdownItems     = &SCALE_LEVEL[dropdownIndex];
+  OPTIONS_BUTTONS[SCREEN_SCALE_DROPDOWN].dropdownItemCount = maxScale;
+  OPTIONS_BUTTONS[SCREEN_SCALE_DROPDOWN].selectedItem      = maxScale - options_getScreenScale();
+}
+
+static void fullscreenBorderless(void) {
+  draw_fullscreenBorderless();
+  setSelectedDropdowns();
+}
+static void fullscreenOn(void) {
+  draw_fullscreenOn();
+  setSelectedDropdowns();
+}
+static void fullscreenOff(void) {
+  draw_fullscreenOff();
+  setSelectedDropdowns();
+}
+
 // --- Menu functions ---
 
 void menu_open(menu_Context context) {
@@ -551,6 +583,8 @@ void menu_open(menu_Context context) {
   g_state.activeDropdown    = -1;
   const menu_Screen* screen = &SCREENS[g_state.currentScreen];
   resetButtonState(screen);
+
+  setSelectedDropdowns();
 }
 
 void menu_close(void) {

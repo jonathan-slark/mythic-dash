@@ -76,6 +76,7 @@ static void setSortby(SortBy sort) { g_state.sort = sort; }
 // --- Score functions ---
 
 void scores_load(void) {
+  errno      = 0;
   FILE* file = fopen(SCORES_FILE, "r");
   if (file == nullptr) {
     LOG_WARN(game_log, "Could not open file %s (%s)", SCORES_FILE, strerror(errno));

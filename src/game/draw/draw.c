@@ -274,6 +274,12 @@ void draw_gameWon(void) {
   if (data.clearResult.isScoreRecord) draw_shadowText(TOTAl_RUN_SCORE_RECORD);
 }
 
+int draw_getMaxScale(void) {
+  int scale = engine_getMaxScale();
+  if (options_getWindowMode() == MODE_WINDOWED) scale--;
+  return MIN(scale, MAX_SCALE);
+}
+
 void draw_fullscreenBorderless(void) {
   if (options_getWindowMode() == MODE_WINDOWED) options_setScreenSacle(engine_getMaxScale());
   setMode(MODE_BORDERLESS);
@@ -290,6 +296,10 @@ void draw_fullscreenOff(void) {
   setMode(MODE_WINDOWED);
 }
 
+void draw_setScale8x(void) { setScale(8); }
+void draw_setScale7x(void) { setScale(7); }
+void draw_setScale6x(void) { setScale(6); }
+void draw_setScale5x(void) { setScale(5); }
 void draw_setScale4x(void) { setScale(4); }
 void draw_setScale3x(void) { setScale(3); }
 void draw_setScale2x(void) { setScale(2); }
