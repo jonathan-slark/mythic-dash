@@ -23,18 +23,18 @@ static const log_Config LOG_CONFIG = {
 int main(void) {
   log_Log* log = log_create(&LOG_CONFIG);
   if (log == nullptr) {
-    LOG_ERROR(log, "Failed to create log");
+    LOG_FATAL(log, "Failed to create log");
     return 1;
   }
 
-  if (!engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE, 0, false, LOG_LEVEL_INFO)) {
-    LOG_ERROR(log, "Failed to initialise engine");
+  if (!engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE, 0, LOG_LEVEL_INFO)) {
+    LOG_FATAL(log, "Failed to initialise engine");
     return 1;
   }
 
   LOG_INFO(log, "Loading game...");
   if (!game_load()) {
-    LOG_ERROR(log, "Failed to load game");
+    LOG_FATAL(log, "Failed to load game");
     return 1;
   }
   LOG_INFO(log, "Game loaded");

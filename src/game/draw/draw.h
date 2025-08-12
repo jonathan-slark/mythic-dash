@@ -22,6 +22,7 @@ constexpr Color TEXT_RED    = { 230, 41, 55, 255 };
 
 // --- Draw functions ---
 
+void draw_init(void);
 void draw_text(draw_Text text, ...);
 int  draw_getTextOffset(int number);
 void draw_shadowText(draw_Text text, ...);
@@ -39,3 +40,10 @@ void draw_ready(void);
 void draw_levelClear(void);
 void draw_gameOver(void);
 void draw_gameWon(void);
+void draw_fullscreenBorderless(void);
+void draw_fullscreenOn(void);
+void draw_fullscreenOff(void);
+void draw_setScale4x(void);
+void draw_setScale3x(void);
+void draw_setScale2x(void);
+void draw_setScale1x(void);

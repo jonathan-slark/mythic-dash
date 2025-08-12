@@ -190,6 +190,7 @@ bool game_load(void) {
   GAME_TRY(asset_initCreatures());
   GAME_TRY(asset_initCursor());
   scores_load();
+  draw_init();
   LOG_INFO(game_log, "Game loading took %f seconds", engine_getTime() - start);
 
   audio_startMusic();

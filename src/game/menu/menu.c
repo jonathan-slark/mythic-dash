@@ -149,15 +149,16 @@ static menu_Button GAME_BUTTONS[] = {
 
 // [Fullscreen: Borderless ↓]
 static menu_Button FULLSCREEN_MODE[] = {
-  { { 138, 70, 24, 10 }, "Borderless", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "On        ", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "Off       ", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Borderless", MENU_NONE, draw_fullscreenBorderless, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "On        ", MENU_NONE,         draw_fullscreenOn, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Off       ", MENU_NONE,        draw_fullscreenOff, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
 };
 // [Scale     : 3x         ↓]
 static menu_Button SCALE_LEVEL[] = {
-  { { 138, 70, 24, 10 }, "3x        ", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "4x        ", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "5x        ", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "4x        ", MENU_NONE, draw_setScale4x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "3x        ", MENU_NONE, draw_setScale3x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "2x        ", MENU_NONE, draw_setScale2x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "1x        ", MENU_NONE, draw_setScale1x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
 };
 static menu_Button OPTIONS_BUTTONS[] = {
   { { 159,  70,  36, 10 },        "Volume", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,          nullptr, 0, 0 },
@@ -344,9 +345,6 @@ static Rectangle getSliderRectangle(const menu_Button* button) {
 }
 
 static void activateSliderButton(const menu_Button* button) {
-  // Check if the click was actually insider the slider area
-  if (!input_isMouseButtonClick(INPUT_LEFT_BUTTON, getSliderOutline(button))) return;
-
   int       scale             = engine_getScale();
   Rectangle slider            = getSliderRectangle(button);
   int       sliderXScaled     = slider.x * scale;

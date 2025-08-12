@@ -60,7 +60,13 @@ static const draw_Text DIFFICULTY_TEXT[DIFFICULTY_COUNT] = {
   { "Arcade Mode", 206, 252, TEXT_COLOUR, FONT_NORMAL }
 };
 
+// --- Global state ---
+
+static int g_scale;
+
 // --- Draw functions ---
+
+void draw_init(void) { g_scale = engine_getMaxScale(); }
 
 void draw_text(draw_Text text, ...) {
   engine_Font* font = text.fontSize == FONT_TINY ? asset_getFontTiny() : asset_getFont();
@@ -259,4 +265,34 @@ void draw_gameWon(void) {
 
   if (data.clearResult.isTimeRecord) draw_shadowText(TOTAL_RUN_TIME_RECORD);
   if (data.clearResult.isScoreRecord) draw_shadowText(TOTAl_RUN_SCORE_RECORD);
+}
+
+void draw_fullscreenBorderless(void) { engine_setWindowMode(MODE_BORDERLESS, g_scale); }
+
+void draw_fullscreenOn(void) { engine_setWindowMode(MODE_FULLSCREEN, g_scale); }
+
+void draw_fullscreenOff(void) {
+  int windowedMaxScale = engine_getMaxScale() - 1;
+  if (g_scale > windowedMaxScale) g_scale = windowedMaxScale;
+  engine_setWindowMode(MODE_WINDOWED, g_scale);
+}
+
+void draw_setScale4x(void) {
+  g_scale = 4;
+  engine_setScale(g_scale);
+}
+
+void draw_setScale3x(void) {
+  g_scale = 3;
+  engine_setScale(g_scale);
+}
+
+void draw_setScale2x(void) {
+  g_scale = 2;
+  engine_setScale(g_scale);
+}
+
+void draw_setScale1x(void) {
+  g_scale = 1;
+  engine_setScale(g_scale);
 }
