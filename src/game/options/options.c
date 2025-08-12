@@ -2,6 +2,7 @@
 #include <engine/engine.h>
 #include <raylib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 // --- Constants ---
@@ -24,7 +25,9 @@ static const char FORMAT_SCREEN_SCALE[]  = SCREEN_SCALE "=%d\n";
 
 constexpr int LINE_LENGTH    = 64;
 constexpr int SETTING_LENGTH = 16;
+constexpr int VALUE_LENGTH   = 16;
 #define SETTING_NO_NULL_LENGTH "15"
+#define VALUE_NO_NULL_LENGTH "15"
 
 // --- Global state ---
 
@@ -55,22 +58,28 @@ static void loadOptionsFile(const char* fileName) {
 
   char line[LINE_LENGTH];
   while (fgets(line, sizeof(line), file)) {
-    char  setting[SETTING_LENGTH];
-    float volume;
-    int   value;
-    if (sscanf(line, "%" SETTING_NO_NULL_LENGTH "[^=]=%d", setting, &value) == 2) {
-      if (strcmp(setting, WINDOW_MODE) == 0) {
-        g_options.windowMode = (engine_WindowMode) value;
-      } else if (strcmp(setting, SCREEN_SCALE) == 0) {
-        g_options.screenScale = value;
-      }
-    } else if (sscanf(line, "%" SETTING_NO_NULL_LENGTH "[^=]=%f", setting, &volume) == 2) {
-      if (strcmp(setting, MASTER_VOLUME) == 0) {
-        g_options.masterVolume = volume;
-      } else if (strcmp(setting, MUSIC_VOLUME) == 0) {
-        g_options.musicVolume = volume;
-      } else if (strcmp(setting, SFX_VOLUME) == 0) {
-        g_options.sfxVolume = volume;
+    char setting[SETTING_LENGTH];
+    char valueStr[VALUE_LENGTH];
+
+    // Parse "name=value" into two strings
+    if (sscanf(line, "%" SETTING_NO_NULL_LENGTH "[^=]=%" VALUE_NO_NULL_LENGTH "s", setting, valueStr) == 2) {
+      // Decide whether it's int or float
+      char* endPtr;
+      long  asInt   = strtol(valueStr, &endPtr, 10);
+      int   isInt   = (*endPtr == '\0');  // fully consumed => integer
+      float asFloat = strtof(valueStr, &endPtr);
+      int   isFloat = (*endPtr == '\0');  // fully consumed => float
+
+      if (strcmp(setting, MASTER_VOLUME) == 0 && isFloat) {
+        g_options.masterVolume = asFloat;
+      } else if (strcmp(setting, MUSIC_VOLUME) == 0 && isFloat) {
+        g_options.musicVolume = asFloat;
+      } else if (strcmp(setting, SFX_VOLUME) == 0 && isFloat) {
+        g_options.sfxVolume = asFloat;
+      } else if (strcmp(setting, WINDOW_MODE) == 0 && isInt) {
+        g_options.windowMode = (engine_WindowMode) asInt;
+      } else if (strcmp(setting, SCREEN_SCALE) == 0 && isInt) {
+        g_options.screenScale = asInt;
       }
     }
   }
