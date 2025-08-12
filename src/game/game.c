@@ -44,7 +44,6 @@ const float MIN_SLOP        = 0.05f;
 const float MAX_SLOP        = 2.5f;
 const float OVERLAP_EPSILON = 2e-5f;
 
-static const float MASTER_VOLUME                        = 1.0f;
 static const char  SCREENSHOT_FILE[]                    = "screenshot.png";
 static const char* DIFFICULTY_STRINGS[DIFFICULTY_COUNT] = { "Easy", "Normal", "Arcade Mode" };
 
@@ -184,14 +183,14 @@ bool game_load(void) {
     return false;
   }
 
-  engine_initAudio(MASTER_VOLUME);
+  options_load();
+  engine_initAudio(options_getMasterVolume());
   GAME_TRY(maze_init());
   GAME_TRY(asset_load());  // Requires maze_init() for the tileset
   GAME_TRY(asset_initPlayer());
   GAME_TRY(asset_initCreatures());
   GAME_TRY(asset_initCursor());
   scores_load();
-  options_load();
   LOG_INFO(game_log, "Game loading took %f seconds", engine_getTime() - start);
 
   audio_startMusic();

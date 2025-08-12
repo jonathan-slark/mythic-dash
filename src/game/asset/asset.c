@@ -5,6 +5,7 @@
 #include "../creature/creature.h"
 #include "../internal.h"
 #include "../maze/maze.h"
+#include "../options/options.h"
 #include "../player/player.h"
 #include "internal.h"
 
@@ -16,15 +17,16 @@ static asset_Assets g_assets;
 
 static bool loadSound(asset_Sound soundData, engine_Sound** sound) {
   GAME_TRY(*sound = engine_loadSound(soundData.filepath, MAX_SOUNDS));
-  engine_setSoundVolume(*sound, soundData.volume);
+  float soundVolume = options_getSfxVolume() * soundData.volume;
+  engine_setSoundVolume(*sound, soundVolume);
   engine_setSoundPitch(*sound, soundData.pitch);
   return true;
 }
 
 static bool loadMusic(const asset_Music musicData, engine_Music** music) {
   GAME_TRY(*music = engine_loadMusic(musicData.filepath));
-  engine_setMusicVolume(*music, musicData.volume);
-  engine_setMusicDucking(*music, musicData.volume, musicData.duckedVolume, FADE_IN_RATE, FADE_OUT_RATE);
+  float musicVolume = options_getMusicVolume() * musicData.volume;
+  engine_setMusicDucking(*music, musicVolume, musicData.duckedVolume, FADE_IN_RATE, FADE_OUT_RATE);
   return true;
 }
 
