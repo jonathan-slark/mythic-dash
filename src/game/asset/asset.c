@@ -25,8 +25,10 @@ static bool loadSound(asset_Sound soundData, engine_Sound** sound) {
 
 static bool loadMusic(const asset_Music musicData, engine_Music** music) {
   GAME_TRY(*music = engine_loadMusic(musicData.filepath));
-  float musicVolume = options_getMusicVolume() * musicData.volume;
-  engine_setMusicDucking(*music, musicVolume, musicData.duckedVolume, FADE_IN_RATE, FADE_OUT_RATE);
+  float musicVolume  = options_getMusicVolume();
+  float finalVolume  = musicVolume * musicData.volume;
+  float duckedVolume = musicVolume * musicData.duckedVolume;
+  engine_setMusicDucking(*music, finalVolume, duckedVolume, FADE_IN_RATE, FADE_OUT_RATE);
   return true;
 }
 

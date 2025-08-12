@@ -6,20 +6,21 @@
 
 // --- Constants ---
 
-static const float             DEFAULT_VOLUME      = 1.0f;
-static const engine_WindowMode DEFAULT_WINDOW_MODE = MODE_BORDERLESS;
-static const char              OPTIONS_FILE[]      = "options.txt";
+static const float             DEFAULT_VOLUME       = 1.0f;
+static const engine_WindowMode DEFAULT_WINDOW_MODE  = MODE_BORDERLESS;
+static const int               DEFAULT_SCREEN_SCALE = 1;
+static const char              OPTIONS_FILE[]       = "options.txt";
 
 #define MASTER_VOLUME "masterVolume"
 #define MUSIC_VOLUME "musicVolume"
 #define SFX_VOLUME "sfxVolume"
 #define WINDOW_MODE "windowMode"
-#define WINDOW_SCALE "windowScale"
+#define SCREEN_SCALE "screenScale"
 static const char FORMAT_MASTER_VOLUME[] = MASTER_VOLUME "=%.2f\n";
 static const char FORMAT_MUSIC_VOLUME[]  = MUSIC_VOLUME "=%.2f\n";
 static const char FORMAT_SFX_VOLUME[]    = SFX_VOLUME "=%.2f\n";
 static const char FORMAT_WINDOW_MODE[]   = WINDOW_MODE "=%d\n";
-static const char FORMAT_WINDOW_SCALE[]  = WINDOW_SCALE "=%d\n";
+static const char FORMAT_SCREEN_SCALE[]  = SCREEN_SCALE "=%d\n";
 
 constexpr int LINE_LENGTH    = 64;
 constexpr int SETTING_LENGTH = 16;
@@ -35,7 +36,7 @@ static struct {
 
   // Display
   engine_WindowMode windowMode;
-  int               windowScale;
+  int               screenScale;
 } g_options;
 
 // --- Helper functions ---
@@ -45,7 +46,7 @@ static void setDefaults(void) {
   g_options.musicVolume  = DEFAULT_VOLUME;
   g_options.sfxVolume    = DEFAULT_VOLUME;
   g_options.windowMode   = DEFAULT_WINDOW_MODE;
-  g_options.windowScale  = engine_getMaxScale();
+  g_options.screenScale  = DEFAULT_SCREEN_SCALE;
 }
 
 static void loadOptionsFile(const char* fileName) {
@@ -56,7 +57,14 @@ static void loadOptionsFile(const char* fileName) {
   while (fgets(line, sizeof(line), file)) {
     char  setting[SETTING_LENGTH];
     float volume;
-    if (sscanf(line, "%" SETTING_NO_NULL_LENGTH "[^=]=%f", setting, &volume) == 2) {
+    int   value;
+    if (sscanf(line, "%" SETTING_NO_NULL_LENGTH "[^=]=%d", setting, &value) == 2) {
+      if (strcmp(setting, WINDOW_MODE) == 0) {
+        g_options.windowMode = (engine_WindowMode) value;
+      } else if (strcmp(setting, SCREEN_SCALE) == 0) {
+        g_options.screenScale = value;
+      }
+    } else if (sscanf(line, "%" SETTING_NO_NULL_LENGTH "[^=]=%f", setting, &volume) == 2) {
       if (strcmp(setting, MASTER_VOLUME) == 0) {
         g_options.masterVolume = volume;
       } else if (strcmp(setting, MUSIC_VOLUME) == 0) {
@@ -78,7 +86,7 @@ static void saveOptionsFile(const char* fileName) {
   fprintf(file, FORMAT_MUSIC_VOLUME, g_options.musicVolume);
   fprintf(file, FORMAT_SFX_VOLUME, g_options.sfxVolume);
   fprintf(file, FORMAT_WINDOW_MODE, (int) g_options.windowMode);
-  fprintf(file, FORMAT_WINDOW_SCALE, g_options.windowScale);
+  fprintf(file, FORMAT_SCREEN_SCALE, g_options.screenScale);
 
   fclose(file);
 }
@@ -116,7 +124,7 @@ void options_setSfxVolume(float volume) {
 // --- Display options ---
 
 engine_WindowMode options_getWindowMode(void) { return g_options.windowMode; }
-int               options_getScreenSacle(void) { return g_options.windowScale; }
+int               options_getScreenScale(void) { return g_options.screenScale; }
 
 void options_setWindowMode(engine_WindowMode mode) {
   g_options.windowMode = mode;
@@ -124,6 +132,6 @@ void options_setWindowMode(engine_WindowMode mode) {
 }
 
 void options_setScreenSacle(int scale) {
-  g_options.windowScale = scale;
+  g_options.screenScale = scale;
   options_save();
 }

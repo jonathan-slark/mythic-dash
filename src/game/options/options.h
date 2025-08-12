@@ -21,7 +21,7 @@ void options_setSfxVolume(float volume);
 // --- Display options ---
 
 engine_WindowMode options_getWindowMode(void);
-int               options_getScreenSacle(void);
+int               options_getScreenScale(void);
 
 void options_setWindowMode(engine_WindowMode mode);
 void options_setScreenSacle(int scale);

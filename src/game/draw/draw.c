@@ -70,7 +70,7 @@ static void setScale(int scale) {
 
 static void setMode(engine_WindowMode mode) {
   options_setWindowMode(mode);
-  engine_setWindowMode(mode, options_getScreenSacle());
+  engine_setWindowMode(mode, options_getScreenScale());
 }
 
 // --- Draw functions ---
@@ -286,7 +286,7 @@ void draw_fullscreenOn(void) {
 
 void draw_fullscreenOff(void) {
   int windowedMaxScale = engine_getMaxScale() - 1;
-  if (options_getScreenSacle() > windowedMaxScale) options_setScreenSacle(windowedMaxScale);
+  if (options_getScreenScale() > windowedMaxScale) options_setScreenSacle(windowedMaxScale);
   setMode(MODE_WINDOWED);
 }
 

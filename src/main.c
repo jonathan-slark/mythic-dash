@@ -3,6 +3,7 @@
 #include <engine/engine.h>
 #include <game/game.h>
 #include <log/log.h>
+#include "game/options/options.h"
 
 // --- Constants ---
 
@@ -27,7 +28,16 @@ int main(void) {
     return 1;
   }
 
-  if (!engine_init(ORG_SCR_WIDTH, ORG_SCR_HEIGHT, WINDOW_TITLE, 0, LOG_LEVEL_INFO)) {
+  options_load();
+  if (!engine_init(
+          ORG_SCR_WIDTH,
+          ORG_SCR_HEIGHT,
+          WINDOW_TITLE,
+          options_getWindowMode(),
+          options_getScreenScale(),
+          0,
+          LOG_LEVEL_INFO
+      )) {
     LOG_FATAL(log, "Failed to initialise engine");
     return 1;
   }

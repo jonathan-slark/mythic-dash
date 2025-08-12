@@ -183,7 +183,6 @@ bool game_load(void) {
     return false;
   }
 
-  options_load();
   engine_initAudio(options_getMasterVolume());
   GAME_TRY(maze_init());
   GAME_TRY(asset_load());  // Requires maze_init() for the tileset
