@@ -3,18 +3,6 @@
 
 #include <raylib.h>
 
-// --- Types ---
-
-typedef struct audio_Volume {
-  float master;
-  float music;
-  float sfx;
-} audio_Volume;
-
-// --- Global state ---
-
-extern audio_Volume g_volume;
-
 // --- Audio functions ---
 
 void audio_onVolumeChange(void);

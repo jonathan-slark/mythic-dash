@@ -7,6 +7,7 @@
 #include "../asset/asset.h"
 #include "../creature/creature.h"
 #include "../internal.h"
+#include "../options/options.h"
 #include "../player/player.h"
 #include "../scores/scores.h"
 #include "game/game.h"
@@ -60,13 +61,19 @@ static const draw_Text DIFFICULTY_TEXT[DIFFICULTY_COUNT] = {
   { "Arcade Mode", 206, 252, TEXT_COLOUR, FONT_NORMAL }
 };
 
-// --- Global state ---
+// --- Helper functions ---
 
-static int g_scale;
+static void setScale(int scale) {
+  options_setScreenSacle(scale);
+  engine_setScale(scale);
+}
+
+static void setMode(engine_WindowMode mode) {
+  options_setWindowMode(mode);
+  engine_setWindowMode(mode, options_getScreenSacle());
+}
 
 // --- Draw functions ---
-
-void draw_init(void) { g_scale = engine_getMaxScale(); }
 
 void draw_text(draw_Text text, ...) {
   engine_Font* font = text.fontSize == FONT_TINY ? asset_getFontTiny() : asset_getFont();
@@ -267,32 +274,23 @@ void draw_gameWon(void) {
   if (data.clearResult.isScoreRecord) draw_shadowText(TOTAl_RUN_SCORE_RECORD);
 }
 
-void draw_fullscreenBorderless(void) { engine_setWindowMode(MODE_BORDERLESS, g_scale); }
+void draw_fullscreenBorderless(void) {
+  if (options_getWindowMode() == MODE_WINDOWED) options_setScreenSacle(engine_getMaxScale());
+  setMode(MODE_BORDERLESS);
+}
 
-void draw_fullscreenOn(void) { engine_setWindowMode(MODE_FULLSCREEN, g_scale); }
+void draw_fullscreenOn(void) {
+  if (options_getWindowMode() == MODE_WINDOWED) options_setScreenSacle(engine_getMaxScale());
+  setMode(MODE_FULLSCREEN);
+}
 
 void draw_fullscreenOff(void) {
   int windowedMaxScale = engine_getMaxScale() - 1;
-  if (g_scale > windowedMaxScale) g_scale = windowedMaxScale;
-  engine_setWindowMode(MODE_WINDOWED, g_scale);
+  if (options_getScreenSacle() > windowedMaxScale) options_setScreenSacle(windowedMaxScale);
+  setMode(MODE_WINDOWED);
 }
 
-void draw_setScale4x(void) {
-  g_scale = 4;
-  engine_setScale(g_scale);
-}
-
-void draw_setScale3x(void) {
-  g_scale = 3;
-  engine_setScale(g_scale);
-}
-
-void draw_setScale2x(void) {
-  g_scale = 2;
-  engine_setScale(g_scale);
-}
-
-void draw_setScale1x(void) {
-  g_scale = 1;
-  engine_setScale(g_scale);
-}
+void draw_setScale4x(void) { setScale(4); }
+void draw_setScale3x(void) { setScale(3); }
+void draw_setScale2x(void) { setScale(2); }
+void draw_setScale1x(void) { setScale(1); }

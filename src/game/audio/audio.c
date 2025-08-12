@@ -4,6 +4,7 @@
 #include "../asset/asset.h"
 #include "../internal.h"
 #include "../maze/maze.h"
+#include "../options/options.h"
 #include "engine/engine.h"
 
 // --- Constants ---
@@ -22,8 +23,6 @@ typedef struct audio_State {
 } audio_State;
 
 // --- Global state ---
-
-audio_Volume g_volume = { 1.0f, 1.0f, 1.0f };
 
 static audio_State g_state = {
   .coinPitches = {
@@ -45,23 +44,27 @@ static inline float getPan(Vector2 pos) { return 1.0f - pos.x / (maze_getCols() 
 // --- Audio functions ---
 
 void audio_onVolumeChange(void) {
-  engine_setMasterVolume(g_volume.master);
+  float masterVolume = options_getMasterVolume();
+  float musicVolume  = options_getMusicVolume();
+  float sfxVolume    = options_getSfxVolume();
 
-  engine_setMusicVolume(asset_getMusic(), g_volume.music);
+  engine_setMasterVolume(masterVolume);
+
+  engine_setMusicVolume(asset_getMusic(), musicVolume);
 
   for (int i = 0; i < WAIL_SOUND_COUNT; i++) {
-    engine_setSoundVolume(asset_getWailSound(i), asset_getWailVolume(i) * g_volume.sfx);
+    engine_setSoundVolume(asset_getWailSound(i), asset_getWailVolume(i) * sfxVolume);
   }
-  engine_setSoundVolume(asset_getChimeSound(), asset_getChimeVolume() * g_volume.sfx);
-  engine_setSoundVolume(asset_getDeathSound(), asset_getDeathVolume() * g_volume.sfx);
-  engine_setSoundVolume(asset_getFallingSound(), asset_getFallingVolume() * g_volume.sfx);
-  engine_setSoundVolume(asset_getWhispersSound(), asset_getWhispersVolume() * g_volume.sfx);
-  engine_setSoundVolume(asset_getPickupSound(), asset_getPickupVolume() * g_volume.sfx);
-  engine_setSoundVolume(asset_getTwinkleSound(), asset_getTwinkleVolume() * g_volume.sfx);
-  engine_setSoundVolume(asset_getWinSound(), asset_getWinVolume() * g_volume.sfx);
-  engine_setSoundVolume(asset_getGameOverSound(), asset_getGameOverVolume() * g_volume.sfx);
-  engine_setSoundVolume(asset_getLifeSound(), asset_getLifeVolume() * g_volume.sfx);
-  engine_setSoundVolume(asset_getResSound(), asset_getResVolume() * g_volume.sfx);
+  engine_setSoundVolume(asset_getChimeSound(), asset_getChimeVolume() * sfxVolume);
+  engine_setSoundVolume(asset_getDeathSound(), asset_getDeathVolume() * sfxVolume);
+  engine_setSoundVolume(asset_getFallingSound(), asset_getFallingVolume() * sfxVolume);
+  engine_setSoundVolume(asset_getWhispersSound(), asset_getWhispersVolume() * sfxVolume);
+  engine_setSoundVolume(asset_getPickupSound(), asset_getPickupVolume() * sfxVolume);
+  engine_setSoundVolume(asset_getTwinkleSound(), asset_getTwinkleVolume() * sfxVolume);
+  engine_setSoundVolume(asset_getWinSound(), asset_getWinVolume() * sfxVolume);
+  engine_setSoundVolume(asset_getGameOverSound(), asset_getGameOverVolume() * sfxVolume);
+  engine_setSoundVolume(asset_getLifeSound(), asset_getLifeVolume() * sfxVolume);
+  engine_setSoundVolume(asset_getResSound(), asset_getResVolume() * sfxVolume);
 }
 
 void audio_startMusic(void) { engine_playMusic(asset_getMusic()); }

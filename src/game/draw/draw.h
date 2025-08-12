@@ -22,7 +22,6 @@ constexpr Color TEXT_RED    = { 230, 41, 55, 255 };
 
 // --- Draw functions ---
 
-void draw_init(void);
 void draw_text(draw_Text text, ...);
 int  draw_getTextOffset(int number);
 void draw_shadowText(draw_Text text, ...);

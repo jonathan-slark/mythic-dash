@@ -8,6 +8,7 @@
 #include "../draw/draw.h"
 #include "../input/input.h"
 #include "../internal.h"
+#include "../options/options.h"
 #include "../player/player.h"
 #include "../scores/scores.h"
 
@@ -46,9 +47,10 @@ typedef struct menu_Button {
   int          selectedItem;
 
   // Slider
-  float* sliderValue;
-  float  sliderMin;
-  float  sliderMax;
+  float (*sliderGet)(void);
+  void  (*sliderSet)(float);
+  float sliderMin;
+  float sliderMax;
 } menu_Button;
 
 typedef struct menu_Screen {
@@ -97,82 +99,82 @@ static const float   VOLUME_SHIFT  = 0.1f;
 
 // clang-format off
 static menu_Button MAIN_BUTTONS[] = {
-  {  { 165, 70, 60, 10 },      "Start Game",     MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  {  { 165, 80, 66, 10 },     "High Scores", MENU_HISCORES,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  {  { 165, 90, 42, 10 },         "Options",  MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 100, 42, 10 },         "Credits",  MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 140, 54, 10 },       "Quit Game",     MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 120, 66, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 130, 90, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 140, 90, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 }
+  {  { 165, 70, 60, 10 },      "Start Game",     MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  {  { 165, 80, 66, 10 },     "High Scores", MENU_HISCORES,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  {  { 165, 90, 42, 10 },         "Options",  MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 100, 42, 10 },         "Credits",  MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 140, 54, 10 },       "Quit Game",     MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 120, 66, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 130, 90, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 140, 90, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 }
 };
 
 // [Mode: Arcade ↓]
 static menu_Button SCORES_MODE[] = {
-  { { 138, 70, 24, 10 }, "Easy  ", MENU_NONE, scores_setEasy,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "Normal", MENU_NONE, scores_setNormal, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "Arcade", MENU_NONE, scores_setArcade, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Easy  ", MENU_NONE, scores_setEasy,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Normal", MENU_NONE, scores_setNormal, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Arcade", MENU_NONE, scores_setArcade, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
 };
 // [Sort by: Score ↓]
 static menu_Button SCORES_SORT[] = {
-  { { 234, 70, 24, 10 },  "Time ", MENU_NONE, scores_setTime,  MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 234, 70, 24, 10 },  "Score", MENU_NONE, scores_setScore, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 234, 70, 24, 10 },  "Time ", MENU_NONE, scores_setTime,  MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 234, 70, 24, 10 },  "Score", MENU_NONE, scores_setScore, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
 };
 static menu_Button SCORES_BUTTONS[] = {
-  { { 138,  70,  96, 10 },    "Mode", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, SCORES_MODE, COUNT(SCORES_MODE), 0, nullptr, 0, 0 },
-  { { 234,  70, 108, 10 }, "Sort by", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, SCORES_SORT, COUNT(SCORES_SORT), 0, nullptr, 0, 0 },
-  { { 138, 190,  24, 10 },    "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,     nullptr,                  0, 0, nullptr, 0, 0 }
+  { { 138,  70,  96, 10 },    "Mode", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, SCORES_MODE, COUNT(SCORES_MODE), 0, nullptr, nullptr, 0, 0 },
+  { { 234,  70, 108, 10 }, "Sort by", MENU_NONE, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, SCORES_SORT, COUNT(SCORES_SORT), 0, nullptr, nullptr, 0, 0 },
+  { { 138, 190,  24, 10 },    "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,     nullptr,                  0, 0, nullptr, nullptr, 0, 0 }
 };
 
 // [Difficulty: Arcade  ↓]
 static menu_Button GAME_DIFFICULTY[] = {
-  { { 165, 70, 24, 10 }, "Easy   ", MENU_NONE,   game_setEasy, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 70, 24, 10 }, "Normal ", MENU_NONE, game_setNormal, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 70, 24, 10 }, "Arcade ", MENU_NONE, game_setArcade, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 165, 70, 24, 10 }, "Easy   ", MENU_NONE,   game_setEasy, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 70, 24, 10 }, "Normal ", MENU_NONE, game_setNormal, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 70, 24, 10 }, "Arcade ", MENU_NONE, game_setArcade, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
 };
 // [Level     : Level 1 ↓]
 static menu_Button GAME_LEVEL[] = {
-  { { 165, 70, 24, 10 },   "Level 1", MENU_NONE, game_setLevel1, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 70, 24, 10 },   "Level 2", MENU_NONE, game_setLevel2, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 70, 24, 10 },   "Level 3", MENU_NONE, game_setLevel3, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 70, 24, 10 },   "Level 4", MENU_NONE, game_setLevel4, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 70, 24, 10 },   "Level 5", MENU_NONE, game_setLevel5, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 70, 24, 10 },   "Level 6", MENU_NONE, game_setLevel6, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 165, 70, 24, 10 },   "Level 7", MENU_NONE, game_setLevel7, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 165, 70, 24, 10 },   "Level 1", MENU_NONE, game_setLevel1, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 70, 24, 10 },   "Level 2", MENU_NONE, game_setLevel2, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 70, 24, 10 },   "Level 3", MENU_NONE, game_setLevel3, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 70, 24, 10 },   "Level 4", MENU_NONE, game_setLevel4, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 70, 24, 10 },   "Level 5", MENU_NONE, game_setLevel5, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 70, 24, 10 },   "Level 6", MENU_NONE, game_setLevel6, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 70, 24, 10 },   "Level 7", MENU_NONE, game_setLevel7, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
 };
 static menu_Button GAME_BUTTONS[] = {
-  {  { 165,  70,  60, 10 }, "Start Game", MENU_NONE, game_start, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0, nullptr, 0, 0 },
-  {  { 165,  90, 138, 10 }, "Difficulty", MENU_NONE,    nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, GAME_DIFFICULTY, COUNT(GAME_DIFFICULTY), 0, nullptr, 0, 0 },
-  {  { 165, 100, 138, 10 }, "Level     ", MENU_NONE,    nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN,      GAME_LEVEL,      COUNT(GAME_LEVEL), 0, nullptr, 0, 0 },
-  {  { 165, 140,  24, 10 },       "Back", MENU_MAIN,    nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0, nullptr, 0, 0 }
+  {  { 165,  70,  60, 10 }, "Start Game", MENU_NONE, game_start, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0, nullptr, nullptr, 0, 0 },
+  {  { 165,  90, 138, 10 }, "Difficulty", MENU_NONE,    nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, GAME_DIFFICULTY, COUNT(GAME_DIFFICULTY), 0, nullptr, nullptr, 0, 0 },
+  {  { 165, 100, 138, 10 }, "Level     ", MENU_NONE,    nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN,      GAME_LEVEL,      COUNT(GAME_LEVEL), 0, nullptr, nullptr, 0, 0 },
+  {  { 165, 140,  24, 10 },       "Back", MENU_MAIN,    nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0, nullptr, nullptr, 0, 0 }
 };
 
 // [Fullscreen: Borderless ↓]
 static menu_Button FULLSCREEN_MODE[] = {
-  { { 138, 70, 24, 10 }, "Borderless", MENU_NONE, draw_fullscreenBorderless, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "On        ", MENU_NONE,         draw_fullscreenOn, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "Off       ", MENU_NONE,        draw_fullscreenOff, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Borderless", MENU_NONE, draw_fullscreenBorderless, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "On        ", MENU_NONE,         draw_fullscreenOn, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "Off       ", MENU_NONE,        draw_fullscreenOff, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
 };
 // [Scale     : 3x         ↓]
 static menu_Button SCALE_LEVEL[] = {
-  { { 138, 70, 24, 10 }, "4x        ", MENU_NONE, draw_setScale4x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "3x        ", MENU_NONE, draw_setScale3x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "2x        ", MENU_NONE, draw_setScale2x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
-  { { 138, 70, 24, 10 }, "1x        ", MENU_NONE, draw_setScale1x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "4x        ", MENU_NONE, draw_setScale4x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "3x        ", MENU_NONE, draw_setScale3x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "2x        ", MENU_NONE, draw_setScale2x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 138, 70, 24, 10 }, "1x        ", MENU_NONE, draw_setScale1x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
 };
 static menu_Button OPTIONS_BUTTONS[] = {
-  { { 159,  70,  36, 10 },        "Volume", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,          nullptr, 0, 0 },
-  { { 165,  80, 156, 10 },        "Master", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0, &g_volume.master, 0, 1 },
-  { { 165,  90, 156, 10 },         "Music", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0,  &g_volume.music, 0, 1 },
-  { { 165, 100, 156, 10 }, "Sound Effects", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0,    &g_volume.sfx, 0, 1 },
-  { { 159, 120,  36, 10 },       "Display", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,          nullptr, 0, 0 },
-  { { 165, 130, 156, 10 },    "Fullscreen", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, FULLSCREEN_MODE, COUNT(FULLSCREEN_MODE), 0,          nullptr, 0, 0 },
-  { { 165, 140, 156, 10 },    "Scale     ", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN,     SCALE_LEVEL,     COUNT(SCALE_LEVEL), 0,          nullptr, 0, 0 },
-  { { 159, 160,  24, 10 },          "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0,          nullptr, 0, 0 }
+  { { 159,  70,  36, 10 },        "Volume", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,                 nullptr,                 nullptr, 0, 0 },
+  { { 165,  80, 156, 10 },        "Master", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0, options_getMasterVolume, options_setMasterVolume, 0, 1 },
+  { { 165,  90, 156, 10 },         "Music", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0,  options_getMusicVolume,  options_setMusicVolume, 0, 1 },
+  { { 165, 100, 156, 10 }, "Sound Effects", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0,    options_getSfxVolume,    options_setSfxVolume, 0, 1 },
+  { { 159, 120,  36, 10 },       "Display", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,                 nullptr,                 nullptr, 0, 0 },
+  { { 165, 130, 156, 10 },    "Fullscreen", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, FULLSCREEN_MODE, COUNT(FULLSCREEN_MODE), 0,                 nullptr,                 nullptr, 0, 0 },
+  { { 165, 140, 156, 10 },    "Scale     ", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN,     SCALE_LEVEL,     COUNT(SCALE_LEVEL), 0,                 nullptr,                 nullptr, 0, 0 },
+  { { 159, 160,  24, 10 },          "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0,                 nullptr,                 nullptr, 0, 0 }
 };
 
 static menu_Button CREDITS_BUTTONS[] = {
-  { { 165, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, 0, 0 }
+  { { 165, 140, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 }
 };
 
 static menu_Screen SCREENS[] = {
@@ -351,7 +353,7 @@ static void activateSliderButton(const menu_Button* button) {
   int       sliderWidthScaled = slider.width * scale;
   float     mouseX            = engine_getMousePosition().x;
   float     newValue          = (mouseX - (float) sliderXScaled) / (float) sliderWidthScaled;
-  *button->sliderValue        = CLAMP(newValue, button->sliderMin, button->sliderMax);
+  button->sliderSet(CLAMP(newValue, button->sliderMin, button->sliderMax));
 
   // Audio module callback
   button->action();
@@ -406,9 +408,10 @@ static void drawSliderButton(const menu_Button* button, bool isSelected, bool is
   colour = isHovered ? TEXT_ACTIVE : BG_BORDER;
   engine_drawRectangleOutline(getSliderOutline(button), colour);
 
-  if (*button->sliderValue > 0.0f) {
+  float sliderValue = button->sliderGet();
+  if (sliderValue > 0.0f) {
     Rectangle slider  = getSliderRectangle(button);
-    slider.width     *= *button->sliderValue;  // TODO: use sliderMin/sliderMax
+    slider.width     *= sliderValue;  // TODO: use sliderMin/sliderMax
     engine_drawRectangle(slider, SLIDER_COLOUR);
   }
 }
@@ -452,8 +455,10 @@ static void drawMenuScreen(const menu_Screen* screen) {
 }
 
 static void volumeChange(const menu_Button* button, float shift) {
-  *button->sliderValue += shift;
-  *button->sliderValue  = CLAMP(*button->sliderValue, button->sliderMin, button->sliderMax);
+  float sliderValue  = button->sliderGet();
+  sliderValue       += shift;
+  sliderValue        = CLAMP(sliderValue, button->sliderMin, button->sliderMax);
+  button->sliderSet(sliderValue);
   button->action();
 }
 
