@@ -273,14 +273,8 @@ static void handleDropdownInput(const menu_Screen* screen) {
   }
 
   for (int i = 0; i < button->dropdownItemCount; i++) {
-    const menu_Button* item         = &button->dropdownItems[i];
-    Rectangle          dropdownRect = {
-      button->bounds.x,
-      button->bounds.y + button->bounds.height,
-      button->bounds.width,
-      button->bounds.height * (button->dropdownItemCount + 2)
-    };
-    Rectangle itemRect = {
+    const menu_Button* item     = &button->dropdownItems[i];
+    Rectangle          itemRect = {
       dropdownRect.x, dropdownRect.y + (i + 1) * button->bounds.height, dropdownRect.width, button->bounds.height
     };
     if (g_state.activatedButton == i || input_isMouseButtonClick(INPUT_LEFT_BUTTON, itemRect)) {
