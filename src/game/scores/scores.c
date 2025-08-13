@@ -40,17 +40,18 @@ typedef struct score_State {
 
 // --- Constants ---
 
-static const char      SCORES_FILE[]                = "scores.csv";
-static const int       ENTRY_COUNT                  = 5;
-static const char      TYPE_TIME[]                  = "time";
-static const char      TYPE_SCORE[]                 = "score";
-static const char      TYPE_FULL_TIME[]             = "fullTime";
-static const char      TYPE_FULL_SCORE[]            = "fullScore";
-static const char*     MODE_NAMES[DIFFICULTY_COUNT] = { "Easy", "Normal", "Arcade" };
-static const draw_Text LEVEL_SCORE_HEADER = { "Level           Time  Score  Lives", 138, 90, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text FULL_RUN_TIME      = { "Full Run  %10s %6d  %5d", 138, 170, TEXT_COLOUR, FONT_NORMAL };
-static const int       LINE_HEIGHT        = 10;
-static const int       LEVEL_SCORE_YPOS   = 100;
+static const char  SCORES_FILE[]                = "scores.csv";
+static const int   ENTRY_COUNT                  = 5;
+static const char  TYPE_TIME[]                  = "time";
+static const char  TYPE_SCORE[]                 = "score";
+static const char  TYPE_FULL_TIME[]             = "fullTime";
+static const char  TYPE_FULL_SCORE[]            = "fullScore";
+static const char* MODE_NAMES[DIFFICULTY_COUNT] = { "Easy", "Normal", "Arcade" };
+static const draw_Text
+    LEVEL_SCORE_HEADER                  = { "Level           Time  Score  Lives", 138, 115, TEXT_COLOUR, FONT_NORMAL };
+static const draw_Text FULL_RUN_TIME    = { "Full Run  %10s %6d  %5d", 138, 195, TEXT_COLOUR, FONT_NORMAL };
+static const int       LINE_HEIGHT      = 10;
+static const int       LEVEL_SCORE_YPOS = 125;
 
 // --- Global state ---
 

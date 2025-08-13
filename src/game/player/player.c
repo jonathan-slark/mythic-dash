@@ -66,7 +66,7 @@ static const float       SWORD_MAX_TIMER[DIFFICULTY_COUNT]   = { 14.0f, 10.0f, 6
 static const float       SWORD_MIN_TIMER[DIFFICULTY_COUNT]   = { 8.4f, 6.0f, 3.6f };     // 60%
 static const int         SCORE_EXTRA_LIFE[DIFFICULTY_COUNT]  = { 3000, 5000, 10000 };
 static const int         SCORE_CHEST                         = 100;
-static const draw_Text   LOCKED_TEXT = { "             (locked)", 168, 110, TEXT_RED, FONT_NORMAL };
+static const draw_Text   LOCKED_TEXT = { "             (locked)", 168, 160, TEXT_RED, FONT_NORMAL };
 
 // --- Global state ---
 
