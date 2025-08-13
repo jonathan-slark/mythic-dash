@@ -82,9 +82,9 @@ static void fullscreenOff(void);
 
 // --- Constants ---
 
-static const Rectangle BG_MAIN             = { 159, 110, 162, 100 };
+static const Rectangle BG_MAIN             = { 159, 135, 162, 100 };
 static const Rectangle BG_HISCORES         = { 132, 85, 216, 150 };
-static const Rectangle BG_OPTIONS          = { 153, 100, 174, 120 };
+static const Rectangle BG_OPTIONS          = { 153, 115, 174, 120 };
 static const Color     BG_COLOUR           = { 64, 64, 64, 200 };
 static const Color     BG_DROP_DOWN_COLOUR = { 40, 40, 40, 200 };
 static const Color     BG_BORDER           = { 255, 255, 255, 200 };
@@ -92,7 +92,7 @@ static const Color     BG_BORDER           = { 255, 255, 255, 200 };
 static const Color TEXT_NORMAL = { 255, 255, 255, 255 };
 static const Color TEXT_ACTIVE = { 151, 255, 49, 255 };
 
-static const char DROP_DOWN_TEXT[] = "[%s: %s \x85]";
+static const char DROP_DOWN_TEXT[] = "[%s: %s \x83]";
 static const int  BUFFER_LEN       = 256;
 static const int  TEXT_WIDTH       = 6;
 
@@ -102,14 +102,14 @@ static const float   VOLUME_SHIFT  = 0.1f;
 
 // clang-format off
 static menu_Button MAIN_BUTTONS[] = {
-  { { 165, 120, 60, 10 },      "Start Game",     MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
-  { { 165, 130, 66, 10 },     "High Scores", MENU_HISCORES,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
-  { { 165, 140, 42, 10 },         "Options",  MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
-  { { 165, 150, 42, 10 },         "Credits",  MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
-  { { 165, 190, 54, 10 },       "Quit Game",     MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
-  { { 165, 160, 66, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
-  { { 165, 180, 90, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
-  { { 165, 190, 90, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 }
+  { { 165, 145, 60, 10 },      "Start Game",     MENU_GAME,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 155, 66, 10 },     "High Scores", MENU_HISCORES,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 165, 42, 10 },         "Options",  MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 175, 42, 10 },         "Credits",  MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 215, 54, 10 },       "Quit Game",     MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 195, 66, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 205, 90, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 215, 90, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 }
 };
 
 // [Mode: Arcade ↓]
@@ -146,10 +146,10 @@ static menu_Button GAME_LEVEL[] = {
   { { 165, 70, 24, 10 },   "Level 7", MENU_NONE, game_setLevel7, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
 };
 static menu_Button GAME_BUTTONS[] = {
-  {  { 165, 120,  60, 10 }, "Start Game", MENU_NONE, game_start, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0, nullptr, nullptr, 0, 0 },
-  {  { 165, 140, 138, 10 }, "Difficulty", MENU_NONE,    nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, GAME_DIFFICULTY, COUNT(GAME_DIFFICULTY), 0, nullptr, nullptr, 0, 0 },
-  {  { 165, 150, 138, 10 }, "Level     ", MENU_NONE,    nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN,      GAME_LEVEL,      COUNT(GAME_LEVEL), 0, nullptr, nullptr, 0, 0 },
-  {  { 165, 190,  24, 10 },       "Back", MENU_MAIN,    nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0, nullptr, nullptr, 0, 0 }
+  {  { 165, 145,  60, 10 }, "Start Game", MENU_NONE, game_start, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0, nullptr, nullptr, 0, 0 },
+  {  { 165, 165, 138, 10 }, "Difficulty", MENU_NONE,    nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, GAME_DIFFICULTY, COUNT(GAME_DIFFICULTY), 0, nullptr, nullptr, 0, 0 },
+  {  { 165, 175, 138, 10 }, "Level     ", MENU_NONE,    nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN,      GAME_LEVEL,      COUNT(GAME_LEVEL), 0, nullptr, nullptr, 0, 0 },
+  {  { 165, 215,  24, 10 },       "Back", MENU_MAIN,    nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0, nullptr, nullptr, 0, 0 }
 };
 
 // [Fullscreen: Borderless ↓]
@@ -170,20 +170,20 @@ static menu_Button SCALE_LEVEL[] = {
   { { 138, 70, 24, 10 }, "1x        ", MENU_NONE, draw_setScale1x, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
 };
 static menu_Button OPTIONS_BUTTONS[] = {
-  { { 159, 110,  36, 10 },        "Volume", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,                 nullptr,                 nullptr, 0, 0 },
-  { { 165, 120, 156, 10 },        "Master", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0, options_getMasterVolume, options_setMasterVolume, 0, 1 },
-  { { 165, 130, 156, 10 },         "Music", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0,  options_getMusicVolume,  options_setMusicVolume, 0, 1 },
-  { { 165, 140, 156, 10 }, "Sound Effects", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0,    options_getSfxVolume,    options_setSfxVolume, 0, 1 },
-  { { 159, 160,  36, 10 },       "Display", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,                 nullptr,                 nullptr, 0, 0 },
-  { { 165, 170, 156, 10 },    "Fullscreen", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, FULLSCREEN_MODE, COUNT(FULLSCREEN_MODE), 0,                 nullptr,                 nullptr, 0, 0 },
-  { { 165, 180, 156, 10 },    "Scale     ", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN,     SCALE_LEVEL,     COUNT(SCALE_LEVEL), 0,                 nullptr,                 nullptr, 0, 0 },
-  { { 159, 200,  24, 10 },          "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0,                 nullptr,                 nullptr, 0, 0 }
+  { { 159, 125,  36, 10 },        "Volume", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,                 nullptr,                 nullptr, 0, 0 },
+  { { 165, 135, 156, 10 },        "Master", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0, options_getMasterVolume, options_setMasterVolume, 0, 1 },
+  { { 165, 145, 156, 10 },         "Music", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0,  options_getMusicVolume,  options_setMusicVolume, 0, 1 },
+  { { 165, 155, 156, 10 }, "Sound Effects", MENU_NONE, audio_onVolumeChange, MENU_CONTEXT_BOTH,   MENU_BUTTON_SLIDER,         nullptr,                      0, 0,    options_getSfxVolume,    options_setSfxVolume, 0, 1 },
+  { { 159, 175,  36, 10 },       "Display", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH,     MENU_BUTTON_TEXT,         nullptr,                      0, 0,                 nullptr,                 nullptr, 0, 0 },
+  { { 165, 185, 156, 10 },    "Fullscreen", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN, FULLSCREEN_MODE, COUNT(FULLSCREEN_MODE), 0,                 nullptr,                 nullptr, 0, 0 },
+  { { 165, 195, 156, 10 },    "Scale     ", MENU_NONE,              nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_DROPDOWN,     SCALE_LEVEL,     COUNT(SCALE_LEVEL), 0,                 nullptr,                 nullptr, 0, 0 },
+  { { 159, 215,  24, 10 },          "Back", MENU_MAIN,              nullptr, MENU_CONTEXT_BOTH,   MENU_BUTTON_NORMAL,         nullptr,                      0, 0,                 nullptr,                 nullptr, 0, 0 }
 };
 static const int WINDOW_MODE_DROPDOWN = 5;
 static const int SCREEN_SCALE_DROPDOWN = 6;
 
 static menu_Button CREDITS_BUTTONS[] = {
-  { { 165, 190, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 }
+  { { 165, 215, 24, 10 }, "Back", MENU_MAIN, nullptr, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 }
 };
 
 static menu_Screen SCREENS[] = {
@@ -247,12 +247,8 @@ static void resetButtonState(const menu_Screen* screen) {
 }
 
 static Rectangle getDropdownRectangle(const menu_Button* button) {
-  return (Rectangle) {
-    button->bounds.x,
-    button->bounds.y + button->bounds.height,
-    button->bounds.width,
-    button->bounds.height * (button->dropdownItemCount + 2)
-  };
+  float height = button->bounds.height * (button->dropdownItemCount + 2);
+  return (Rectangle) { button->bounds.x, button->bounds.y - height - 1, button->bounds.width, height };
 }
 static void activateDropdownButton(const menu_Button* button, int buttonID) {
   g_state.dropdownSelection = button->selectedItem;
