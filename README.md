@@ -21,6 +21,8 @@ An arcade-style dungeon dash inspired by Southeast Asian myths. Collect gold, do
 * [Action 03 by rhodesmas](https://freesound.org/people/rhodesmas/sounds/320883/) - CC BY 3.0
 * [RPG - Misty Mountains by Hitctrl](https://opengameart.org/content/rpg-misty-mountains) - CC BY 3.0
 * [Blip Squeak by GameAudio](https://freesound.org/people/GameAudio/sounds/220189/) - CC0
+* [Racing Sans One by Pablo Impallari and Rodrigo Fuenzalida](https://fonts.google.com/specimen/Racing+Sans+One) - SIL 1.1
+* [Charm by The Charm Project Authors](https://fonts.google.com/specimen/Charm) - SIL 1.1
 
 ## Menu
 

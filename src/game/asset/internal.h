@@ -37,6 +37,7 @@ typedef struct asset_Music {
 } asset_Music;
 
 typedef struct asset_Assets {
+  engine_Texture* logo;
   engine_Texture* creatureSpriteSheet;
   engine_Texture* playerSpriteSheet;
   engine_Sprite*  playerSprites[PLAYER_STATE_COUNT];
@@ -65,11 +66,11 @@ typedef struct asset_Assets {
 
 // --- Constants ---
 
-static const char FILE_BACKGROUND[] = ASSET_DIR "gfx/background.png";
-static const char FILE_CREATURES[]  = ASSET_DIR "gfx/creatures.png";
-static const char FILE_PLAYER[]     = ASSET_DIR "gfx/player.png";
-static const char FILE_FONT[]       = ASSET_DIR "gfx/font.png";
-static const char FILE_FONT_TINY[]  = ASSET_DIR "gfx/tiny-numbers.png";
+static const char FILE_LOGO[]      = ASSET_DIR "gfx/logo.png";
+static const char FILE_CREATURES[] = ASSET_DIR "gfx/creatures.png";
+static const char FILE_PLAYER[]    = ASSET_DIR "gfx/player.png";
+static const char FILE_FONT[]      = ASSET_DIR "gfx/font.png";
+static const char FILE_FONT_TINY[] = ASSET_DIR "gfx/tiny-numbers.png";
 
 static const asset_Sound WAIL_SOUNDS[] = {
   { .filepath = ASSET_DIR "sfx/wail-down.wav", .volume = 0.2f, .pitch = 1.0f },

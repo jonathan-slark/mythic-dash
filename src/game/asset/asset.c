@@ -35,6 +35,7 @@ static bool loadMusic(const asset_Music musicData, engine_Music** music) {
 // --- Asset functions ---
 
 bool asset_load(void) {
+  GAME_TRY(g_assets.logo = engine_textureLoad(FILE_LOGO));
   GAME_TRY(g_assets.creatureSpriteSheet = engine_textureLoad(FILE_CREATURES));
   GAME_TRY(g_assets.playerSpriteSheet = engine_textureLoad(FILE_PLAYER));
   g_assets.cursorSpriteSheet = maze_getTileSet();
@@ -76,6 +77,7 @@ void asset_unload(void) {
   engine_fontUnload(&g_assets.font);
   engine_textureUnload(&g_assets.playerSpriteSheet);
   engine_textureUnload(&g_assets.creatureSpriteSheet);
+  engine_textureUnload(&g_assets.logo);
 }
 
 bool asset_initPlayer(void) {
@@ -193,6 +195,11 @@ void asset_shutdownCreatures(void) {
 void asset_shutdownCursor(void) {
   assert(g_assets.cursorSprite != nullptr);
   g_assets.cursorSprite = nullptr;
+}
+
+engine_Texture* asset_getLogo(void) {
+  assert(g_assets.logo != nullptr);
+  return g_assets.logo;
 }
 
 engine_Texture* asset_getCreatureSpriteSheet(void) {

@@ -37,7 +37,6 @@ static draw_Text       NEW_LIFE               = { "+1", 0, 0, TEXT_COLOUR, FONT_
 static const draw_Text SCORE_TEXT             = { "Score: %d", 8, 0, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text LEVEL_TEXT             = { "Level: %02d / %02d", 386, 0, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text EXTRA_LIFE_TEXT        = { "@ %d", 428, 252, TEXT_COLOUR, FONT_NORMAL };
-static const draw_Text TITLE_TEXT             = { "Mythic Dash", 207, 40, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text LEVEL_CLEAR_TEXT       = { "Level clear!", 153, 100, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text LEVEL_TIME_TEXT        = { "This level's time:  %s", 153, 120, TEXT_COLOUR, FONT_NORMAL };
 static const draw_Text LEVEL_SCORE_TEXT       = { "This level's score: %d", 153, 130, TEXT_COLOUR, FONT_NORMAL };
@@ -232,7 +231,7 @@ void draw_nextLife(void) {
   draw_text(EXTRA_LIFE_TEXT, player_getNextExtraLifeScore());
 }
 
-void draw_title(void) { draw_text(TITLE_TEXT); }
+void draw_title(void) { engine_drawBackground(asset_getLogo()); }
 
 void draw_ready(void) {
   draw_shadowText(PLAYER_READY_TEXT[game_getDifficulty()]);

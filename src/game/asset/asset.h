@@ -20,6 +20,7 @@ void asset_shutdownPlayer(void);
 void asset_shutdownCreatures(void);
 void asset_shutdownCursor(void);
 
+engine_Texture* asset_getLogo(void);
 engine_Texture* asset_getCreatureSpriteSheet(void);
 engine_Texture* asset_getPlayerSpriteSheet(void);
 engine_Sprite*  asset_getPlayerSprite(game_PlayerState state);
