@@ -5,6 +5,10 @@
 #include <log/log.h>
 #include "game/options/options.h"
 
+#if defined(PLATFORM_WEB)
+#include <emscripten/emscripten.h>
+#endif
+
 // --- Constants ---
 
 static const char* WINDOW_TITLE   = "Mythic Dash";
@@ -18,6 +22,34 @@ static const log_Config LOG_CONFIG = {
   .showFileLine  = true,
   .subsystem     = "MAIN"
 };
+
+// --- Global state ---
+
+double g_previousTime;
+
+// --- Helper Functions ---
+
+void mainLoop(void) {
+  game_input();
+
+  double now     = engine_getTime();
+  double delta   = now - g_previousTime;
+  g_previousTime = now;
+  if (game_getDifficulty() == DIFFICULTY_ARCADE) {
+    g_accumulator += delta;
+    while (g_accumulator >= FRAME_TIME) {
+      game_update(FRAME_TIME);
+      g_accumulator -= FRAME_TIME;
+    }
+  } else {
+    game_update(delta);
+  }
+
+  engine_beginFrame();
+  engine_clearScreen(BLACK);
+  game_draw();
+  engine_endFrame();
+}
 
 // --- Main ---
 
@@ -44,29 +76,16 @@ int main(void) {
   }
   LOG_INFO(log, "Game loaded");
 
-  g_accumulator   = 0.0;
-  double previous = engine_getTime();
+  g_accumulator  = 0.0;
+  g_previousTime = engine_getTime();
+
+#if defined(PLATFORM_WEB)
+  emscripten_set_main_loop(mainLoop, 0, 1);
+#else
   while (!engine_shouldClose()) {
-    game_input();
-
-    double now   = engine_getTime();
-    double delta = now - previous;
-    previous     = now;
-    if (game_getDifficulty() == DIFFICULTY_ARCADE) {
-      g_accumulator += delta;
-      while (g_accumulator >= FRAME_TIME) {
-        game_update(FRAME_TIME);
-        g_accumulator -= FRAME_TIME;
-      }
-    } else {
-      game_update(delta);
-    }
-
-    engine_beginFrame();
-    engine_clearScreen(BLACK);
-    game_draw();
-    engine_endFrame();
+    mainLoop();
   }
+#endif
 
   LOG_INFO(log, "Closing game...");
   game_unload();
