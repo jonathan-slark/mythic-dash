@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.21)
 project(mythic-dash LANGUAGES C)
 
-add_subdirectory(extern/raylib)
 add_subdirectory(extern/engine)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(PLATFORM Web CACHE STRING "Platform for raylib")
 add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 set(CUTE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/extern/cute_headers/include)
@@ -65,7 +65,7 @@ add_custom_command(TARGET package_release POST_BUILD
 set(WEB_TARGET ${PROJECT_NAME}_web)
 
 add_executable(${WEB_TARGET} ${SOURCES})
-target_include_directories(${WEB_TARGET} PUBLIC ${ENGINE_DIR})
+target_include_directories(${WEB_TARGET} PUBLIC ${ENGINE_DIR} ${RAYLIB_DIR})
 target_include_directories(${WEB_TARGET} PRIVATE ${INCLUDE_DIR} ${CUTE_DIR})
 target_link_libraries(${WEB_TARGET} PRIVATE raylib engine log)
 target_compile_definitions(${WEB_TARGET} PRIVATE ASSET_DIR="./asset/")

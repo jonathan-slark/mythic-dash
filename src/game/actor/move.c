@@ -1,6 +1,7 @@
 #include <assert.h>
-#include <math.h>  // fminf, fmaxf
+#include <math.h>
 #include <raylib.h>
+#include <stddef.h>
 #include "../internal.h"
 #include "../maze/maze.h"
 #include "actor.h"

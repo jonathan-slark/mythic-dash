@@ -8,6 +8,7 @@
 #include "../internal.h"
 #include <assert.h>
 #include <raylib.h>
+#include <stddef.h>
 
 // --- Types ---
 

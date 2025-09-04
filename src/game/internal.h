@@ -6,6 +6,7 @@
 #include <log/log.h>
 #include <raylib.h>
 #include <raymath.h>
+#include <stddef.h>
 
 // --- Helper macros ---
 
