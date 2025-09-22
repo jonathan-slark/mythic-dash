@@ -42,3 +42,21 @@ An arcade-style dungeon dash inspired by Southeast Asian myths. Collect gold, do
    * Scale
 3. Cheats
    * Enable Cheats
+
+## Building
+
+Windows:
+
+```sh
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF
+cmake --build build
+```
+
+Emscripten:
+
+```sh
+emcmake cmake -B build_web -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DPLATFORM=Web
+cmake --build build_web
+cd build_web
+emrun mythic-dash.html
+```

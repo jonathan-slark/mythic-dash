@@ -7,6 +7,11 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <stddef.h>
+#include <string.h>
+
+#ifndef ASSET_DIR
+#define ASSET_DIR "./asset/"
+#endif
 
 // --- Helper macros ---
 

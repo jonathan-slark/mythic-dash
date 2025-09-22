@@ -153,7 +153,7 @@ static game_Tile getTargetTile(creature_Creature* creature) {
         targetTile = playerTile;
       }
       break;
-    default: assert(false);
+    default: assert(false); return (game_Tile) {};
   }
   return targetTile;
 }

@@ -58,7 +58,7 @@ static void drawActorArrow(game_Actor* actor) {
     case DIR_RIGHT: end = Vector2Add(pos, (Vector2) { ACTOR_SIZE * scale, ACTOR_SIZE * scale / 2.0f }); break;
     case DIR_DOWN: end = Vector2Add(pos, (Vector2) { ACTOR_SIZE * scale / 2.0f, ACTOR_SIZE * scale }); break;
     case DIR_LEFT: end = Vector2Add(pos, (Vector2) { 0.0f, ACTOR_SIZE * scale / 2.0f }); break;
-    default: assert(false);
+    default: assert(false); return;
   }
 
   engine_drawArrow(start, end, ACTOR_SIZE, WHITE);

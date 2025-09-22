@@ -382,22 +382,14 @@ static bool loadMazetileset(cute_tiled_map_t* map, int level) {
 
   char buffer[BUFFER_SIZE] = ASSET_DIR "map/";
 
-  size_t filenameLen = strnlen_s(map->tilesets->image.ptr, sizeof buffer);
-  if (filenameLen == sizeof buffer) {
-    LOG_FATAL(game_log, "Tileset file name too long to fit buffer");
-    return false;
-  }
-  size_t folderLen = strnlen_s(buffer, sizeof buffer);
+  size_t filenameLen = strlen(map->tilesets->image.ptr);
+  size_t folderLen   = strlen(buffer);
   if (folderLen + filenameLen >= sizeof buffer - 1) {
     LOG_FATAL(game_log, "Tileset file name too long to fit buffer");
     return false;
   }
 
-  int result = strncat_s(buffer, sizeof buffer - strlen(buffer) - 1, map->tilesets->image.ptr, filenameLen);
-  if (result != 0) {
-    LOG_FATAL(game_log, "strncat_s failed: %s", strerror(result));
-    return false;
-  }
+  strncat(buffer, map->tilesets->image.ptr, filenameLen);
   GAME_TRY(g_maze[level].tileset = engine_textureLoad(buffer));
 
   return true;
