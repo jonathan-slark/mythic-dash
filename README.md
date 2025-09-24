@@ -24,25 +24,6 @@ An arcade-style dungeon dash inspired by Southeast Asian myths. Collect gold, do
 * [Racing Sans One by Pablo Impallari and Rodrigo Fuenzalida](https://fonts.google.com/specimen/Racing+Sans+One) - SIL 1.1
 * [Charm by The Charm Project Authors](https://fonts.google.com/specimen/Charm) - SIL 1.1
 
-## Menu
-
-1. New Game
-2. Options
-3. Credits
-4. Quit
-
-## Options
-
-1. Volume
-   * Master
-   * Music
-   * SFX
-2. Display
-   * Fullscreen
-   * Scale
-3. Cheats
-   * Enable Cheats
-
 ## Building
 
 Windows:
@@ -57,6 +38,5 @@ Emscripten:
 ```sh
 emcmake cmake -B build_web -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=OFF -DPLATFORM=Web
 cmake --build build_web
-cd build_web
-emrun mythic-dash.html
+emrun build_web\mythic-dash.html
 ```

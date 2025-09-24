@@ -14,6 +14,13 @@ set(PLATFORM Web CACHE STRING "Platform for raylib")
 add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 if(EMSCRIPTEN)
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}
+  -s USE_GLFW=3 
+  -s WASM=1 
+  -s ASYNCIFY 
+  -s GL_ENABLE_GET_PROC_ADDRESS=1 
+  -s EXPORTED_RUNTIME_METHODS=HEAPF32 
+  --preload-file ../asset/")
   set(CMAKE_EXECUTABLE_SUFFIX ".html")
 endif()
 
