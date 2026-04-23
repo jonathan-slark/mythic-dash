@@ -5,7 +5,7 @@
 #include <log/log.h>
 #include "game/options/options.h"
 
-#if defined(PLATFORM_WEB)
+#if defined(__EMSCRIPTEN__)
 #include <emscripten/emscripten.h>
 #endif
 
@@ -79,7 +79,7 @@ int main(void) {
   g_accumulator  = 0.0;
   g_previousTime = engine_getTime();
 
-#if defined(PLATFORM_WEB)
+#if defined(__EMSCRIPTEN__)
   emscripten_set_main_loop(mainLoop, 0, 1);
 #else
   while (!engine_shouldClose()) {

@@ -7,10 +7,15 @@
 
 // --- Constants ---
 
-static const float             DEFAULT_VOLUME       = 1.0f;
-static const engine_WindowMode DEFAULT_WINDOW_MODE  = MODE_BORDERLESS;
-static const int               DEFAULT_SCREEN_SCALE = -1;
-static const char              OPTIONS_FILE[]       = "options.txt";
+#if defined(__EMSCRIPTEN__)
+static const engine_WindowMode DEFAULT_WINDOW_MODE = MODE_WINDOWED;
+#else
+static const engine_WindowMode DEFAULT_WINDOW_MODE = MODE_BORDERLESS;
+#endif
+
+static const int   DEFAULT_SCREEN_SCALE = -1;
+static const float DEFAULT_VOLUME       = 1.0f;
+static const char  OPTIONS_FILE[]       = "options.txt";
 
 #define MASTER_VOLUME "masterVolume"
 #define MUSIC_VOLUME "musicVolume"

@@ -76,7 +76,9 @@ typedef struct menu_State {
 // --- Function prototypes ---
 
 static void returnToTitle(void);
+#if !defined(__EMSCRIPTEN__)
 static void fullscreenBorderless(void);
+#endif
 static void fullscreenOn(void);
 static void fullscreenOff(void);
 
@@ -106,10 +108,15 @@ static menu_Button MAIN_BUTTONS[] = {
   { { 165, 155, 66, 10 },     "High Scores", MENU_HISCORES,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
   { { 165, 165, 42, 10 },         "Options",  MENU_OPTIONS,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
   { { 165, 175, 42, 10 },         "Credits",  MENU_CREDITS,             nullptr,   MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+#if defined(__EMSCRIPTEN__)
+  { { 165, 205, 66, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+  { { 165, 215, 90, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+#else
   { { 165, 215, 54, 10 },       "Quit Game",     MENU_NONE, engine_requestClose,  MENU_CONTEXT_TITLE, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
   { { 165, 195, 66, 10 },     "Resume Game",     MENU_NONE,          menu_close, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
   { { 165, 205, 90, 10 }, "Return to Title",     MENU_NONE,       returnToTitle, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
   { { 165, 215, 90, 10 }, "Exit to Desktop",     MENU_NONE, engine_requestClose, MENU_CONTEXT_INGAME, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 }
+#endif
 };
 
 // [Mode: Arcade ↓]
@@ -154,7 +161,9 @@ static menu_Button GAME_BUTTONS[] = {
 
 // [Fullscreen: Borderless ↓]
 static menu_Button FULLSCREEN_MODE[] = {
+#if !defined (__EMSCRIPTEN__)
   { { 138, 70, 24, 10 }, "Borderless", MENU_NONE, fullscreenBorderless, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
+#endif
   { { 138, 70, 24, 10 }, "On        ", MENU_NONE,         fullscreenOn, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
   { { 138, 70, 24, 10 }, "Off       ", MENU_NONE,        fullscreenOff, MENU_CONTEXT_BOTH, MENU_BUTTON_NORMAL, nullptr, 0, 0, nullptr, nullptr, 0, 0 },
 };
@@ -526,7 +535,11 @@ static void checkMouse(void) {
 }
 
 static void setSelectedDropdowns(void) {
+#if defined(__EMSCRIPTEN__)
+  OPTIONS_BUTTONS[WINDOW_MODE_DROPDOWN].selectedItem = options_getWindowMode() - 1;
+#else
   OPTIONS_BUTTONS[WINDOW_MODE_DROPDOWN].selectedItem = options_getWindowMode();
+#endif
 
   int maxScale                                             = draw_getMaxScale();
   int dropdownIndex                                        = MAX_SCALE - maxScale;
@@ -535,14 +548,18 @@ static void setSelectedDropdowns(void) {
   OPTIONS_BUTTONS[SCREEN_SCALE_DROPDOWN].selectedItem      = maxScale - options_getScreenScale();
 }
 
+#if !defined(__EMSCRIPTEN__)
 static void fullscreenBorderless(void) {
   draw_fullscreenBorderless();
   setSelectedDropdowns();
 }
+#endif
+
 static void fullscreenOn(void) {
   draw_fullscreenOn();
   setSelectedDropdowns();
 }
+
 static void fullscreenOff(void) {
   draw_fullscreenOff();
   setSelectedDropdowns();
